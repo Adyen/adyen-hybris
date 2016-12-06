@@ -1,0 +1,7 @@
+#% impex.setLocale( Locale.GERMAN );
+
+$storeUid=apparel-uk
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$storeImage=storeImage(qualifier, $catalogVersion)

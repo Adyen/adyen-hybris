@@ -1,0 +1,6 @@
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$media=@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$siteResource=jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/stores/apparel-de
+$medias=medias(code, $catalogVersion)

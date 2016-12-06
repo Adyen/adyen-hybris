@@ -1,0 +1,8 @@
+#% impex.setLocale( Locale.GERMAN );
+
+$defaultPromoGrp=electronicsPromoGrp
+$favCustomers=favoriteCustomers
+$bigSpenders=bigSpenders
+$productCatalog=electronicsProductCatalog
+$catalogVersion=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$productCatalog]),CatalogVersion.version[default=Online])[default=$productCatalog:Online]
+$regulargroup=regulargroup

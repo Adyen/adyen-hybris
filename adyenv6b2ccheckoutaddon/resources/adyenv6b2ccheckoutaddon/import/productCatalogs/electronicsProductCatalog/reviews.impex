@@ -1,0 +1,5 @@
+$catalog-Online=Online
+$product-catalog=electronicsProductCatalog
+$productCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$product-catalog]),CatalogVersion.version[default=$catalog-Online])[default=$product-catalog:$catalog-Online]
+$defaultPassword=password
+

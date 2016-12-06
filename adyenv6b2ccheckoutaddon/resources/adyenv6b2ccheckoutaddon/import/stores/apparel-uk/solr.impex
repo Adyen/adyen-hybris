@@ -1,0 +1,12 @@
+$productCatalog=apparelProductCatalog
+$catalogVersions=catalogVersions(catalog(id),version);
+$serverConfigName=apparel-ukSolrServerConfig
+$indexConfigName=apparel-ukSolrIndexConfig
+$searchConfigName=apparel-ukPageSize
+$facetSearchConfigName=apparel-ukIndex
+$facetSearchConfigDescription=Apparel UK Solr Index
+$searchIndexNamePrefix=apparel-uk
+$solrIndexedType=apparel-ukProductType
+$indexBaseSite=apparel-uk
+$indexLanguages=en
+$indexCurrencies=GBP

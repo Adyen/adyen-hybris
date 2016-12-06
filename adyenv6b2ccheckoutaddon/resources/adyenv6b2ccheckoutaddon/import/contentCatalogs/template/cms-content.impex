@@ -1,0 +1,10 @@
+######
+## PARAMETERS REQUIRED FOR THIS SCRIPT
+##
+##   * contentCatalog   - content catalog id
+##   * addonExtensionName - extension name of the ui addon
+#######
+
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$jarResourceCmsCockpit=jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/cockpit/cmscockpit
+
