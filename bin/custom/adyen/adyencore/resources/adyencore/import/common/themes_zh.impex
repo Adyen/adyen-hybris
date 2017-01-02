@@ -1,0 +1,11 @@
+#
+# Import Themes
+#
+
+# Language
+$lang=zh
+
+# SiteTheme
+UPDATE SiteTheme;code[unique=true];name[lang=$lang]
+ ;black;"黑"
+ ;blue;"蓝"

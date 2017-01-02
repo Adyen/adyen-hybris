@@ -1,0 +1,5 @@
+$productCatalog=electronicsProductCatalog
+$contentCatalog=electronicsContentCatalog
+$productCatalogName=Electronics Product Catalog
+$productCatalogVersion=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true]
+$contentCatalogVersion=catalogVersion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true]

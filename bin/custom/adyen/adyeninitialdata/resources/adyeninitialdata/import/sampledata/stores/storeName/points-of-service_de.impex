@@ -1,0 +1,16 @@
+# ImpEx for Store / Point of Service
+# German localisations
+
+$lang=de
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$storeImage=storeImage(qualifier, $catalogVersion)
+
+UPDATE StoreLocatorFeature;code[unique=true];name[lang=$lang]
+
+UPDATE SpecialOpeningDay;openingSchedule(code)[unique=true];date[unique=true,dateformat=dd.MM.yyyy];name[lang=$lang];message[lang=$lang]
+
+UPDATE PointOfService;name[unique=true];displayName;

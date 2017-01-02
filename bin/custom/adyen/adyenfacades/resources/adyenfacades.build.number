@@ -1,0 +1,9 @@
+#Ant properties
+#Sat Feb 21 01:22:17 CET 2015
+builddate=20150221 0122
+description=adyenfacades
+name=adyenfacades
+releasedate=20150128 1159
+vendor=hybris
+version=5.5.0.0-M3
+version.api=5.5.0

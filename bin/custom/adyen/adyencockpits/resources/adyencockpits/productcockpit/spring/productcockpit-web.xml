@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-autowire="byName">
+
+	<alias name="accProductPerspective" alias="ProductPerspective"/>
+	<bean id="accProductPerspective" parent="defaultProductPerspective">
+		<property name="editorAreaTypes">
+			<set merge="true">
+				<bean class="de.hybris.platform.cockpit.session.impl.EditorAreaTypeRule">
+					<property name="typeCode" value="MediaContainer" />
+					<property name="recursive" value="true" />
+					<property name="allowed" value="true" />
+				</bean>
+			</set>
+		</property>
+	</bean>
+	
+	<alias name="defaultExternalTaxesSection" alias="externalTaxesSection"/>
+	<bean id="defaultExternalTaxesSection" class="com.adyen.cockpits.productcockpit.editor.ExternalTaxesSectionConfiguration" scope="session">
+		<property name="sectionRenderer">
+			<ref bean="externalTaxesSectionRenderer"/>
+		</property>
+	</bean>
+	
+	<alias name="defaultExternalTaxesSectionRenderer" alias="externalTaxesSectionRenderer"/>
+	<bean id="defaultExternalTaxesSectionRenderer" class="com.adyen.cockpits.productcockpit.editor.ExternalTaxesSectionRenderer" scope="prototype">
+		<property name="typeService" ref="cockpitTypeService"/>
+		<property name="productTaxCodeService" ref="productTaxCodeService"/>
+	</bean>
+	
+
+</beans>

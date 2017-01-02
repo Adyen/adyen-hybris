@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2013 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<!--
+	ATTENTION: This is just an example file. You have to edit it according to your needs.
+-->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:noNamespaceSchemaLocation="beans.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/util
+       					   http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean class="com.adyen.facades.order.data.AdyenPaymentInfoData" extends="de.hybris.platform.commercefacades.order.data.CCPaymentInfoData">
+		<property name="cardEncryptedJson" type="java.lang.String"/>
+		<property name="shopperIp" type="java.lang.String"/>
+		<property name="savePayment" type="boolean"/>
+		<property name="recurringDetailReference" type="java.lang.String"/>
+		<property name="installments" type="java.lang.String"/>
+		<property name="useBoleto" type="boolean"/>
+		<property name="boletoPaymentInfo" type="com.adyen.facades.order.data.BoletoPaymentData"/>
+		<property name="useHPP" type="boolean"/>
+		<property name="adyenPaymentBrand" type="java.lang.String"/>
+		<property name="hppURL" type="java.lang.String"/>
+		<property name="boletoPdfUrl" type="java.lang.String"/>
+		<property name="issuerId" type="java.lang.String"/>
+	</bean>
+	
+	<bean class="com.adyen.facades.order.data.BoletoPaymentData">
+		<property name="firstName" type="java.lang.String"/>
+		<property name="lastName" type="java.lang.String"/>
+		<property name="selectedBrand" type="java.lang.String"/>
+		<property name="socialSecurityNumber" type="java.lang.String"/>
+		<property name="shopperStatement" type="java.lang.String"/>
+	</bean>
+	
+
+</beans>

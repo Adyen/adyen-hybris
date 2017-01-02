@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="base.xsd">
+	<search>
+		<search-properties>
+			<property qualifier="Product.code"/>
+			<property qualifier="Product.name"/>
+			<property qualifier="Product.description"/>
+		</search-properties>
+		<sort-properties>
+			<property qualifier="Item.modifiedtime"/>
+			<property qualifier="Item.pk"/>
+			<property qualifier="Product.code"/>
+			<property qualifier="Product.name"/>
+			<property qualifier="Product.description"/>
+		</sort-properties>
+	</search>
+	
+	<label spring-bean="productLabelProvider"/>
+	
+	<initial-properties source-object-template="Product">
+		<property-mapping source="src.catalogVersion" target="VariantProduct.catalogVersion"/>
+		<property-mapping source="src" target="VariantProduct.baseProduct"/>
+	</initial-properties>
+</base>

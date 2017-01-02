@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+
+<!--
+. WARNING: This is the CUSTOM Spring WEB configuration file used for cmscockpit 
+. web application.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-autowire="byName">
+
+	<alias alias="synchronizationService" name="defaultSynchronizationService" />
+	<bean id="defaultSynchronizationService" class="de.hybris.platform.cmscockpit.sync.CMSSynchronizationService" parent="defaultCMSSynchronizationService" autowire="byName"/>
+
+
+
+	<alias name="accBrowserFilterFactory" alias="browserFilterFactory" />
+	<bean id="accBrowserFilterFactory" class="de.hybris.platform.cockpit.session.BrowserFilterFactory"
+		>
+		<property name="browserFilters">
+			<map>
+				<entry key="AbstractPage">
+					<list>
+						<ref bean="desktopUiExperienceBrowserFilter" />
+						<ref bean="mobileUiExperienceBrowserFilter" />
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="abstractUiExperienceBrowserFilter" abstract="true" class="com.adyen.cockpits.cmscockpit.browser.filters.AbstractUiExperienceFilter" >
+		<property name="typeService" ref="cockpitTypeService"/>
+	</bean>
+	<bean id="mobileUiExperienceBrowserFilter" parent="abstractUiExperienceBrowserFilter" class="com.adyen.cockpits.cmscockpit.browser.filters.MobileUiExperienceBrowserFilter" />
+	<bean id="desktopUiExperienceBrowserFilter" parent="abstractUiExperienceBrowserFilter" class="com.adyen.cockpits.cmscockpit.browser.filters.DesktopUiExperienceBrowserFilter" />
+
+	<alias alias="cmsSearchProvider" name="uiExperienceCmsSearchProvider" />
+	<bean id="uiExperienceCmsSearchProvider"  class="com.adyen.cockpits.cmscockpit.services.impl.UiExperienceCmsSearchProvider" />
+
+
+    <alias name="DefaultCmsPageBrowserModel" alias="cmsPageBrowserModel"/>
+    <bean id="DefaultCmsPageBrowserModel" class="com.adyen.cockpits.cmscockpit.session.impl.DefaultCmsPageBrowserModel" scope="prototype">
+        <constructor-arg ref="cmsAdminSiteService"/>
+        <constructor-arg ref="cmsCockpitService"/>
+        <constructor-arg ref="modelService"/>
+        <constructor-arg ref="cmsAdminComponentService"/>
+        <constructor-arg ref="cmsAdminContentSlotService"/>
+    </bean>
+
+
+</beans>

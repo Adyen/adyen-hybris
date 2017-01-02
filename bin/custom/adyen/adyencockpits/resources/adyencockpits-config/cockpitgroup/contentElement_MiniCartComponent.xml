@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="MiniCartComponent" name="type.MiniCartComponent.name"
+							description="type.MiniCartComponent.description"
+							image="cmscockpit/images/component-icon-minicart.gif" 
+							refImage="cmscockpit/images/component-icon-minicart-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-minicart-small.gif"
+							/>
+
+</content-elements>

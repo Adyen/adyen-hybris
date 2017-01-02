@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	<group qualifier="General" visible="true" initially-opened="true">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="CMSItem.name"/>
+		<property qualifier="CMSItem.catalogVersion" editor="shortListEditor"/>
+		<property qualifier="AbstractCMSComponent.visible"/>
+	</group>
+
+	<group qualifier="visibility" visible="true" initially-opened="false">
+		<label key="config.general.contextvisibility" />
+		<property qualifier="AbstractCMSComponent.restrictions">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+		</property>
+		<property qualifier="AbstractCMSComponent.onlyOneRestrictionMustApply"/>
+	</group>
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="CMSItem.uid"/>
+		<property qualifier="AbstractCMSComponent.slots"/>
+		<property qualifier="AbstractCMSComponent.actions"/>
+		<property qualifier="AbstractCMSComponent.container"/>
+		<property qualifier="Item.pk" />
+		<property qualifier="Item.creationTime" />
+		<property qualifier="Item.modifiedtime" />
+	</group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false"
+		visible="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+</editor>

@@ -1,0 +1,13 @@
+# ImpEx for Importing Suppliers
+# English Localisation
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+
+# Language
+$lang=en
+
+# Create Categories
+UPDATE Category;$catalogVersion;code[unique=true];name[lang=$lang];description[lang=$lang]

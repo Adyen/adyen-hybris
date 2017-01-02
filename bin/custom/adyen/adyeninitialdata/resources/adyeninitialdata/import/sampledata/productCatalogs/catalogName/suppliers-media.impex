@@ -1,0 +1,13 @@
+# ImpEx for Importing Supplier Media
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$productCatalogName=__PRODUCT_CATALOG_FULL_NAME__
+
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$thumbnail=thumbnail(code, $catalogVersion)
+$siteResource=jar:com.adyen.initialdata.setup.InitialDataSystemSetup&/adyeninitialdata/import/productCatalogs/$productCatalog
+
+INSERT_UPDATE Media;code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];$catalogVersion
+
+UPDATE Category;code[unique=true];$thumbnail;allowedPrincipals(uid)[default='customergroup'];$catalogVersion

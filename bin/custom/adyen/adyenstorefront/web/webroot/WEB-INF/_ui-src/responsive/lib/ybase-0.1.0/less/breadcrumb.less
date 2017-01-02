@@ -1,0 +1,24 @@
+header + .breadcrumb-section{
+	margin-top: -10px;
+	margin-bottom: 10px;
+}
+
+
+
+.breadcrumb-section{
+	background: @breadcrumb-bg;
+
+	.breadcrumb{
+		margin: 0;
+		font-weight: 300;
+		a{
+			color: @breadcrumb-color;
+		}
+
+		> li + li:before{
+			color: @breadcrumb-separator-color;
+		}
+
+
+	}
+}

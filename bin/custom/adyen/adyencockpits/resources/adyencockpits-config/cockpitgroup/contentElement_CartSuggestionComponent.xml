@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CartSuggestionComponent" name="type.CartSuggestionComponent.name"
+							description="type.CartSuggestionComponent.description"
+							image="cmscockpit/images/component-icon-cartsuggestion.gif"
+							refImage="cmscockpit/images/component-icon-cartsuggestion-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-cartsuggestion-small.gif"
+							/>
+
+</content-elements>

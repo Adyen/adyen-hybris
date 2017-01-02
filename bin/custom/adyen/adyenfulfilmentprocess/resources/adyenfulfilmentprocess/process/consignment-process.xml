@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition" start="waitBeforeTransmission" name="consignment-process" processClass="de.hybris.platform.ordersplitting.model.ConsignmentProcessModel">
+
+	<action id="waitBeforeTransmission" bean="waitBeforeTransmissionAction">
+		<transition name="NOK" to="waitBeforeTransmission"/>
+		<transition name="OK" to="sendConsignmentToWarehouse"/>
+	</action>
+
+	<action id="sendConsignmentToWarehouse" bean="sendConsignmentToWarehouseAction">
+		<transition name="OK" to="waitForWarehouse"/>
+	</action>
+
+	<wait id="waitForWarehouse" then="receiveConsignmentStatus" prependProcessCode="false">
+		<event>${process.code}_WaitForWarehouse</event>
+	</wait>
+	
+	<action id="receiveConsignmentStatus" bean="receiveConsignmentStatusAction">
+		<transition name="OK" to="capturePayment"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+		<transition name="ERROR" to="error"/>
+	</action>
+	
+	<action id="capturePayment" bean="capturePaymentAction">
+		<transition name="OK" to="waitForPaymentCapture"/>
+		<transition name="NOT_REQUIRED" to="allowShipment"/>
+		<transition name="ERROR" to="error"/>
+	</action>
+	
+	<wait id="waitForPaymentCapture" then="allowShipment" prependProcessCode="false">
+		<event>${process.code}_WaitForCapture</event>
+	</wait>
+
+	<action id="allowShipment" bean="allowShipmentAction">
+		<transition name="DELIVERY" to="sendDeliveryMessage"/>
+		<transition name="PICKUP" to="sendReadyForPickupMessage"/>
+		<transition name="ERROR" to="error"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+	</action>
+
+	<action id="sendDeliveryMessage" bean="sendDeliveryMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+	
+	<action id="sendReadyForPickupMessage" bean="sendReadyForPickupMessageAction">
+		<transition name="OK" to="waitForPickup"/>
+	</action>
+
+	<action id="cancelConsignment" bean="cancelConsignmentAction">
+		<transition name="OK" to="sendCancelMessage"/>
+	</action>
+
+	<action id="sendCancelMessage" bean="sendCancelMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+
+	<wait id="waitForPickup" then="confirmConsignmentPickup" prependProcessCode="false">
+		<event>${process.code}_ConsignmentPickup</event>
+	</wait>
+	
+	<action id="confirmConsignmentPickup" bean="confirmConsignmentPickupAction">
+		<transition name="OK" to="sendPickedUpMessage"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+		<transition name="ERROR" to="error"/>
+	</action>
+	
+	<action id="sendPickedUpMessage" bean="sendPickedUpMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+
+	<action id="subprocessEnd" bean="subprocessEndAction">
+		<transition name="OK" to="success"/>
+	</action>
+
+	<end id="error" state="ERROR">All went wrong.</end>
+	<end id="failed" state="FAILED">Order not placed.</end>
+	<end id="success" state="SUCCEEDED">Order placed.</end>
+</process>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="NavigationBarComponent" name="type.NavigationBarComponent.name"
+							description="type.NavigationBarComponent.description"
+							image="cmscockpit/images/component-icon-mainnav.gif" 
+							refImage="cmscockpit/images/component-icon-mainnav-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-mainnav-small.gif"
+							/>
+
+</content-elements>

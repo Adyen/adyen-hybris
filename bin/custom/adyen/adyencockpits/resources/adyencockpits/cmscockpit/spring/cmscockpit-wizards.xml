@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<!--
+ WARNING: This is the CUSTOM Spring WEB configuration file used for cmscockpit web application. 
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd "
+	default-autowire="byName">
+
+	<!-- CMSSite Wizard -->
+	<alias alias="cmsSiteWizard" name="accSiteWizard" />
+	<bean id="accSiteWizard" parent="genericWizard" scope="prototype" class="de.hybris.platform.cmscockpit.wizard.cmssite.CmsSiteWizard">
+
+		<property name="currentStringType" value="CMSSite"/>
+		<property name="title" value="cockpit.wizard.cmssite.title"/>
+		<property name="pages">
+			<list>
+				<ref bean="typeSelectorPage"/>
+				<ref bean="mandatoryPage"/> 
+				<ref bean="baseStoresPage"/>
+				<ref bean="templatesForCmsSitePage"/>
+				<ref bean="cmsSiteDecisionPage"/>
+				<ref bean="createContentCatalogPage"/>
+				<ref bean="advancedSearchPage"/>
+				<ref bean="themeSelectorPage"/>
+				<ref bean="cmsSummaryPage"/>
+			</list>
+		</property>
+	</bean>
+
+	<alias alias="themeSelectorPage" name="accThemeSelectorPage" />
+	<bean id="accThemeSelectorPage" class="com.adyen.cockpits.cmscockpit.sitewizard.ThemeSelectorPage" scope="prototype">
+		<property name="id" value="themeSelectorPage"/>
+		<property name="title" value="cockpit.wizard.cmssite.page.typeSelector" />
+		<property name="componentURI" value="themeSelector.zul"/>
+	</bean>
+
+	<alias alias="cmsSummaryPage" name="accCmsSummaryPage" />
+	<bean id="accCmsSummaryPage" class="com.adyen.cockpits.cmscockpit.sitewizard.SummaryPage" scope="prototype">
+		<property name="id" value="cmsSummaryPage"/>
+		<property name="title" value="cockpit.wizard.cmssite.page.summary" />
+	</bean>
+
+	<alias alias="createContentCatalogPage" name="accCreateContentCatalogPage" />
+	<bean id="accCreateContentCatalogPage" class="de.hybris.platform.cmscockpit.wizard.cmssite.pages.CreateContentCatalogPage" scope="prototype">
+		<property name="id" value="provideName"/>
+		<property name="title" value="cockpit.wizard.cmssite.page.provideName" />
+		<property name="nextPageWizardId" value="themeSelectorPage"/>
+	</bean>
+
+	<bean id="acceleratorWizardHelper" class="com.adyen.cockpits.cmscockpit.sitewizard.AcceleratorWizardHelper" >
+		<property name="catalogVersionService" ref="catalogVersionService"/>
+		<property name="cmsAdminPageService" ref="cmsAdminPageService"/>
+		<property name="modelService" ref="modelService"/>
+		<property name="uidGenerator" ref="genericRandomNameProducer"/>
+		<property name="importService" ref="importService"/>
+	</bean>
+
+	<bean id="b2bAcceleratorWizardHelper" class="com.adyen.cockpits.cmscockpit.sitewizard.B2BAcceleratorWizardHelper" parent="acceleratorWizardHelper" />
+
+	<bean id="defaultCmsPageSelectorPage" class="de.hybris.platform.cmscockpit.wizard.page.TypeSelectorPage" scope="prototype">
+		<property name="id" value="typeSelector"/>
+		<property name="title" value="wizard.page.typeSelector" />
+		<property name="controller">
+			<bean class="de.hybris.platform.cmscockpit.wizard.controller.CmsTypePageController" />
+		</property>
+		<property name="excludeCreateTypes">
+			<list value-type="java.lang.String">
+				<value>CatalogPage</value>
+			</list>
+		</property>
+	</bean>
+	
+	<alias alias="imageMediaPredefinedValuesStrategy" name="cmsImageMediaPredefinedValuesStrategy"/>
+	<bean id="cmsImageMediaPredefinedValuesStrategy" class="com.adyen.cockpits.cmscockpit.wizard.strategies.CmsImageMediaPredefinedValuesStrategy" parent="defaultImageMediaPredefinedValuesStrategy">
+		<property name="cmsAdminSiteService" ref="cmsAdminSiteService"/>
+	</bean>
+	
+</beans>

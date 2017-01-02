@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="base">
+	    <xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="search" type="search" minOccurs="0" maxOccurs="1"/>
+    			<xs:element name="label" type="label" minOccurs="0" maxOccurs="1"/>
+    			<xs:element name="initial-properties" type="initial-properties" minOccurs="0" maxOccurs="unbounded"/>
+    			<xs:element name="default-property-settings" type="default-property-list" minOccurs="0" maxOccurs="1"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="search">
+    	<xs:sequence>
+    		<xs:element name="search-properties" type="property-list" minOccurs="1" maxOccurs="1"/>
+    		<xs:element name="sort-properties" type="property-list" minOccurs="0" maxOccurs="1"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="property-list">
+    	<xs:sequence>
+    		<xs:element name="property" type="property" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="default-property-list">
+    	<xs:sequence>
+    		<xs:element name="property" type="default-property" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    
+    <xs:complexType name="property">
+		<xs:attribute name="qualifier" type="xs:string" use="required"/>
+     </xs:complexType>    
+
+	<xs:complexType name="default-property">
+		<xs:sequence>
+			<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="qualifier" type="xs:string" use="required"/>
+		<xs:attribute name="defaultEditor" type="xs:string" use="optional"/>
+		<xs:attribute name="baseProperty" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>
+
+    <xs:complexType name="label">
+    	<xs:sequence>
+    		<xs:element name="property" type="property" minOccurs="0" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:attribute name="spring-bean" type="xs:string" use="optional"/>
+    	<xs:attribute name="class" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+	<xs:complexType name="initial-properties">
+    	<xs:sequence>
+    		<xs:element name="property-mapping" type="property-mapping" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:attribute name="source-object-template" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="property-mapping">
+		<xs:attribute name="source" type="xs:string" use="required"/>
+		<xs:attribute name="target" type="xs:string" use="required"/>
+	</xs:complexType>
+    
+	<xs:complexType name="parameter">
+    	<xs:sequence>
+    		<xs:element name="name" type="name"/>
+    		<xs:element name="value" type="value"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="name">
+    	<xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    
+    <xs:simpleType name="value">
+       	<xs:restriction base="xs:string"/> 
+    </xs:simpleType>
+</xs:schema>

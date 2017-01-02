@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+	#foreach( $siteMapUrl in $ctx.siteMapData )
+		<url>
+			<loc>${ctx.baseUrl}${siteMapUrl.loc}</loc>
+
+			#if ($siteMapUrl.images)
+				#foreach( $image in $siteMapUrl.images )
+					<image:image>
+						<image:loc>${ctx.mediaUrl}${image}</image:loc>
+					</image:image>
+
+				#end
+			#end
+			<changefreq>${ctx.changeFreq}</changefreq>
+			<priority>${ctx.priority}</priority>
+		</url>
+	#end
+</urlset>

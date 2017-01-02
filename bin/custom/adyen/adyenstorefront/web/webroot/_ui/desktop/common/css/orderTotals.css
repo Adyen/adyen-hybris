@@ -1,0 +1,63 @@
+/*
+## orderTotals
+********************************************************************/
+
+
+#orderTotals{
+	width:100%;
+}
+
+#orderTotals td{
+	text-align:right;
+}
+
+#orderTotals td:first-child{
+	text-align:left;
+	vertical-align:top;
+}
+
+
+#orderTotals thead td{
+	border-bottom:1px solid #a5a5a5;
+	height:30px;
+	line-height:30px;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.2em;
+	white-space:nowrap;
+	padding-left: 5px;
+	background-color: #f6f6f6;
+}
+
+
+#orderTotals tbody td{
+	height:30px;
+	line-height:30px;
+}
+
+
+
+
+#orderTotals tfoot td{
+	border-top:1px dotted #a5a5a5;
+	height:30px;
+	line-height:30px;
+	font-weight:bold;
+	font-size:1.1em;
+}
+
+#orderTotals #countryIso{
+	width:150px;
+}
+
+
+
+#orderTotals .zipInput{
+	
+}
+
+#orderTotals #estimateTaxesButton{
+	margin:8px 0 8px 8px;
+}
+
+

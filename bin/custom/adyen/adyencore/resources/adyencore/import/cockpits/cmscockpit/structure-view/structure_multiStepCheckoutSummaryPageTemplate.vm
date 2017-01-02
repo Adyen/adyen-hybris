@@ -1,0 +1,49 @@
+<div>
+	<table width="100%" cellspacing="0" style="margin:0;padding:0;table-layout:auto;border:1px solid #1E4EBF;">
+		<tbody>
+			<tr>
+				<td colspan="3" class="structureViewSection">
+					<cockpit code="TopHeaderSlot"/>
+				</td>
+			</tr>
+			<tr>
+				<td height="125px" width="25%" rowspan="2" class="structureViewSection">
+					<cockpit code="SiteLogo" />
+				</td>
+				<td class="structureViewSection">
+					<cockpit code="HeaderLinks" />
+					<cockpit code="SearchBox" />
+				</td>
+				<td width="15%" rowspan="2" class="structureViewSection">
+					<cockpit code="MiniCart" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="structureViewSection">
+					<cockpit code="NavigationBar" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="structureViewSection">
+					<cockpit code="BottomHeaderSlot"/>
+				</td>
+			</tr>
+			<tr>
+				<td width="20%" rowspan="1" height="243px" class="structureViewSection" style="vertical-align:top;">
+					<cockpit code="SideContent" />
+				</td>
+				<td colspan="2" height="343px" width="85%" class="structureViewSection" style="vertical-align:top;">
+					<div>Checkout summary Data</div>
+				</td>
+			</tr>
+			<tr>
+				<td height="170px" colspan="3" class="structureViewSection">
+					<cockpit code="Footer" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div style="width:100%; border-top: 2px solid #bbb" class="cmsContentEditor">
+		<cockpit code="editor" />
+	</div>
+</div>

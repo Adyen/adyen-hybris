@@ -1,0 +1,21 @@
+#
+# Import CMS Cockpit customizations
+#
+
+$jarResource=jar:com.adyen.cockpits.constants.AdyenCockpitsConstants&/adyencockpits/cmscockpit
+
+
+INSERT_UPDATE CockpitUIScriptConfigMedia;code[unique=true];allowScriptEvaluation;mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true]
+;wizard_cmssite_acceleratortemplate_ui_config;true;text/xml;wizardConfig_CMSSite.AcceleratorWebsite.xml;$jarResource/xml/wizardConfig_CMSSite.AcceleratorWebsite.xml
+;wizard_b2bcmssite_acceleratortemplate_ui_config;true;text/xml;wizardConfig_CMSSite.B2BAcceleratorWebsite.xml;$jarResource/xml/wizardConfig_CMSSite.B2BAcceleratorWebsite.xml
+;wizard_cmslinkcomponent_acceleratortemplate_ui_config;true;text/xml;wizardConfig_CMSLinkComponent.InternalLink.xml;$jarResource/xml/wizardConfig_CMSLinkComponent.InternalLink.xml
+
+INSERT_UPDATE CockpitUIComponentConfiguration;code[unique=true];factoryBean;objectTemplateCode[unique=true];principal(uid)[unique=true];media(code);
+;wizardConfig;wizardConfigurationFactory;CMSSite.AcceleratorWebsite;cockpitgroup;wizard_cmssite_acceleratortemplate_ui_config
+;wizardConfig;wizardConfigurationFactory;CMSSite.B2BAcceleratorWebsite;cockpitgroup;wizard_b2bcmssite_acceleratortemplate_ui_config
+;wizardConfig;wizardConfigurationFactory;CMSLinkComponent.InternalLink;cockpitgroup;wizard_cmslinkcomponent_acceleratortemplate_ui_config
+
+
+INSERT_UPDATE CockpitItemTemplate;code[unique=true];name[lang=de];name[lang=en];description[lang=de];description[lang=en];relatedType(code);
+;"AcceleratorWebsite";"Accelerator Website";"Accelerator Website";"Accelerator Website";"Accelerator Website";CMSSite;
+;"B2BAcceleratorWebsite";"B2B Accelerator Website";"B2B Accelerator Website";"B2B Accelerator Website";"B2B Accelerator Website";CMSSite;

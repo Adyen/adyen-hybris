@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSLinkComponent.ExternalLink" name="template.cmslinkcomponent.externallink.name" 
+							image="cmscockpit/images/ContentElementLinkExternal.gif"
+							refImage="cmscockpit/images/ContentElementLinkExternalReference.gif"
+							imageSmall="cmscockpit/images/ContentElementLinkExternalSmall.gif" 
+							description="template.cmslinkcomponent.externallink.description"/>
+
+</content-elements>

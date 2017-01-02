@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grid-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="grid-view.xsd">
+	<imageslot>
+		<property qualifier="AbstractPage.previewImage.URL">
+			<parameter>
+				<name>defaultPreviewImage</name>
+				<value>/cmscockpit/cmscockpit/images/ContentPageModel_nopreview.gif</value>
+			</parameter>
+		</property>
+	</imageslot>
+	<labelslot>
+		<property qualifier="AbstractPage.name" />
+	</labelslot>
+	<descriptionslot>
+		<property qualifier="AbstractPage.uid" />
+	</descriptionslot>
+	<shortinfoslot>
+		<property qualifier="AbstractPage.catalogVersion.mnemonic"/>
+	</shortinfoslot>
+	<actionslot spring-bean="CatalogAbstractPageSectionListActionColumn"/>
+<!--	<specialactionslot>-->
+<!--	</specialactionslot>-->
+</grid-view>

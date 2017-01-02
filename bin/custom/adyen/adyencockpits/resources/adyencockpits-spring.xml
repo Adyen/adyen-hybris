@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="yAcceleratorCockpitsSystemSetup" class="com.adyen.cockpits.setup.CockpitSystemSetup"  parent="abstractCoreSystemSetup"/>
+
+	<alias alias="adyencockpitsLabelLocator" name="defaultYacceleratorcockpitsLabelLocator" />
+	<bean id="defaultYacceleratorcockpitsLabelLocator" class="de.hybris.platform.cockpit.util.ConfigurableCockpitLabelLocator" scope="singleton" lazy-init="false">
+		<property name="resourceFolder" value="/adyencockpits/cockpit/localization/"/>
+	</bean>
+
+	<alias alias="cmsPreviewService" name="defaultCMSCockpitLivePreviewService" />
+	<bean id="defaultCMSCockpitLivePreviewService"
+		class="com.adyen.cockpits.cmscockpit.services.impl.DefaultCMSCockpitLivePreviewService"
+		parent="defaultCMSPreviewService" >
+	</bean>
+
+	<alias alias="imageMediaPredefinedValuesStrategy" name="defaultImageMediaPredefinedValuesStrategy"/>
+	<bean id="defaultImageMediaPredefinedValuesStrategy" class="com.adyen.cockpits.cockpit.wizard.strategies.DefaultImageMediaPredefinedValuesStrategy" >
+		<property name="mediaService" ref="mediaService"/>
+		<property name="mediaFolderName" value="images"/>
+	</bean>
+	
+	<alias name="accRecipientTypeToContextClassMap" alias="recipientTypeToContextClassMap"/>
+	<util:map id="accRecipientTypeToContextClassMap">
+		<entry>
+			<key><util:constant static-field="de.hybris.platform.ticket.enums.CsEmailRecipients.CUSTOMER"/></key>
+			<value>com.adyen.cockpits.ticket.email.context.AcceleratorCustomerTicketContext</value>
+		</entry>
+		<entry>
+			<key><util:constant static-field="de.hybris.platform.ticket.enums.CsEmailRecipients.ASSIGNEDAGENT"/></key>
+			<value>de.hybris.platform.ticket.email.context.AgentTicketContext</value>
+		</entry>
+		<entry>
+			<key><util:constant static-field="de.hybris.platform.ticket.enums.CsEmailRecipients.ASSIGNEDGROUP"/></key>
+			<value>de.hybris.platform.ticket.email.context.AgentGroupTicketContext</value>
+		</entry>
+	</util:map>
+
+</beans>

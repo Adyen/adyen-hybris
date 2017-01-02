@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               showPrefilledValues="true" selectMode="true" createMode="true" displaySubtypes="true">
+	<displayed-properties>
+		<group qualifier="General" visible="true" initially-opened="true">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="CMSItem.name"/>
+			<property qualifier="CMSImageComponent.media" editorCode="simpleMediaReferenceSelector">
+				<parameter name="predefinedValuesStrategy" value="imageMediaPredefinedValuesStrategy"/>
+			</property>
+		</group>
+	</displayed-properties>
+</wizard-config>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               showPrefilledValues="false" selectMode="true" createMode="true" createWithinPopup="false">
+	<displayed-properties>
+		<group qualifier="General" visible="true" initially-opened="true">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="Media.code" />
+			<property qualifier="Media.catalogVersion" editorCode="shortListEditor">
+				<parameter name="autocomplete" value="false"/>
+				<parameter name="autodrop" value="true"/>
+				<parameter name="sclass" value="mediaUploadCatalogVersionCombo"/>
+				<parameter name="constraint" value="strict"/>
+			</property>
+			<property qualifier="Media.mediaFormat" />
+			<property qualifier="Media.folder" />
+		</group>
+	</displayed-properties>
+</wizard-config>

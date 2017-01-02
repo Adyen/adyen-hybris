@@ -1,0 +1,21 @@
+# ImpEx for Promotions for the Store
+
+# Language
+$lang=ja
+
+# Import config properties into impex macros
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+
+# Load the storefront context root config param
+$storefrontContextRoot=$config-storefrontContextRoot
+
+
+UPDATE ProductPercentageDiscountPromotion;code[unique=true];enabled[default=true][unique=true];messageFired[lang=$lang];name[lang=$lang];
+
+UPDATE AcceleratorProductMultiBuyPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+
+UPDATE AcceleratorProductBOGOFPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+
+UPDATE ProductPerfectPartnerPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+
+UPDATE ProductBundlePromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];

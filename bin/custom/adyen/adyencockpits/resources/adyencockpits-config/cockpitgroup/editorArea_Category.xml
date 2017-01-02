@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	
+	<group qualifier="General" visible="true" initially-opened="true">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="category.code" />
+		<property qualifier="category.name" />
+		<property qualifier="category.catalogversion"  editor="shortListEditor"/>
+		<property qualifier="category.allowedPrincipals" />
+		<property qualifier="category.description" editor="wysiwyg"/>
+		<property qualifier="category.keywords"/>
+	</group>
+
+	<group qualifier="Category" visible="true" initially-opened="false">
+		<label key="config.general.categorystructure" />
+		<property qualifier="category.supercategories"/>
+		<property qualifier="category.categories"/>
+		<property qualifier="category.contentBlocks"/>
+	</group>
+
+	<group qualifier="Multimedia" visible="true" initially-opened="false">
+		<label key="config.general.multimedia" />
+		<property qualifier="category.picture" editor="simpleMediaReferenceSelector">
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+		<property qualifier="category.thumbnail" editor="simpleMediaReferenceSelector">
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>thumbnail</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+		<property qualifier="category.data_sheet"  editor="mediaReferenceCollectionSelector"/>
+		<property qualifier="category.detail"  editor="mediaReferenceCollectionSelector"/>
+		<property qualifier="category.logo"  editor="mediaReferenceCollectionSelector"/>
+		<property qualifier="category.normal"  editor="mediaReferenceCollectionSelector"/>
+		<property qualifier="category.others"  editor="mediaReferenceCollectionSelector"/>
+		<property qualifier="category.thumbnails"  editor="mediaReferenceCollectionSelector"/>
+	</group>
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="Item.pk" />
+		<property qualifier="Item.creationTime" />
+		<property qualifier="Item.modifiedtime" />
+<!--		<property qualifier="Item.assignedCockpitItemTemplates"/>-->
+	</group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+	
+	
+</editor>

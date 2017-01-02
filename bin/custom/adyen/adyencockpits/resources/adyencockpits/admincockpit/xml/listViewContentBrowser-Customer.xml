@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view unassigned-group-name="Other">
+	<group name="General">
+		<property qualifier="Customer.name" visible="true" />
+        <property qualifier="Customer.uid" visible="true" />
+		<property qualifier="User.logindisabled" visible="true" />
+		<property qualifier="User.authorizedToUnlockPages" visible="true" />
+		<property qualifier="User.ldapaccount" visible="true" />
+		<property qualifier="Customer.type" visible="true" />
+	</group>
+</list-view>

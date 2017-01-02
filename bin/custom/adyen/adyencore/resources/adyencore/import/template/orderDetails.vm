@@ -1,0 +1,48 @@
+<div class="headline">Order Items</div>
+	<table class="orderListTable">
+		<thead>
+			<tr>
+				<th id="header1"><span class="hidden">Product Id</span></th>
+				<th id="header2"><span class="hidden">Product Details</span></th>
+				<th id="header4">Quantity</th>
+				<th id="header5">Item Price</th>
+				<th id="header6">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach( $entry in ${order.entries})
+			<tr class="item">
+				<td headers="header1">$entry.product.code</td>
+				<td headers="header2">$entry.product.name</td>
+				<td headers="header4">$entry.quantity</td>
+				<td headers="header5">$entry.basePrice.formattedValue</td>
+				<td headers="header6">$entry.totalPrice.value</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+	<table>
+		<thead>
+			<tr>
+				<td>Order Totals</td>
+				<td></td>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<td>Total:</td>
+				<td>${order.totalPrice.formattedValue}</td>
+			</tr>
+		</tfoot>
+		<tbody>
+			<tr>
+				<td>Subtotal:</td>
+				<td>${order.subTotal.formattedValue}</td>
+			</tr>
+			<tr>
+				<td>Delivery:</td>
+				<td>${order.deliveryCost.formattedValue}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

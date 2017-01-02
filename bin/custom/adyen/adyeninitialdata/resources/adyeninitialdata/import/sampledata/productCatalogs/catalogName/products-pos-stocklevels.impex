@@ -1,0 +1,111 @@
+# ImpEx for Importing Products Store Stock Levels into the Store
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$productCatalogName=__PRODUCT_CATALOG_FULL_NAME__
+$vendor=__VENDOR_NAME__
+
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+
+
+# Create some Warehouses for the Vendor
+INSERT_UPDATE Warehouse;code[unique=true];vendor(code)[default=$vendor];default[default='false']
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nakano',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Shinbashi',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Koto',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Misato',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Matsudo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Ichikawa',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Choshi',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Chiba',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokosuka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Tokio Cerulean Tower Tokyu Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Tokio Flexstay Nippori Inn',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Tokio Hotel Metropolitan Tokyo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Tokio Dormy Inn Tokyo Hatchobori',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Tokio Park Hotel Tokyo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokohama Sakuragicho Washington Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokohama Shin Yokohama Prince Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokohama Comfort Hotel Yokohama Kannai',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokohama Hotel New Grand',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Yokohama Hotel JAL City Kannai Yokohama',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Osaka Hilton Osaka Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Osaka Crowne Plaza Hotel Ana Osaka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Osaka Ramada Osaka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Osaka Cross Hotel Osaka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Osaka Best Western Hotel Fino Osaka Shinsaibashi',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nagoya Hilton Nagoya Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nagoya Marriott Nagoya',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nagoya Crowne Plaza Ana Grand Court Nagoya',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nagoya The Westin Nagoya Castle',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Nagoya Royal Park Inn Nagoya',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Sapporo Ana Hotel Sapporo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Sapporo Best Western Hotel Sapporo Nakajima Koen',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Sapporo Sheraton Sapporo Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Sapporo Hotel Resol Trinity Sapporo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Sapporo Hotel Sunroute Sapporo',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kobe Hotel Monterey Amalie',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kobe Hotel Monterey Kobe',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kobe Sannomiya Terminal Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kobe Bay Sheraton Hotel and Towers',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kobe the b',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Fukuoka Hotel Monterey La Soeur Fukuoka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Fukuoka Hilton Fukuoka Sea Hawk',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Fukuoka Best Western Fukuoka Nakasu Inn',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Fukuoka Canal City Fukuoka Washington Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Fukuoka Hotel Nikko Fukuoka',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kawasaki Mets Kawasaki Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kawasaki Mets Mizonokuchi Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kawasaki Hotel Sunroute Kawasaki',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kawasaki Pearl Hotel Kawasaki',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[default='Kawasaki Grand Hotel',unique=true];inStockStatus(code)[default='notSpecified'];overSelling;preOrder;productCode[unique=true];reserved
+

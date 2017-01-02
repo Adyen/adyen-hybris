@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="adyenAddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
+		<property name="supportedChannels">
+			<list value-type="de.hybris.platform.commerceservices.enums.SiteChannel">
+				<value>B2C</value>
+				<!--
+								<value>B2B</value>
+				-->
+			</list>
+		</property>
+		<property name="addonExtensionMetadata">
+			<bean class="de.hybris.platform.addonsupport.data.AddonExtensionMetadata">
+				<property name="suffixChannel" value="false"/>
+				<property name="baseExtensionName" value="adyenAddon"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="adyenAddonSampleDataEventListener" parent="abstractGenericAddOnSampleDataEventListener"  >
+		<property name="extensionName" value="adyenAddon" />
+	</bean>
+	
+	<alias name="adyenExtCheckoutFacade" alias="checkoutFlowFacade" />
+	<bean id="adyenExtCheckoutFacade"
+		class="com.adyen.storefront.facades.impl.AdyenExtCheckoutFacade"
+		parent="defaultCheckoutFlowFacade">
+		<property name="adyenService" ref="adyenService" />
+		<property name="cmsSiteService" ref="cmsSiteService" />
+		<property name="configurationService" ref="configurationService" />
+		<property name="sessionService" ref="sessionService" />
+		<property name="flexibleSearchService" ref="flexibleSearchService" />
+		<property name="adyenPaymentInfoConverter" ref="adyenPaymentInfoConverter" />
+	</bean>
+	
+	<alias name="extOrderFacade" alias="orderFacade"/>
+	<bean id="extOrderFacade" class="com.adyen.storefront.facades.order.impl.AdyenExtOrderFacade" parent="defaultOrderFacade"/>
+
+	<bean id="adyenPaymentInfoConverter" parent="abstractPopulatingConverter">
+		<lookup-method name="createTarget" bean="adyenPaymentInfoData" />
+		<property name="populators">
+			<list>
+				<ref bean="adyenPaymentInfoPopulator" />
+			</list>
+		</property>
+	</bean>
+	<bean id="adyenPaymentInfoPopulator"
+		class="com.adyen.facades.order.converters.populator.AdyenPaymentInfoPopulator">
+		<property name="addressConverter" ref="addressConverter" />
+		<property name="cardTypeConverter" ref="cardTypeConverter" />
+	</bean>
+	<bean id="adyenPaymentInfoData" class="com.adyen.facades.order.data.AdyenPaymentInfoData"
+		scope="prototype" />
+
+	<alias name="extOrderPopulator" alias="orderPopulator" />
+	<bean id="extOrderPopulator"
+		class="com.adyen.facades.order.converters.populator.ExtOrderPopulator"
+		parent="defaultOrderPopulator">
+		<property name="adyenPaymentInfoConverter" ref="adyenPaymentInfoConverter" />
+	</bean>
+	
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+      <property name="velocityProperties">
+        	<props>
+      			<prop key="resource.loader">class</prop>
+      			<prop key="class.resource.loader.class">
+        			org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+      			</prop>
+     			<prop key="input.encoding">UTF-8</prop>
+                <prop key="output.encoding">UTF-8</prop>
+		    </props>
+      </property>
+   	</bean>
+
+</beans>

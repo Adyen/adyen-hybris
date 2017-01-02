@@ -1,0 +1,32 @@
+#
+# Import CMS content for the site
+#
+
+$contentCatalog=__CONTENT_CATALOG_NAME__
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# Language
+$lang=ja
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;mobile-account;"アカウント"
+ ;;mobile-add-edit-address;"アドレスの追加/編集"
+ ;;mobile-address-book;"アドレス帳"
+ ;;mobile-cartPage;"ショッピング バスケット"
+ ;;mobile-checkout-login;"会計へ進む"
+ ;;mobile-checkout-register;"Registration"
+ ;;mobile-faq;"よくある質問 (FAQ)"
+ ;;mobile-homepage;"ホームページ"
+ ;;mobile-login;"ログイン"
+ ;;mobile-multiStepCheckoutSummaryPage;"会計"
+ ;;mobile-notFound;"見つかりません"
+ ;;mobile-order;"注文詳細"
+ ;;mobile-orderConfirmationPage;"注文確認"
+ ;;mobile-orders;"注文履歴"
+ ;;mobile-payment-details;"支払詳細"
+ ;;mobile-profile;"プロフィール"
+ ;;mobile-register;"Register"
+ ;;mobile-searchEmpty;"結果0件"
+ ;;mobile-storefinderPage;"店舗検索"
+ ;;mobile-updatePassword;"Update Forgotten Password"

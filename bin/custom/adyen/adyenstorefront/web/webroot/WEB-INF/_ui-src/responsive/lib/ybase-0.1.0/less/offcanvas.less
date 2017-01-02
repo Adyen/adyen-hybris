@@ -1,0 +1,47 @@
+// offcanvas styles
+
+body{
+	overflow-x: hidden;
+}
+
+
+main{
+	.transition-transform(~"0.3s ease-out");
+	
+	@media all and (min-width: @screen-xs-max) and (max-width: @screen-sm-max) { 
+		&.offcanvas{
+			.translate(@left-offcanvas-width,0);
+		}
+	}	
+	
+	@media (max-width: @screen-xs-max) { 
+		&.offcanvas{
+			.translate(100%,0);
+			
+			& > *{
+				margin-left: -@left-offcanvas-rightside-width;
+			}
+
+			.main-navigation{
+				background: none ;
+			}
+		}	
+
+		.main-navigation{
+			padding-right: @left-offcanvas-rightside-width !important;
+			width: 100% !important;
+			left: -100% !important;
+			z-index: -1;
+			&:before{
+				content:"";
+				display: block;
+				position: absolute;
+				top: 0;
+				left:0;
+				bottom: 0;
+				right: @left-offcanvas-rightside-width;
+				background: #19212b;
+			}
+		}
+	}
+}

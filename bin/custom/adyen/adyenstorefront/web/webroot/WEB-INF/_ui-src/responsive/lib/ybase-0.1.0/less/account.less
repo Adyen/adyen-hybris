@@ -1,0 +1,341 @@
+.account-navigation{
+	margin-bottom: (@grid-gutter-width/2);
+	.account-navigation-header{
+		//background: @grayblue;
+		padding: (@grid-gutter-width/2);
+		text-transform: uppercase;
+
+		a{
+			display: block;
+		}
+
+	}
+
+	.account-navigation-list{
+		margin: (@grid-gutter-width/2);
+		.list-unstyled;
+		.hidden-sm;
+		.hidden-xs;
+		li{
+			&.title{
+				margin-top: (@grid-gutter-width/2);
+				font-weight: bold;
+			}
+
+			&.active{
+				font-weight: bold;
+			}
+			a{
+				//color: @text-color;
+
+
+				&:hover, &focus{
+					color: @brand-primary;
+				}
+
+			}
+		}
+	}
+}
+
+.account-home{
+	.account-home-section{
+		margin-bottom: @grid-gutter-width;
+		.account-home-section-header{
+			background: @grayblue;
+			padding: (@grid-gutter-width/2);
+			text-transform: uppercase;
+		}
+
+		.account-home-section-content{
+			height: 100px;
+			padding: (@grid-gutter-width/2);
+			border:1px solid @grayblue;
+			border-top:0;
+
+			ul{
+				.list-unstyled;
+				margin: 0;
+				li{
+					// a{
+					// 	color: @text-color;
+
+					// 	&:hover, &:focus{
+					// 		color: @brand-primary;
+					// 	}
+					// }
+				}
+			}
+		}
+	}
+}
+
+
+
+
+@media (max-width: @screen-sm-max) {
+
+	.account-home{
+		.account-home-section{
+			margin-bottom: (@grid-gutter-width/2);
+
+			.account-home-section-header{
+
+			}
+
+			.account-home-section-content{
+				height: auto;
+				padding: 0;
+
+				ul{
+					li{
+						a{
+							padding: (@grid-gutter-width/2);
+							display: block;
+						}
+
+						+ li{
+							border-top:1px solid #eee;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+.account-section{
+	.account-section-header{
+		background: @grayblue;
+		padding: (@grid-gutter-width/2);
+		text-transform: uppercase;
+
+	}
+
+	.account-section-content{
+		padding: (@grid-gutter-width/2);
+		&.account-section-content-small{
+			max-width: 600px;
+		}
+	}
+
+	.btn.btn-block + .btn.btn-block{
+		margin-top: (@grid-gutter-width/2);
+	}
+}
+
+
+
+.account-profil{
+	.account-profil-info{
+		margin:  0 0 (@grid-gutter-width/2);
+		.account-profil-info-line{
+			line-height: 2em;
+			span{
+				display: inline-block;
+				width: 100px;
+			}
+		}
+	}
+
+	a.btn{
+		margin-top: (@grid-gutter-width/2);
+	}
+
+	.btn + .btn{
+		margin-left: (@grid-gutter-width/2) ;
+	}
+
+
+}
+
+
+
+
+.account-addressbook,
+.account-paymentdetails{
+	.account-addressbook-list,
+	.account-paymentdetails-list{
+		.list-unstyled;
+
+		li{
+			padding: (@grid-gutter-width/2) 0;
+			.actions{
+				.btn{
+					margin-top: (@grid-gutter-width/2) ;
+
+					& + .btn{
+						margin-left: (@grid-gutter-width/2) ;
+					}
+				}
+
+			}
+
+			.remove{
+				float: right;
+			}
+
+			+ li{
+				border-top:1px solid @grayblue;
+			}
+		}
+
+	}
+}
+
+
+.account-addressbook{
+	.remove{
+		float: right;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+.account-orderhistory{
+	.account-orderhistory-pagination{
+		padding-bottom: (@grid-gutter-width/2);
+		padding-top: (@grid-gutter-width/2);
+
+		.account-orderhistory-pagination-text{
+			line-height: 32px;
+		}
+
+
+		.pager{
+			margin: 0;
+		}
+
+
+	}
+
+	.account-orderhistory-sort{
+		background: @grayblue;
+		padding: (@grid-gutter-width/2);
+	}
+
+
+	.account-orderhistory-list{
+		border:1px solid #eee;
+		ul{
+			.list-unstyled;
+			margin: 0;
+		}
+		.account-orderhistory-list-item{
+			padding: (@grid-gutter-width/2);
+
+			a{
+				color: @text-color;
+				&:hover, &:focus{
+					color: @brand-primary;
+				}
+			}
+			@media (max-width: @screen-xs-max) {
+				.status strong{
+					display: block;
+				}
+			}
+
+		}
+
+		li+li{
+			border-top:1px solid #eee;
+		}
+	}
+}
+
+
+
+
+.account-orderdetail{
+
+	.account-orderdetail-overview{
+		.clearfix;
+		.canel-panel{
+			float: right;
+			max-width: 200px;
+		}
+
+	}
+
+
+	.account-orderdetail-item-section{
+		padding: (@grid-gutter-width/2) 0;
+		.account-orderdetail-item-section-header{
+			background: @grayblue;
+			padding: (@grid-gutter-width/2);
+			.clearfix;
+
+			.button-panel{
+				float: right;
+				width: 200px;
+
+			}
+
+		}
+
+		.account-orderdetail-item-section-body{
+			border:1px solid #eee;
+
+			ul{
+				.list-unstyled;
+				margin: 0;
+				li{
+					padding: (@grid-gutter-width/2);
+					.clearfix;
+				}
+
+				li+li{
+					border-top:1px solid #eee;
+				}
+
+				.thumb{
+					float: left;
+					margin-right: (@grid-gutter-width/2);
+				}
+
+				.price-total{
+					float: right;
+				}
+
+				.details{
+
+				}
+
+
+			}
+
+
+
+		}
+
+		.account-orderdetail-item-section-footer{
+
+			.subtotals{
+				padding: (@grid-gutter-width/2);
+
+				text-align: right;
+				border-top:1px solid #eee;
+				div{
+					span{
+						display: inline-block;
+						width: 100px;
+					}
+				}
+
+				.totals{
+					font-weight: bold;
+				}
+			}
+		}
+	}
+
+}

@@ -1,0 +1,83 @@
+/*
+## Header 
+********************************************************************/
+
+
+#header .siteLogo{
+	padding:20px 0;
+}
+
+#header .headerContent{
+	float:right;
+}
+
+#header .headerContent.secondRow{
+	clear: both;
+	margin:5px 0 0 0;
+}
+
+#header .headerContent .nav{
+	height:21px;
+	line-height:1.667em;
+	color:#484848;
+	margin:15px 0 0 0;
+}
+
+#header .headerContent .nav > li{
+	float:left;
+	border-left:1px solid #000;
+	padding: 0 6px;
+	display:block;
+
+}
+	
+
+#header .headerContent .nav > li:first-child {
+	border:0;
+	padding-left:0;
+}
+
+
+#header .headerContent .nav > li > a{
+	display:block;
+}
+
+
+#header .headerContent .nav > li.miniCart > a{
+	text-transform:lowercase; /*  temp */
+}
+
+
+
+
+#header .headerContent.secondRow .yCmsComponent{
+	float: left;
+}
+
+#header .headerContent.secondRow .yCmsComponent + .yCmsComponent{
+	margin:0 0 0 10px;
+}
+
+
+
+
+
+.languagecurrencycomponent{
+	margin: 0 10px;
+	display: inline-block;
+}
+
+.languagecurrencycomponent li{
+	float:left;
+	height:30px;
+}
+
+.languagecurrencycomponent li + li{
+	margin:0 0 0 10px;
+}
+
+
+
+
+
+

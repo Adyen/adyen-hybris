@@ -1,0 +1,91 @@
+
+<Server port="${tomcat.internalserver.port}" shutdown="SHUTDOWN">
+
+	<Listener className="org.apache.catalina.core.JasperListener" />
+	<Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+	<Listener className="org.apache.catalina.mbeans.JmxRemoteLifecycleListener"
+		rmiRegistryPortPlatform="${tomcat.jmx.port}" rmiServerPortPlatform="${tomcat.jmx.server.port}" />
+
+
+	<GlobalNamingResources>
+
+		<!-- If you want to use the jndi database resource please set db.pool.fromJNDI 
+			property and uncomment following block. Furthermore you have to copy the 
+			related jdbc library from platform/lib/dbdriver to the tomcat/lib folder -->
+		<!-- <Resource name="hybrisDS" auth="Container" type="javax.sql.DataSource" 
+			maxActive="${db.pool.maxActive}" maxIdle="${db.pool.maxIdle}" maxWait="${db.pool.maxWait}" 
+			testWhileIdle="${db.pool.testWhileIdle}" timeBetweenEvictionRunsMillis="${db.pool.timeBetweenEvictionRunsMillis}" 
+			minEvictableIdleTimeMillis="${db.pool.minEvictableIdleTimeMillis}" numTestsPerEvictionRun="${db.pool.numTestsPerEvictionRun}" 
+			testOnBorrow="${db.pool.testOnBorrow}" testOnReturn="${db.pool.testOnReturn}" 
+			whenExhaustedAction="${db.pool.whenExhaustedAction}" username="${db.username}" 
+			password="${db.password.XMLENCODED}" driverClassName="${db.driver}" url="${db.url.XMLENCODED}" 
+			/> -->
+
+		<!-- If you want to use a mail JNDI resource please set mail.fromJNDI property 
+			and uncomment following block. Furthermore you have to copy the mail library 
+			from ext/core/lib to tomcat/lib -->
+		<!-- <Resource name="mail/Session" auth="Container" type="javax.mail.Session" 
+			mail.transport.protocol="smtp" mail.smtp.host="${mail.smtp.server}" mail.smtp.from="${mail.from}" 
+			description="Global E-Mail Resource" /> -->
+		<Resource name="UserDatabase" auth="Container"
+			type="org.apache.catalina.UserDatabase" description="User database that can be updated and saved"
+			factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+			pathname="${catalina.home}/conf/tomcat-users.xml" />
+	</GlobalNamingResources>
+
+
+	<Service name="Catalina">
+
+		<Executor name="hybrisExecutor" namePrefix="hybrisHTTP"
+			maxThreads="${tomcat.maxthreads}" minSpareThreads="${tomcat.minsparethreads}"
+			maxIdleTime="${tomcat.maxidletime}" />
+
+		<Connector port="${tomcat.http.port}" maxHttpHeaderSize="8192"
+			maxThreads="${tomcat.maxthreads}" protocol="org.apache.coyote.http11.Http11Protocol"
+			executor="hybrisExecutor" enableLookups="false" acceptCount="100"
+			connectionTimeout="20000" URIEncoding="UTF-8" disableUploadTimeout="true" />
+
+		<Connector port="${tomcat.ssl.port}" maxHttpHeaderSize="8192"
+			maxThreads="150" protocol="org.apache.coyote.http11.Http11Protocol"
+			executor="hybrisExecutor" enableLookups="false" acceptCount="${tomcat.acceptcount}"
+			connectionTimeout="20000" disableUploadTimeout="true" URIEncoding="UTF-8"
+			SSLEnabled="true" scheme="https" secure="true" clientAuth="false"
+			sslProtocol="TLS" keystoreFile="${catalina.home}/lib/keystore"
+			keystorePass="123456" />
+
+		<!-- This might evaluate into <Connector protocol="AJP/1.3" port="${tomcat.ajp.port}" 
+			proxyPort="${proxy.http.port}" redirectPort="${proxy.ssl.port}" useIPVHosts="${tomcat.ajp.useipv}" 
+			/> where the tomcat.ajp.port is mandatory property to render this connector. -->
+		${tomcat.connectors.ajp.plain}
+
+		<Engine name="Catalina" defaultHost="localhost">
+			<Realm className="org.apache.catalina.realm.LockOutRealm">
+
+				<!-- This Realm uses the UserDatabase configured in the global JNDI resources 
+					under the key "UserDatabase". Any edits that are performed against this UserDatabase 
+					are immediately available for use by the Realm. -->
+
+
+				<Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+					resourceName="UserDatabase" />
+
+			</Realm>
+
+			<Valve className="org.apache.catalina.valves.AccessLogValve"
+				directory="${HYBRIS_LOG_DIR}/tomcat" prefix="access." suffix=".log"
+				pattern="combined" />
+
+			<Host name="localhost" appBase="webapps" unpackWARs="true"
+				autoDeploy="false">
+
+
+				${tomcat.webapps}
+
+
+			</Host>
+
+		</Engine>
+
+	</Service>
+
+</Server>

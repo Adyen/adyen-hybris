@@ -1,0 +1,3 @@
+#% impex.setLocale( Locale.GERMAN );
+
+$storeUid=electronics

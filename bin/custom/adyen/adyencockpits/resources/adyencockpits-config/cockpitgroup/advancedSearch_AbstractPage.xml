@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<advanced-search xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="advanced-search.xsd">
+	
+	<group name="root" type="abstractpage">
+		<label key="config.general.searchfor" />
+		<group name="general">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="cmsitem.name" sort-enabled="true" visible="true"/>
+			<property qualifier="cmsitem.uid" sort-enabled="true" visible="true"/>
+			<property qualifier="cmsitem.catalogVersion" sort-enabled="true" visible="true"/>
+			<property qualifier="abstractpage.defaultPage" sort-enabled="false"/>
+			<property qualifier="abstractpage.masterTemplate" visible="false"/>
+		</group>
+		<group name="other">
+			<label key="cockpit.config.label.Other" />
+			<property qualifier="item.pk" sort-enabled="true" visible="false"/>
+		</group>
+	</group>
+	
+</advanced-search>

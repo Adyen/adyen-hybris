@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<advanced-search xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="advanced-search.xsd">
+	
+	<group name="root" type="variantproduct">
+		<label key="config.general.bmecat" />
+		<group name="general">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="product.code" sort-enabled="true"/>
+			<property qualifier="product.name" sort-enabled="true"/>
+			<property qualifier="product.catalogversion" visible="false"/>
+			<property qualifier="product.approvalStatus" visible="false"/>
+			<property qualifier="product.onlineDate" visible="false" />
+			<property qualifier="product.offlineDate" visible="false"/>
+			<property qualifier="product.unit" visible="false" />
+			<property qualifier="product.description" visible="false"/>
+		</group>
+		<group name="Price">
+			<label key="config.general.prices" />
+			<property qualifier="product.Europe1PriceFactory_PPG" visible="false"/>
+			<property qualifier="product.Europe1PriceFactory_PTG" visible="false"/>
+			<property qualifier="product.Europe1PriceFactory_PDG" visible="false"/>
+			<property qualifier="product.minOrderQuantity" visible="false" sort-enabled="false"/>
+			<property qualifier="product.maxOrderQuantity" visible="false" sort-enabled="false"/>
+		</group>
+		<group name="Category">
+			<label key="config.general.categorysystem" />
+			<property qualifier="product.supercategories" visible="false"/>
+			<property qualifier="product.productReferences" visible="false"/>
+		</group>
+		<group name="Multimedia">
+			<label key="config.general.multimedia" />
+			<property qualifier="product.picture" visible="false"/>
+			<property qualifier="product.thumbnail" visible="false"/>
+			<property qualifier="product.data_sheet" visible="false"/>
+			<property qualifier="product.detail" visible="false"/>
+			<property qualifier="product.logo" visible="false"/>
+			<property qualifier="product.normal" visible="false"/>
+			<property qualifier="product.others" visible="false"/>
+			<property qualifier="product.thumbnails" visible="false"/>
+		</group>
+		<group name="Additional">
+			<label key="cockpit.config.label.Additional" />
+			<property qualifier="product.ean" visible="false"/>
+			<property qualifier="product.manufacturerAID" visible="false"/>
+			<property qualifier="product.manufacturerName" visible="false"/>
+			<property qualifier="product.deliveryTime" visible="false"/>
+			<property qualifier="product.contentUnit" visible="false"/>
+			<property qualifier="product.numberContentUnits" visible="false"/>
+			<property qualifier="product.remarks" visible="false"/>
+			<property qualifier="product.keywords" visible="false"/>
+		</group>
+		<group name="BMEcat">
+			<label key="config.general.bmecat" />
+			<property qualifier="product.manufacturertypeDescription" visible="false"/>
+			<property qualifier="product.supplierAlternativeAID" visible="false"/>
+			<property qualifier="product.erpGroupBuyer" visible="false"/>
+			<property qualifier="product.erpGroupSupplier" visible="false"/>
+			<property qualifier="product.segment" visible="false"/>
+			<property qualifier="product.order" visible="false"/>
+			<property qualifier="product.orderQuantityInterval" visible="false"/>
+		</group>
+	</group>
+	
+</advanced-search>

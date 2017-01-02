@@ -1,0 +1,31 @@
+#
+# Import Constraints for Product Cockpit
+# 
+
+INSERT_UPDATE CoverageConstraintGroup;id[unique=true];coverageDomainID;dedicatedTypes(code);interfaceName
+;productCoverageConstraintGroup;defaultDomain;Product;de.hybris.platform.validation.groupinterfaces.ProductCoverageConstraintGroup
+;variantCoverageConstraintGroup;defaultDomain;VariantProduct;de.hybris.platform.validation.groupinterfaces.VariantCoverageConstraintGroup
+
+INSERT_UPDATE SizeConstraint;descriptor(enclosingType(code),qualifier);id[unique=true,allownull=true];max[allownull=true];min[allownull=true];qualifier[allownull=true];severity(code,itemtype(code));target[allownull=true];type(code);constraintGroups(id);message[lang=de];message[lang=en]
+;Product:code;ProductCodeMinSizeCoverageConstraint;255;5;code;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;Product:name;ProductNameMinSizeCoverageConstraint;255;3;name;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;Product:description;ProductDescriptionMinSizeCoverageConstraint;10000;20;description;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;Product:europe1Prices;ProductPricesMinSizeCoverageConstraint;10000;1;europe1Prices;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup;Es muss mindestens ein Preis definiert sein.;There must be at least one price assigned.
+;VariantProduct:code;VariantProductCodeMinSizeCoverageConstraint;255;5;code;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+;VariantProduct:name;VariantProductNameMinSizeCoverageConstraint;255;3;name;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+;VariantProduct:description;VariantProductDescriptionMinSizeCoverageConstraint;10000;20;description;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+;VariantProduct:europe1Prices;VariantProductPricesMinSizeCoverageConstraint;10000;1;europe1Prices;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup;Es muss mindestens ein Preis definiert sein.;There must be at least one price assigned.
+
+INSERT_UPDATE NotEmptyConstraint;descriptor(enclosingType(code),qualifier);id[unique=true,allownull=true];qualifier[allownull=true];severity(code,itemtype(code));target[allownull=true];type(code);constraintGroups(id)
+;Product:ean;ProductEanNotEmptyConstraint;ean;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;VariantProduct:ean;VariantProductEanNotEmptyConstraint;ean;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+
+INSERT_UPDATE NotNullConstraint;descriptor(enclosingType(code),qualifier);id[unique=true,allownull=true];qualifier[allownull=true];severity(code,itemtype(code));target[allownull=true];type(code);constraintGroups(id)
+;Product:picture;ProductPictureNotNullConstraint;picture;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;Product:name;ProductNameNotNullConstraint;name;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;Product:description;ProductDescriptionNotNullConstraint;description;ERROR:Severity;de.hybris.platform.core.model.product.ProductModel;Product;productCoverageConstraintGroup
+;VariantProduct:picture;VariantProductPictureNotNullConstraint;picture;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+;VariantProduct:name;VariantProductNameNotNullConstraint;name;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+;VariantProduct:description;VariantProductDescriptionNotNullConstraint;description;ERROR:Severity;de.hybris.platform.variants.model.VariantProductModel;VariantProduct;variantCoverageConstraintGroup
+
+$de.hybris.platform.core.Registry.getApplicationContext().getBean(de.hybris.platform.validation.services.ValidationService.class).reloadValidationEngine()

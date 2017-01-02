@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="grid-view">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="imageslot" type="imageSlotConfiguration" />
+				<xs:element name="labelslot" type="propertySlotConfiguration"/>
+				<xs:element name="descriptionslot" type="propertySlotConfiguration"/>
+				<xs:element name="shortinfoslot" type="propertySlotConfiguration"/>
+				<xs:element name="actionslot" type="actionSlotConfiguration"/>
+				<xs:element name="specialactionslot" type="actionSlotConfiguration" minOccurs="0"/>
+				
+				<xs:element name="additionalPropertySlot" type="propertySlotConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+    </xs:element>
+    
+	
+	<xs:complexType name="propertySlotConfiguration">
+		<xs:sequence minOccurs="1" maxOccurs="1" >
+			<xs:element name="property" type="property"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="imageSlotConfiguration">
+		<xs:complexContent>
+			<xs:extension base="propertySlotConfiguration"/>
+		</xs:complexContent>	
+	</xs:complexType>
+	
+	
+	<xs:complexType name="actionSlotConfiguration">
+		<xs:attribute name="class" type="xs:string" use="optional"/>
+    	<xs:attribute name="spring-bean" type="xs:string" use="optional"/>
+	</xs:complexType>
+	
+	
+    <xs:complexType name="property">
+ 		<xs:sequence minOccurs="0" maxOccurs="1">
+ 			<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded"/>			
+ 		</xs:sequence>
+ 		<xs:attribute name="qualifier" type="xs:string" use="required"/>
+ 		<xs:attribute name="prefix" type="xs:string" use="optional"/>
+    </xs:complexType>
+	
+    <xs:complexType name="parameter">
+    	<xs:sequence>
+    		<xs:element name="name" type="name"/>
+    		<xs:element name="value" type="value"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="name">
+    	<xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    
+    <xs:simpleType name="value">
+       	<xs:restriction base="xs:string"/> 
+    </xs:simpleType>
+	
+
+</xs:schema>

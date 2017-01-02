@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list-view.xsd"
+           unassigned-group-name="Other">
+	<group name="General">
+		<custom class="de.hybris.platform.cockpit.services.config.impl.LineNumberColumn" name="Line nr" visible="false" selectable="true" width="70px"/>
+		<property qualifier="cmsitem.name" visible="true"/>
+		<property qualifier="cmsitem.uid" visible="true"/>
+		<property qualifier="cmsitem.catalogversion" visible="true" editor="shortListEditor"/>
+		<property qualifier="PageTemplate.active" visible="true"/>
+	</group>
+</list-view>

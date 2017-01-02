@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ProductReferencesComponent" name="type.ProductReferencesComponent.name"
+							description="type.ProductReferencesComponent.description"
+							image="cmscockpit/images/component-icon-productreference.gif" 
+							refImage="cmscockpit/images/component-icon-productreference-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-productreference-small.gif"
+							/>
+
+</content-elements>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ProductPage" name="type.productpage.name" 
+							description="type.productpage.description" 
+							image="cmscockpit/images/page_product.gif" />
+
+</content-elements>

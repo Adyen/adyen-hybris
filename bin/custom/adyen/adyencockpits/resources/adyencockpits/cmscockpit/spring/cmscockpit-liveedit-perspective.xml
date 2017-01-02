@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- [y] hybris Platform Copyright (c) 2000-2015 hybris AG All rights reserved. 
+	This software is the confidential and proprietary information of hybris ("Confidential 
+	Information"). You shall not disclose such Confidential Information and shall 
+	use it only in accordance with the terms of the license agreement you entered 
+	into with hybris. -->
+
+
+<!-- WARNING: This is the Spring WEB configuration file. If you want to replace 
+	items or managers you have to do this from the extensions core configuration 
+	file (cmscockpit/resources/cmscockpit-application-context.xml) -->
+
+<!-- WARNING: This file is imported in cmscockpit-web-spring.xml therefore you don't need
+	to list it in your deployment descriptor -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-autowire="byName">
+
+	<!--#### LiveEdit perspective start #### -->
+
+	<bean id="LiveEditPerspective"
+		class="de.hybris.platform.cmscockpit.session.impl.LiveEditPerspective"
+		scope="session" parent="BasePerspective">
+		<property name="uid" value="cmscockpit.perspective.liveedit"/>
+		<property name="label" value="cmscockpit.perspective.liveedit"/>
+		<property name="customCsaURI" value="/cmscockpit/dynamicLiveEditCSA.zul"/>
+		<!-- default site to be activated -->
+		<!-- <property name="activeSiteCode" value="site"/> -->
+		<property name="navigationArea" ref="LiveEditNavigationArea"/>
+		<property name="browserArea">
+			<bean class="com.adyen.cockpits.cmscockpit.session.impl.DefaultLiveEditBrowserArea">
+				<property name="viewURI" value="/cmscockpit/liveeditBrowser.zul"/>
+				<property name="commonI18NService" ref="commonI18NService"/>
+			</bean>
+		</property>
+		<property name="editorArea">
+			<bean id="LiveEditEditorAreaModel" parent="BaseEditorAreaModel"/>
+		</property>
+		<property name="popupEditorArea">
+			<bean id="LiveProductPopupEditor" parent="BasePopupEditor">
+				<property name="editorAreaController" ref="CmsPopupEditorAreaController"/>
+			</bean>
+		</property>
+		<property name="cockpitTypeService" ref="cockpitTypeService"/>
+	</bean>
+
+	<!--#### Live edit perspective: Navigation area #### -->
+	<bean id="LiveEditNavigationArea"
+		class="de.hybris.platform.cmscockpit.session.impl.LiveEditNavigationArea"
+		scope="session" parent="BaseNavigationArea">
+		<property name="sectionModel" ref="LiveEditNavigationAreaModel"/>
+		<property name="infoSlotRenderer">
+			<bean class="de.hybris.platform.cockpit.components.navigationarea.renderer.InfoBoxRenderer"/>
+		</property>
+		<property name="infoSlotAttachmentTypes" ref="WorkflowAttachmentData"/>
+		<property name="sections">
+			<list>
+				<ref bean="LiveSiteSelectorSection"/>
+				<ref bean="CmsUndoSection"/>
+			</list>
+		</property>
+		<property name="cockpitTypeService" ref="cockpitTypeService"/>
+	</bean>
+
+	<bean id="LiveEditNavigationAreaModel"
+		class="de.hybris.platform.cmscockpit.components.navigationarea.LiveEditNavigationAreaModel"
+		scope="session">
+	</bean>
+
+	<!--#### CMSSite selector section #### -->
+	<bean id="LiveSiteSelectorSection"
+		class="de.hybris.platform.cmscockpit.components.sectionpanel.LiveSiteSectionSelectorSection"
+		scope="session" autowire="byName">
+		<property name="localizedLabel" value="navigationarea.websites"/>
+		<property name="initiallySelected" value="false"/>
+		<property name="visible" value="true"/>
+		<property name="subSections">
+			<list>
+				<ref bean="LiveCatalogVersionSelectorSection"/>
+			</list>
+		</property>
+		<!-- comment out the next lines in order to use the default cockpit selector renderer -->
+		<property name="renderer">
+			<bean
+					class="de.hybris.platform.cmscockpit.components.sectionpanel.renderer.SiteSectionSelectorSectionRenderer"
+					autowire="byName"/>
+		</property>
+		<property name="navigationAreaModel" ref="LiveEditNavigationAreaModel"/>
+	</bean>
+	<!--#### content catalog version selector section #### -->
+	<bean id="LiveCatalogVersionSelectorSection"
+		class="de.hybris.platform.cmscockpit.components.sectionpanel.LiveCatalogVersionSectionSelectorSection"
+		scope="prototype" autowire="byName">
+		<property name="localizedLabel" value="navigationarea.catalogs"/>
+		<property name="initiallySelected" value="false"/>
+		<property name="visible" value="true"/>
+		<!-- comment out the next lines in order to use the default cockpit selector 
+			renderer -->
+		<property name="renderer">
+			<bean
+					class="de.hybris.platform.cmscockpit.components.sectionpanel.renderer.CatalogVersionSectionSelectorSectionRenderer"
+					autowire="byName"/>
+		</property>
+		<property name="navigationAreaModel" ref="LiveEditNavigationAreaModel"/>
+	</bean>
+
+	<!-- Default CMS Preview Loader -->
+	<bean id="cmsPreviewLoader" class="com.adyen.cockpits.components.liveedit.DefaultAcceleratorPreviewLoader"/>
+
+	<!--#### Live edit perspective end #### -->
+</beans>

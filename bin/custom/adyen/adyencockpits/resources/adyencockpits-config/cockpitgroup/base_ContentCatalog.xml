@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="base.xsd">
+	<search>
+		<search-properties>
+			<property qualifier="ContentCatalog.id"/>
+			<property qualifier="ContentCatalog.name"/>
+		</search-properties>
+		<sort-properties>	
+			<property qualifier="Item.modifiedtime"/>
+			<property qualifier="Item.pk"/>
+			<property qualifier="ContentCatalog.name"/>
+			<property qualifier="ContentCatalog.id"/>
+		</sort-properties>
+	</search>
+	<label>
+		<property qualifier="ContentCatalog.name"/>
+	</label>
+</base>

@@ -1,0 +1,16 @@
+INSERT_UPDATE Domain;code[unique=true];name;
+;ticketSystemDomain;Ticket System Domain;
+
+
+INSERT_UPDATE Component;code[unique=true];name;domain[unique=true](code)
+;ticketSystem;Ticket System;ticketSystemDomain
+
+INSERT_UPDATE CommentType;code[unique=true];name;domain[unique=true](code);metaType(code)
+;customerNote;Customer Note;ticketSystemDomain;CsCustomerEvent
+;customerEmail;Customer Email;ticketSystemDomain;CsCustomerEvent
+;ticketCreationEvent;Ticket Created Event;ticketSystemDomain;CsCustomerEvent
+;ticketResolutionEvent;Ticket Resolved Event;ticketSystemDomain;CsTicketResolutionEvent
+;ticketChangeEvent;Ticket Changed Event;ticketSystemDomain;CsTicketEvent;
+
+INSERT_UPDATE CsAgentGroup;uid[unique=true];
+;fraudAgentGroup;fraudadmin

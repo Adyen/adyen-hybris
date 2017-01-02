@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list-view.xsd"
+           unassigned-group-name="Other">
+	<group name="General">
+		<custom class="de.hybris.platform.cockpit.services.config.impl.LineNumberColumn" name="Line nr" visible="true" editable="true"/>
+		<property qualifier="CatalogVersion.catalog.name" visible="true" editable="false"/>
+		<property qualifier="CatalogVersion.version" visible="true" editable="false"/>
+		<property qualifier="CatalogVersion.active" visible="true" editable="false"/>
+	</group>
+</list-view>

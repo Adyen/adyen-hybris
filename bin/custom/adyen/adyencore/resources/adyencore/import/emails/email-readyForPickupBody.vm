@@ -1,0 +1,173 @@
+## messageSource=classpath:/adyencore/messages/email-readyForPickup_$lang.properties
+#macro( genHtmlBoldFont $text )
+<font color="#414a4f" size="2" face="Arial, Helvetica, sans-serif"><b>$text</b></font>
+#end
+#macro(genHtmlLinkStartTag $url)
+<a href="$url"><font color="#666666">
+#end
+#macro(genHtmlLinkEndTag)
+</font></a>
+#end
+#macro(genHtmlLink $url $textColor $bodyContent)
+<a href="$url"><font color="$textColor">$bodyContent</font></a>
+#end
+
+<html>
+	<head>
+	</head>
+	<body bgcolor="#ffffff"
+	#if ( $ctx.isGuest() )
+	    #set ($orderInfoUrl = "${ctx.baseUrl}/guest/order/${ctx.orderGuid}")
+	#else
+	    #set ($orderInfoUrl = "${ctx.baseUrl}/my-account/order/${ctx.orderCode}")
+	#end
+	<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#ffffff"
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="center" valign="top">
+				<table width="610" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#fff">
+					<tr>
+						<td align="center" valign="top" bgcolor="#FFFFFF">
+							<table width="570" cellpadding="0" cellspacing="0" border="0" align="center">
+								<tr>
+									<td valign="middle">&nbsp;</td>
+								</tr>
+								<tr>
+									<td valign="middle">
+										${ctx.cmsSlotContents.SiteLogo}
+										<img src="${ctx.themeResourceUrl}/images/header_01.png" alt="" width="229" height="72" border="0" align="right" title="" />
+									</td>
+								</tr>
+								<tr>
+									<td height="30" align="right" valign="middle" bgcolor="#000000">
+										#if (! $ctx.isGuest())
+											<font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><a href="${ctx.secureBaseUrl}/my-account"><font color="#FFFFFF">${ctx.messages.myAccount}</font></a> |
+										#end <a href="${ctx.baseUrl}/store-finder"><font color="#FFFFFF">${ctx.messages.storeFinder}</font></a> &nbsp;&nbsp;</font>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" valign="middle">
+										<a href="${ctx.baseUrl}" style="display:block; margin-top:10px;margin-bottom:10px;">${ctx.cmsSlotContents.TopContent}</a>
+									</td>
+								</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+								<tr>
+									<td align="left" valign="top">
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.getMessage('salutation', ${ctx.title},${ctx.displayName})},</font></p>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.getMessage('thankYouForOrder', ${ctx.consignment.deliveryPointOfService.name})}</font></p>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.getMessage('pickupInformation')}</font></p>
+										<span><font color="#666666" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.consignment.deliveryPointOfService.address.line1},</b></font></span><br/>
+										#if ($ctx.consignment.deliveryPointOfService.address.line2)
+										<span><font color="#666666" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.consignment.deliveryPointOfService.address.line2},</b></font></span><br/>
+										#end
+										<span><font color="#666666" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.consignment.deliveryPointOfService.address.town},</b></font></span><br/>
+										#if ($ctx.consignment.deliveryPointOfService.address.region)
+										<span><font color="#666666" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.consignment.deliveryPointOfService.address.region.name}</b></font></span><br/>
+										#end
+										#if ($ctx.consignment.deliveryPointOfService.address.postalCode)
+										<span><font color="#666666" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.consignment.deliveryPointOfService.address.postalCode}</b></font></span><br/>
+										#end
+										<br/>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.getMessage('readyItems', "#genHtmlLinkStartTag($orderInfoUrl)", "#genHtmlBoldFont(${ctx.orderCode})", "#genHtmlLinkEndTag()")}</font></p>
+										<!--products start-->
+										<table width="100%" border="1" align="center" cellpadding="0" cellspacing="0" bordercolor="#bfc1c0" class="products">
+											<tr>
+												<td>
+													<table width="100%" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="50%">&nbsp;</td>
+															<td width="17%" height="40px"><font color="#333" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.messages.quantity}</b></font></td>
+															<td width="17%" height="40px"><font color="#333" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.messages.itemPrice}</b></font></td>
+															<td width="16%" height="40px"><font color="#333" size="2" face="Arial, Helvetica, sans-serif"><b>${ctx.messages.total}</b></font></td>
+														</tr>
+														#foreach( $entry in ${ctx.consignment.entries} )
+														<tr>
+															<td>
+																<table width="100%" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td valign="top">
+																			<a href="${ctx.baseUrl}$entry.orderEntry.product.url">
+																				#foreach($image in $entry.orderEntry.product.images) #if($image.imageType == "PRIMARY" && $image.format == "thumbnail" )
+																				<img src="${ctx.mediaBaseUrl}$image.url" alt="" title="$entry.orderEntry.product.name" />
+																				#end #end
+																			</a>
+																			&nbsp;
+																		</td>
+																		<td valign="top">
+																			<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">
+																				<a href="${ctx.baseUrl}$entry.orderEntry.product.url"><font color="#666666"><b>$entry.orderEntry.product.name</b></font></a>
+																			</p>
+																			#if (!$entry.orderEntry.product.baseOptions.isEmpty())
+																			#foreach ($option in $entry.orderEntry.product.baseOptions)
+																			#if ($option.selected && ($option.selected.url == $entry.orderEntry.product.url))
+																			<table width="100%" cellpadding="0" cellspacing="0">
+																				#foreach ($selectedOption in $option.selected.variantOptionQualifiers)
+																				<tr>
+																					<td width="30%"><p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">$selectedOption.name:</font></p></td>
+																					<td width="70%"><p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">$selectedOption.value</font></p></td>
+																				</tr>
+																				#end
+																			</table>
+																			#end
+																			#end
+																			#end
+																		</td>
+																	</tr>
+																</table>
+															</td>
+															<td valign="top"><p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">$entry.orderEntry.quantity</font></p></td>
+															<td valign="top"><p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">$entry.orderEntry.basePrice.formattedValue</font></p></td>
+															<td valign="top"><p><font color="#414a4f" size="3" face="Arial, Helvetica, sans-serif"><b>#if($entry.orderEntry.totalPrice.value > 0) $entry.orderEntry.totalPrice.formattedValue #else ${ctx.messages.free} #end</b></font></p></td>
+														</tr>
+														#end
+													</table>
+												</td>
+											</tr>
+										</table>
+										<!--products end-->
+										<br/>
+										#set ($mailToUrl = "mailto:${ctx.messages.contactUsEmailAddress}")
+										#if(${ctx.baseSite.Uid} == "electronics")
+										#set ( $paragraphContactUs = ${ctx.messages.getMessage('paragraphContactUs_electronics', "#genHtmlLinkStartTag(${ctx.messages.contactUsPage})", "#genHtmlLinkEndTag()", "#genHtmlLink($mailToUrl '#666666' ${ctx.messages.contactUsEmailAddress})")} )
+										#else
+										#set ($faqPage = "${ctx.baseUrl}/faq")
+										#set ( $paragraphContactUs = ${ctx.messages.getMessage('paragraphContactUs', "#genHtmlLinkStartTag($faqPage)", "#genHtmlLinkEndTag()", "#genHtmlLinkStartTag(${ctx.messages.contactUsPage})", "#genHtmlLinkEndTag()", "#genHtmlLink($mailToUrl '#666666' ${ctx.messages.contactUsEmailAddress})")} )
+										#end
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.paragraphDeliveryInfo}</font></p>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">$paragraphContactUs</font></p>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.complimentaryClosing}</font></p>
+										<p><font color="#666666" size="2" face="Arial, Helvetica, sans-serif">${ctx.messages.signature}</font></p>
+									</td>
+								</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+								<tr>
+									<td align="center" valign="middle">
+										<a href="${ctx.baseUrl}" style="display:block; margin-top:10px;margin-bottom:10px;">${ctx.cmsSlotContents.BottomContent}</a>
+									</td>
+								</tr>
+								<tr>
+									<td height="30" align="right" valign="middle" bgcolor="#000000">
+										<font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><a href="${ctx.baseUrl}"><font color="#FFFFFF">${ctx.messages.help}</font></a> | <a href="${ctx.messages.contactUsPage}"><font color="#FFFFFF">${ctx.messages.contactUs}</font></a> | <a href="${ctx.baseUrl}"><font color="#FFFFFF">${ctx.messages.termsAndCondition}</font></a> &nbsp;&nbsp;</font>
+									</td>
+								</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+</body>
+</html>

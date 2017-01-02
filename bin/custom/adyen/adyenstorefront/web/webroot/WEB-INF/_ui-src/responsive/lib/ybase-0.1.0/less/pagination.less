@@ -1,0 +1,97 @@
+//
+// Pagination (multiple pages)
+// --------------------------------------------------
+.pagination {
+	display: inline-block;
+	line-height: 28px;
+	.list-unstyled;
+	.pagination-size(@padding-base-vertical; @font-size-base);
+
+	> li {
+		display: inline-block; // Remove list-style and block-level defaults
+		height: 100%;
+		> a,
+		> span {
+			display: block;
+			position: relative;
+			text-decoration: none;
+			color: @pagination-color;
+			background-color: @pagination-bg;
+			border: 1px solid @pagination-border;
+			width: @pagination-width;
+			text-align: center;
+			height: 100%;
+		}
+
+		+ li{
+			margin-left: 5px;
+		}
+		
+	}
+
+	> li > a,
+	> li > span {
+		&:hover,
+		&:focus {
+			color: @pagination-hover-color;
+			background-color: @pagination-hover-bg;
+			border-color: @pagination-hover-border;
+		}
+	}
+
+	> .active > a,
+	> .active > span {
+		&,
+		&:hover,
+		&:focus {
+			z-index: 2;
+			color: @pagination-active-color;
+			background-color: @pagination-active-bg;
+			border-color: @pagination-active-border;
+			cursor: default;
+			.box-shadow(~"inset 0 0  0 1px #fff");
+		}
+	}
+
+	> .disabled {
+		> span,
+		> span:hover,
+		> span:focus,
+		> a,
+		> a:hover,
+		> a:focus {
+			color: @pagination-disabled-color;
+			background-color: @pagination-disabled-bg;
+			border-color: @pagination-disabled-border;
+			cursor: not-allowed;
+		}
+	}
+}
+
+// Sizing
+// --------------------------------------------------
+
+// Large
+.pagination-lg {
+	.pagination-size(@padding-large-vertical; @font-size-large);
+}
+
+// Small
+.pagination-sm {
+	.pagination-size(@padding-small-vertical; @font-size-small);
+}
+
+
+
+
+
+.pagination-size(@padding-vertical; @font-size) {
+	height: (@padding-vertical*2)+@line-height-computed;
+	line-height:  (@padding-vertical*2)+@line-height-computed;
+  > li {
+    > a,
+    > span {
+      font-size: @font-size;
+    }
+  }
+}

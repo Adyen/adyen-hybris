@@ -1,0 +1,18 @@
+# ImpEx for Importing Category Classifications
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$productCatalogName=__PRODUCT_CATALOG_FULL_NAME__
+$classificationCatalog=__CLASSIFICATION_CATALOG_NAME__
+
+$classCatalogVersion=catalogversion(catalog(id[default='$classificationCatalog']),version[default='1.0'])[unique=true,default='$classificationCatalog:1.0']
+$classSystemVersion=systemVersion(catalog(id[default='$classificationCatalog']),version[default='1.0'])[unique=true]
+
+# Language
+$lang=en
+
+# Insert Classifications
+UPDATE ClassificationClass;code[unique=true];$classCatalogVersion;name[lang=$lang]
+
+# Insert Classification Attributes
+UPDATE ClassificationAttribute;code[unique=true];$classSystemVersion;name[lang=$lang]

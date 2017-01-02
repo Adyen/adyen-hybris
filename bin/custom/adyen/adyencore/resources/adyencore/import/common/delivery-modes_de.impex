@@ -1,0 +1,13 @@
+#
+# Import Delivery Modes / Zones
+#
+
+# Language
+$lang=de
+
+# Zone Delivery Modes
+UPDATE ZoneDeliveryMode;code[unique=true];name[lang=$lang];description[lang=$lang]
+ ;premium-gross;"Lieferart Premium";"Tage1–2 Werktage"
+ ;premium-net;"Lieferart Premium";"Tage1–2 Werktage"
+ ;standard-gross;"Lieferart Standard";"3–5 Werktage"
+ ;standard-net;"Lieferart Standard";"3–5 Werktage"

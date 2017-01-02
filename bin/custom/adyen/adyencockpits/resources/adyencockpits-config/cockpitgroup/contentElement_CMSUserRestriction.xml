@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSUserRestriction" name="type.cmsuserrestriction.name" 
+							description="type.cmsuserrestriction.description" 
+							image="cmscockpit/images/RestrictionUser.gif" 
+							refImage="cmscockpit/images/RestrictionUserReference.gif"/>
+
+</content-elements>

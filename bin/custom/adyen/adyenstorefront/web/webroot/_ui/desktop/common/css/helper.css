@@ -1,0 +1,353 @@
+
+
+
+.clear_fix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.clear_fix {
+	display: inline-block;
+}
+
+
+
+.clear_fix {
+	display: block;
+}
+
+ul,ol{
+	padding:0;
+	margin:0;
+	
+}
+
+ul li {
+	list-style-type: none;
+
+}
+
+.skip, .skiptocontent, .skiptonavigation{
+	position: absolute;
+	top: -30000px;
+	left: -30000px;
+}
+
+
+a{
+	text-decoration:none;
+	color:#000;
+}
+
+.hidden,.notVisible{
+	display:none;
+}
+
+img{
+	vertical-align:top;
+}
+
+/*
+select {
+	float: left;
+}
+
+input.text,
+input.qty,
+label {
+	padding: 0 0 0 1px;
+	margin: 0;
+	float: left;
+}
+
+label {
+	font-weight: normal;
+}
+
+.paragraphContent p,
+.paragraphContent h1,
+.paragraphContent h2,
+.paragraphContent h3,
+.paragraphContent h4,
+.paragraphContent h5,
+.paragraphContent h6 {
+	padding: 10px;
+	margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	color: #666666;
+	line-height: 1.2;
+}
+
+.strong {
+	font-weight: bold;
+}
+
+dl {
+	overflow: hidden;
+	line-height: 1.5em;
+}
+
+dl dt {
+	float: left;
+	min-width: 148px;
+}
+
+table, th, td {
+	vertical-align: top;
+}
+
+table ul {
+	padding: 0;
+}
+
+thead th {
+	background-color: transparent;
+}
+
+table tr td {
+	padding: 10px;
+}
+
+p {
+	margin: 0 0 10px 0;
+}
+
+dl {
+	margin: 0 0 10px 0;
+}
+
+thead th {
+	background-color: transparent;
+}
+
+table tr td {
+	border-left: 1px solid #e7e7e7;
+	border-top: 1px solid #C0C1C2;
+}
+
+table tr td:first-child {
+	border-left: none;
+}
+
+tbody tr:nth-child(2n) td,tbody tr.even td {
+	background-image: none;
+	background-color: transparent;
+}
+
+a {
+	text-decoration: none;
+}
+
+a,a:visited {
+	color: #495862;
+}
+
+a:hover {
+	color: #2d95c8;
+	text-decoration: underline;
+}
+
+a:focus {
+	color: #2d95c8;
+	text-decoration: underline;
+}
+
+a:focus img {
+	outline: 1px solid #999;
+}
+
+a:active {
+	color: #00679f;
+}
+
+.uppercase {
+	text-transform: uppercase;
+}
+
+.prod_image {
+	padding: 10px;
+}
+
+.hidden {
+	display: none;
+}
+
+.text_hide {
+	text-indent: -9999px;
+}
+
+.pad_right {
+	margin-right: 10px;
+}
+
+.pad_left {
+	margin-left: 10px;
+}
+
+.pad_none {
+	margin: 0;
+	padding: 0;
+}
+
+#wrapper {
+	width: 990px;
+	margin: 0 auto;
+	overflow: hidden;
+	background-image: url(../images/bg-frame.png); 
+	background-repeat: repeat;
+	background-position: center center;
+	background-color: transparent;
+	background: rgba(255, 255, 255, 0.3) none; /* all browsers supporting RGBa will use and ignore the above */
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	border-right: 1px solid;
+	border-color: #90bdd0;
+	border-color: rgba(255, 255, 255, 0.2); /* all browsers supporting RGBa will use and ignore the above */
+}
+
+#page {
+	position: relative;
+	overflow: hidden;
+	width: 970px;
+	margin: 0 auto;
+	margin-bottom: 10px;
+	background-color: #ffffff;
+}
+
+.cms_disp-img_slot .disp-img,.cms_disp-img_slot .simple_disp-img {
+	border: 0px solid #999999;
+	margin-bottom: 10px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.span-4.section4 .cms_disp-img_slot .disp-img:first-child,.span-4.section4 .cms_disp-img_slot .simple_disp-img:first-child {
+	margin-top: 30px;
+}
+
+.page-productList .section1.cms_disp-img_slot .content {
+	margin-bottom: 10px;
+}
+
+.section1.cms_disp-img_slot .disp-img .title,
+.section1.cms_disp-img_slot .disp-img .details,
+.section1.cms_disp-img_slot .disp-img .action,
+.section2.cms_disp-img_slot .disp-img .title,
+.section2.cms_disp-img_slot .disp-img .details,
+.section2.cms_disp-img_slot .disp-img .action,
+.zone_a.cms_disp-img_slot .disp-img .title,
+.zone_a.cms_disp-img_slot .disp-img .details,
+.zone_a.cms_disp-img_slot .disp-img .action,
+.zone_b.cms_disp-img_slot .disp-img .title,
+.zone_b.cms_disp-img_slot .disp-img .details,
+.zone_b.cms_disp-img_slot .disp-img .action,
+.zone_c.cms_disp-img_slot .disp-img .title,
+.zone_c.cms_disp-img_slot .disp-img .details,
+.zone_c.cms_disp-img_slot .disp-img .action,
+.section4.cms_disp-img_slot .disp-img .title,
+.section4.cms_disp-img_slot .disp-img .details,
+.section4.cms_disp-img_slot .disp-img .action,
+.section5.cms_disp-img_slot .disp-img .title,
+.section5.cms_disp-img_slot .disp-img .details,
+.section5.cms_disp-img_slot .disp-img .action,
+.left-content-slot.cms_disp-img_slot .disp-img .title,
+.left-content-slot.cms_disp-img_slot .disp-img .details,
+.left-content-slot.cms_disp-img_slot .disp-img .action,
+.top-content-slot.cms_disp-img_slot .disp-img .title,
+.top-content-slot.cms_disp-img_slot .disp-img .details,
+.top-content-slot.cms_disp-img_slot .disp-img .action,
+.wide-content-slot.cms_disp-img_slot .disp-img .title,
+.wide-content-slot.cms_disp-img_slot .disp-img .details,
+.wide-content-slot.cms_disp-img_slot .disp-img .action,
+.narrow-content-slot.cms_disp-img_slot .disp-img .title,
+.narrow-content-slot.cms_disp-img_slot .disp-img .details,
+.narrow-content-slot.cms_disp-img_slot .disp-img .action {
+	display: none;
+}
+
+.backToMobileStore {
+	font-size: 5em;
+	font-weight: bold;
+	border-bottom: 0.1em solid #687387;
+	padding: 0.5em 0.5em;
+	background: -moz-linear-gradient(top, #ffffff, #e6edf3);
+	background: -ms-linear-gradient(top, #ffffff, #e6edf3);
+	background: -o-linear-gradient(top, #ffffff, #e6edf3);
+	background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#e6edf3));
+	background: -webkit-linear-gradient(top, #ffffff, #e6edf3);
+	background: linear-gradient(top, #ffffff, #e6edf3);
+}
+
+.greyDot {
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	background-position: 0 0;
+	background-color: #6E7588;
+	border-radius: 500em 500em 500em 500em;
+	color: #FFFFFF;
+	display: block;
+	float: left;
+	font-size: 0.6em;
+	height: 1.5em;
+	margin: 0.6em 0.6em 0 0;
+	text-align: center;
+	width: 1.5em;
+}
+
+.closeDot {
+	float: right;
+	cursor: pointer;
+}
+
+.emptyMessage {
+	font-weight: bold;
+}
+
+.cms-content {
+	padding: 10px 20px;
+}
+
+.cms-content .information_message {
+	margin-bottom: 30px;
+}
+
+.cms-content h3 {
+	margin: 20px 0 6px 0;
+}
+
+.cms-content .bullet-list li {
+	margin: 1px 0;
+	list-style-type: disc;
+}
+
+.cms-content-emphasized-big {
+	font-size: 1.2em;
+}
+
+.helpBanner {
+	margin: 20px 0;
+	padding: 5px;
+	border: 1px dotted #000;
+}
+
+.helpBanner .bannerHeadline {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.helpBanner a {
+	font-weight: bold;
+	margin-left: 10px;
+}

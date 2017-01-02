@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	
+	<group qualifier="general" visible="true" initially-opened="false">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="Media.code"/>
+		<property qualifier="Media.mime"/>
+		<property qualifier="Media.URL" editor="imageEditor"/>
+		<property qualifier="Media.downloadURL"/>
+		<property qualifier="Media.folder"/>
+		<property qualifier="Media.mediaFormat"/>
+		<property qualifier="Media.description"/>
+		<property qualifier="Media.realFileName"/>
+		<property qualifier="Media.altText"/>
+	</group>
+
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.MediaEditorSectionConfiguration" 
+		qualifier="uploadsection"
+		initially-opened="true"
+		visible="true">
+		<label key="config.general.preview" />
+	</custom-group>
+
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="Item.pk"/>
+		<property qualifier="Item.creationTime"/>
+		<property qualifier="Item.modifiedtime"/>
+<!--		<property qualifier="Item.assignedCockpitItemTemplates"/>-->
+	</group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false"
+		visible="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+	
+</editor>

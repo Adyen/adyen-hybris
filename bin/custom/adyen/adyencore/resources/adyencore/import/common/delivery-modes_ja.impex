@@ -1,0 +1,13 @@
+#
+# Import Delivery Modes / Zones
+#
+
+# Language
+$lang=ja
+
+# Zone Delivery Modes
+UPDATE ZoneDeliveryMode;code[unique=true];name[lang=$lang];description[lang=$lang]
+ ;premium-gross;"プレミアム配送モード";"1 ～ 2 営業日"
+ ;premium-net;"プレミアム配送モード";"1 ～ 2 営業日"
+ ;standard-gross;"通常配送モード";"3 ～ 5 営業日"
+ ;standard-net;"通常配送モード";"3 ～ 5 営業日"

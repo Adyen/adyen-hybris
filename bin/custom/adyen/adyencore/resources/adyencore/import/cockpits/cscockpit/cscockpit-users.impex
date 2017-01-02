@@ -1,0 +1,8 @@
+#
+# Import Users and Groups for CS Cockpit
+# 
+INSERT_UPDATE UserGroup;UID[unique=true];groups(uid)[mode=append];locname[lang=en]
+;customerservicegroup;employeegroup;"Customer Service Group"
+
+INSERT_UPDATE UserGroup;UID[unique=true];groups(uid)[mode=append];locname[lang=en]
+;csagentgroup;cockpitgroup,customerservicegroup;"Customer Service Agent Group"

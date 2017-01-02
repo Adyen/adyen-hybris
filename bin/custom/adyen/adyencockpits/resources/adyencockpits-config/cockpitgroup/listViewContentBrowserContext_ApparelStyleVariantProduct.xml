@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list-view.xsd"
+           unassigned-group-name="Other" allow-create-inline-items="true">
+	<group name="General">
+		<property qualifier="product.thumbnail" editor="simpleMediaReferenceSelector" visible="true">
+			<renderer class="de.hybris.platform.cockpit.model.listview.impl.ImageCellRenderer"/>
+		</property>
+		<custom spring-bean="ProductContentBrowserStatusColumn" name="Status"
+			visible="true" selectable="true">
+			<label key="config.general.status" />
+		</custom>
+		<property qualifier="Product.code" visible="true" editable="false"/>
+		<property qualifier="Product.name" visible="true" editable="false"/>
+		<property qualifier="ApparelStyleVariantProduct.style" visible="true" editable="false"/>
+	</group>
+</list-view>

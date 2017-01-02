@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               selectMode="true" createMode="false" activateAfterCreate="true" createWithinPopup="false" createWithinEditor="false">
+	<displayed-properties>
+		<group qualifier="General" visible="true" initially-opened="false">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="Category.name"/>
+		    <property qualifier="Category.code"/>
+		    <property qualifier="ClassificationClass.catalogVersion"/>
+		</group>
+	</displayed-properties>
+</wizard-config>
+
+
+	 

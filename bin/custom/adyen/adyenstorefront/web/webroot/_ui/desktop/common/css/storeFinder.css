@@ -1,0 +1,154 @@
+/*
+## storeFinder
+********************************************************************/
+
+
+
+#storeFinder{
+	
+	
+}
+
+
+
+
+#storeFinder .searchPane{
+	float:left;
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+	position:relative;
+	height:366px;
+	width:268px;
+	margin:0 10px 0 0;
+}
+
+
+
+#storeFinder .searchPane .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 39px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+#storeFinder .searchPane .description{
+	margin:0 0 20px 0;
+}
+
+#storeFinder .searchPane  .findStoresNearMe{
+  background: url("../images/findStoresNearMe-bg.png") no-repeat scroll 10px center #000;
+}
+
+
+
+
+
+#storeFinder .storeMap{
+	float:left;
+	height:388px;
+	width:630px;
+}
+
+
+#storeFinder  #map_canvas{
+	height:388px;
+}
+
+
+
+
+#storeFinder .storeResultList{
+	clear:both;
+	padding:20px 0 0 0;
+}
+
+
+
+#storeFinder .storeResultList .storeResultTable{
+	width:100%;
+	margin: 0  0 20px 0;
+}
+
+
+
+
+
+#storeFinder .storeResultList .storeResultTable thead th{
+	border-bottom:1px dotted #a5a5a5;
+	height:30px;
+	line-height:30px;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1em;
+}
+
+
+
+
+
+#storeFinder .storeResultList .storeResultTable > tbody > tr >  td{
+	vertical-align:top;
+	border-bottom:1px dotted #a5a5a5;
+	padding:20px 0 0 0;
+}
+
+#storeFinder .storeResultList .storeResultTable td.thumb{
+	border-bottom:0;
+	padding-right:20px;
+}
+
+
+#storeFinder .storeResultList .storeResultTable tbody td{
+	vertical-align:top;
+}
+
+
+#storeFinder .storeResultList .storeResultTable .store-openings{
+	margin:0 0 20px 0;
+}
+
+
+
+#storeFinder .storeResultList .storeResultTable .storeItem .details{
+	margin:0 0 0 110px;
+	
+}
+
+
+#storeFinder .storeResultList .storeResultTable .storeItem .details .itemName{
+	font-weight:bold;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

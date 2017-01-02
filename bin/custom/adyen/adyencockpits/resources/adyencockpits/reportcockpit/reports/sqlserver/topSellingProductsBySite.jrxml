@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="topSellingProducts" language="groovy" pageWidth="595" pageHeight="620" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table" isDefault="false">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" isDefault="false" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" isDefault="false" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" isDefault="false" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="topSellingDS">
+		<parameter name="From" class="java.util.Date" isForPrompting="false">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="To" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT TOP 5 {p.name} as PRODUCTNAME, SUM({oe.totalPrice} * {curr2.conversion}/{curr1.conversion}) AS SUMA
+FROM {OrderEntry AS oe JOIN Order AS o ON {oe.order}={o.PK} JOIN Product AS p ON {oe.product}={p.PK}  JOIN Currency as curr1 ON {o.currency}={curr1.PK} JOIN Currency as curr2 ON {curr2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE ({oe.creationtime} > $P{From} AND {oe.creationtime} < $P{To}) AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY {p.PK}, {p.name}
+ORDER BY SUMA DESC]]>
+		</queryString>
+		<field name="PRODUCTNAME" class="java.lang.String"/>
+		<field name="SUMA" class="java.lang.Double"/>
+	</subDataset>
+	<parameter name="From" class="java.util.Date"/>
+	<parameter name="To" class="java.util.Date"/>
+	<parameter name="timerange" class="java.lang.String">
+		<property name="type" value="ReportTimeRange"/>
+		<property name="defaultvalue" value="LASTMONTH"/>
+	</parameter>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="Currency" class="java.lang.Long">
+		<property name="type" value="Currency"/>
+	</parameter>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT {code} FROM {Order}]]>
+	</queryString>
+	<field name="Code" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="540" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="319" y="505" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="462" y="465" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="319" y="485" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.from" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="190" y="465" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="462" y="505" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{To}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="190" y="505" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="485" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="465" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="190" y="485" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{timerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="505" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.currency" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="462" y="485" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{From}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="319" y="465" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<bar3DChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230" isPrintWhenDetailOverflows="true"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="topSellingDS">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[str("series.topsellingproducts")]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{PRODUCTNAME}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{SUMA}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot labelRotation="45.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisFormat labelRotation="45.0">
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.totalsales" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+			<componentElement>
+				<reportElement key="table" style="table" x="15" y="242" width="561" height="206"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="topSellingDS">
+						<datasetParameter name="From">
+							<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="To">
+							<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Currency">
+							<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="10" width="90" height="20"/>
+								<textElement textAlignment="Center">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[str("table.position")]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell height="30" rowSpan="1">
+							<box>
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="10" width="90" height="20"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="343">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="10" width="343" height="20"/>
+								<textElement textAlignment="Center">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[str("table.productname")]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="30" rowSpan="1">
+							<textField>
+								<reportElement x="10" y="10" width="333" height="20"/>
+								<textElement/>
+								<textFieldExpression class="java.lang.String"><![CDATA[$F{PRODUCTNAME}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="128">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="10" width="128" height="20"/>
+								<textElement textAlignment="Center">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[str("table.revenue")]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="30" rowSpan="1">
+							<textField pattern="#.##">
+								<reportElement x="10" y="10" width="118" height="20"/>
+								<textElement/>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$F{SUMA}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>

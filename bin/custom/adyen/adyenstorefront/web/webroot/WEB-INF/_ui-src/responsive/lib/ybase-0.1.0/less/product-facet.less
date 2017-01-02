@@ -1,0 +1,160 @@
+.product-facet{
+	margin: @grid-gutter-width 0;
+
+
+	.facet{
+		padding: (@grid-gutter-width/2);
+		border:1px solid #a9afb7;
+		margin:  0 0 @grid-gutter-width 0;
+		.clearfix;
+
+		.facet-name{
+			text-transform: uppercase;
+			font-weight: bold;
+		}
+
+		.facet-list{
+			.list-unstyled;
+			margin:  (@grid-gutter-width/2) 0;
+
+			li{
+				padding: (@grid-gutter-width/2) 0;
+			}
+
+			label{
+				cursor: pointer;
+				font-weight: normal;
+				display: block;
+				margin: 0;
+			}
+			.facet-checkbox{
+				// display: none;
+			}
+
+			.facet-mark{
+				display: inline-block;
+				width: 20px;
+				height: 20px;
+				padding: 0;
+				margin-right:  (@grid-gutter-width/2);
+				border:1px solid #a9afb7;
+				text-align: center;
+				vertical-align: middle;
+				background: #fff;
+				margin-top: -3px;
+			}
+
+
+			.facet-checkbox:checked + .facet-label{
+				.facet-mark{
+					background: @brand-primary;
+					border:1px solid @brand-primary;
+					.box-shadow(~"inset 0 0  0 1px #fff");
+				}
+
+				.facet-text{
+					color: @brand-primary;
+				}
+
+			}
+
+			.facet-checkbox:focus + .facet-label{
+				.facet-mark{
+					border:1px solid @brand-primary;
+					.box-shadow(~"inset 0 0  0 1px #fff");
+				}
+
+				
+
+			}
+
+
+
+		
+
+			.facet-text{
+				line-height: 20px;
+			}
+			
+
+			&.facet-list-hidden{
+				display: none;
+			}
+
+
+			
+		}
+
+
+		.more{
+			display: block;
+		}
+
+		.less{
+			display: none;
+		}
+
+		
+
+		.facet-form{
+			padding-top: 10px;
+			&-hidden{
+				display: none;
+			}
+		}
+
+
+		.facet-container{
+			&-hidden{
+				display: none;
+			}
+		}
+	}
+
+
+
+}
+
+
+
+
+
+
+@media (max-width: @screen-sm-max) { 
+	.product-facet{
+		padding: (@grid-gutter-width/2);
+		margin: 0;
+
+		#colorbox &{
+			display: block !important;
+		}
+		
+
+		.facet {
+			float: none;
+			width: 100%;
+			border:0;
+			margin: 0;
+			padding: 0 0  (@grid-gutter-width/2) 0;
+
+			.facet-name{
+				background: #eee;
+				cursor: pointer;
+				padding: (@grid-gutter-width/2);
+			}
+
+			.facet-values{
+				display: none;
+					
+			}
+
+			&.active{
+				.facet-values{
+					display: block;
+						
+				}
+			}
+		}
+	}
+
+}

@@ -1,0 +1,77 @@
+/*
+## storeDetail
+********************************************************************/
+
+
+
+#storeDetail{
+	
+	
+}
+
+#storeDetail .detailPane{
+	float:left;
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+	position:relative;
+	width:288px;
+	margin:0 10px 0 0;
+}
+
+
+
+#storeDetail .detailPane .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 39px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+
+
+
+
+
+
+#storeDetail .storeMap{
+	float:left;
+	height:610px;
+	width:610px;
+}
+
+
+#storeDetail   #map_canvas{
+	height:610px;
+}
+
+
+#storeDetail   .storeImage img{
+	width:100%;
+	margin:20px 0 0 0;
+}
+
+
+#storeDetail   .storeDetailsTable td{
+	vertical-align:top;
+}
+
+
+
+
+
+#storeDetail .detailSection{
+	margin: 0 0 20px 0;
+}
+
+#storeDetail .detailSectionHeadline{
+	font-weight:bold;
+	margin:0 0 0 0;
+}
+
+
+#storeDetail .detailSection .store-openings{
+	margin: 0;
+}

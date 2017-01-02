@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wizard-config showPrefilledValues="false" selectMode="false" createMode="true" activateAfterCreate="false" createWithinPopup="false" createWithinEditor="false">
+	<displayed-properties>
+		<group qualifier="General" visible="true" initially-opened="false">
+			<label key="adyencockpits.wizardConfig.basicacceleratordata" />
+			<property qualifier="CMSSite.name"/>
+			<property qualifier="CMSSite.active"/>
+			<property qualifier="CMSSite.uid"/>
+		</group> 
+	</displayed-properties>
+	<after-done-wizard-script language="beanshell">
+		<content>
+			<![CDATA[
+			/* all beanshell code extracted to helper method - ease for development */
+			import de.hybris.platform.core.Registry;
+			import com.adyen.cockpits.cmscockpit.sitewizard.B2BAcceleratorWizardHelper;
+			
+			B2BAcceleratorWizardHelper b2bAccWizardHelper = (B2BAcceleratorWizardHelper)Registry.getApplicationContext().getBean("b2bAcceleratorWizardHelper");
+			return b2bAccWizardHelper.createSite((Map)context);
+			]]>
+		</content>
+	</after-done-wizard-script>
+</wizard-config>
+

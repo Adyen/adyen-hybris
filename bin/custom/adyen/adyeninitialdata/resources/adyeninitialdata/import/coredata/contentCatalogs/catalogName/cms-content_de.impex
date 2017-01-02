@@ -1,0 +1,29 @@
+#
+# Import CMS content for the site
+#
+
+$contentCatalog=__CONTENT_CATALOG_NAME__
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# Language
+$lang=de
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;account;"Ihr Konto"
+ ;;add-edit-address;"Adresse hinzufügen/bearbeiten"
+ ;;address-book;"Adressbuch"
+ ;;cartPage;"Ihr Einkaufskorb"
+ ;;checkout-login;"Zur Kasse gehen"
+ ;;homepage;"Homepage"
+ ;;login;"Anmelden"
+ ;;multiStepCheckoutSummaryPage;"Kasse"
+ ;;notFound;"Nicht gefunden"
+ ;;order;"Bestelldetails"
+ ;;orderConfirmationPage;"Bestellbestätigung"
+ ;;orders;"Bestellverlauf"
+ ;;payment-details;"Zahlungsdetails"
+ ;;profile;"Profil"
+ ;;searchEmpty;"Keine Ergebnisse"
+ ;;storefinderPage;"Händlersuche"
+ ;;updatePassword;"Vergessenes Kennwort aktualisieren"

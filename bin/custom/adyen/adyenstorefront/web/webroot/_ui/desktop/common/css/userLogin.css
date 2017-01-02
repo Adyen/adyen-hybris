@@ -1,0 +1,65 @@
+/*
+## userLogin
+********************************************************************/
+
+.userLogin{
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+}
+
+.userLogin .headline{
+	border-bottom: 1px solid #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 33px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+.userLogin .description{
+	margin:0 0 5px 0;
+}
+
+.userLogin  form{
+	margin:0;
+}
+
+.userLogin  .expressCheckoutLogin {
+	margin:20px 0 0 0;
+}
+
+.userLogin  .expressCheckoutLogin ul li{
+	list-style: disc outside none;
+	margin:0 0 5px 13px;
+}
+
+.forgottenPwd{
+	padding:20px;
+}
+
+.forgottenPwd .headline{
+	border-bottom: 1px solid #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 39px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+.forgottenPwd .description{
+	margin:0 0 20px 0;
+}
+
+.expressCheckoutCheckbox {
+	margin: 0 0 10px 0;
+}
+
+.expressCheckoutCheckbox input{
+	margin: 2px 7px 0 0;
+}
+
+a.password-forgotten {
+	text-decoration:underline;
+}

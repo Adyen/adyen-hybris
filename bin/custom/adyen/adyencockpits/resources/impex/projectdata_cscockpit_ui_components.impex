@@ -1,0 +1,20 @@
+$jarResource=jar:com.adyen.cockpits.constants.AdyenCockpitsConstants&/adyencockpits/cscockpit
+
+#
+# Load medias
+#
+INSERT_UPDATE CockpitUIConfigurationMedia;code[unique=true];mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true]
+
+;ApparelProduct_ProductDetails_cockpitgroup_ui_config;text/xml;ApparelProduct_ProductDetails.xml;$jarResource/xml/ApparelProduct_ProductDetails.xml
+;ApparelStyleVariantProduct_ProductDetails_cockpitgroup_ui_config;text/xml;ApparelStyleVariantProduct_ProductDetails.xml;$jarResource/xml/ApparelStyleVariantProduct_ProductDetails.xml
+;ApparelSizeVariantProduct_ProductDetails_cockpitgroup_ui_config;text/xml;ApparelSizeVariantProduct_ProductDetails.xml;$jarResource/xml/ApparelSizeVariantProduct_ProductDetails.xml
+
+
+#
+# Setup cockpit configuration
+#
+INSERT_UPDATE CockpitUIComponentConfiguration;code[unique=true];factoryBean;objectTemplateCode[unique=true];principal(uid)[unique=true];media(code);
+
+;productDetails;listViewConfigurationFactory;ApparelProduct;cockpitgroup;ApparelProduct_ProductDetails_cockpitgroup_ui_config;
+;productDetails;listViewConfigurationFactory;ApparelStyleVariantProduct;cockpitgroup;ApparelStyleVariantProduct_ProductDetails_cockpitgroup_ui_config;
+;productDetails;listViewConfigurationFactory;ApparelSizeVariantProduct;cockpitgroup;ApparelSizeVariantProduct_ProductDetails_cockpitgroup_ui_config;

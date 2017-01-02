@@ -1,0 +1,12 @@
+#
+# Import Admin Cockpit customizations
+#
+
+$jarResource=jar:com.adyen.cockpits.constants.AdyenCockpitsConstants&/adyencockpits/admincockpit
+
+
+INSERT_UPDATE CockpitUIScriptConfigMedia;code[unique=true];allowScriptEvaluation;mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true]
+;admingroup_Customer_listViewConfigurationFactory_listViewContentBrowser;true;text/xml;listViewContentBrowser-Customer.xml;$jarResource/xml/listViewContentBrowser-Customer.xml
+
+INSERT_UPDATE CockpitUIComponentConfiguration;code[unique=true];factoryBean;objectTemplateCode[unique=true];principal(uid)[unique=true];media(code);
+;listViewContentBrowser;listViewConfigurationFactory;Customer;admingroup;admingroup_Customer_listViewConfigurationFactory_listViewContentBrowser

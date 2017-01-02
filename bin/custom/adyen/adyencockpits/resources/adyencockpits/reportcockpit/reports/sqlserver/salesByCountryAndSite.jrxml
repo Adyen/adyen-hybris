@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesByCountry" language="groovy" pageWidth="595" pageHeight="420" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="background" isDefault="false" backcolor="#FFFFFF"/>
+	<subDataset name="salesByCountryDS">
+		<parameter name="From" class="java.util.Date"/>
+		<parameter name="To" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.String"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT x.COUNTRY AS COUNTRY, SUM(x.TOTPRICE) as TOTPRICE
+FROM
+({{
+Select {country.name} as COUNTRY, COALESCE(sum({o.totalPrice} * {c2.conversion}/{c.conversion}),0) as TOTPRICE
+from { Country AS country LEFT JOIN Address AS a ON {a.country}={country.PK} LEFT JOIN Order AS o ON {o.paymentAddress}={a.PK} LEFT JOIN Currency as c ON {o.currency}={c.PK} LEFT JOIN Currency as c2 ON {c2.pk}= $P{Currency} AND {o.creationtime} >= $P{From} AND {o.creationtime} < $P{To}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY {country.PK}, {country.name}
+}}
+UNION ALL
+{{
+Select {country.name} as COUNTRY, COALESCE(sum({o.totalPrice} * {c2.conversion}/{c.conversion}),0) as TOTPRICE
+from { Country AS country LEFT JOIN Address AS a ON {a.country}={country.PK} LEFT JOIN Order AS o ON {o.paymentAddress}={a.PK} LEFT JOIN Currency as c ON {o.currency}={c.PK} LEFT JOIN Currency as c2 ON {c2.pk}= $P{Currency} AND {o.creationtime} >= $P{From} AND {o.creationtime} < $P{To} AND {o.paymentAddress} IS NULL
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY {country.PK}, {country.name}
+}}) x
+GROUP BY COUNTRY
+ORDER BY TOTPRICE DESC]]>
+		</queryString>
+		<field name="COUNTRY" class="java.lang.String"/>
+		<field name="TOTPRICE" class="java.lang.Double"/>
+	</subDataset>
+	<parameter name="From" class="java.util.Date"/>
+	<parameter name="To" class="java.util.Date"/>
+	<parameter name="timerange" class="java.lang.String">
+		<property name="type" value="ReportTimeRange"/>
+		<property name="defaultvalue" value="LASTMONTH"/>
+	</parameter>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="Currency" class="java.lang.Long">
+		<property name="type" value="Currency"/>
+	</parameter>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT {code} FROM {Order}]]>
+	</queryString>
+	<field name="Code" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="320" splitType="Stretch">
+			<barChart>
+				<chart customizerClass="de.hybris.platform.cockpit.reports.scriptlets.BarChartCustomizer">
+					<reportElement x="0" y="0" width="595" height="230"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="salesByCountryDS">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series.salesbycountry" )]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{COUNTRY}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{TOTPRICE}]]></valueExpression>
+						<labelExpression><![CDATA[new java.text.DecimalFormat("#.##").format($F{TOTPRICE})]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true" isShowTickLabels="true" isShowTickMarks="true">
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF">
+						<font size="10"/>
+					</itemLabel>
+					<categoryAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.country" )]]></categoryAxisLabelExpression>
+					<categoryAxisFormat>
+						<axisFormat verticalTickLabels="true">
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.totalsales" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat verticalTickLabels="true">
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="434" y="263" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{From}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="434" y="283" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{To}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="163" y="263" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{timerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="163" y="243" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="434" y="243" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="163" y="283" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="243" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="263" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="283" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.currency" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="291" y="243" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="291" y="263" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.from" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="291" y="283" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,145 @@
+/*
+## Account
+********************************************************************/
+
+
+
+.accountNav .headline{
+	margin:0 0 20px 0;
+
+	background-color: #F6F6F6;
+    border-bottom: 1px solid #A5A5A5;
+    font-size: 1.2em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+	
+}
+
+
+.accountNav ul{
+	margin: 0 0 20px 0;
+	
+}
+
+.accountNav li.active{
+	font-weight:bold;
+	
+}
+
+
+.accountContentPane .headline{
+	border-bottom: 1px solid #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 30px;
+	line-height: 30px;
+	text-transform: uppercase;
+	margin:0 0 20px;
+}
+
+.accountContentPane .orderList{
+	border:0;
+	padding:0;
+	margin:0;
+}
+
+.accountContentPane .addressItem{
+	border-bottom:1px dotted #a5a5a5;
+
+	padding:20px 0;
+	position:relative;
+
+}
+
+
+.accountContentPane .addressItem .buttons{
+	position:absolute;
+	right:0;
+	top:20px;
+
+}
+
+.account-profile-data tr > td {
+	min-width: 70px;
+	padding: 0 5px 5px 0;
+}
+
+
+.accountContentPane .paymentItem{
+	border-bottom:1px dotted #a5a5a5;
+
+	padding:20px 0;
+	position:relative;
+
+}
+
+
+.accountContentPane .paymentItem .buttons{
+	position:absolute;
+	right:0;
+	top:20px;
+
+}
+
+
+.accountContentPane .i18nAddressForm{
+	margin-right:-20px;
+}
+.accountContentPane .control-group{
+	float:left;
+	width:305px;
+	margin-right:20px;
+}
+
+
+.accountContentPane  .form-actions{
+	clear:both;
+}
+
+.accountContentPane  .orderBoxes {
+	margin: 20px -20px 0 0;
+	clear: left;
+}
+
+
+.accountContentPane  .orderBoxes .orderBox{
+	width:343px;
+	margin:0 20px 20px 0;
+}
+
+
+
+
+
+
+/*
+* accountnavigationcollectioncomponent
+*/
+
+
+.accountContentPane .accountnavigationcollectioncomponent{
+	margin:0 -20px 0 0;
+}
+
+
+.accountContentPane .accountnavigationcollectioncomponent .accountNav{
+	border:1px dotted #a5a5a5;
+	padding:0 20px 20px;
+	width:343px;
+	margin:0 20px 20px 0;
+	height:100px;
+	float: left;
+}
+
+.accountContentPane .accountnavigationcollectioncomponent .accountNav .headline{
+	background: none;
+	padding: 0;
+}
+
+.accountContentPane .accountnavigationcollectioncomponent .accountNav  a{
+	display:block;
+}

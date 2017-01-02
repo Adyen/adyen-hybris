@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="advanced-search">
+	    <xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="group" type="root-group" minOccurs="1" maxOccurs="1"/>
+    			<xs:element name="related-types" minOccurs="0" maxOccurs="1" type="related-types"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="group">
+    	<xs:sequence>
+    		<xs:element name="label" type="label" minOccurs="0" maxOccurs="unbounded"/>
+    		<xs:element name="property" type="property" minOccurs="0" maxOccurs="unbounded"/>
+    		<xs:element name="group" type="group" minOccurs="0" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:attribute name="name" type="xs:string" use="optional"/>
+    	<xs:attribute name="visible" type="xs:boolean" use="optional" default="true"/>
+    </xs:complexType>
+  
+     <xs:complexType name="root-group">
+    	<xs:complexContent>
+    		<xs:extension base="group">
+				<xs:attribute name="type" type="xs:string" use="required"/>
+				<xs:attribute name="excludeRootType" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="includeSubTypes" type="xs:boolean" use="optional" default="true"/>
+    		</xs:extension>    		
+    	</xs:complexContent>	
+    </xs:complexType>
+  
+  
+  	<xs:complexType name="label">
+    	<xs:simpleContent>
+    		<xs:extension base="xs:string">
+    			<xs:attribute name="key" use="optional" type="xs:string" />
+				<xs:attribute name="lang" use="optional" type="xs:string" />
+    		</xs:extension>
+    	</xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="property">
+    	<xs:sequence>
+    		<xs:element name="conditions" type="conditionList" minOccurs="0" maxOccurs="1"/>
+    		<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:attribute name="qualifier" type="xs:string" use="required"/>
+    	<xs:attribute name="visible" type="xs:boolean" use="optional" default="true"/>
+    	<xs:attribute name="sort-enabled" type="xs:boolean" use="optional" default="true"/>
+    	<xs:attribute name="editor" type="xs:string" use="optional"/>
+    </xs:complexType>  
+    
+    <xs:complexType name="related-types">
+    	<xs:sequence>
+    		<xs:element name="type" minOccurs="1" maxOccurs="unbounded" type="type"/>
+    	</xs:sequence>
+		<xs:attribute name="includeSubTypes" type="xs:boolean" use="optional" default="false"/>
+    </xs:complexType>
+    
+    <xs:complexType name="type">
+    	<xs:attribute name="code" type="xs:string" use="required"/>
+    </xs:complexType>
+    
+    
+    
+    
+    <xs:complexType name="conditionList">
+    	<xs:sequence>
+    		<xs:element name="condition" type="condition" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:attribute name="mode" type="mode" default="replace"/>
+    </xs:complexType>
+    
+    <xs:simpleType name="mode">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="append"/>
+    		<xs:enumeration value="replace"/>
+    		<xs:enumeration value="exclude"/>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="condition">
+    	<xs:sequence>
+    		<xs:element name="label" type="label" minOccurs="0" maxOccurs="unbounded"/>
+    		<xs:element name="values" type="shortcutValueList" minOccurs="0" maxOccurs="1"/>
+    	</xs:sequence>
+    	<xs:attribute name="operator" type="xs:string" use="required"/>
+    	<xs:attribute name="index" type="xs:integer" use="optional"/>
+    </xs:complexType>
+    
+    <xs:complexType name="shortcutValueList">
+    	<xs:sequence>
+    		<xs:element name="value" type="shortcutValue" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="shortcutValue">
+    	<xs:simpleContent>
+    		<xs:extension base="xs:string">
+    			<xs:attribute name="type" type="xs:string" default="java.lang.String"/>
+    		</xs:extension>
+    	</xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="parameter">
+    	<xs:sequence>
+    		<xs:element name="name" type="name"/>
+    		<xs:element name="value" type="value"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="name">
+    	<xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    
+    <xs:simpleType name="value">
+       	<xs:restriction base="xs:string"/> 
+    </xs:simpleType>
+    
+</xs:schema>

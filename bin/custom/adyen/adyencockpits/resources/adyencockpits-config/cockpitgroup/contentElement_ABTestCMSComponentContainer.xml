@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ABTestCMSComponentContainer" name="type.abtestcontentcontainer.name" 
+							description="type.abtestcontentcontainer.description" 
+							image="cmscockpit/images/ContentElementABTest.gif"
+							refImage="cmscockpit/images/ContentElementABTestReference.gif"
+							imageSmall="cmscockpit/images/ContentElementABTestSmall.gif"/>
+
+</content-elements>

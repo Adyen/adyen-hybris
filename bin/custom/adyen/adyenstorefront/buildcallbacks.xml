@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2015 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+
+--><!--
+ All hybris buildcallbacks.xml macrodefinitions:
+
+ Build/Documentation
+
+	 before/after ant macro "clean"
+		 <macrodef name="adyenstorefront_before_clean"/>
+		 <macrodef name="adyenstorefront_after_clean"/>
+
+	 before/after ant macro "build"
+		 <macrodef name="adyenstorefront_before_build"/>
+		 <macrodef name="adyenstorefront_after_build"/>
+
+	 before/after ant macro "compile_core" - the core module of the extension
+		 <macrodef name="adyenstorefront_before_compile_core">
+		 <macrodef name="adyenstorefront_after_compile_core">
+
+	 before/after ant macro "compile_web" - the web module of the extension
+		 <macrodef name="adyenstorefront_before_compile_web" />
+		 <macrodef name="adyenstorefront_after_compile_web" />
+
+	 before/after ant macro "compile_hmc" - the hmc module of the extension
+		 <macrodef name="adyenstorefront_before_compile_hmc" />
+		 <macrodef name="adyenstorefront_after_compile_hmc" />
+
+ Preparing extension
+
+	 will be called in the beginning of the ant call and only once (also when using multiple 
+	 ant targets e.g. ant build yunittest)
+		 <macrodef name="adyenstorefront_only_once_prepare"/>
+
+ Creating ear module/production
+
+	 before/after ant macro "ear"
+		 <macrodef name="adyenstorefront_before_ear"/>
+		 <macrodef name="adyenstorefront_after_ear"/>
+
+	 before/after ant macro "production" - for hybris server only
+		 <macrodef name="adyenstorefront_before_production" />
+		 <macrodef name="adyenstorefront_after_production" />
+
+ JUnit Test
+
+	 before/after ant macro "yunitinit" 
+		 <macrodef name="adyenstorefront_before_yunitinit" />
+		 <macrodef name="adyenstorefront_after_yunitinit" />
+
+	 before/after ant macro "yunit"
+		 <macrodef name="adyenstorefront_before_yunit" />
+		 <macrodef name="adyenstorefront_after_yunit" /> 
+
+ Distribution package
+
+	 before/after ant macro "dist" - internal target; only for use when platform is available in source code
+		 <macrodef name="adyenstorefront_after_dist"/>
+		 <macrodef name="adyenstorefront_before_dist"/>
+
+	 before/after ant macro "dist_copy" - internal target; only for use when platform is available in source code
+		 <macrodef name="adyenstorefront_before_dist_copy"/>
+		 <macrodef name="adyenstorefront_after_dist_copy"/>
+
+--><project name="adyenstorefront_buildcallbacks">
+	<property location="${ext.adyenstorefront.path}/web/webroot/WEB-INF/lib/less-rhino-1.7.3.js" name="tool.less"/>
+	<property location="${ext.adyenstorefront.path}/web/webroot/WEB-INF/lib/lessc-rhino-1.7.3.js" name="tool.lessc"/>
+	<property location="${ext.adyenstorefront.path}/web/webroot/WEB-INF/lib/rhino1_7R4.jar" name="tool.rhino"/>
+
+
+	<macrodef name="lesscss">
+		<sequential>
+			<apply dir="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/responsive/themes/" executable="java" failonerror="true" parallel="false">
+				<!-- Give the input bundle of less files-->
+				<fileset dir="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/responsive/themes/">
+					<include name="**/style.less"/>
+				</fileset>
+				<arg value="-jar"/>
+				<arg path="${tool.rhino}"/>
+				<arg value="-f"/>
+				<arg path="${tool.less}"/>
+				<arg path="${tool.lessc}"/>
+				<srcfile/>
+				<!-- Output the compiled css file with corresponding name -->
+				<mapper from="(.*)/less/(.*)\.less$$" to="${ext.adyenstorefront.path}/web/webroot/_ui/responsive/theme-\1/css/\2.css" type="regexp"/>
+				<targetfile/>
+			</apply>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="movelibs">
+		<sequential>
+			<copy todir="${ext.adyenstorefront.path}/web/webroot/_ui/responsive/common/bootstrap">
+				<fileset dir="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/responsive/lib/bootstrap-3.2.0" includes="**"/>
+			</copy>
+			<copy todir="${ext.adyenstorefront.path}/web/webroot/_ui/responsive/common/js">
+				<fileset dir="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/responsive/lib/ybase-0.1.0/js" includes="**"/>
+			</copy>
+			<copy todir="${ext.adyenstorefront.path}/web/webroot/_ui/responsive/">
+				<fileset dir="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/responsive/" includes="themes/**/fonts/*"/>
+				<mapper from="themes/(.*)/fonts/(.*)" to="theme-\1/fonts/\2" type="regexp"/>
+			</copy>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="generatevariables">
+		<sequential>
+			<uptodate property="updates" targetfile="${ext.adyenstorefront.path}/resources/generateVariables.properties" value="true">
+				<srcfiles file="${ext.adyenstorefront.path}/web/webroot/WEB-INF/tags/shared/variables/generatedVariables.tag"/>
+				<srcfiles file="${ext.adyenstorefront.path}/web/webroot/_ui/shared/js/generatedVariables.js"/>
+				<srcfiles file="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/shared/less/generatedVariables.less"/>
+			</uptodate>
+			<if>
+				<equals arg1="${updates}" arg2="true"/>
+				<then>
+					<concat destfile="${ext.adyenstorefront.path}/web/webroot/WEB-INF/tags/shared/variables/generatedVariables.tag" overwrite="no">
+						<string>&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+</string>
+						<filelist dir="${ext.adyenstorefront.path}/resources" files="generateVariables.properties"/>
+					</concat>
+
+					<replaceregexp byline="true" file="${ext.adyenstorefront.path}/web/webroot/WEB-INF/tags/shared/variables/generatedVariables.tag" match="^(?!&lt;%@)(.*)=(.*)" replace="&lt;c:set var=&quot;\1&quot; value=&quot;\2&quot; scope=&quot;session&quot;/&gt;"/>
+
+					<concat destfile="${ext.adyenstorefront.path}/web/webroot/_ui/shared/js/generatedVariables.js" overwrite="yes">
+						<filelist dir="${ext.adyenstorefront.path}/resources" files="generateVariables.properties"/>
+					</concat>
+
+					<replaceregexp byline="true" file="${ext.adyenstorefront.path}/web/webroot/_ui/shared/js/generatedVariables.js" match="(.*)=(.*)" replace="var \1=&quot;\2&quot;;"/>
+
+					<concat destfile="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/shared/less/generatedVariables.less" overwrite="no">
+						<filelist dir="${ext.adyenstorefront.path}/resources" files="generateVariables.properties"/>
+					</concat>
+					
+					<replaceregexp byline="true" file="${ext.adyenstorefront.path}/web/webroot/WEB-INF/_ui-src/shared/less/generatedVariables.less" match="(.*)=(.*)" replace="@\1:\2;"/>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="adyenstorefront_after_build">
+		<sequential>
+			<echo message="adyenstorefront_after_build"/>
+			<impexGenerate extname="adyenstorefront"/>
+			<containsExact separator=";" string="${extension.names}" substring="addonsupport">
+				<do>
+					<foreachext>
+						<do>
+							<for delimiter=";" list="${addon.folder}" param="addOnFile">
+								<sequential>
+									<if>
+										<available file="${ext.@{extname}.path}/acceleratoraddon/@{addOnFile}"/>
+										<then>
+											<copyAddOnToExtension addonextension="@{extname}" addonresource="@{addOnFile}" target="adyenstorefront"/>
+										</then>
+									</if>
+								</sequential>
+							</for>
+						</do>
+					</foreachext>
+				</do>
+			</containsExact>
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="adyenstorefront_before_build">
+		<sequential>
+			<echo message="adyenstorefront_before_build"/>
+			<generatevariables/>
+			<foreachext>
+				<do>
+					<if>
+						<available file="${ext.@{extname}.path}/commonweb"/>
+						<then>
+							<echo message="Found commonweb extension:  @{extname}"/>
+							<copyCommonWebToExtension commonwebextension="@{extname}" commonwebresource="/src" target="adyenstorefront"/>
+						</then>
+					</if>
+				</do>
+			</foreachext>
+		</sequential>
+
+
+	</macrodef>
+
+
+	<!-- 
+		Called whenever 'ant ear' is used. this callback can be used to modify the content of the ear file
+
+		${ear.path}: 			path to ear
+	 -->
+	<macrodef name="adyenstorefront_after_clean">
+		<sequential>
+			<!-- Addon folders in storefronts are always cleaned (even if there is no addonsupport on localextension list) -->
+			<addonclean/>
+			<commonwebclean/>
+		</sequential>
+	</macrodef>
+
+
+	<target description="compile the _ui-src folder in _ui" name="compileuisrc">
+		<lesscss/>
+		<movelibs/>
+	</target>
+</project>

@@ -1,0 +1,15 @@
+#
+# Import the Solr configuration for the store
+#
+
+# Index Type
+$solrIndexedType=
+
+# Language
+$lang=en
+
+# Solr Indexed Property
+UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];displayName[lang=$lang]
+
+# Define the available sorts
+UPDATE SolrSort;indexedType(identifier)[unique=true];code[unique=true];name[lang=$lang];useBoost

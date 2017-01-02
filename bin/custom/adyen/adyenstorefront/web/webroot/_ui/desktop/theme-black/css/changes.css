@@ -1,0 +1,56 @@
+/* Theme Black changes*/
+
+body div#header div.headerContent ul.nav li div, body div#header div.headerContent ul.nav li a{
+	font-family: georgia, serif;
+}
+
+#header .headerContent .nav {
+	position: relative;
+}
+
+body div#header div.headerContent ul.nav li.logged_in {
+	font-family: georgia, serif;
+	position: absolute;
+	top: 25px;
+}
+
+body div#header div.headerContent ul.nav li div#miniCartLayer div, body div#header div.headerContent ul.nav li div#miniCartLayer a{
+	font-family: arial, sans-serif;
+}
+
+.price {
+	font-family: georgia, serif;
+	font-weight: bold;
+}
+
+.big-price {
+	font-family: georgia, serif;
+	font-weight: bold;
+}
+
+.itemPrice {
+	font-family: georgia, serif;
+	font-weight: bold;
+}
+
+#cartItems .cartItem td.total {
+	font-family: georgia, serif;
+	font-weight: bold;
+}
+
+#orderTotals tfoot td {
+	font-family: georgia, serif;
+	font-weight: bold;
+}
+
+.productDescription h1 {
+	font-family: georgia, serif;
+}
+
+.navigationbarcollectioncomponent li.La {
+    font-weight: bold;
+}
+
+.navigationbarcollectioncomponent li.La ul {
+    font-weight: normal;
+}

@@ -1,0 +1,89 @@
+/*
+## productList
+********************************************************************/
+
+.productList .productListItem {
+	margin:25px 5px 40px;
+	border-bottom:1px dotted #c1c1c1;
+}
+
+
+.productList .productListItem .thumb{
+	float:left;
+}
+
+.productList .productListItem .thumb img{ 
+	width:220px;
+}
+
+
+.productList .productListItem .price{
+	float:right;
+	font-size: 1.5em;
+}
+
+
+.productList .productListItem .head{
+	border-bottom: 1px dotted #979797;
+	color: #666666;
+	font-size: 1.5em;
+	font-weight: normal;
+	padding: 0 0 1px;
+	margin:0 0 10px 240px;	
+}
+
+
+.productList .productListItem .stars{
+	float:none;	
+	margin:0 0 10px 240px;	
+}
+
+.productList .productListItem .details{
+	color:#8f8f8f;
+	padding:5px 0;
+	margin:0 0 0 240px;	
+}
+
+
+.productList .productListItem .product-classification{
+	margin:0 0 0 240px;	
+}
+
+.productList .productListItem .lowStock{
+	margin:0 0 0 240px;	
+}
+
+
+.productList .productListItem .product-classification dd{
+	margin:0;	
+}
+
+
+.productList .productListItem .priceContainer{
+	float:right;
+}
+
+.productList .productListItem .cart{
+	padding:5px 0;	
+	margin:0  0 0 240px;	
+}
+
+
+.productList .productListItem .cart .add_to_cart_form{
+	float:right;
+	width:29%;
+}
+
+.productList .productListItem .cart .collect_from_store{
+	width:29%;
+	float: right;
+	margin-right: 10px;
+}
+
+.productListItem button.pickupInStoreButton, .productListItem button.addToCartButton {
+	height: 27px;
+}
+
+
+
+

@@ -1,0 +1,92 @@
+/* Theme Specific Changes CSS */
+
+/* TOP NAVIGATION BAR - START */
+.top-nav-bar {
+	background: #fff;
+}
+
+.top-nav-bar-layer {
+	-webkit-box-shadow: 0 0 10px #000;
+	-moz-box-shadow: 0 0 10px #000;
+	box-shadow: 0 0 10px #000;
+	background: #fff;
+}
+
+/* // TOP NAVIGATION BAR - END */
+
+/* HEADER - START */
+#header {
+	background: #ffffff; 
+	border-top: none;
+	border-bottom: 1px dotted #a5a5a5;
+}
+
+.accmob-mainSearch-trigger .ui-btn-corner-all span {
+	background: url('../images/accmob-searchTriggerIcon.png') no-repeat 50% 50%;
+	background-size: auto 22px;
+}
+
+/* // HEADER - END */
+
+.accmob-PDP-navigationHolder,.accmob-POP-navigationHolder {
+	background: #edf3f7;
+	border-bottom: 1px solid #BDCCD7;
+}
+
+#menuButton {
+	text-decoration: none;
+	color: #2489CE;
+}
+
+#cartTotals .ui-block-a {
+	font-weight: bold;
+	color: #4C566C;
+}
+
+#cartTotals .ui-block-b {
+	color: #484848 !important;
+}
+
+#cartTotals {
+	font-size: 0.86666666666671em;
+	margin-top: 15px;
+}
+
+#cartTotals .completePrice {
+	border-top: 1px solid #BFBFBF;
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+.itemTotalPrice {
+	color: #1A618B;
+	font-size: 1.06666666666672em;
+}
+
+.paymentDetails h3 {
+	color: #4C566C;
+}
+
+.paymentDetails {
+	font-size: 0.86666666666671em;
+}
+
+.menulist.ui-listview-inset .ui-li {
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+#pickUpInStoreResultsList #changeLocation {
+	color: #2489CE;
+}
+
+.pickup_store_results-list_stock_out {
+	color: #bc0000;
+}
+
+
+label.skip{
+	position:absolute;
+	left:-9999%;	
+	
+}

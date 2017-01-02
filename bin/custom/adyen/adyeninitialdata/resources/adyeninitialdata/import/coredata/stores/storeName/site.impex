@@ -1,0 +1,66 @@
+#
+# Import the CMS Site configuration for the store
+#
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$contentCatalog=__CONTENT_CATALOG_NAME__
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$defaultLanguage=en
+$storeUid=__STORE_UID__
+$siteUid=__STORE_UID__
+$promoGrp=__DEFAULT_PROMO_GRP__
+$siteMapUrlLimitPerFile=50000
+
+$siteMapLangCur=enEur
+$siteMapPage=Homepage,Product,CategoryLanding,Category,Store,Content,Custom
+$customSiteMapUrls=
+
+# Import config properties into impex macros
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+# Module gen config
+$jarResource=$config-jarResource
+# Load the storefront context root config param
+$storefrontContextRoot=$config-storefrontContextRoot
+
+# SiteMap Configuration
+INSERT_UPDATE SiteMapLanguageCurrency;&siteMapLanguageCurrency;language(isoCode)[unique=true];currency(isocode)[unique=true];
+;enEur;en;EUR
+
+INSERT_UPDATE CatalogUnawareMedia;&siteMapMediaId;code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='text/plain']
+;$siteUid-siteMapMedia;$siteUid-siteMapMedia;siteMapTemplate.vm;$jarResource/site-siteMapTemplate.vm;
+
+INSERT_UPDATE RendererTemplate;&siteMapRenderer;code[unique=true];content(&siteMapMediaId);contextClass;rendererType(code)[default='velocity'];
+;$siteUid-siteMapTemplate;$siteUid-siteMapTemplate;$siteUid-siteMapMedia;de.hybris.platform.acceleratorservices.sitemap.renderer.SiteMapContext;
+
+INSERT_UPDATE SiteMapPage;&siteMapPage;code(code)[unique=true];frequency(code)[unique=true];priority[unique=true];active[default=true]
+;Homepage;Homepage;daily;1.0;;
+;Product;Product;weekly;0.6;;
+;CategoryLanding;CategoryLanding;daily;0.9;;
+;Category;Category;daily;0.8;;
+;Store;Store;weekly;0.6;;
+;Content;Content;monthly;0.4;;
+;Custom;Custom;daily;1.0;;
+
+ 
+INSERT_UPDATE SiteMapConfig;&siteMapConfigId;configId[unique=true];siteMapLanguageCurrencies(&siteMapLanguageCurrency);siteMapPages(&siteMapPage);siteMapTemplate(&siteMapRenderer)[unique=true];customUrls;
+;$storeUidSiteMapConfig;$storeUidSiteMapConfig;$siteMapLangCur;$siteMapPage;$siteUid-siteMapTemplate;$customSiteMapUrls;
+
+# CMS Site
+INSERT_UPDATE CMSSite;uid[unique=true];theme(code);channel(code);stores(uid);contentCatalogs(id);defaultCatalog(id);defaultLanguage(isoCode);siteMapConfig(&siteMapConfigId);urlPatterns;active;previewURL;startingPage(uid,$contentCV);urlEncodingAttributes;defaultPromotionGroup(Identifier)[default=$promoGrp]
+;$siteUid;blue;B2C;$storeUid;$contentCatalog;$productCatalog;$defaultLanguage;$storeUidSiteMapConfig;(?i)^https?://[^/]+(/[^?]*)?\?(.*\&)?(site=$siteUid)(|\&.*)$,(?i)^https?://$siteUid\.[^/]+(|/.*|\?.*)$,(?i)^https?://api\.hybrisdev\.com(:[\d]+)?/rest/.*$,(?i)^https?://localhost(:[\d]+)?/rest/.*$;true;$storefrontContextRoot/?site=$siteUid;homepage;storefront,language
+
+# Cart Cleanup CronJobs
+INSERT_UPDATE CartRemovalCronJob;code[unique=true];job(code)[default=cartRemovalJob];sites(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en]
+;$siteUid-CartRemovalJob
+
+# Uncollected orders cronjob
+INSERT_UPDATE UncollectedOrdersCronJob;code[unique=true];job(code)[default=uncollectedOrdersJob];sites(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en]
+;$siteUid-UncollectedOrdersJob
+
+# Sitemap Generation CronJobs
+INSERT_UPDATE SiteMapMediaCronJob;code[unique=true];job(code)[default=siteMapMediaJob];contentSite(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en]
+;$siteUid-SiteMapMediaJob;;;;$siteMapUrlLimitPerFile
+
+INSERT_UPDATE Trigger;cronJob(code)[unique=true];second;minute;hour;day;month;year;relative;active;maxAcceptableDelay
+;$siteUid-CartRemovalJob;0;5;4;-1;-1;-1;false;true;-1
+;$siteUid-UncollectedOrdersJob;0;0;6;-1;-1;-1;true;false;-1
+;$siteUid-SiteMapMediaJob;0;0;6;-1;-1;-1;true;false;-1

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-editor.xsd"
+                hideEmpty="true" hideReadOnly="true" groupCollections="true">
+	<template>
+	<![CDATA[
+		<table width="100%" style="margin:0;padding:0">
+		<tbody>
+		<tr><td><div style="height:6px"/></td></tr>
+		<tr><td><cockpit code="general"/></td></tr>
+		<tr><td style="text-align:left"><cockpit code="list"/></td></tr>
+		</tbody>
+		</table>
+	]]>
+	</template>
+</content-editor>

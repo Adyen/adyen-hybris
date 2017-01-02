@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="averageOrderValue" language="groovy" pageWidth="595" pageHeight="420" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="lastweekDS">
+		<parameter name="From" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="To" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Currency" class="java.lang.String"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[select X.DAY, avg(X.TOTPRICE) as TOTALPRICE, avg(X.TOTQUANTITY) as TOTALQUANTITY
+from (
+{{
+select {oe.creationtime} as DAY, sum({oe.totalPrice} * {c2.conversion}/{c.conversion}) as TOTPRICE, sum({oe.quantity}) as TOTQUANTITY
+from {OrderEntry as oe JOIN Order as o ON {oe.order}={o.PK}  JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where {oe.creationtime} >= $P{From} AND {oe.creationtime} < $P{To} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+group by {oe.order}, {oe.creationtime}
+}})
+AS X
+group by X.DAY]]>
+		</queryString>
+		<field name="DAY" class="java.sql.Timestamp"/>
+		<field name="TOTALPRICE" class="java.lang.Double"/>
+		<field name="TOTALQUANTITY" class="java.math.BigDecimal"/>
+		<variable name="DAYS_BETWEEN" class="java.lang.Integer">
+			<variableExpression><![CDATA[org.joda.time.Days.daysBetween(new org.joda.time.DateMidnight($P{From}),new org.joda.time.DateMidnight($P{To})).getDays()]]></variableExpression>
+			<initialValueExpression><![CDATA[0]]></initialValueExpression>
+		</variable>
+		<group name="day">
+			<groupExpression><![CDATA[$F{DAY}]]></groupExpression>
+		</group>
+	</subDataset>
+	<parameter name="timerange" class="java.lang.String">
+		<property name="type" value="ReportTimeRange"/>
+		<defaultValueExpression><![CDATA["LAST7DAYS"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="displayordersunitaverage" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="From" class="java.util.Date"/>
+	<parameter name="To" class="java.util.Date"/>
+	<parameter name="Currency" class="java.lang.Long">
+		<property name="type" value="Currency"/>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[select {code} FROM {Order}]]>
+	</queryString>
+	<field name="Code" class="java.lang.String"/>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="340" splitType="Stretch">
+			<textField>
+				<reportElement x="182" y="256" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{timerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="182" y="276" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Boolean"><![CDATA[$P{displayordersunitaverage}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="182" y="236" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="456" y="236" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy" isBlankWhenNull="false">
+				<reportElement x="456" y="256" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{From}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="456" y="276" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{To}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="182" y="296" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency})]]></textFieldExpression>
+			</textField>
+			<multiAxisChart>
+				<chart>
+					<reportElement x="7" y="0" width="588" height="226">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForHourGranularity($P{timerange})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<multiAxisPlot>
+					<plot/>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="595" height="226" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Hour">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.hour" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="200" height="200" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Hour">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALQUANTITY}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.hour" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+				</multiAxisPlot>
+			</multiAxisChart>
+			<multiAxisChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="226">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForDayGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<multiAxisPlot>
+					<plot/>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="595" height="226" backcolor="#FFFFFF">
+									<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+								</reportElement>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset>
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.day" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="0" height="0" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset>
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALQUANTITY}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.day" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+				</multiAxisPlot>
+			</multiAxisChart>
+			<multiAxisChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="226">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForWeekGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<multiAxisPlot>
+					<plot/>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="595" height="226" backcolor="#FFFFFF">
+									<printWhenExpression><![CDATA[$P{timerange} == 'LAST4WEEKS']]></printWhenExpression>
+								</reportElement>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Week">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.week" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="0" height="0" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Week">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALQUANTITY}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.week" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+				</multiAxisPlot>
+			</multiAxisChart>
+			<multiAxisChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="226">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForMonthGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<multiAxisPlot>
+					<plot/>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="595" height="226" backcolor="#FFFFFF">
+									<printWhenExpression><![CDATA[$P{timerange} == 'LASTMONTH']]></printWhenExpression>
+								</reportElement>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Month">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true" isShowShapes="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.month" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageordervalue" ) + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+					<axis>
+						<timeSeriesChart>
+							<chart>
+								<reportElement x="0" y="0" width="0" height="0" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000"/>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Month">
+								<dataset>
+									<datasetRun subDataset="lastweekDS">
+										<datasetParameter name="Currency">
+											<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="From">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="To">
+											<datasetParameterExpression><![CDATA[$P{displayordersunitaverage} ? $P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday}) : new Date(0)]]></datasetParameterExpression>
+										</datasetParameter>
+										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{TOTALQUANTITY}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowLines="true">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "time.month" )]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "axis.averageorderunits" )]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat>
+										<labelFont/>
+										<tickLabelFont/>
+									</axisFormat>
+								</valueAxisFormat>
+								<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+								<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+				</multiAxisPlot>
+			</multiAxisChart>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="7" y="236" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="7" y="256" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="7" y="276" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.displayorders" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="7" y="296" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.currency" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="313" y="236" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="313" y="256" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.from" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="313" y="276" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
