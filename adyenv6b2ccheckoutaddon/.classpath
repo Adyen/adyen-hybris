@@ -9,6 +9,6 @@
 	<classpathentry exported="true" output="eclipsebin/classes" kind="src" path="src" />
 	<classpathentry exported="true" output="eclipsebin/classes" kind="src" path="testsrc" />
 	<classpathentry exported="true" output="eclipsebin/classes" kind="src" path="gensrc" />
-				
+    <classpathentry kind="lib" path="lib/java-api-library-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>
 </classpath>
 				

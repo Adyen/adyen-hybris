@@ -23,7 +23,7 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd">
            
-    <context:annotation-config/> 
+    <context:annotation-config/>
 
 	<bean id="adyenv6b2ccheckoutaddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
 		<property name="supportedChannels">
@@ -46,4 +46,40 @@
 		<property name="extensionName" value="adyenv6b2ccheckoutaddon" />
 	</bean>
 
+
+	<bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
+		<property name="addressConverter" ref="addressConverter"/>
+	</bean>
+
+	<bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="cartConverter"/>
+		<property name="add" ref="adyenCartPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="cartConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+	<!--For CommerceCartFacade-->
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="extendedCartConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="orderConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+
+	<!--To support hasNoPaymentInfo for non credit cards-->
+	<alias name="adyenCheckoutFlowFacade" alias="checkoutFlowFacade"/>
+	<bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" />
+
+	<bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService">
+		<property name="configurationService" ref="configurationService" />
+	</bean>
 </beans>

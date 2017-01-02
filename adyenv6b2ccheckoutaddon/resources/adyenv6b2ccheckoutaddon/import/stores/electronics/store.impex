@@ -15,3 +15,15 @@ $pickupInStoreMode=BUY_AND_COLLECT
 $customerAllowedToIgnoreSuggestions=true
 $paymentProvider=Mockup
 $expressCheckoutEnabled=true
+
+$adyenCheckoutGroup=adyenB2CCheckoutGroup
+$adyenResponsiveCheckoutGroup=adyenB2CResponsiveCheckoutGroup
+
+# Base Store
+UPDATE BaseStore;uid[unique=true];checkoutFlowGroup
+;$storeUid;$adyenCheckoutGroup
+
+#% if: "responsive".equalsIgnoreCase(Config.getParameter("commerceservices.default.desktop.ui.experience"));
+UPDATE BaseStore;uid[unique=true];checkoutFlowGroup
+;$storeUid;$adyenResponsiveCheckoutGroup
+#% endif:
