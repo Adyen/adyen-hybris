@@ -1,4 +1,4 @@
-# Adyen Payment plugin for Hybris
+# Adyen Payment plugin for Hybris 5.1
 	
 Hybris is a Java based eCommerce framework built on the Spring MVC framework. The purpose of providing a plugin for Adyen is to aid integration of the Adyen payment gateway into a hybris implementation. Because Hybris is built on the Spring framework this makes it highly customizable and extensible. The plugin also utilizes this framework so can also easily be extended to add specific behavior if required.
 
