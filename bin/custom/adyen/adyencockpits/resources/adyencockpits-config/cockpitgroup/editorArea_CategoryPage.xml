@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	<group qualifier="General" visible="true" initially-opened="true">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="cmsitem.name"/>
+		<property qualifier="abstractpage.title"/>
+		<property qualifier="abstractpage.masterTemplate"/>
+		<property qualifier="cmsitem.catalogVersion" editor="shortListEditor"/>
+		<property qualifier="abstractpage.defaultPage"/>
+	</group>
+	
+	<group qualifier="visibility" visible="true" initially-opened="false">
+		<label key="config.general.contextvisibility" />
+		<property qualifier="abstractpage.restrictions">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>excludeCreateTypes</name>
+				<value>CMSProductRestriction</value>
+			</parameter>
+		</property>
+		<property qualifier="abstractpage.onlyOneRestrictionMustApply"/>
+	</group>
+
+	<custom-group 
+		spring-bean="PageUrlCustomSection" 
+		qualifier="url"
+		initially-opened="false"
+		visible="true">
+		<label key="cmscockpit.config.label.url" />
+	</custom-group>
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="cmsitem.uid"/>
+		<property qualifier="abstractpage.contentSlots"/>
+		<property qualifier="Item.pk" />
+		<property qualifier="Item.creationTime" />
+		<property qualifier="Item.modifiedtime" />
+	</group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false"
+		visible="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+</editor>

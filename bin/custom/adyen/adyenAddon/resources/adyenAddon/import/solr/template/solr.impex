@@ -1,0 +1,16 @@
+######
+## PARAMETERS REQUIRED FOR THIS SCRIPT
+##
+##   * productCatalog   = product catalog id
+##   * siteUid - site id
+#######
+
+$catalogVersions=catalogVersions(catalog(id),version);
+$serverConfigName=$siteUidSolrServerConfig
+$indexConfigName=$siteUidSolrIndexConfig
+$searchConfigName=$siteUidPageSize
+$facetSearchConfigName=$siteUidIndex
+$facetSearchConfigDescription=$siteUid Solr Index
+$searchIndexNamePrefix=$siteUid
+$solrIndexedType=$siteUidProductType
+$indexBaseSite=$siteUid

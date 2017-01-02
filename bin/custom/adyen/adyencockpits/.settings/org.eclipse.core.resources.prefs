@@ -1,0 +1,18 @@
+#Mon Nov 28 19:03:13 CET 2011
+eclipse.preferences.version=1
+encoding//resources/localization/adyencockpits-locales_de.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_en.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_fr.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_it.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_ja.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_pt.properties=UTF-8
+encoding//resources/localization/adyencockpits-locales_zh.properties=UTF-8
+encoding//resources/adyencockpits/cockpit/localization/i3-label.properties=UTF-8
+encoding//resources/adyencockpits/cockpit/localization/i3-label_de.properties=UTF-8
+encoding//resources/adyencockpits/cockpit/localization/i3-label_fr.properties=UTF-8
+encoding//resources/adyencockpits/cockpit/localization/i3-label_ja.properties=UTF-8
+encoding//resources/adyencockpits/cscockpit/cscockpit-messages_it.properties=UTF-8
+encoding//resources/adyencockpits/cscockpit/cscockpit-messages_pt.properties=UTF-8
+encoding//resources/adyencockpits/cscockpit/cscockpit-messages_zh.properties=UTF-8
+
+encoding/<project>=UTF-8

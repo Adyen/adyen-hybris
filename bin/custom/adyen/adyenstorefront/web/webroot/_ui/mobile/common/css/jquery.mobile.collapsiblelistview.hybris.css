@@ -1,0 +1,10 @@
+.ul-li-collapsiblelistview span.ui-icon {
+    top: 1.2em !important;
+}
+
+.ul-li-collapsiblelistview span.ui-icon a {
+    width: 18px;
+    height: 18px;
+    top: 0px;
+    background: none;
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="test.sendConsignmentToWarehouseAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SendConsignmentToWarehouse"  parent="abstractAction"/>
+	<bean id="test.waitBeforeTransmissionAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.WaitBeforeTransmission"  parent="abstractAction"/>
+	<bean id="test.receiveConsignmentStatusAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.ReceiveConsignmentStatus"  parent="abstractAction"/>
+	<bean id="test.confirmConsignmentPickupAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.ConfirmConsignmentPickup"  parent="abstractAction"/>
+	<bean id="test.sendDeliveryMessageAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SendDeliveryMessage"  parent="abstractAction"/>
+	<bean id="test.sendReadyForPickupMessageAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SendReadyForPickupMessage"  parent="abstractAction"/>
+	<bean id="test.sendPickedUpMessageAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SendPickedUpMessage"  parent="abstractAction"/>
+	<bean id="test.cancelConsignmentAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.CancelConsignment"  parent="abstractAction"/>
+	<bean id="test.sendCancelMessageAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SendCancelMessage"  parent="abstractAction"/>
+	<bean id="test.subprocessEndAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.SubprocessEnd"  parent="abstractAction"/>
+	<bean id="test.allowShipmentAction" class="com.adyen.fulfilmentprocess.test.actions.consignmentfulfilment.AllowShipment"  parent="abstractAction">
+		<property name="result" value="DELIVERY"></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,41 @@
+# ImpEx for SOLR Configuration
+
+# Macros / Replacement Parameter definitions
+$classificationCatalog=__CLASSIFICATION_CATALOG_NAME__
+$contentCatalog=__CONTENT_CATALOG_NAME__
+
+$classSystemVersion=systemVersion(catalog(id[default='$classificationCatalog']),version[default='1.0'])
+$classCatalogVersion=catalogVersion(catalog(id[default='$classificationCatalog']),version[default='1.0'])
+$classAttribute=classificationAttribute(code,$classSystemVersion)
+$classClass=classificationClass(code,$classCatalogVersion)
+$classAttributeAssignment=classAttributeAssignment($classClass,$classAttribute,$classSystemVersion)
+$contentCatalogVersion=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalogName]),CatalogVersion.version[default=Staged])[default=$contentCatalogName:Staged]
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$productCatalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+
+
+# Define Range Set
+INSERT_UPDATE SolrValueRangeSet;name[unique=true];qualifier;type;solrValueRanges(&rangeValueRefID)
+
+# Define Ranges
+INSERT_UPDATE SolrValueRange;&rangeValueRefID;solrValueRangeSet(name)[unique=true];name[unique=true];from;to
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];facet[default=false];facetType(code);facetSort(code);priority;visible;fieldValueProvider;customFacetSortProvider;rangeSets(name);$classAttributeAssignment
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);localized[default=true];multiValue[default=false];fieldValueProvider;$classAttributeAssignment
+
+# Import Classification Features
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);localized[default=true];multiValue[default=false];fieldValueProvider;$classAttributeAssignment
+
+# Show the Classification Features in the Product List View Category /Search Pages
+INSERT_UPDATE ClassAttributeAssignment;$classClass[unique=true];$classAttribute[unique=true];$classSystemVersion[unique=true];listable[default=true]
+
+# Redirect page URL
+INSERT_UPDATE SolrURIRedirect;url[unique=true]
+
+INSERT_UPDATE SolrPageRedirect;redirectItem(uid,$contentCatalogVersion)[unique=true]
+
+INSERT_UPDATE SolrCategoryRedirect;redirectItem(code,$productCatalogVersion)[unique=true]
+
+INSERT_UPDATE SolrProductRedirect;redirectItem(code,$productCatalogVersion)[unique=true]
+

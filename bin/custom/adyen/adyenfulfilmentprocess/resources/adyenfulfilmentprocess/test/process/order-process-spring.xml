@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="test.checkOrderAction" class="com.adyen.fulfilmentprocess.test.actions.CheckOrder"  parent="abstractAction"/>
+	<bean id="test.cancelWholeOrderAuthorizationAction" class="com.adyen.fulfilmentprocess.test.actions.CancelWholeOrderAuthorization"  parent="abstractAction"/>
+	<bean id="test.sendOrderPlacedNotificationAction" class="com.adyen.fulfilmentprocess.test.actions.SendOrderPlacedNotification"  parent="abstractAction"/>
+	<bean id="test.takePaymentAction" class="com.adyen.fulfilmentprocess.test.actions.TakePayment"  parent="abstractAction"/>
+	<bean id="test.sendPaymentFailedNotificationAction" class="com.adyen.fulfilmentprocess.test.actions.SendPaymentFailedNotification"  parent="abstractAction"/>
+	<bean id="test.checkTransactionReviewStatusAction" class="com.adyen.fulfilmentprocess.test.actions.CheckTransactionReviewStatus"  parent="abstractAction"/>
+	<bean id="test.fraudCheckOrderAction" class="com.adyen.fulfilmentprocess.test.actions.FraudCheckOrder"  parent="abstractAction"/>
+	<bean id="test.prepareOrderForManualCheckAction" class="com.adyen.fulfilmentprocess.test.actions.PrepareOrderForManualCheck"  parent="abstractAction"/>
+	<bean id="test.sendFraudErrorNotificationAction" class="com.adyen.fulfilmentprocess.test.actions.SendFraudErrorNotification"  parent="abstractAction"/>
+	<bean id="test.checkAuthorizeOrderPaymentAction" class="com.adyen.fulfilmentprocess.test.actions.CheckAuthorizeOrderPayment"  parent="abstractAction"/>
+	<bean id="test.sendAuthorizationFailedNotificationAction" class="com.adyen.fulfilmentprocess.test.actions.SendAuthorizationFailedNotification"  parent="abstractAction"/>
+	<bean id="test.reserveOrderAmountAction" class="com.adyen.fulfilmentprocess.test.actions.ReserveOrderAmount"  parent="abstractAction"/>
+	<bean id="test.fraudCheckOrderInternalAction" class="com.adyen.fulfilmentprocess.test.actions.FraudCheckOrderInternal"  parent="abstractAction"/>
+	<bean id="test.orderManualCheckedAction" class="com.adyen.fulfilmentprocess.test.actions.OrderManualChecked"  parent="abstractAction"/>
+	<bean id="test.splitOrderAction" class="com.adyen.fulfilmentprocess.test.actions.SplitOrder"  parent="abstractAction"/>
+	<bean id="test.subprocessesCompletedAction" class="com.adyen.fulfilmentprocess.test.actions.SubprocessesCompleted"  parent="abstractAction"/>
+	<bean id="test.sendOrderCompletedNotificationAction" class="com.adyen.fulfilmentprocess.test.actions.SendOrderCompletedNotification"  parent="abstractAction"/>
+	<bean id="test.scheduleForCleanUpAction" class="com.adyen.fulfilmentprocess.test.actions.ScheduleForCleanUp"  parent="abstractAction"/>
+	<bean id="test.notifyCustomerAboutFraudAction" class="com.adyen.fulfilmentprocess.test.actions.NotifyCustomerAboutFraud"  parent="abstractAction"/>
+
+</beans>

@@ -1,0 +1,31 @@
+# ImpEx for Importing BTG configuration
+
+# Macros / Replacement Parameter definitions
+$productCatalog=__PRODUCT_CATALOG_NAME__
+$productCatalogName=__PRODUCT_CATALOG_FULL_NAME__
+$contentCatalog=__CONTENT_CATALOG_NAME__
+
+$productCatalogVersion=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true]
+$contentCatalogVersion=catalogVersion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true]
+
+INSERT_UPDATE BTGSegment;uid[unique=true];name;sites(uid);active[default=true];scope(code)[default=ONLINE];$contentCatalogVersion
+
+INSERT_UPDATE BTGRule;uid[unique=true];code;segment(uid, $contentCatalogVersion);ruleType(code);$contentCatalogVersion
+
+INSERT_UPDATE BTGOperator;uid[unique=true];code;$contentCatalogVersion
+
+INSERT_UPDATE BTGCategoriesInOrdersOperand;uid[unique=true];code;withSupercategories[default=false];scope(code)[default=ONLINE];$contentCatalogVersion
+
+INSERT_UPDATE BTGReferenceCategoriesOperand;uid[unique=true];code;categories(code, $productCatalogVersion);$contentCatalogVersion
+
+INSERT_UPDATE BTGExpression;uid[unique=true];leftOperand(uid, $contentCatalogVersion);rightOperand(uid, $contentCatalogVersion);operator(uid, $contentCatalogVersion);rule(uid, $contentCatalogVersion);$contentCatalogVersion
+
+INSERT_UPDATE CmsRestrictionActionDefinition;uid[unique=true];code;target;inverted;segment(uid, $contentCatalogVersion);$contentCatalogVersion;type(code)[default=PLAIN]
+
+INSERT_UPDATE BtgSegmentRestriction;uid[unique=true];outputActionDefinition(uid, $contentCatalogVersion);components(uid, $contentCatalogVersion);$contentCatalogVersion
+
+INSERT_UPDATE BTGNumberOfOrdersRelativeDateOperand;uid[unique=true];value;unit(code);$contentCatalogVersion
+
+INSERT_UPDATE BTGIntegerLiteralOperand;uid[unique=true];literal;$contentCatalogVersion
+
+INSERT_UPDATE BTGAssignToGroupDefinition;uid[unique=true];code;target;userGroups(uid);segment(uid, $contentCatalogVersion);$contentCatalogVersion

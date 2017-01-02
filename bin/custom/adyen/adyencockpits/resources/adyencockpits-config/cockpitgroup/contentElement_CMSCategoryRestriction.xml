@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSCategoryRestriction" name="type.cmscategoryrestriction.name" 
+							description="type.cmscategoryrestriction.description" 
+							image="cmscockpit/images/RestrictionCategory.gif" 
+							refImage="cmscockpit/images/RestrictionCategoryReference.gif"/>
+
+</content-elements>

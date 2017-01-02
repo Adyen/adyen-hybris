@@ -1,0 +1,22 @@
+#
+# Localise hsqldb jasper reports
+#
+
+# Language
+$lang=ja
+
+$defaultCatalog=Default
+$defaultCatalogVersion=Staged
+$catalogVersion=catalogVersion(catalog(id[default='$defaultCatalog']),version[default='$defaultCatalogVersion'])[unique=true,default='$defaultCatalog:$defaultCatalogVersion']
+
+
+# Create Countries
+UPDATE JasperMedia;code[unique=true];$catalogVersion;title[lang=$lang];reportDescription[lang=$lang]
+ ;averageOrderValueBySite;;"サイトごとの平均注文金額";"このウィジェットは時間範囲の平均注文金額を表示します"
+ ;orderVolumeBySite;;"サイトごとの注文金額";"特定の時間内の注文数を表示します"
+ ;salesByCountryAndSite;;"国とサイトごとの売上";"このウィジェットは国ごとの売上を表示します"
+ ;salesByHourAndSite;;"時間とサイトごとの売上";"24 時間以上の時間単位での総売上を表示します"
+ ;salesPerCategoryBySite;;"サイトごとのカテゴリ別売上";"このウィジェットは特定の時間内のカテゴリ別売上を表示します"
+ ;salesPerRegionBySite;;"サイトごとの地域別売上";"このウィジェットは国の地域ごとの売上を表示します"
+ ;topSellingProductsBySite;;"サイトごとの売れ筋商品";"システム全体での売上トップ 5 商品リストを表示します"
+ ;totalSalesBySite;;"サイトごとの総売上";"サイトごとの特定の時間内の総売上を表示します"

@@ -1,0 +1,199 @@
+.product-listing{
+	.list-unstyled;
+	
+	.product-item{
+	}
+
+	
+
+
+
+	.promo{
+		.text-success;
+		margin-bottom:  (@grid-gutter-width/2);
+	}
+	
+
+	.price-panel{
+		text-align: right;
+	}
+	
+
+
+
+
+	a.name{
+		display: block;
+		font-weight: 300;
+		text-transform: uppercase;
+		font-weight: bold;
+		margin: 0 0 (@grid-gutter-width/2) 106px;
+		color: inherit;
+
+	} 
+
+	.description{
+		.hidden-xs;
+	}
+
+
+
+	.description{
+		.hidden-xs;
+		margin: 0 210px 0 106px;
+	}
+
+
+
+	.addtocart{
+		clear:both;
+		text-align: right;
+		padding:  (@grid-gutter-width/2) 0 0 0;
+
+		button{
+			margin-bottom: (@grid-gutter-width/2);
+			
+		}
+	}
+
+
+
+
+	&.product-list{
+
+
+
+		.product-item{
+			padding: 10px;
+			.clearfix; 
+
+			& + .product-item{
+				margin-top: (@grid-gutter-width/2);
+			}
+
+			&:nth-child(2n) {
+    		background: none repeat scroll 0 0 @grayblue;
+    		}
+		}
+
+		.thumb{
+			float: left;
+			margin-right:  (@grid-gutter-width/2);
+			display: block;
+		}
+
+		.price-panel{
+			float: right;
+			width: 200px;
+		}
+
+
+		.addtocart{
+			
+			button{
+				& + button{
+					margin-left: (@grid-gutter-width/2);
+				}
+			}
+		}
+
+
+
+
+		@media (max-width: @screen-xs-max) { 
+
+			
+
+
+			.price-panel{
+				text-align: left;
+				float:none;
+				margin-left: 106px;
+				width: auto;
+			}
+
+
+				
+		}
+	}
+
+
+
+
+	&.product-grid{
+		.make-row;
+
+		.product-item{
+			.make-xs-column(6);  
+			.make-sm-column(3);
+			.make-md-column(4);
+			.make-lg-column(3);
+			
+			
+			margin-bottom:  @grid-gutter-width;
+			
+		}
+
+		.thumb{
+			display: block;
+			img{
+				width: 100%;
+				height: auto;
+			}
+			margin-bottom:  (@grid-gutter-width/2);
+		}
+
+
+
+
+		.details{
+			min-height: 100px;
+
+			.name{
+				margin: 0;
+			}
+
+		}
+	}
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+.search-empty{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	text-align: center;
+
+	.headline{
+		margin-bottom: 20px;
+	}
+
+
+	.search-suggestions{
+		margin-bottom: 20px;
+	}
+}
+
+
+
+
+.ProductListComponent-ListPickUpInStoreAction,
+.ProductListComponent-ListAddToCartAction{
+	.make-xs-column(6);
+	.make-sm-column(3);
+	.make-sm-column-push(6);
+}

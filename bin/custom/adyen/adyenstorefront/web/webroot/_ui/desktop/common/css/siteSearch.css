@@ -1,0 +1,128 @@
+/*
+### Site Search
+********************************************************************/
+
+
+
+.siteSearch .control-group{
+	width:290px;
+}
+
+
+.siteSearch .siteSearchInput{
+	padding-right:35px !important;
+
+}
+
+
+.siteSearch .siteSearchSubmit {
+  background: url("../images/storesFacetSearchIcon.png") no-repeat scroll center center transparent;
+  border: 0 none;
+  display: block;
+  float: right;
+  height: 28px;
+  margin: 1px 1px 1px -30px;
+  padding: 0;
+  width: 28px;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+  ui-autocomplete   
+  */
+
+
+#header input#search {
+	z-index:10000;
+}
+
+.ui-autocomplete{
+	width:278px !important;
+	z-index:10000 !important;
+    border: 1px solid #CCCCCC;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+    border-radius: 0;
+	-webkit-box-shadow: 0px 8px 15px #2c3a55;
+	-moz-box-shadow: 0px 8px 15px #2c3a55;
+    box-shadow: 0 8px 15px #999;
+	padding:5px;
+	margin:0;
+	float:none;
+}
+
+.ui-autocomplete .ui-menu-item{
+	border-top: 1px solid #ccc;
+}
+
+.ui-autocomplete .ui-menu-item:first-child{
+	border-top: 0;
+}
+
+.ui-autocomplete .ui-menu-item a,
+.ui-autocomplete .ui-menu-item a:hover{
+	display:block;
+	padding: 0;
+	border-top:1px solid #fff;
+	border-bottom:1px solid #fff;
+	font-weight:normal !important;
+	color:#000 !important;
+}
+
+.ui-autocomplete .suggestions.ui-menu-item a,
+.ui-autocomplete .suggestions.ui-menu-item a:hover{
+	padding: 10px;
+	text-transform:uppercase;
+}
+
+.ui-autocomplete .ui-menu-item .ui-state-hover{
+	background:#F6F6F6;
+}
+
+.ui-autocomplete .ui-menu-item .thumb{
+	float:left;
+	width:76px;
+	height:76px;
+}
+
+.ui-autocomplete .ui-menu-item .thumb img{
+	width:100%;
+	height:auto;
+}
+
+
+.ui-autocomplete .ui-menu-item .desc{
+	margin:10px;
+}
+
+
+.ui-autocomplete .ui-menu-item .desc .title{
+	float:left;
+	white-space: normal;
+	width: 200px;
+	display:block;
+}
+
+.ui-autocomplete .ui-menu-item .desc .price{
+	float:right;
+	font-weight:bold  !important;
+}
+
+
+/* products with image */
+.ui-autocomplete .ui-menu-item .thumb + .desc{
+	margin:10px 10px 0 100px;
+}
+
+.ui-autocomplete .ui-menu-item .thumb + .desc .title{
+	width: 115px;
+}
+

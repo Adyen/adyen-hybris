@@ -1,0 +1,7 @@
+$catalog-Online=Online
+$product-catalog=apparelProductCatalog
+$productCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$product-catalog]),CatalogVersion.version[default=$catalog-Online])[default=$product-catalog:$catalog-Online]
+$passwordEncoding=md5
+$defaultPassword=password
+$setPassword=@password[translator=de.hybris.platform.impex.jalo.translators.ConvertPlaintextToEncodedUserPasswordTranslator][default='$passwordEncoding:$defaultPassword']
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Online'])[unique=true,default=$productCatalog:Online]

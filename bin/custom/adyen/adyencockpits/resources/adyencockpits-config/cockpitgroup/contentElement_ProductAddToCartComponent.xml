@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ProductAddToCartComponent" name="type.ProductAddToCartComponent.name"
+							description="type.ProductAddToCartComponent.description"
+							image="cmscockpit/images/component-icon-productaddtocart.gif"
+							refImage="cmscockpit/images/component-icon-productaddtocart-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-productaddtocart-small.gif"
+							/>
+
+</content-elements>

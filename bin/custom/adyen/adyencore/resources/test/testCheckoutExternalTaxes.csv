@@ -1,0 +1,132 @@
+$currencies=EUR
+$defaultCurrency=EUR
+$defaultLanguage=en
+$deliveryCountries=US
+
+$catalog-id=testCatalog
+$catalog-version=Online
+
+$testCategory0-id=testCategory0
+$testCategory1-id=testCategory1
+
+$catalogversion=catalogversion(catalog(id),version)[unique=true,default=$catalog-id:$catalog-version];;;;;;;;;;;;;;;;;;;;;;
+$supercategories=supercategories(code,catalogversion(catalog(id[default=$catalog-id]),version[default=$catalog-version]));;;;;;;;;;;;;;;;;;;;;;
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator];;;;;;;;;;;;;;;;;;;;;;
+
+INSERT_UPDATE Language;isocode[unique=true];active
+;de;true
+;en;true
+
+INSERT_UPDATE Unit;unitType[unique=true];code[unique=true];name[lang=de];name[lang=en];conversion
+;pieces;pieces;pieces;pieces;1
+
+INSERT_UPDATE Currency;isocode[unique=true];name[lang=de];name[lang=en];active;base;conversion;digits;symbol;;;;;;;;;;;;;;
+;EUR;Euro;Euro;true;true;1;2;E
+;USD;US-Dollar;US Dollar;true;false;1,38;2;$
+
+INSERT_UPDATE Title;code[unique=true];name[lang=de];name[lang=en];;;;;;;;;;;;;;;;;;;
+;dr;Dr.;dr.;;;;;;;;;;;;;;;;;;;
+;prof;Prof.;prof.;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Country;isocode[unique=true];name[lang=de];name[lang=en];active;;;;;;;;;;;;;;;;;;
+;DE;Deutschland;Germany;true;;;;;;;;;;;;;;;;;;
+;US;Vereinigte Staaten von Amerika;United States of America;true;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE UserGroup;uid[unique=true];groups(uid);;;;;;;;;;;;;;;;;;;;
+;cockpitgroup;;;;;;;;;;;;;;;;;;;;;
+;customergroup;cockpitgroup;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Customer;uid[unique=true];customerID;name;description;sessionLanguage(isocode);sessionCurrency(isocode);groups(uid);password;;;;;;;;;;;;;;
+;ahertz;K2006-C0005;Anja Hertz;;en;USD;customergroup;1234;;;;;;;;;;;;;;
+;abrode;K2006-C0006;Arin Brode;;en;USD;customergroup;1234;;;;;;;;;;;;;;
+;dejol;K2006-C0007;Max de Jol;;en;USD;customergroup;1234;;;;;;;;;;;;;;
+;promoted;K2006-C0007;Max promo;;en;EUR;customergroup;1234;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Address;owner(Customer.uid)[unique=true];streetname[unique=true];streetnumber[unique=true];postalcode[unique=true];duplicate[unique=true];town;country(isocode);billingAddress;contactAddress;shippingAddress;unloadingAddress;firstname;lastname;email;gender(code);middlename;phone1;title(code);url;company;fax;department
+;ahertz;Zennerstrasse;45;28277;false;Bremen;DE;false;false;false;true;Anja;Hertz;ahertz@na-du.de;FEMALE;;;;;hybris GmbH;;
+;ahertz;Schiller Allee;8;28277;false;Bremen;DE;true;true;true;false;Anja;Hertz;ahertz@na-du.de;FEMALE;;;;;hybris GmbH;;
+;abrode;Feldweg;7;18551;false;Sagard;DE;true;false;true;true;Arin;Brode;arin@wow-europe.com;MALE;;;;;hybris GmbH;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Customer;uid[unique=true];defaultPaymentaddress(owner(Customer.uid), streetname, streetnumber, postalcode,duplicate);defaultShipmentAddress(owner(Customer.uid), streetname, streetnumber, postalcode, duplicate);;;;;;;;;;;;;;;;;;;
+;ahertz;ahertz:Schiller Allee:8:28277:false;ahertz:Zennerstrasse:45:28277:false;;;;;;;;;;;;;;;;;;;
+;abrode;abrode:Feldweg:7:18551:false;abrode:Feldweg:7:18551:false;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Catalog;id[unique=true];name[lang=de];name[lang=en];defaultCatalog;;;;;;;;;;;;;;;;;;
+;$catalog-id;$catalog-id;$catalog-id;true;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE CatalogVersion; catalog(id)[unique=true]; version[unique=true]; active;defaultCurrency(isocode);;;;;;;;;;;;;;;;;;
+;$catalog-id;$catalog-version;true;EUR;de,en;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Category;code[unique=true];$catalogversion;name[lang=de];name[lang=en];$supercategories;;;;;;;;;;;;;;;;;
+;$testCategory0-id;;$testCategory0-id;$testCategory0-id;;;;;;;;;;;;;;;;;;
+;$testCategory1-id;;$testCategory1-id;$testCategory1-id;$testCategory0-id;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Product;code[unique=true];$catalogversion;name[lang=de];name[lang=en];unit(code);$prices;approvalStatus(code);owner(Principal.uid);startLineNumber;$supercategories;;;;;;;;;;;;
+;HW1210-3422;;testDE;testEN;pieces;57,95 EUR;approved;ahertz;0;$testCategory0-id;;;;;;;;;;;;
+;HW1210-3423;;test2DE;test2EN;pieces;67,95 EUR;approved;ahertz;0;$testCategory1-id;;;;;;;;;;;;
+;HW1210-3424;;test3DE;test3EN;pieces;32,95 EUR;approved;ahertz;0;$testCategory1-id;;;;;;;;;;;;
+;HW1210-3425;;test3DE;test4EN;pieces;95 EUR;approved;ahertz;0;$testCategory1-id;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Cart;user(uid);code[unique=true];currency(isocode);date[dateformat=dd.MM.yyyy HH:mm:ss];net;calculated;;;;;;;;;;;;;;;;
+;ahertz;ahertzCart;EUR;27.04.2010 00:00:00;true;false;;;;;;;;;;;;;;;;
+;abrode;abrodeCart;EUR;27.04.2010 00:00:00;true;false;;;;;;;;;;;;;;;;
+;dejol;dejolStored;EUR;27.04.2010 00:00:00;true;false;;;;;;;;;;;;;;;;
+;promoted;promotedStored;EUR;27.04.2010 00:00:00;true;false;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT CartEntry;order(Cart.code);creationTime[dateformat=dd.MM.yyyy HH:mm:ss];product(code,catalogVersion(catalog(id),version));quantity;unit(code);entryNumber;;;;;;;;;;;;;;;;
+;ahertzCart;27.04.2010 00:00:00;HW1210-3422:$catalog-id:$catalog-version;2;pieces;1;;;;;;;;;;;;;;;;
+;abrodeCart;27.04.2010 00:00:00;HW1210-3422:$catalog-id:$catalog-version;2;pieces;1;;;;;;;;;;;;;;;;
+;abrodeCart;27.04.2010 00:00:00;HW1210-3423:$catalog-id:$catalog-version;5;pieces;2;;;;;;;;;;;;;;;;
+;dejolStored;27.04.2010 00:00:00;HW1210-3423:$catalog-id:$catalog-version;10;pieces;1;;;;;;;;;;;;;;;;
+;dejolStored;27.04.2010 00:00:00;HW1210-3424:$catalog-id:$catalog-version;10;pieces;2;;;;;;;;;;;;;;;;
+;promotedStored;27.04.2010 00:00:00;HW1210-3425:$catalog-id:$catalog-version;8;pieces;2;;;;;;;;;;;;;;;;
+;promotedStored;27.04.2010 00:00:00;HW1210-3423:$catalog-id:$catalog-version;1;pieces;1;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE PromotionGroup;Identifier[unique=true];;;;;;;;;;;;;;;;;;;;;
+;default;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE PromotionPriceRow;currency(isocode)[unique=true];price[unique=true];;;;;;;;;;;;;;;;;;;;
+;EUR;12;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE ProductFixedPricePromotion;code[unique=true];title;description;enabled;products(code,catalogVersion(catalog(id),version));productFixedUnitPrice(price,currency(isocode));productBanner(code);PromotionGroup(Identifier);endDate[dateformat=yyyy-MM-dd];;;;;;;;;;;;;
+;FixedPriceDefault;clearance sale;Fixed Price for default;true;HW1210-3425:$catalog-id:$catalog-version;12:EUR;;default;2400-01-01;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Vendor;code[unique=true];name[lang=en];name[lang=de];;;;;;;;;;;;;;;;;;;
+;electro;Electro;Electro;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE BaseStore;uid[unique=true];catalogs(id);currencies(isocode);net;taxGroup(code);storelocatorDistanceUnit(code);defaultCurrency(isocode);languages(isocode);defaultLanguage(isocode);deliveryCountries(isocode);solrFacetSearchConfiguration(name);submitOrderProcessCode
+;testStore;$catalog-id;$currencies;false;;km;$defaultCurrency;$defaultLanguage;$defaultLanguage;$deliveryCountries;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE BaseSite;uid[unique=true];stores(uid);defaultPromotionGroup(Identifier)
+;testSite;testStore;default;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Warehouse;code[unique=true];name[lang=en];name[lang=de];vendor(code);default;baseStores(uid);;;;;;;;;;;;;;;;
+;warehouse_s;Warehouse South;Warehouse South;electro;true;testStore;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE StockLevel;available;warehouse(code)[unique=true];inStockStatus(code);maxPreOrder;maxStockLevelHistoryCount;overSelling;preOrder;productCode[unique=true];reserved;;;;;;;;;;;;;
+;0;warehouse_s;forceInStock;0;-1;0;0;HW1210-3422;0;;;;;;;;;;;;;
+;10;warehouse_s;notSpecified;0;-1;0;0;HW1210-3423;0;;;;;;;;;;;;;
+;2;warehouse_s;notSpecified;1;-1;0;0;HW1210-3424;0;;;;;;;;;;;;;
+;0;warehouse_s;notSpecified;1;-1;0;0;HW1210-3425;0;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+INSERT_UPDATE Product;code[unique=true];$catalogversion;stockLevels(productCode,warehouse(code));vendors(code);;;;;;;;;;;;;;;;;;
+;HW1210-3422;;HW1210-3422:warehouse_s;electro;;;;;;;;;;;;;;;;;;
+;HW1210-3423;;HW1210-3423:warehouse_s;electro;;;;;;;;;;;;;;;;;;
+;HW1210-3424;;HW1210-3424:warehouse_s;electro;;;;;;;;;;;;;;;;;;
+;HW1210-3425;;HW1210-3425:warehouse_s;electro;;;;;;;;;;;;;;;;;;
+
+
+INSERT_UPDATE Zone;code[unique=true];countries(isocode)
+;usa;US
+
+# Zone Delivery Modes
+INSERT_UPDATE ZoneDeliveryMode;code[unique=true];net;active[default=true]
+;premium-gross;false
+
+
+# USA
+INSERT_UPDATE ZoneDeliveryModeValue;deliveryMode(code)[unique=true];zone(code)[default='usa'][unique=true];currency(isocode)[unique=true];value;minimum[unique=true]
+;premium-gross;;$defaultCurrency;16,99;0,00
+
+INSERT_UPDATE BaseStore2DeliveryModeRel;source(uid)[unique=true];target(code)[unique=true]
+;testStore;premium-gross

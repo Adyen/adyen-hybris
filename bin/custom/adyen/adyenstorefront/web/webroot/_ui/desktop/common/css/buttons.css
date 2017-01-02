@@ -1,0 +1,155 @@
+/* -------------------------------------------------------------- 
+  
+buttons.css
+* Gives you some great CSS-only buttons.
+   
+Created by Kevin Hale [particletree.com]
+* particletree.com/features/rediscovering-the-button-element
+
+See Readme.txt in this folder for instructions.
+
+-------------------------------------------------------------- */
+
+a.button, button {
+	display: block;
+	float: left;
+	margin: 0.7em 0.5em 0.7em 0;
+	padding: 5px 10px 5px 7px;   /* Links */
+	border:2px solid #C7C7C7;
+	background: #f8f8f8;
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 100%;
+	line-height: 130%;
+	text-decoration: none;
+	font-weight: bold;
+	color: #777;
+	cursor: pointer;
+	text-align: center;
+	padding: 0 10px;
+}
+button {
+	width: auto;
+	overflow: visible;
+	height: 32px;
+}
+
+a.button {
+	height: 28px;
+	line-height: 28px;
+}
+
+button img, a.button img {
+	margin: 0 3px -3px 0 !important;
+	padding: 0;
+	border: none;
+	width: 16px;
+	height: 16px;
+	float: none;
+}
+
+
+/* Button colors
+-------------------------------------------------------------- */
+
+
+
+button.positive,
+button.negative {
+	height: 40px;
+}
+
+a.button.positive,
+a.button.negative {
+	height: 36px;
+	line-height: 36px;
+}
+
+
+
+
+
+
+/* Standard */
+button:hover, a.button:hover {
+}
+a.button:active,
+button:active {
+}
+
+/* Positive */
+button.positive,
+a.button.positive {
+	color: #fff;
+	background: #000;
+	font-weight: bold;
+	text-transform: uppercase;
+	border-color:#000;
+}
+a.button.positive:hover, 
+button.positive:hover {
+}
+a.button.positive:active,
+button.positive:active {
+}
+
+/* Negative */
+button.negative,
+a.button.negative {
+	color: #000;
+	background: #fff;
+	border-color:#000;
+
+}
+a.button.negative:hover, 
+button.negative:hover {
+}
+a.button.negative:active,
+button.negative:active {
+}
+
+
+
+/* Button block width
+-------------------------------------------------------------- */
+
+
+button.block, a.button.block {
+	width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+button[disabled]{
+	opacity:0.2;
+	cursor:default;
+	text-transform: none;
+}
+
+
+
+
+
+
+
+
+
+button.link {
+	display:inline;
+	float:none;
+	background:none;
+	border:0;
+	padding:0;
+	margin:0;
+	line-height:auto;
+	font-weight:normal;
+	color:inherit !important;
+	opacity:inherit;
+}

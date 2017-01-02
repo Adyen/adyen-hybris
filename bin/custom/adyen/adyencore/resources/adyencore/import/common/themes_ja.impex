@@ -1,0 +1,11 @@
+#
+# Import Themes
+#
+
+# Language
+$lang=ja
+
+# SiteTheme
+UPDATE SiteTheme;code[unique=true];name[lang=$lang]
+ ;black;"黒色"
+ ;blue;"青色"

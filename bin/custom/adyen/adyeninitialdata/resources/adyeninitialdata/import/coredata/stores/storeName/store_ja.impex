@@ -1,0 +1,9 @@
+#
+# Import the BaseStore
+#
+
+# Language
+$lang=ja
+
+# Create Base Store
+UPDATE BaseStore;uid[unique=true];name[lang=$lang]

@@ -1,0 +1,12 @@
+#
+# Import Access Rights for BTG Cockpit
+# 
+
+$START_USERRIGHTS;;;;;;;;;
+Type;UID;MemberOfGroups;Password;Target;read;change;create;remove;change_perm
+UserGroup;btgmanager;;;;;;;;
+
+# btgcockpit
+;;;;BTGItem;+;+;+;+;+;
+;;;;AbstractAction;+;+;+;+;+;
+$END_USERRIGHTS;;;;;

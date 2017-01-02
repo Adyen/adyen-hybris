@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="eclipsebin/notused"/>
+
+	<classpathentry exported="false" kind="src" path="/platform" />
+	<classpathentry exported="true" kind="src" path="/b2ccheckoutaddon" />
+	<classpathentry exported="true" kind="src" path="/btg" />
+	<classpathentry exported="true" kind="src" path="/acceleratorstorefrontcommons" />
+	<classpathentry exported="true" kind="src" path="/adyenfacades" />
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.9.11.jar" />
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl-1.9.11.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/granule-1.0.9.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/json-taglib-0.4.1.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/jsoup-1.6.1.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/jstl-api-1.2.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/jstl-impl-1.2.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/rhino1_7R4.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/spring-security-taglibs-3.2.3.RELEASE.jar" />
+	<classpathentry exported="false" kind="lib" path="web/webroot/WEB-INF/lib/spring-webmvc-3.2.8.RELEASE.jar" />
+	<classpathentry exported="true" kind="lib" path="resources" />
+	<classpathentry exported="false" output="eclipsebin/web/classes" kind="src" path="web/src" />
+	<classpathentry exported="false" output="eclipsebin/web/classes" kind="src" path="web/testsrc" />
+				
+</classpath>
+				

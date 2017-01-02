@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ProductCarouselComponent" name="type.productcarouselcomponent.name"
+							image="cmscockpit/images/ProductCarouselComponent.gif" 
+							description="type.productcarouselcomponent.description"
+							imageSmall="cmscockpit/images/ProductCarouselComponentSmall.gif"
+							/>
+
+</content-elements>

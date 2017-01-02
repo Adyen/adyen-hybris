@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-editor.xsd"
+                hideEmpty="true" hideReadOnly="true" groupCollections="true">
+	<template>
+	<![CDATA[
+		<table width="100%" style="margin:0;padding:0" class="structViewCnt">
+		<tbody>
+		<tr><td><div style="height:6px"/></td></tr>
+		<tr><td style="text-align:left"><cockpit code="list" value="RotatingImagesComponent.banners"/></td></tr>
+		</tbody>
+		</table>
+	]]>
+	</template>
+	<custom-editors>
+		<property qualifier="BannerComponent.media" editorCode="simpleMediaReferenceSelector">
+			<parameter>
+				<name>mimeTypes</name>
+				<value>image/jpeg;image/gif;image/png</value>
+			</parameter>
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+	</custom-editors>
+</content-editor>

@@ -1,0 +1,9 @@
+#
+# Import the Responsive CMS Site configuration
+#
+$siteUid=__STORE_UID__
+
+
+# CMS Site - Update the theme to be responsive
+INSERT_UPDATE CMSSite;uid[unique=true];theme(code);
+;$siteUid;blue;

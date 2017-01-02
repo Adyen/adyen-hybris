@@ -1,0 +1,22 @@
+#
+# Localise hsqldb jasper reports
+#
+
+# Language
+$lang=en
+
+$defaultCatalog=Default
+$defaultCatalogVersion=Staged
+$catalogVersion=catalogVersion(catalog(id[default='$defaultCatalog']),version[default='$defaultCatalogVersion'])[unique=true,default='$defaultCatalog:$defaultCatalogVersion']
+
+
+# Create Countries
+UPDATE JasperMedia;code[unique=true];$catalogVersion;title[lang=$lang];reportDescription[lang=$lang]
+ ;averageOrderValueBySite;;"Average Order Value By Site";"This widget displays the average order value for time range"
+ ;orderVolumeBySite;;"Order Volume By Site";"Displays how many orders have been placed over a given time period"
+ ;salesByCountryAndSite;;"Sales By Country and Site";"This Widget displays revenue by Country"
+ ;salesByHourAndSite;;"Sales By Hour and Site";"Displays overall Sales by the hour over a 24 hours period"
+ ;salesPerCategoryBySite;;"Sales Per Category By Site";"This widget shows sales per category for a given time frame"
+ ;salesPerRegionBySite;;"Sales Per Region By Site";"This widget displays sales for each region of a country"
+ ;topSellingProductsBySite;;"Top Selling Products By Site";"Displays a list of the top 5 selling products across the system"
+ ;totalSalesBySite;;"Total Sales By Site";"Displays total sales in a given time period by site"

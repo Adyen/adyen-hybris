@@ -1,0 +1,10 @@
+# 
+# Create the BaseStore
+#
+
+$storeUid=__STORE_UID__
+$checkoutFlowGroup=responsiveCheckoutGroup
+
+# Base Store
+INSERT_UPDATE BaseStore;uid[unique=true];checkoutFlowGroup;
+;$storeUid;;$checkoutFlowGroup;

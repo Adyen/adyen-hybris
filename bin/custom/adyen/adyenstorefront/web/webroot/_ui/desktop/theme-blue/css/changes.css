@@ -1,0 +1,59 @@
+/* Theme Blue changes*/
+
+
+
+/*
+	button color
+*/
+button.pickupInStoreButton,
+button.negative, a.button.negative {
+    color:#1a618b;
+    border-color: #1a618b;
+}
+
+button.addToCartButton,
+#storeFinder .searchPane .findStoresNearMe,
+button.positive, a.button.positive {
+    background-color:#1a618b;
+    border-color: #1a618b;
+}
+
+
+/*
+	checkout progress
+*/
+
+#checkoutProgress li.step.active {
+    background: none repeat scroll 0 0 #1a618b;
+}
+
+/*
+	scroller product number  
+*/
+
+.span-24 > .scroller ul li{
+	width:150px;
+}
+
+
+
+
+/*
+	Productlist image size
+*/
+
+
+.productList .productListItem .thumb img {
+  width: 96px;
+}
+
+
+
+.productList .productListItem .stars,
+.productList .productListItem .details,
+.productList .productListItem .cart,
+.productList .productListItem .product-classification,
+.productList .productListItem .lowStock,
+.productList .productListItem .head {
+  margin-left:  110px;
+}

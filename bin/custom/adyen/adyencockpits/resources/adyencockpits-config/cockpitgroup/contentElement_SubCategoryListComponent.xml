@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="SubCategoryListComponent" name="type.SubCategoryListComponent.name"
+							description="type.SubCategoryListComponent.description"
+							image="cmscockpit/images/component-icon-subcategory.gif"
+							refImage="cmscockpit/images/component-icon-subcategory-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-subcategory-small.gif"
+							/>
+
+</content-elements>

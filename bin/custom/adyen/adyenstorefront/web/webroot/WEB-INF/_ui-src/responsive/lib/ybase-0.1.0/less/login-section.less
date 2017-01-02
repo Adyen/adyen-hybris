@@ -1,0 +1,39 @@
+.login-section, .register-section{
+	.headline{
+		padding: (@grid-gutter-width/2) 0;
+		font-size: @font-size-large;
+	}
+}
+
+
+
+.forgotten-password{
+	margin-bottom: 20px;
+
+	.description{
+		margin-bottom: (@grid-gutter-width/2);
+	}
+}
+
+
+
+
+
+@media (max-width: @screen-sm-max) {
+	.login-section, .register-section{
+		margin-bottom: 50px;
+
+		.headline{
+			border-bottom:1px solid #eee;
+			margin-bottom: 20px;
+		}
+
+
+		.forgotten-password{
+			padding-top: 10px;
+			margin-bottom: 30px;
+		}
+		
+	}
+
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="content-editor">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="template" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="custom-editors" type="editor-list" minOccurs="0" maxOccurs="1"/>    			
+			</xs:sequence>
+			<xs:attribute name="hideReadOnly" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="hideEmpty" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="groupCollections" type="xs:boolean" use="optional" default="true"/>
+		</xs:complexType>
+	</xs:element>
+    
+	<xs:complexType name="editor-list">
+		<xs:sequence>
+			<xs:element name="property" type="property" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+    
+	<xs:complexType name="property">
+		<xs:sequence>
+			<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="qualifier" type="xs:string" use="required"/>
+		<xs:attribute name="editorCode" type="xs:string" use="required"/>
+		<xs:attribute name="visible" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>      
+     
+	<xs:complexType name="parameter">
+		<xs:sequence>
+			<xs:element name="name" type="name"/>
+			<xs:element name="value" type="value"/>
+		</xs:sequence>
+	</xs:complexType>  
+	
+	<xs:simpleType name="name">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+    
+	<xs:simpleType name="value">
+		<xs:restriction base="xs:string"/> 
+	</xs:simpleType>
+</xs:schema>

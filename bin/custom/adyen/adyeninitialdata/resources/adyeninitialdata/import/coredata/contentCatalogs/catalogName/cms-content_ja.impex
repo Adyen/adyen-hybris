@@ -1,0 +1,30 @@
+#
+# Import CMS content for the site
+#
+
+$contentCatalog=__CONTENT_CATALOG_NAME__
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# Language
+$lang=ja
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;account;"アカウント"
+ ;;add-edit-address;"アドレスの追加/編集"
+ ;;address-book;"アドレス帳"
+ ;;cartPage;"ショッピング バスケット"
+ ;;checkout-login;"会計へ進む"
+ ;;faq;"よくある質問 (FAQ)"
+ ;;homepage;"ホームページ"
+ ;;login;"ログイン"
+ ;;multiStepCheckoutSummaryPage;"会計"
+ ;;notFound;"見つかりません"
+ ;;order;"注文詳細"
+ ;;orderConfirmationPage;"注文確認"
+ ;;orders;"注文履歴"
+ ;;payment-details;"支払詳細"
+ ;;profile;"プロフィール"
+ ;;searchEmpty;"結果0件"
+ ;;storefinderPage;"店舗検索"
+ ;;updatePassword;"忘れたパスワードを更新"

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver" ?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:h="http://www.w3.org/1999/xhtml" 
+		xmlns:zk="http://www.zkoss.org/2005/zk"
+		xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd ">
+	<div style="text-align: left;">
+		<div style="padding: 20px; border-bottom: 1px solid #ccc;">
+			<label value="Please select the theme."/>
+		</div>
+		<div height="20px"/>
+		<div id="themeEditor" style="padding: 20px; border-bottom: 1px solid #ccc;" 
+				 use="de.hybris.platform.cockpit.components.editor.CockpitEditorContainer"
+				 propertyQualifier="CMSSite.theme"
+				 valueContainer="${wizardBean.objectValueContainer}"
+				 onChange='setAttr("theme",self.value)'>
+		</div>
+	</div>
+</zk>

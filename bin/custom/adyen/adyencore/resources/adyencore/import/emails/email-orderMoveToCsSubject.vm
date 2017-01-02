@@ -1,0 +1,1 @@
+${ctx.messages.getMessage('movedToCsEmailSubject', ${ctx.orderCode})}

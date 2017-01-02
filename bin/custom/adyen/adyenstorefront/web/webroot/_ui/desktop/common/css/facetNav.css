@@ -1,0 +1,187 @@
+/*
+## Facet Navigation
+********************************************************************/
+
+.facetNavigation .headline{
+	display:block;
+	line-height:2em;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.167em;
+	border-bottom: 1px dotted #303030;
+	background-color: #f6f6f6;
+	line-height: 48px;
+	margin: 0 0 20px;
+	padding-left: 5px;
+}
+
+.facetNavigation .facet{
+	margin:0 0 15px 0;
+}
+
+.facetNavigation .facet .facetHead{
+	border-bottom:1px solid #919191;
+	
+}
+
+.facetNavigation .facet .facetHead .refinementToggle{
+	display:block;
+	line-height:2em;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.167em;
+	background:url("../images/facet-collapse-minus.png") no-repeat right center;
+}
+
+.facetNavigation .facet .facetHead .refinementToggle.close{
+	background:url("../images/facet-collapse-plus.png") no-repeat right center;
+}
+
+.facetNavigation  .facetValues ul.facet_block li {
+	line-height:1.1em;
+	padding: 5px 0;
+	clear: left;
+}
+
+
+.facetNavigation  .facetValues ul.facet_block .facet_block-label input {
+	float: left;
+  margin: -2px 4px 3px 0;
+}
+
+.facetNavigation  .facetValues ul.facet_block li label,
+.facetNavigation .facetValues ul.facet_block li a{
+	font-weight:normal;
+	color:#5d5d5d;
+}
+
+
+.facetNavigation .facetValues ul.facet_block li .facetValueCount{
+	color:#b2b2b2;
+	font-style:italic;
+}
+
+.facetNavigation  .facetValues .more a {
+	display:block;
+	border-top:1px dotted #c1c1c1;
+	color:#808080;
+	font-weight:bold;
+	line-height:3em;
+	margin:10px 0 0 0;
+	padding:0 0 0 10px;
+	background:url("../images/facetMoreLessIcon.png") no-repeat left center ;
+}
+
+a.change_location-link {
+	font-weight: bold;
+	display: block;
+	text-decoration: underline;
+	margin: 5px 0;
+}
+
+
+
+
+/*
+### Store Facet 
+********************************************************************/
+
+
+.facetNavigation .storesFacet{
+	border:1px solid #c1c1c1;
+	margin:1.167em 0 35px 0;
+	padding: 0 10px 10px 10px ;
+}
+
+.facetNavigation .storesFacet .storesFacetHead{
+	text-align:center;
+	margin:-1.167em 0 0 0;
+}
+
+
+.facetNavigation .storesFacet .storesFacetHead .refinementToggle{
+	display:inline-block;
+	line-height:2em;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.167em;
+	background:#fff;
+	padding:0 10px;
+}
+
+
+
+
+
+
+
+
+
+/*
+####  Store Search 
+*/
+
+.facetNavigation  .storesFacetSearchForm {
+	margin:10px 0 0 0;
+}
+
+
+
+
+
+
+.facetNavigation  .storesFacetSearchForm .storesFacetSearchInput{
+	padding-right:35px !important;
+	width:230px;
+}
+
+
+.facetNavigation  .storesFacetSearchForm .storesFacetSearchSubmit{
+  background: url("../images/storesFacetSearchIcon.png") no-repeat scroll center center transparent;
+  border: 0 none;
+  display: block;
+  float: right;
+  height: 28px;
+  margin: 1px 1px 1px -30px;
+  padding: 0;
+  width: 28px;
+}
+
+
+
+
+.facetNavigation  .findStoresNearMe{
+  background: url("../images/findStoresNearMe-bg.png") no-repeat scroll 10px center #000;
+}
+
+
+
+
+.facetNavigation  .facetValues ul.facet_block li.remove_item_left {
+	border-bottom: 1px dotted #C1C1C1;
+	line-height:24px;
+	padding:0;
+}
+
+.facetNavigation  .facetValues ul.facet_block li.remove_item_left span {
+
+	line-height:24px;
+
+}
+
+
+.facetNavigation .remove a{
+	background: url("../images/facet-remove.png") no-repeat scroll right center transparent;
+	display:block;
+	height:24px;
+	width:24px;
+	float:right;
+	
+}
+
+
+
+
+
+
+

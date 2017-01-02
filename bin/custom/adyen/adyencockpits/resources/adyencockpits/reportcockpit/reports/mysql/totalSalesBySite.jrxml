@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="totalSales" language="groovy" pageWidth="595" pageHeight="420" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table" isDefault="false">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" isDefault="false" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" isDefault="false" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" isDefault="false" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1" isDefault="false">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" isDefault="false" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" isDefault="false" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" isDefault="false" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="totalSalesDS">
+		<parameter name="FirstFrom" class="java.util.Date"/>
+		<parameter name="FirstTo" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<parameter name="SecondFrom" class="java.util.Date"/>
+		<parameter name="SecondTo" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[SELECT x.SERIE, x.DATEVALUE, x.TOTALSUM
+FROM
+({{
+SELECT '1' as SERIE, hour({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{FirstFrom} AND {o.creationtime} < $P{FirstTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY SERIE, DATEVALUE
+}}
+UNION ALL
+{{
+SELECT '2' as SERIE, hour({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{SecondFrom} AND {o.creationtime} < $P{SecondTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY SERIE, DATEVALUE
+}})
+AS x]]>
+		</queryString>
+		<field name="SERIE" class="java.lang.String"/>
+		<field name="DATEVALUE" class="java.lang.Integer"/>
+		<field name="TOTALSUM" class="java.lang.Double"/>
+		<variable name="variable1" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="totalSalesDSMonths">
+		<parameter name="FirstFrom" class="java.util.Date"/>
+		<parameter name="FirstTo" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<parameter name="SecondFrom" class="java.util.Date"/>
+		<parameter name="SecondTo" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[SELECT x.LP, x.DATEVALUE, x.TOTALSUM
+FROM
+({{
+SELECT '1' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{FirstFrom} AND {o.creationtime} < $P{FirstTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, month({o.creationtime})
+}}
+UNION ALL
+{{
+SELECT '2' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{SecondFrom} AND {o.creationtime} < $P{SecondTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, month({o.creationtime})
+}})
+AS x]]>
+		</queryString>
+		<field name="LP" class="java.lang.String"/>
+		<field name="DATEVALUE" class="java.sql.Timestamp"/>
+		<field name="TOTALSUM" class="java.lang.Double"/>
+		<variable name="variable1" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="totalSalesDSDays">
+		<parameter name="FirstFrom" class="java.util.Date"/>
+		<parameter name="FirstTo" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<parameter name="SecondFrom" class="java.util.Date"/>
+		<parameter name="SecondTo" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[SELECT x.LP, x.DATEVALUE, x.TOTALSUM
+FROM
+({{
+SELECT '1' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{FirstFrom} AND {o.creationtime} < $P{FirstTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, year({o.creationtime}), month({o.creationtime}), day({o.creationtime})
+}}
+UNION ALL
+{{
+SELECT '2' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{SecondFrom} AND {o.creationtime} < $P{SecondTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, year({o.creationtime}), month({o.creationtime}), day({o.creationtime})
+}})
+AS x]]>
+		</queryString>
+		<field name="LP" class="java.lang.String"/>
+		<field name="DATEVALUE" class="java.sql.Timestamp"/>
+		<field name="TOTALSUM" class="java.lang.Double"/>
+		<variable name="variable1" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="totalSalesDSWeeks">
+		<parameter name="FirstFrom" class="java.util.Date"/>
+		<parameter name="FirstTo" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<parameter name="SecondFrom" class="java.util.Date"/>
+		<parameter name="SecondTo" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[SELECT x.LP, x.DATEVALUE, x.TOTALSUM
+FROM
+({{
+SELECT '1' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{FirstFrom} AND {o.creationtime} < $P{FirstTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, year({o.creationtime}), week({o.creationtime})
+}}
+UNION ALL
+{{
+SELECT '2' as LP, max({o.creationtime}) as DATEVALUE, SUM({o:totalPrice} * {c2.conversion}/{c.conversion}) as TOTALSUM
+FROM {Order as o JOIN Currency as c ON {o.currency}={c.PK} JOIN Currency as c2 ON {c2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+WHERE {o.creationtime} >= $P{SecondFrom} AND {o.creationtime} < $P{SecondTo} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY LP, year({o.creationtime}), week({o.creationtime}), day({o.creationtime})
+}})
+AS x]]>
+		</queryString>
+		<field name="LP" class="java.lang.String"/>
+		<field name="DATEVALUE" class="java.sql.Timestamp"/>
+		<field name="TOTALSUM" class="java.lang.Double"/>
+		<variable name="variable1" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="timerange" class="java.lang.String">
+		<property name="type" value="ReportTimeRange"/>
+		<property name="defaultvalue" value="LAST52WEEKS"/>
+		<defaultValueExpression><![CDATA["LAST7DAYS"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="From" class="java.util.Date"/>
+	<parameter name="To" class="java.util.Date"/>
+	<parameter name="Currency" class="java.lang.Long">
+		<property name="type" value="Currency"/>
+	</parameter>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT {code} FROM {Order}]]>
+	</queryString>
+	<field name="CODE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="340" splitType="Stretch">
+			<textField>
+				<reportElement x="25" y="275" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="439" y="255" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="439" y="295" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{To}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="275" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{timerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="25" y="255" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="296" y="275" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.from" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="295" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="296" y="295" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="296" y="255" width="143" height="20" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="168" y="255" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="439" y="275" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{From}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="25" y="295" width="143" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.currency" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="313" y="276" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="1" y="0" width="594" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForHourGranularity($P{timerange})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Hour">
+					<dataset>
+						<datasetRun subDataset="totalSalesDS">
+							<datasetParameter name="FirstFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FirstTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFromForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getToForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$F{SERIE} == "2" ? new org.joda.time.DateMidnight($P{SecondFrom}).toString("MMMM, dd") : new org.joda.time.DateMidnight($P{FirstFrom}).toString("MMMM, dd")]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new org.joda.time.DateTime($P{FirstFrom}).withHourOfDay($F{DATEVALUE}.intValue()).toDate()]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALSUM}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.hour")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.sales") + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="1" y="0" width="594" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForDayGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset>
+					<dataset>
+						<datasetRun subDataset="totalSalesDSDays">
+							<datasetParameter name="FirstFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FirstTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFromForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getToForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$F{LP} == "2" ?
+( new org.joda.time.DateMidnight($P{SecondFrom}).toString("dd MMMM yyyy") + " - " + new org.joda.time.DateMidnight($P{SecondTo}).toString("dd MMMM yyyy"))
+: ( new org.joda.time.DateMidnight($P{FirstFrom}).toString("dd MMMM yyyy") + " - " + new org.joda.time.DateMidnight($P{FirstTo}).toString("dd MMMM yyyy"))]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{LP} == "2" ? new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).plusDays(org.joda.time.Days.daysBetween(new org.joda.time.DateMidnight($P{FirstFrom}),new org.joda.time.DateMidnight($P{FirstTo})).getDays()).toDate() : new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).toDate()]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALSUM}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.day")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.sales") + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="594" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForWeekGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Week">
+					<dataset>
+						<datasetRun subDataset="totalSalesDSWeeks">
+							<datasetParameter name="FirstFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FirstTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFromForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getToForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$F{LP} == "2" ? (new org.joda.time.DateMidnight($P{SecondFrom}).toString("w-yyyy") + " - " + new org.joda.time.DateMidnight($P{SecondTo}).toString("w-yyyy"))
+: (new org.joda.time.DateMidnight($P{FirstFrom}).toString("w-yyyy") + " - " + new org.joda.time.DateMidnight($P{FirstTo}).toString("w-yyyy"))]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{LP} == "2" ? new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).plusDays(org.joda.time.Days.daysBetween(new org.joda.time.DateMidnight($P{FirstFrom}),new org.joda.time.DateMidnight($P{FirstTo})).getDays()).toDate() : new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).toDate()]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALSUM}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.week")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.sales") + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="1" y="0" width="594" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForMonthGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Month">
+					<dataset>
+						<datasetRun subDataset="totalSalesDSMonths">
+							<datasetParameter name="FirstFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FirstTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondFrom">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFromForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="SecondTo">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getToForPreviousPeriod($P{timerange},$P{From},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[$F{LP} == "2" ? (new org.joda.time.DateMidnight($P{SecondFrom}).toString("MMMM, yyyy") + " - " + new org.joda.time.DateMidnight($P{SecondTo}).toString("MMMM, yyyy"))
+: (new org.joda.time.DateMidnight($P{FirstFrom}).toString("MMMM, yyyy") + " - " + new org.joda.time.DateMidnight($P{FirstTo}).toString("MMMM, yyyy"))]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{LP} == "2" ? new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).plusDays(org.joda.time.Days.daysBetween(new org.joda.time.DateMidnight($P{FirstFrom}),new org.joda.time.DateMidnight($P{FirstTo})).getDays()).toDate() : new org.joda.time.DateMidnight($F{DATEVALUE}.getTime()).toDate()]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALSUM}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true" isShowShapes="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.month")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.sales") + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

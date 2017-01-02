@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- [y] hybris Platform Copyright (c) 2000-2013 hybris AG All rights reserved. 
+	This software is the confidential and proprietary information of hybris ("Confidential 
+	Information"). You shall not disclose such Confidential Information and shall 
+	use it only in accordance with the terms of the license agreement you entered 
+	into with hybris. -->
+<!-- ATTENTION: This is just an example file. You have to edit it according 
+	to your needs. -->
+
+<items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="items.xsd">
+	
+	<collectiontypes>
+		<collectiontype code="availableBoletoTypeList" elementtype="BoletoBrand" autocreate="true" generate="true"
+			type="list" />
+		<collectiontype code="siteAdyenPaymentMethodList" elementtype="AdyenPaymentMethod" autocreate="true" generate="true"
+			type="list" />
+	</collectiontypes>
+	
+	<enumtypes>
+		<enumtype code="PaymentTransactionType" autocreate="false"
+			generate="false" dynamic="false">
+			<value code="AUTHORIZATION_REQUESTED" />
+			<value code="AUTHORIZATION_REQUESTED_3DSECURE" />
+			<value code="CANCEL_OR_REFUND_REQUESTED" />
+			<value code="REFUND_REQUESTED" />
+			<value code="CANCEL_OR_REFUND" />
+			<value code="REFUNDED_REVERSED" />
+			<value code="CAPTURE_FAILED" />
+			<value code="CAPTURE_REQUESTED"/>
+			<value code="PENDING" />
+			<value code="HPP_RESULT"/>
+		</enumtype>
+		<enumtype code="BoletoBrand" autocreate="true" generate="true">
+			<value code="boletobancario_hsbc" />
+			<value code="boletobancario_itau" />
+			<value code="boletobancario_santander" />
+			<value code="boletobancario_bradesco" />
+			<value code="boletobancario_bancodobrasil" />
+		</enumtype>
+		
+		<enumtype code="OrderStatus" autocreate="false" generate="true" dynamic="true">
+			<value code="CANCEL_FAILED"/>
+			<value code="PAYMENT_PENDING"/>
+		</enumtype>
+	</enumtypes>
+	<itemtypes>
+		<itemtype code="AdyenPaymentTransactionEntry" extends="PaymentTransactionEntry"
+			generate="false" singleton="false" jaloonly="false" autocreate="true">
+			<deployment table="AdyenPaymentTransEntries" typecode="22222" />
+			<attributes>
+				<attribute qualifier="adyenAuthCode" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenBoloToPDFUrl" type="java.lang.String">
+					<persistence type="property">
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
+						</columntype>
+					</persistence>
+				</attribute>
+				<attribute qualifier="adyenErrorCode" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenMessage" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+			</attributes>
+		</itemtype>
+		<itemtype code="AdyenPaymentInfo" extends="PaymentInfo"
+			jaloclass="de.hybris.platform.jalo.order.payment.PaymentInfo"
+			autocreate="true" generate="false">
+			<attributes>
+				<attribute qualifier="ccOwner" autocreate="true"
+					type="java.lang.String">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+					<custom-properties>
+						<property name="hmcIndexField">
+							<value>"thefield"</value>
+						</property>
+					</custom-properties>
+				</attribute>
+				<attribute qualifier="number" autocreate="true"
+					type="java.lang.String">
+					<!-- CAUTION: ONLY CHANGE THE VALUE OF ENCRYPTED WHEN YOU KNOW WHAT 
+						YOU DO !!! -->
+					<modifiers read="true" write="true" search="false"
+						optional="true" encrypted="true" />
+					<persistence type="property" />
+					<custom-properties>
+						<property name="hmcIndexField">
+							<value>"thefield"</value>
+						</property>
+					</custom-properties>
+				</attribute>
+				<attribute qualifier="type" autocreate="true" type="CreditCardType">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="validToMonth" autocreate="true"
+					type="java.lang.String">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="validToYear" autocreate="true"
+					type="java.lang.String">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="validFromMonth" autocreate="true"
+					type="java.lang.String">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="validFromYear" autocreate="true"
+					type="java.lang.String">
+					<modifiers read="true" write="true" search="true"
+						optional="true" />
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="subscriptionValidated" type="boolean">
+					<description>Determines whether the subscription ID has been validated.</description>
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="issueNumber" type="java.lang.Integer">
+					<persistence type="property" />
+					<description>Issue number is the reference information for the credit cart data.</description>
+				</attribute>
+				<attribute qualifier="subscriptionId" type="java.lang.String">
+					<persistence type="property" />
+					<description>Subscription ID is the reference information for the credit cart data stored in the external payment provider.</description>
+				</attribute>
+
+				<attribute qualifier="cardEncryptedJson" type="java.lang.String">
+					<persistence type="property">
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
+						</columntype>
+					</persistence>
+					<description>Adyen Card Encrypted Json</description>
+				</attribute>
+				<attribute qualifier="shopperIp" type="java.lang.String">
+					<persistence type="property" />
+					<description>Adyen Shopper Ip</description>
+				</attribute>
+				<attribute qualifier="savePayment" type="boolean">
+					<persistence type="property" />
+					<description>If save payment to Adyen</description>
+				</attribute>
+				<attribute qualifier="recurringDetailReference" type="java.lang.String">
+					<persistence type="property" />
+					<description>Recurring Detail Reference</description>
+				</attribute>
+				<attribute qualifier="installments" type="java.lang.Integer">
+					<persistence type="property" />
+					<description>installments of payment</description>
+				</attribute>
+				<attribute qualifier="firstName" type="java.lang.String">
+					<persistence type="property" />
+					<description>Boleto required first name of payer.</description>
+				</attribute>
+				<attribute qualifier="lastName" type="java.lang.String">
+					<persistence type="property" />
+					<description>Boleto required last name of payer.</description>
+				</attribute>
+				
+				<attribute qualifier="selectedBrand" type="java.lang.String">
+					<persistence type="property" />
+					<description>Selected Brand of boleto</description>
+				</attribute>
+				<attribute qualifier="socialSecurityNumber" type="java.lang.String">
+					<persistence type="property" />
+					<description>Social Security Number of boleto</description>
+				</attribute>
+				<attribute qualifier="shopperStatement" type="java.lang.String">
+					<persistence type="property" />
+					<description>Shopper Statement</description>
+				</attribute>
+				<attribute qualifier="adyenPaymentBrand" type="java.lang.String">
+					<persistence type="property" />
+					<description>Choosed payment method of Adyen. Will be feed back from notification/response</description>
+				</attribute>
+				<attribute qualifier="authCode" type="java.lang.String">
+					<persistence type="property" />
+					<description>Adyen Auth code. Will be feed back from notification/response</description>
+				</attribute>
+				<attribute qualifier="adyenReason" type="java.lang.String">
+					<persistence type="property" />
+					<description>Adyen notification reason. Will be feed back from notification/response</description>
+				</attribute>
+				<attribute qualifier="useHPP" type="boolean">
+					<persistence type="property" />
+					<description>If use HPP</description>
+				</attribute>
+				<attribute qualifier="hppURL" type="java.lang.String">
+					<persistence type="property" />
+					<description>Hpp Url</description>
+				</attribute>
+				<attribute qualifier="adyenBoletoPDFUrl" type="java.lang.String">
+					<persistence type="property">
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
+						</columntype>
+					</persistence>
+					<description>Boleto PDF Url</description>
+				</attribute>
+				<attribute qualifier="issuerId" type="java.lang.String">
+					<persistence type="property" />
+					<description>Issuer Id</description>
+				</attribute>
+			</attributes>
+			<indexes>
+				<index name="Subscription">
+					<key attribute="subscriptionId" />
+				</index>
+			</indexes>
+		</itemtype>
+		<itemtype code="AdyenPaymentMethod" autocreate="true"
+			generate="true" jaloclass="com.adyen.services.jalo.AdyenPaymentMethod">
+			<deployment table="AdyenPaymentMethod" typecode="22223" />
+			<attributes>
+				<attribute qualifier="adyenPaymentMethodCode" type="java.lang.String">
+					<modifiers read="true" write="true" search="true" optional="false" unique="true" />
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="captureNeeded" type="boolean">
+					<modifiers optional="false"/>
+					<defaultvalue>true</defaultvalue>
+					<persistence type="property"/>
+				</attribute>
+			</attributes>
+		</itemtype>
+		<typegroup name="CMSSite">
+			<itemtype code="CMSSite" autocreate="false" generate="false">
+				<description>Extends existing type with additional attributes.</description>
+				<attributes>
+					<attribute qualifier="adyenUseSavedPayment" type="boolean">
+						<description>Determines whether use saved payment</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>java.lang.Boolean.TRUE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenUseDirectoryLookup" type="boolean">
+						<description>Determines whether use directory lookup</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>Boolean.TRUE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenUseAPI" type="boolean">
+						<description>Determines whether use api</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>Boolean.TRUE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenUseHPP" type="boolean">
+						<description>Determines whether use hpp.</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>Boolean.TRUE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenBoletoAvailable" type="boolean">
+						<description>Determines whether boleto available.</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenEnableInstallment" type="boolean">
+						<description>Determines whether enable installment.</description>
+						<persistence type="property" />
+						<modifiers optional="false" />
+						<defaultvalue>Boolean.FALSE</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenMerchantAccount" type="java.lang.String">
+						<description>Adyen Merchant Account for WS call.</description>
+						<persistence type="property" />
+						<!-- <modifiers optional="false" /> -->
+						<defaultvalue>"YourMerchantAccountHere"</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenAPIAccount" type="java.lang.String">
+						<description>Adyen API Account</description>
+						<persistence type="property" />
+						<!-- <modifiers optional="false" /> -->
+						<defaultvalue>"YourAPIAccountHere"</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenAPIPassword" type="java.lang.String">
+						<description>Adyen API Account password.</description>
+						<persistence type="property" />
+						<!-- <modifiers optional="false" /> -->
+						<defaultvalue>"1234"</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenCSEKey" type="java.lang.String">
+						<description>Adyen client side encryption public key.</description>
+						<persistence type="property">
+							<columntype>
+								<value>HYBRIS.LONG_STRING</value>
+							</columntype>
+						</persistence>
+						<!-- <modifiers optional="false" /> -->
+						<defaultvalue>"YourCESKeyHere"</defaultvalue>
+					</attribute>
+					<attribute qualifier="availableBoletoTypes" type="availableBoletoTypeList">
+						<persistence type="property" />
+						<description>Available Boleto types for site.</description>
+					</attribute>
+					<attribute qualifier="siteAdyenPaymentMethods" type="siteAdyenPaymentMethodList" >
+						<persistence type="property" />
+					</attribute>
+					<attribute qualifier="adyenHmacKey" type="java.lang.String">
+						<description>Adyen client side encryption public key.</description>
+						<persistence type="property" />
+						<defaultvalue>"YourHMACKeyHere"</defaultvalue>
+					</attribute>
+					<attribute qualifier="adyenSkinCode" type="java.lang.String">
+						<description>Adyen client side encryption public key.</description>
+						<persistence type="property" />
+						<defaultvalue>"YourSkinCodeHere"</defaultvalue>
+					</attribute>
+				</attributes>
+			</itemtype>
+		</typegroup>
+	</itemtypes>
+</items>

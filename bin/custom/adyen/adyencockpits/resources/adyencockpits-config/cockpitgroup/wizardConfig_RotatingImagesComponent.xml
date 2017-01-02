@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               showPrefilledValues="true" selectMode="true" createMode="true">
+	<displayed-properties>
+		<group qualifier="Base" visible="false" initially-opened="false">
+			<label key="cockpit.config.label.General" />
+			<property qualifier="RotatingImagesComponent.timeout" visible="false"/>
+			<property qualifier="RotatingImagesComponent.effect" visible="false"/>
+		</group>
+		<group qualifier="Relations" visible="true">
+			<label key="cmscockpit.Wizard.relations" />
+			<property qualifier="RotatingImagesComponent.banners">
+				<parameter name="predefinedValuesStrategy" value="cmsItemPredefinedValuesStrategy"/>
+				<parameter name="allowCreate" value="true"/>
+			</property>
+			<property qualifier="AbstractCMSComponent.restrictions">
+				<parameter name="allowCreate" value="true"/>
+				<parameter name="excludeCreateTypes" value="CMSUserRestriction,CMSCategoryRestriction,CMSProductRestriction"/>
+			</property>
+		</group>
+	</displayed-properties>
+</wizard-config>
+
+

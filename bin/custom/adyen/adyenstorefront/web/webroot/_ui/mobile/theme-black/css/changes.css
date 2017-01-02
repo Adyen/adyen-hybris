@@ -1,0 +1,166 @@
+/* Theme Specific Changes CSS */
+
+/* GENERAL */
+.top-nav-bar {
+	background: #fff;
+}
+
+
+#header {
+	background: #ffffff;
+	border-top: none;
+	border-bottom: 1px dotted #a5a5a5;
+}
+
+label.skip{
+	position:absolute;
+	left:-9999%;	
+	
+}
+
+/* CUSTOM ICON CHANGES */
+
+.ui-icon-cart {
+	background-image: url("../images/app-icon-cart.png"); 
+	height: 22px;
+	background-position: 0 center;
+}
+
+/* HD/"retina" - alternative icons
+-----------------------------------------------------------------------------------------------------------*/
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+	.ui-icon-globe {
+		background-image: url("../images/app-icon-cart-highres.png");
+		background-size: 18px 18px;
+	}
+}
+
+
+/* DEFAULT THEME CHANGES */
+/* A
+-----------------------------------------------------------------------------------------------------------*/
+
+.ui-btn-hover-a:visited,
+.ui-btn-hover-a:hover,
+.ui-btn-hover-a a.ui-link-inherit{
+	color: #000;
+}
+
+
+/* B
+-----------------------------------------------------------------------------------------------------------*/
+
+.ui-btn-up-b {
+	border: 2px solid #000     /*{b-bar-border}*/;
+	background:   #000   /*{b-bar-background-color}*/;
+	color:     	#fff    /*{b-bar-color}*/;
+	font-weight: normal;
+	text-transform: inherit;
+}
+
+.ui-btn-hover-b {
+	border: 2px solid   #000    /*{b-bhover-border}*/;
+	background: #000    /*{b-bhover-background-color}*/;
+	font-weight: normal;
+	color:   #fff   /*{b-bhover-color}*/;
+	text-transform: inherit;
+}
+.ui-btn-down-b {
+	border: 2px solid   #000    /*{b-bhover-border}*/;
+	background: #000    /*{b-bdown-background-color}*/;
+	font-weight: normal;
+	color:   #fff   /*{b-bdown-color}*/;
+	text-transform: inherit;
+}
+
+
+/* C
+-----------------------------------------------------------------------------------------------------------*/
+
+.ui-btn-up-c {
+	border: 2px solid #000     /*{b-bar-border}*/;
+	background:   #fff   /*{c-bar-background-color}*/;
+	color:     	#000   /*{c-bar-color}*/;
+	font-weight: normal;
+	text-transform: inherit;
+}
+
+.ui-btn-hover-c {
+	border: 2px solid   #000    /*{b-bhover-border}*/;
+	background: #000    /*{c-chover-background-color}*/;
+	font-weight: normal;
+	color:   #fff   /*{c-chover-color}*/;
+	text-transform: inherit;
+}
+.ui-btn-down-c {
+	border: 2px solid   #000    /*{b-bhover-border}*/;
+	background: #000    /*{c-cdown-background-color}*/;
+	font-weight: normal;
+	color:   #fff!impo   /*{c-cdown-color}*/;
+	text-transform: inherit;
+}
+
+.ui-btn-up-c:visited, .ui-btn-up-c a.ui-link-inherit{
+	color: #000;
+}
+
+/* D
+-----------------------------------------------------------------------------------------------------------*/
+
+.ui-btn-up-d,
+.ui-btn-hover-d,
+.ui-btn-down-d {
+	font-weight: normal;
+	color: #777;
+	background: #f8f8f8;
+}
+
+.ui-bar-d .ui-link {
+	color:     #919191     /*{d-bar-link-color}*/;
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+.ui-bar-d .ui-link:hover {
+	color:     #ed5f69    /*{d-bar-link-hover}*/;
+}
+
+.ui-bar-d .ui-link:active {
+	color:     #ed5f69     /*{d-bar-link-active}*/;
+}
+
+.ui-bar-d .ui-link:visited {
+	color:     #919191     /*{d-bar-link-visited}*/;
+}
+
+
+
+
+/* SITE SPECIFIC CHANGES 
+-----------------------------------------------------------------------------------------------------------*/
+
+
+/* PDP */ 
+h2.productHeadline{
+	font-family: georgia, serif;
+	font-weight: normal;
+	font-size: 17px;
+	color: #000;
+	border-bottom:1px dotted #979797;
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+.productprice{
+	font-family: georgia, serif;
+}
+
+
+/* CART */
+
+.itemPrice,
+.itemTotalPrice,
+.order_totals td.order_totals_Sum{
+	font-family: georgia, serif;
+}
+

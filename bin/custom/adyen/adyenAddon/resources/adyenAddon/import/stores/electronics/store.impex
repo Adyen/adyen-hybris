@@ -1,0 +1,17 @@
+$productCatalog=electronicsProductCatalog
+$classificationCatalog=ElectronicsClassification
+$currencies=JPY,USD
+$net=false
+$storeUid=electronics
+$defaultCurrency=USD
+$languages=ja,en,de,zh
+$defaultLanguage=en
+$unitedKingdom=GB,GG,IM,JE
+$europeNotUK=AD,AL,AT,BA,BE,BG,BY,CH,CY,CZ,DE,DK,EE,ES,FI,FO,FR,GI,GL,GR,HR,HU,IE,IS,IT,LI,LT,LU,LV,MC,MD,ME,MK,MT,NL,NO,PL,PT,RO,RS,RU,SE,SI,SK,SM,TR,UA,VA
+$asianCountries=CN,JP,VN,HK,KP,KR
+$deliveryCountries=$unitedKingdom,$europeNotUK,$asianCountries,US
+$orderProcessCode=order-process
+$pickupInStoreMode=BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions=true
+$paymentProvider=Mockup
+$expressCheckoutEnabled=true

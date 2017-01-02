@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-editor.xsd"
+                hideEmpty="true" hideReadOnly="true" groupCollections="true">
+	<template>
+	<![CDATA[
+		<table width="100%" style="margin:0px;padding:0px">
+			<tbody>
+				<tr>
+					<td colspan="2"><div style="height:6px"/></td>
+				</tr>
+				<tr>
+					<td><cockpit code="property" value="AbstractBannerComponent.media"/></td>
+					<td><div style="height:6px"/></td>
+				</tr>
+				<tr>
+					<td><cockpit code="property" value="AbstractBannerComponent.urlLink"/></td>
+					<td><div style="height:6px"/></td>
+				</tr>
+				<tr>
+					<td><cockpit code="property" value="AbstractBannerComponent.external"/></td>
+					<td><div style="height:6px"/></td>
+				</tr>
+			</tbody>
+		</table>
+	]]>
+	</template>
+	<custom-editors>
+		<property qualifier="AbstractBannerComponent.media" editorCode="simpleMediaReferenceSelector">
+			<parameter>
+				<name>mimeTypes</name>
+				<value>image/jpeg;image/gif;image/png</value>
+			</parameter>
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media</value>
+			</parameter>
+			<parameter>
+				<name>imageHeight</name>
+				<value>80px</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+	</custom-editors>
+</content-editor>

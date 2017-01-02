@@ -1,0 +1,30 @@
+#
+# Import CMS content for the site
+#
+
+$contentCatalog=__CONTENT_CATALOG_NAME__
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# Language
+$lang=zh
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;account;"我的账户"
+ ;;add-edit-address;"添加/编辑地址"
+ ;;address-book;"地址簿"
+ ;;cartPage;"您的购物篮"
+ ;;checkout-login;"进入结算流程"
+ ;;faq;"常见问题解答"
+ ;;homepage;"主页"
+ ;;login;"登录"
+ ;;multiStepCheckoutSummaryPage;"结帐"
+ ;;notFound;"没有找到"
+ ;;order;"订单详细信息"
+ ;;orderConfirmationPage;"订单确认"
+ ;;orders;"订单历史记录"
+ ;;payment-details;"付款详细信息"
+ ;;profile;"个人资料"
+ ;;searchEmpty;"无结果"
+ ;;storefinderPage;"店铺搜索器"
+ ;;updatePassword;"更新忘记的密码"

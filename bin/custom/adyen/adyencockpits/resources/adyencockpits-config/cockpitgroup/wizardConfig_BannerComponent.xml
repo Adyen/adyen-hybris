@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               showPrefilledValues="true" selectMode="true" createMode="true" displaySubtypes="true">
+	<displayed-properties>
+		<group qualifier="Properties" visible="true" initially-opened="true">
+			<label key="config.wizardConfig.properties" />
+			<property qualifier="BannerComponent.page">
+				<parameter name="allowCreate" value="true"/>
+				<parameter name="predefinedValuesStrategy" value="cmsItemPredefinedValuesStrategy"/>
+			</property>
+			<property qualifier="BannerComponent.headline"/>
+			<property qualifier="BannerComponent.content"/>
+			<property qualifier="AbstractBannerComponent.urlLink"/>
+			<property qualifier="AbstractBannerComponent.external"/>
+			<property qualifier="AbstractBannerComponent.media" editorCode="simpleMediaReferenceSelector">
+				<parameter name="predefinedValuesStrategy" value="imageMediaPredefinedValuesStrategy"/>
+			</property>
+		</group>
+	</displayed-properties>
+</wizard-config>

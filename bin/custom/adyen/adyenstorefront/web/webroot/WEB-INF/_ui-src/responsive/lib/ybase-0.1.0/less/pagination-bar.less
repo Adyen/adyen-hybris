@@ -1,0 +1,65 @@
+.pagination-bar{
+	margin:  (@grid-gutter-width/2) 0;
+	line-height: 35px;
+
+
+
+	.pagination{
+		margin: 0;
+		float: right;
+	}
+
+	.pager{
+		margin: 0;
+		float: right;
+	}
+
+	.form-group{
+	 	margin: 0;
+	}
+
+	@media (min-width: @screen-md-min) { 
+		.form-group{
+			margin: 0;
+			 .center-block();
+			 width: 100px;
+		}
+	}
+
+
+	&.top{
+
+		@media (max-width: @screen-sm-max) { 
+			.sort-refine-bar{
+				.clearfix;
+				margin-top:  (@grid-gutter-width/2);
+			
+				clear: both;
+				background-color: @grayblue;
+				.well-sm;
+
+				.form-group{
+					select{
+						width: auto;
+						.input-lg;
+					}
+				}
+
+				button{
+					.btn-lg;
+				}
+			}
+		}
+
+	}
+
+	&.bottom{
+		.helper{
+			display: none;
+		}
+
+		.sort-refine-bar{
+			display: none;
+		}
+	}
+}

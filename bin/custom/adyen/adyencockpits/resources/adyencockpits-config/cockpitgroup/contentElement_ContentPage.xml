@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ContentPage" name="type.contentpage.name" 
+							description="type.contentpage.description" 
+							image="cmscockpit/images/contentpage_for_wizard.gif" />
+
+</content-elements>

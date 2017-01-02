@@ -1,0 +1,9 @@
+#Ant properties
+#Thu Jan 29 23:39:45 CET 2015
+builddate=20150129 2339
+description=adyenAddon
+name=adyenAddon
+releasedate=20150128 1159
+vendor=hybris
+version=5.5.0.0-M3
+version.api=5.5.0

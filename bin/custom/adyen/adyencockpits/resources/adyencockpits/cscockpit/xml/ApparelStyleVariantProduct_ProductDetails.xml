@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view>
+	<group name="General">
+		<custom class="de.hybris.platform.cscockpit.services.config.impl.ProductThumbnailColumn" name="Thumbnail" visible="true">
+			<label key="adyencockpits.ApparelVariantProduct.style" />
+		</custom>
+		<group name="ProductDetails">
+			<label key="adyencockpits.Apparel.genders" />
+
+			<custom class="de.hybris.platform.cscockpit.services.config.impl.ProductDescriptionColumn" name="Description" visible="true">
+				<label key="config.general.description" />
+			</custom>
+		</group>
+		<group name="Genders">
+			<label key="adyencockpits.Apparel.genders" />
+			<property qualifier="ApparelProduct.genders" visible="true"/>
+		</group>
+		<group name="Style">
+			<label key="adyencockpits.ApparelVariantProduct.style" />
+			<property qualifier="ApparelStyleVariantProduct.style" visible="true"/>
+		</group>
+		<group name="SwatchColour">
+			<label key="adyencockpits.ApparelVariantProduct.colour" />
+			<property qualifier="ApparelStyleVariantProduct.swatchColour" visible="true"/>
+		</group>
+	</group>
+</list-view>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Consignment Process Actions -->
+
+	<bean id="sendConsignmentToWarehouseAction" class="com.adyen.fulfilmentprocess.actions.consignment.SendConsignmentToWarehouseAction"  parent="abstractAction">
+		<property name="process2WarehouseAdapter" ref="process2WarehouseAdapter"/>
+	</bean>
+
+	<bean id="waitBeforeTransmissionAction" class="com.adyen.fulfilmentprocess.actions.consignment.WaitBeforeTransmissionAction"  parent="abstractAction"/>
+
+	<bean id="receiveConsignmentStatusAction" class="com.adyen.fulfilmentprocess.actions.consignment.ReceiveConsignmentStatusAction"  parent="abstractAction"/>
+
+	<bean id="confirmConsignmentPickupAction" class="com.adyen.fulfilmentprocess.actions.consignment.ConfirmConsignmentPickupAction"  parent="abstractAction"/>
+
+	<bean id="sendDeliveryMessageAction" class="com.adyen.fulfilmentprocess.actions.consignment.SendDeliveryMessageAction"  parent="abstractAction">
+		<property name="eventService" ref="eventService"/>
+	</bean>
+
+	<bean id="sendReadyForPickupMessageAction" class="com.adyen.fulfilmentprocess.actions.consignment.SendReadyForPickupMessageAction"  parent="abstractAction">
+		<property name="eventService" ref="eventService"/>
+	</bean>
+	
+	<bean id="sendPickedUpMessageAction" class="com.adyen.fulfilmentprocess.actions.consignment.SendPickedUpMessageAction"  parent="abstractAction">
+		<property name="eventService" ref="eventService"/>
+	</bean>
+
+	<bean id="cancelConsignmentAction" class="com.adyen.fulfilmentprocess.actions.consignment.CancelConsignmentAction"  parent="abstractAction"/>
+
+	<bean id="sendCancelMessageAction" class="com.adyen.fulfilmentprocess.actions.consignment.SendCancelMessageAction"  parent="abstractAction"/>
+
+	<bean id="subprocessEndAction" class="com.adyen.fulfilmentprocess.actions.consignment.SubprocessEndAction"  parent="abstractAction">
+		<property name="businessProcessService" ref="businessProcessService"/>
+	</bean>
+
+	<bean id="allowShipmentAction" class="com.adyen.fulfilmentprocess.actions.consignment.AllowShipmentAction"  parent="abstractAction">
+		<property name="process2WarehouseAdapter" ref="process2WarehouseAdapter"/>
+	</bean>
+	
+	<bean id="capturePaymentAction" class="com.adyen.fulfilmentprocess.actions.consignment.CapturePaymentAction" parent="abstractAction">
+		<property name="adyenPaymentService" ref="paymentService" />
+	</bean>
+
+</beans>

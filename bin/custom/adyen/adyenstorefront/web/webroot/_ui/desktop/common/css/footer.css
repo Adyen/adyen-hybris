@@ -1,0 +1,41 @@
+/*
+## Footer
+********************************************************************/
+
+
+.footer{
+	border-top:1px solid #979797;
+	margin:50px 0 50px 0;
+	padding:25px 0 0 0;
+	clear: both;
+}
+
+.footer .links{
+	float:left;
+	
+}
+
+.footer .links .title{
+	
+}
+
+
+.footer .links ul{
+	float:left;
+	width:192px;
+	
+}
+
+
+.footer .links a{
+	font-weight:bold;
+}
+
+
+
+
+
+.footer .copyright{
+	clear:both;
+	padding-top: 10px;
+}

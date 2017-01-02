@@ -1,0 +1,10 @@
+#
+# Import links for the Multi Channel Cockpit
+#
+
+# Language
+$lang=en
+
+# DynamicLink
+UPDATE DynamicLink;code[unique=true];description[lang=$lang]
+ ;accelerator-site-links;"Accelerator Storefront"

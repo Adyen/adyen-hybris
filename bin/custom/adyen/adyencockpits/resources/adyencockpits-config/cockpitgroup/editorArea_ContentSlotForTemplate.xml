@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	<group qualifier="General" visible="true" initially-opened="true">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="CMSRelation.uid"/>
+		<property qualifier="CMSRelation.catalogVersion" editor="shortListEditor"/>
+		<property qualifier="ContentSlotForTemplate.allowOverwrite"/>
+		<property qualifier="ContentSlotForTemplate.position"/>
+		<property qualifier="ContentSlotForTemplate.pageTemplate"/>
+		<property qualifier="ContentSlotForTemplate.contentSlot"/>
+	</group>
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="Item.pk" />
+		<property qualifier="Item.creationTime" />
+		<property qualifier="Item.modifiedtime" />
+	</group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+</editor>

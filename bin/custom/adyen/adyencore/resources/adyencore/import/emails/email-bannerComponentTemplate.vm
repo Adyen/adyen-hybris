@@ -1,0 +1,8 @@
+#set ( $siteUrl = $ctx.urlResolutionService.getWebsiteUrlForSite($ctx.site,false,$ctx.urlLink) )
+#set ( $mediaUrl =  $ctx.urlResolutionService.getMediaUrlForSite($ctx.site,false,$ctx.media.url) )
+
+<div>
+	<a href="${siteUrl}">
+		<img title="${ctx.headline}" alt="#if(${ctx.media.altText})${ctx.media.altText}#end" src="${mediaUrl}">
+	</a>
+</div>

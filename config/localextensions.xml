@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
+	<extensions>
+		<!-- 
+				All extensions located in ${HYBRIS_BIN_DIR}/platform/ext are automatically loaded. 
+				More information about how to configure available extensions can be found here : https://wiki.hybris.com/x/nZVzC
+		-->
+				
+		<path dir="${HYBRIS_BIN_DIR}" />
+		
+
+										
+		<!-- ext-platform -->
+		<extension name="admincockpit" />
+		<extension name="backoffice" />
+		<extension name="cockpit" />
+		<extension name="hmc" />
+		<extension name="mcc" />
+		<extension name="platformhmc" />
+
+										
+		<!-- ext-commerce -->
+		<extension name="btg" />
+		<extension name="btgcockpit" />
+		<extension name="commercesearch" />
+		<extension name="commercesearchbackoffice" />
+		<extension name="commercesearchhmc" />
+		<extension name="commerceservices" />
+		<extension name="basecommerce" />
+		<extension name="payment" />
+		<extension name="promotions" />
+		<extension name="voucher" />
+		<extension name="customerreview" />
+		<extension name="ticketsystem" />
+		<extension name="solrfacetsearch" />
+		<extension name="solrfacetsearchhmc" />
+		<extension name="b2bcommerce" />
+		<extension name="b2bapprovalprocess" />
+		<extension name="b2badmincockpit" />
+		<extension name="oci" />
+		<extension name="wishlist" />
+		<extension name="commercefacades" />
+
+										
+		<!-- ext-data -->
+		<!--extension name="commercesearchsampledata" /-->
+		<extension name="apparelstore" />
+		<!--extension name="electronicsstore" />
+		<extension name="b2bacceleratorsampledata" />
+		<extension name="instoresampledata" /-->
+
+										
+		<!-- ext-content -->
+		<extension name="productcockpit" />
+		<extension name="cms2" />
+		<extension name="cms2lib" />
+		<extension name="cmscockpit" />
+		<extension name="bmecat" />
+		<extension name="bmecathmc" />
+		<extension name="importcockpit" />
+		<!--extension name="classificationsystems" />
+		<extension name="classificationsystemshmc" /-->
+
+										
+		<!-- ext-channel -->
+		<extension name="cscockpit" />
+		<!--extension name="mobileoptionals" />
+		<extension name="mobileservices" /-->
+		<extension name="instore" />
+
+										
+		<!-- ext-addon -->
+		<extension name="addonsupport" />
+		<!-- extension name="b2ccheckoutaddon" /-->
+
+										
+		<!-- ext-print -->
+		<!--extension name="print" />
+		<extension name="printcockpit" />
+		<extension name="printhmc" /-->
+
+										
+		<!-- ext-template -->
+		<!--extension name="ycommercewebservices" />
+		<extension name="ycommercewebserviceshmc" />
+		<extension name="ycommercewebservicestest" />
+		<extension name="yacceleratorfulfilmentprocess" />
+		<extension name="yaddon" />
+		<extension name="yacceleratortest" />
+		<extension name="yacceleratorstorefront" />
+		<extension name="yacceleratorinitialdata" />
+		<extension name="yacceleratorcockpits" />
+		<extension name="yb2bacceleratorcore" />
+		<extension name="yb2bacceleratorfacades" />
+		<extension name="yb2bacceleratorinitialdata" />
+		<extension name="yb2bacceleratorstorefront" />
+		<extension name="yb2bacceleratortest" />
+		<extension name="yinstoreinitialdata" /-->
+
+										
+		<!-- ext-accelerator -->
+		<extension name="acceleratorservices" />
+		<extension name="acceleratorfacades" />
+		<extension name="acceleratorcms" />
+		<extension name="acceleratorstorefrontcommons" />
+		<!--extension name="b2bacceleratorfacades" />
+		<extension name="b2bacceleratorservices" /-->
+		
+		
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenfacades"/>
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyencore"/>
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyeninitialdata"/>
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenAddon"/>
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyencockpits"/>		
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenCommerceServices" />
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenfulfilmentprocess" />
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenServices" />
+		<extension dir="${HYBRIS_BIN_DIR}/custom/adyen/adyenstorefront"/>
+
+				
+	</extensions>
+</hybrisconfig>

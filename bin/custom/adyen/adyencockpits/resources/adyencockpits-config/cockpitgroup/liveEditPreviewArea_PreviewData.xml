@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	<group qualifier="General">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="PreviewData.user" />
+		<property qualifier="PreviewData.userGroup" />
+		<property qualifier="PreviewData.time">
+			<parameter>
+				<name>showExtrasMenu</name>
+				<value>true</value>
+			</parameter>
+		</property>
+		<property qualifier="PreviewData.language" editor="simple" />
+		<property qualifier="PreviewData.page" />
+		<property qualifier="PreviewData.uiExperience" editor="uiExperience" />
+	</group>
+</editor>

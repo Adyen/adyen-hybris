@@ -1,0 +1,29 @@
+#
+# Creates Content pages for existing templates.
+# Header with catalogversion etc. is provided by AcceleratorWizardHelper class
+INSERT_UPDATE ProductPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;productDetails;Product Details;ProductDetailsPageTemplate;true;
+
+INSERT_UPDATE CategoryPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;productList;Product List;ProductListPageTemplate;true;
+;;productGrid;Product Grid;ProductGridPageTemplate;false;
+;;category;Default Category Page;CategoryPageTemplate;false;
+
+INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;cartPage;CartPage;CartPageTemplate
+;;search;SearchResults;SearchResultsListPageTemplate
+;;searchEmpty;SearchResultsEmpty;SearchResultsEmptyPageTemplate
+;;account;AccountPage;AccountPageTemplate
+;;profile;ProfilePage;AccountPageTemplate
+;;address-book;AddressBookPage;AccountPageTemplate
+;;add-edit-address;AddEditAddressPage;AccountPageTemplate
+;;payment-details;PaymentDetailsPage;AccountPageTemplate
+;;order;OrderDetailsPage;AccountPageTemplate
+;;orders;OrderHistoryPage;AccountPageTemplate
+;;multiStepCheckoutSummaryPage;MultiStepCheckoutSummaryPage;MultiStepCheckoutSummaryPageTemplate
+;;storefinderPage;StoreFinderPage;StoreFinderPageTemplate
+;;login;LoginPage;LoginPageTemplate
+;;checkout-login;CheckoutLoginPage;CheckoutLoginPageTemplate
+;;updatePassword;UpdateForgottenPasswordPage;LoginPageTemplate
+;;orderConfirmationPage;OrderConfirmationPage;OrderConfirmationPageTemplate
+;;notFound;NotFound;ErrorPageTemplate

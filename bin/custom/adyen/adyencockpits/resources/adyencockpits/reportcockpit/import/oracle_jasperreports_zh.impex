@@ -1,0 +1,22 @@
+#
+# Localise hsqldb jasper reports
+#
+
+# Language
+$lang=zh
+
+$defaultCatalog=Default
+$defaultCatalogVersion=Staged
+$catalogVersion=catalogVersion(catalog(id[default='$defaultCatalog']),version[default='$defaultCatalogVersion'])[unique=true,default='$defaultCatalog:$defaultCatalogVersion']
+
+
+# Create Countries
+UPDATE JasperMedia;code[unique=true];$catalogVersion;title[lang=$lang];reportDescription[lang=$lang]
+ ;averageOrderValueBySite;;"各站点的平均订单价值";"此小组件显示某个时段内的平均订单价值"
+ ;orderVolumeBySite;;"各站点的订单量";"显示特定时段内下达的订单数"
+ ;salesByCountryAndSite;;"各国家/地区和站点的销售量";"此小组件显示各国家/地区的营业收入"
+ ;salesByHourAndSite;;"各时段和站点的销售量";"显示 24 小时内每小时的总销售量"
+ ;salesPerCategoryBySite;;"各站点和类别的销售量";"此小组件显示特定时段内各类别的销售量"
+ ;salesPerRegionBySite;;"各站点和区域的销售量";"此小组件显示某个国家/地区内各区域的销售量"
+ ;topSellingProductsBySite;;"各站点的热销产品";"显示系统内前 5 大热销商品"
+ ;totalSalesBySite;;"各站点的总销售量";"显示特定时段内各站点的总销售量"

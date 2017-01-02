@@ -1,0 +1,59 @@
+/*
+## checkoutProgress
+********************************************************************/
+
+
+#checkoutProgress{
+	margin:0 0 20px 0;
+	height:30px;
+	background:#eee;
+}
+
+#checkoutProgress li.step{
+	float:left;
+	background:#eee;
+	height:30px;
+	line-height:30px;
+	
+}
+
+#checkoutProgress.steps-1 li.step{width:100%;}
+#checkoutProgress.steps-2 li.step{width:50%;}
+#checkoutProgress.steps-3 li.step{width:33%;}
+#checkoutProgress.steps-4 li.step{width:25%;}
+#checkoutProgress.steps-5 li.step{width:20%;}
+#checkoutProgress.steps-6 li.step{width:16%;}
+#checkoutProgress.steps-7 li.step{width:14%;}
+#checkoutProgress.steps-8 li.step{width:12.5%;}
+#checkoutProgress.steps-9 li.step{width:11%;}
+#checkoutProgress.steps-10 li.step{width:10%;}
+
+
+#checkoutProgress li.step a{
+	display:block;
+	text-align:center;
+	color:inherit;
+}
+
+
+#checkoutProgress li.step.visited{
+	
+}
+
+#checkoutProgress li.step.active{
+	color:#fff;
+	background:#333;
+}
+
+
+
+#checkoutProgress li.step.disabled{
+	color: #999;
+}
+
+
+
+
+
+
+

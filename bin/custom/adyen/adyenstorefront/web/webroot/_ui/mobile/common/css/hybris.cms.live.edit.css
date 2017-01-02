@@ -1,0 +1,70 @@
+/*
+ * Stylesheet loaded when the site is being viewed in lived edit mode
+ */
+
+/*
+ * cmsLiveEditComponent class is added to divs that are injected by the cms tags while in live edit mode.
+ * Note that these divs do not normally exist in the html, but are injected during live edit only.
+ *
+ * Select all elements that are direct children of the divs with the liveEditElement class.
+ * and put a red border around the elements.
+ */
+
+
+
+
+
+/* Content Slot */
+
+.yCmsLiveEdit .yCmsContentSlot {
+	padding-top: 10px;
+	padding-bottom: 5px;
+}
+
+.yCmsLiveEdit .yCmsContentSlot:before {
+	content: "Slot: " attr(data-cms-content-slot-position);
+	font-weight: bold;
+	display: block;
+	z-index: -1;
+	padding: 5px;
+	background: #ddd;
+}
+
+
+/* Component */
+
+.yCmsComponent {
+	position: relative;
+}
+
+.yCmsLiveEdit .yCmsComponent > * {
+	cursor: pointer;
+	border: 1px dashed #33ba31 !important;
+	box-sizing: border-box !important;
+	-moz-box-sizing: border-box !important;
+	-webkit-sizing: border-box !important;
+	-ms-sizing: border-box !important;
+}
+
+.yCmsLiveEdit .yCmsComponent > *:hover {
+	cursor: pointer;
+	border: 1px solid #E13815 !important;
+	box-sizing: border-box !important;
+	-moz-box-sizing: border-box !important;
+	-webkit-sizing: border-box !important;
+	-ms-sizing: border-box !important;
+}
+
+/* Custom */
+
+.yCmsLiveEdit #header .yCmsContentSlot {
+	padding-top: 0;
+}
+
+.yCmsLiveEdit .yCmsComponent .yCmsComponentEmpty {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border: 2px solid #BACAD5;
+	border-radius: 4px 4px 4px 4px;
+	padding: 5px;
+}

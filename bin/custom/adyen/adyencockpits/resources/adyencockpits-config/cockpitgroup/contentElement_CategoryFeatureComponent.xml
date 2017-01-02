@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CategoryFeatureComponent" name="type.CategoryFeatureComponent.name"
+							description="type.CategoryFeatureComponent.description"
+							image="cmscockpit/images/component-icon-categoryfeature.gif" 
+							refImage="cmscockpit/images/component-icon-categoryfeature-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-categoryfeature-small.gif"
+							/>
+
+</content-elements>

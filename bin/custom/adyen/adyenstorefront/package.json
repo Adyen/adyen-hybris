@@ -1,0 +1,25 @@
+{
+  "name": "adyenstorefront",
+  "version": "0.0.0",
+  "description": "grunt config for the accelerator",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"grunt"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-less": "^0.11.3",
+    "grunt-contrib-watch": "^0.6.1",
+    "gulp": "",
+    "gulp-debug": "^0.3.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-watch": "^0.6.2",
+    "gulp-plumber": "^0.6.1",
+    "gulp-less-sourcemap": "^1.3.3"
+  },
+  "dependencies": {
+    "grunt-sync": "0.0.8"
+  }
+}
