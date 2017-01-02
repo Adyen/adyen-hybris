@@ -1,0 +1,5 @@
+$productCatalog=electronicsProductCatalog
+$stagedCatalogVersion=target(CatalogVersion.catalog(id[default=$productCatalog]),CatalogVersion.version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$onlineCatalogVersion=target(CatalogVersion.catalog(id[default=$productCatalog]),CatalogVersion.version[default='Online'])[unique=true,default=$productCatalog:Online]
+$classificationSystem=ElectronicsClassification
+$classificationSystemVersion=target(CatalogVersion.catalog(id[default=$classificationSystem]),CatalogVersion.version[default='1.0'])[unique=true,default=$classificationSystem:1.0]

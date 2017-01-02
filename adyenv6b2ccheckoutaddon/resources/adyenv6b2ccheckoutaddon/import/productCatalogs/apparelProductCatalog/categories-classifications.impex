@@ -1,0 +1,4 @@
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$classCatalogVersion=catalogversion(catalog(id[default='ElectronicsClassification']),version[default='1.0'])[unique=true,default='ElectronicsClassification:1.0']
+$classSystemVersion=systemVersion(catalog(id[default='ElectronicsClassification']),version[default='1.0'])[unique=true]

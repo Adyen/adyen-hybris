@@ -1,0 +1,5 @@
+$contentCatalog=apparel-ukContentCatalog
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$productCatalogVersion=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true]
+$contentCatalogVersion=catalogVersion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true]
