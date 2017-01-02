@@ -17,13 +17,9 @@ Hybris 5.1 is running on Java 7.
 5. Initialize the platform from HAC. 
   * Full initialization will remove all data. If this is not acceptable an update can be done instead. However, there is data loaded during the initialization/update that is required for the integration to function correctly.
   
-## Usage
+## Usage & Documentation
   
-Explain how to use after installation.
-  
-## Documentation
-  
-The documentation is inside the document folder of this repository.
+This is described in the documentation inside the document folder of this repository
   
 ## Licence
   
