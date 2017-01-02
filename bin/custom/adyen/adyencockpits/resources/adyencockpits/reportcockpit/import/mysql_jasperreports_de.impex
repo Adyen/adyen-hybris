@@ -1,0 +1,22 @@
+#
+# Localise hsqldb jasper reports
+#
+
+# Language
+$lang=de
+
+$defaultCatalog=Default
+$defaultCatalogVersion=Staged
+$catalogVersion=catalogVersion(catalog(id[default='$defaultCatalog']),version[default='$defaultCatalogVersion'])[unique=true,default='$defaultCatalog:$defaultCatalogVersion']
+
+
+# Create Countries
+UPDATE JasperMedia;code[unique=true];$catalogVersion;title[lang=$lang];reportDescription[lang=$lang]
+ ;averageOrderValueBySite;;"Durchschnittlicher Bestellwert";"Dieses Widget zeigt den durchschnittliche Bestellwert für einen bestimmten Zeitraum"
+ ;orderVolumeBySite;;"Bestellvolumen";"Zeigt an, wie viele Bestellungen in einem bestimmten Zeitraum getätigt wurden"
+ ;salesByCountryAndSite;;"Umsatz pro Land";"Dieses Widget zeigt den Umsatz pro Land"
+ ;salesByHourAndSite;;"Umsatz pro Stunde";"Zeigt den Umsatz pro Stunde über einen Zeitraum von 24 Stunden"
+ ;salesPerCategoryBySite;;"Umsatz pro Kategorie";"Dieses Widget zeigt den Umsatz pro Kategorie für einen bestimmten Zeitraum"
+ ;salesPerRegionBySite;;"Umsatz pro Region";"Dieses Widget zeigt den Umsatz pro Region eines Landes"
+ ;topSellingProductsBySite;;"Meistverkaufte Produkte";"Zeigt eine Liste der 5 meistverkauften Produkte im gesamten System"
+ ;totalSalesBySite;;"Gesamtumsatz";"Zeigt den Gesamtumsatz in einem bestimmten Zeitraum"

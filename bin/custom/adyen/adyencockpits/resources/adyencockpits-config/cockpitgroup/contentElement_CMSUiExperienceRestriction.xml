@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSUiExperienceRestriction" name="type.cmsuiexperiencerestriction.name"
+							description="type.cmsuiexperiencerestriction.description"
+							image="cmscockpit/images/RestrictionProduct.gif" 
+							refImage="cmscockpit/images/RestrictionProductReference.gif"/>
+
+</content-elements>

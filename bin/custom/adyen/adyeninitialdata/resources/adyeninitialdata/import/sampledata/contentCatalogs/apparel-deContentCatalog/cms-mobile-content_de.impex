@@ -1,0 +1,200 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+#
+#	ImpEx for Apparel DE Mobile Site CMS Content, de localisations
+#
+
+$contentCatalog=apparel-deContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$productCatalog=apparelProductCatalog
+$productCV=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$picture=media(code, $contentCV);
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/contentCatalogs/$contentCatalog
+$jarResourceCms=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/cockpits/cmscockpit
+
+# Language
+$lang=de
+
+# Import config properties into impex macros
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+
+# Load the storefront context root config param
+$storefrontContextRoot=$config-storefrontContextRoot
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;/images/theme/mobilelogo-hybris.png;mobilelogo-hybris.png;$siteResource/images/theme/mobilelogo-hybris.png;image/png;;Mobile hybris Accelerator
+
+
+# CMS Site logo
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileSiteLogoComponent;/images/theme/mobilelogo-hybris.png
+
+
+# CMS Link Components #
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=$lang]
+;;MobileAccountLink;"Konto"
+;;MobileCartFooterLink;"Warenkorb"
+;;MobileConnectFooterLink;"Verbinden"
+;;MobileHomeFooterLink;"Startseite"
+;;MobileStoreFooterLink;"Händleren"
+;;MobileStoresLink;"Händleren"
+
+
+# CMS Mini Cart Component #
+UPDATE MiniCartComponent;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+;;MobileMiniCart;"Ihre Einkaufstasche"
+
+
+# CMS Navigation Nodes #
+UPDATE CMSNavigationNode;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+;;MobileAcceleratorNavNode;"Accelerator"
+;;MobileAccessoriesMenNavNodeMenu;"Men"
+;;MobileAccessoriesWomenNavNodeMenu;"Women"
+;;MobileAllBrandsNavNode;"Alle Marken"
+;;MobileAllCategoriesNavNode;"Alle Kategorien"
+;;MobileApparelDENavNode;"DE Website Kleidung"
+;;MobileBackpacksBrandsNavNode;"Marken"
+;;MobileBackpacksNavNode;"Rucksäcke"
+;;MobileBrandsNavNode;"Marken"
+;;MobileCapsNavNode;"Kappen"
+;;MobileCategoriesNavNode;"Kategorien"
+;;MobileClothesCategoriesNavNode;"Bekleidung"
+;;MobileClothesNavNode;"Bekleidung"
+;;MobileGogglesNavNode;"Skibrillen"
+;;MobileGuidesNavNode;"Guides"
+;;MobileHelmetNavNode;"Helmet"
+;;MobileHybrisNavNode;"Hybris"
+;;MobileOthersNavNode;"Andere"
+;;MobileShirtsBrandsNavNode;"Marken"
+;;MobileShirtsNavNode;"Hemden"
+;;MobileShoesBrandsNavNode;"Marken"
+;;MobileShoesNavNode;"Schuhe"
+;;MobileSiteRootNode;"SiteRoot"
+;;MobileSkiGearCategoriesNavNode;"Skiausrüstung"
+;;MobileSkiGearNavNode;"Skiausrüstung"
+;;MobileSnowKitNavNodeMenu;"Kit"
+;;MobileSnowwearMenNavNodeMenu;"Men"
+;;MobileSnowwearWomenNavNodeMenu;"Women"
+;;MobileSnowwearYouthNavNodeMenu;"Kinder"
+;;MobileStreetwearMenNavNodeMenu;"Men"
+;;MobileStreetwearWomenNavNodeMenu;"Women"
+;;MobileStreetwearYouthNavNodeMenu;"Kinder"
+;;MobileSunglassesBrandsNavNode;"Marken"
+;;MobileSunglassesNavNode;"Sonnenbrillen"
+;;MobileSurfBoardsNavNodeMenu;"Boards"
+;;MobileSurfSandalsNavNodeMenu;"Sandalen"
+;;MobileSurfTShadesNavNodeMenu;"Sonnenbrillen"
+;;MobileSurfTShirtNavNodeMenu;"T-shirt"
+;;MobileToolsNavNode;"Zeuge"
+;;MobileYouthBoardshortsNavNode;"Boardshorts"
+;;MobileYouthTShirtNavNode;"T-shirts"
+
+
+# CMS tabs components #
+UPDATE CMSTabParagraphComponent;$contentCV[unique=true];uid[unique=true];title[lang=$lang];content[lang=$lang]
+;;MobiledeliveryTab;Lieferung;"<p align=""justify"">Lorem ipsum dolor sit amet, dolor sed, ut nam ut. Senectus mauris egestas a massa, enim placeat wisi congue purus fermentum. Ut aptent mauris dapibus congue in sit. Sed dolor varius amet feugiat volutpat dignissim, pede a rhoncus sodales aliquam adipiscing, dapibus massa fusce. Dui egestas ornare urna nibh facilisi, cras posuere.</p>"
+
+
+# CMS Footer Component
+UPDATE FooterComponent;$contentCV[unique=true];uid[unique=true];notice[lang=$lang]
+;;MobileFooterComponent;"© 2013 hybris GmbH"
+
+# CMS Paragraph Component (Contact information)
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=$lang]
+;;MobileContactInfo;Hotline: <a href="tel:%2B49%20089%20890%20650">+49 (0)89 / 890 650</a>
+
+# Generic Banners (banners are not localizable so we must create a separate banner per language)
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;MobileGeneric_148x300_MobileApp_DE_01.jpg;$siteResource/images/banners/site/Generic_148x300_MobileApp_DE_01.jpg;;;"Immer aktuell! Jetzt unsere App laden";
+;;MobileGeneric_788x120_FacebookOffers_DE_01.jpg;$siteResource/images/banners/site/Generic_788x120_FacebookOffers_DE_01.jpg;;;"Bis zu 30% gänstiger! Besuche uns auf faceboo für exklusive Angebote";
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileFacebookOffersBanner;MobileGeneric_788x120_FacebookOffers_DE_01.jpg
+;;MobileMobileAppBanner;MobileGeneric_148x300_MobileApp_DE_01.jpg
+
+# CMS ProductReferences Components
+UPDATE ProductReferencesComponent;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+;;MobileCrossSelling;"Complete the look."
+;;MobileOthers;"Accessories"
+;;MobileSimilar;"Das kannte Ihnen auch gefallen"
+;;Mobileaccessories;"Accessories"
+
+# CMS CartSuggestion Components
+UPDATE CartSuggestionComponent;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+;;MobileCartSuggestions;"Das kannte Ihnen auch gefallen"
+
+# Apparel DE Homepage #
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];&imageRef;folder(qualifier)[default='images'];altText
+;;MobileSunglassesBrands;$siteResource/images/banners/category_banners/mobile_sunglasses_DE.jpg;;;;"Sunglasses"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileSunglassesBrandsBanner;MobileSunglassesBrands
+
+# Apparel Search Results Page #
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;MobileAppa_788x80_Save_DE_01.jpg;$siteResource/images/banners/site/Appa_788x80_Save_DE_01.jpg;;;"Online kaufen und sparen. Halten Sie Ausschau nach den besten Sparangeboten in unserem Store"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileBuyOnlineSimpleBannerComponent;MobileAppa_788x80_Save_DE_01.jpg
+
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=$lang]
+;;MobileNoSearchResultsParagraphComponent;"<h2>Leider wurden für Ihre Suche keine Ergebnisse gefunden</h2><p>Vorschläge</p><ul>	<li>Bitte überprüfen Sie die Rechtschreibung des eingegebenen Begriffs</li>	<li>Ihre Eingabe war moglicherweise zu spezifisch. Verbessern Sie die Suchergebnisse, indem Sie weniger Begriffe eingeben</li>	<li>Wählen Sie die Produkte über die Kategorien oben aus</li></ul>"
+
+# Apparel Cart Page #
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;MobileAppa_148x148_Help_DE_01.jpg;$siteResource/images/banners/site/Appa_148x148_Help_DE_01.jpg;;;"Benütigen Sie Hilfe? Klicken Sie hier für Hilfe beim Bezahlen";
+;;MobileAppa_788x80_FreeDelivery_DE_01.jpg;$siteResource/images/banners/site/Appa_788x80_FreeDelivery_DE_01.jpg;;;"Bestellen Sie vor 18 Uhr für eine Lieferung am folgenden Tag";
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileFreeDeliverySimpleBannerComponent;MobileAppa_788x80_FreeDelivery_DE_01.jpg
+;;MobileHelpWithCheckoutSimpleBannerComponent;MobileAppa_148x148_Help_DE_01.jpg
+
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=$lang]
+;;MobileEmptyCartParagraphComponent;"<h2>Ihre Einkaufstasche ist leer</h2><p>Vorschläge</p><ul>	<li>Wählen Sie die Produkte über die Kategorien oben aus</li></ul>"
+
+# Apparel DE FAQ Page #
+
+# CMS Paragraph Component (Contact information)
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=$lang]
+;;MobilefaqMenuParagraph;"<div class=""nav_column"">	<div class=""title_holder"">		<div class=""title"">			<div class=""title-top"">				<span></span>			</div>		</div>		<h2>Häufig gestellte Fragen</h2>	</div>	<div class=""item"">		<ul class=""facet_block indent"">			<li><a href=""#a00"">Rücksendung und Rückerstattungen</a></li>			<li><a href=""#b00"">Lieferinformationen</a></li>			<li><a href=""#c00"">Registrierung</a></li>			<li><a href=""#d00"">Ihr Online-Konto</a></li>			<li><a href=""#e00"">Bestellungen</a></li>			<li><a href=""#f00"">Werbeaktionen und Rabatte</a></li>			<li><a href=""#g00"">Produkt- und allgemeine Informationen</a></li>			<li><a href=""#h00"">Informationen zu Verkaufsstellen</a></li>			<li><a href=""#i00"">Geschäftliche Kontakte</a></li>			<li><a href=""#j00"">Einkaufsratgeber</a></li>			<li><a href=""#k00"">Größenratgeber</a></li>			<li><a href=""#l00"">Datenschutz und Sicherheit</a></li>		</ul>	</div></div>"
+;;MobilefaqTextParagraph;"<a name=""00""></a><div class=""textpage textpage-faqs""><div class=""item_container"">		<h2><a name=""a00""></a>Rücksendung und Rückerstattungen</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>		<div class=""item_container"">		<h2><a name=""b00""></a>Lieferinformationen</h2>		<a class=""faq-menulink"" href=""#b01"">Lieferoptionen</a>		<a class=""faq-menulink"" href=""#b02"">Lieferzeiten&amp; Kosten</a>		<a class=""faq-menulink"" href=""#b03"">Tracking-Informationen anfordern</a>		<a class=""faq-menulink"" href=""#b04"">Informationen zum aktuellen Lieferungsstatus</a>			<h3><a name=""b01""></a>Lieferoptionen</h3>		<p>			Die für Sie verfügbaren Lieferoptionen werden im Bereich „Check-out“ unter „Liefermethode“ angezeigt.<br><br>			Je nach Lieferadresse sind einige dieser Optionen möglicherweise nicht verfügbar.			</p><ul>			<li>					<b>Home Delivery</b> - Gratis-Standardversand im Raum UK für alle Bestellungen im Wert von über 50 GBP innerhalb von 4 Werktagen (*Ausnahmen sind möglich)				</li>				<li>					<b>Standard-Lieferung</b> – 1 bis 2 Werktage				</li>				<li>					<b>Andere Liefermethode</b>  &ndash; – 3 bis 5 Werktage				</li>				<li>				<b>Internationale Lieferung</b> &ndash; 7 bis 10 Werktage (nicht in allen Ländern verfügbar)				</li>			</ul>		<p></p>		<h3><a name=""b02""></a>Lieferzeiten&amp; Kosten</h3>		<p>			Wir liefern die meisten unserer Bestellungen innerhalb von 4 Werktagen* aus. Die Versandkosten betragen 3,99 GBP, bei einem Bestellwert von über 50 GBP ist der Versand kostenlos (*Ausnahmen siehe Tabelle unten).			</p><ul>				<li>					Lieferungen an Adressen in Großbritannien werden montags bis freitags von 8:00 Uhr bis 18:00 Uhr zugestellt (mit Ausnahme von Feiertagen). 				</li>				<li>					Lieferungen an Adressen in den Schottischen Highlands und Inseln, in Nordirland und anderen küstenfernen Orten brauchen möglicherweise etwas länger.<br>					Informationen zu Lieferungen an Adressen in Irland entnehmen Sie bitte unserer irischen Website auf hybris.com.				</li>				<li>					Bestellungen mit mehreren Artikeln können in mehreren Einzelpaketen zu verschiedenen Zeitpunkten geliefert werden.				</li>			</ul>		<p></p>	<h3><a name=""b03""></a>Tracking-Informationen anfordern</h3>		<p>			Wir werden Sie per E-Mail über alle Phasen Ihrer Bestellung auf dem Laufenden halten. In allen E-Mails wird der Status Ihrer aktuellen Bestellung angezeigt. Die jeweiligen Status sind in der Tabelle unten beschrieben. Die Mehrzahl unserer Pakete stellen wir über unseren Kurierdienst zu. Diese Pakete können Sie verfolgen, indem Sie auf den Paket-Referenz-Link in Ihrer E-Mail klicken. Wenn Sie auf den Link klicken, werden Sie direkt an die Website des Kurierdienstes weitergeleitet. Weitere Informationen über die Sendungsstatus erhalten Sie <a href=""#b04"">hier</a>.		</p>		<table width=""100%"" cellspacing=""0"" cellpadding=""0"" border=""0"">			<tbody>				<tr>					<th>Status</th>					<th>Beschreibung</th>				</tr>				<!--ROW 1-->				<tr>					<td class=""blue3"">						<strong>Bearbeitung</strong><br>					</td>					<td class=""grey3"">						Ihre Bestellung wird bearbeitet.<br>					</td>				</tr>				<!--ROW 2-->	<tr>					<td class=""blue3"">						<strong>Versandt</strong><br>					</td>					<td class=""grey3"">						Ihre Bestellung wurde an den Kurier übergeben.<br><br>    Bei schweren und sperrigen Produkten wird Ihre Bestellung von unserem Paketdienst zugestellt. Der Paketdienst wird Kontakt mit Ihnen aufnehmen, um ein geeignetes Zustelldatum mit Ihnen zu vereinbaren.<br><br>Bei Bestellungen, die direkt aus dem Geschäft abgeholt werden, erhalten Sie eine weitere Bestellstatusinformation, sobald ihr(e) Artikel zur Abholung bereit stehen (weitere Informationen zu den Status zur Abholung aus einem Geschäft finden Sie unten).<br><br>					</td>				</tr>				<!--ROW 3-->				<tr>					<td class=""blue3"">						<strong>Storniert<br>Nicht lieferbar<br> Rückbuchung</strong><br>					</td>					<td class=""grey3"">						Ihre Bestellung wurde aus Lagerverfügbarkeitsgründen storniert, es hat keine Abbuchung/Zahlung stattgefunden.<br><br>					</td>				</tr>				<!--ROW 4-->				<tr>					<td class=""blue3"">						<strong>Storniert<br>Nicht lieferbar<br> Rückerstattung</strong><br>				</td>					<td class=""grey3"">						Ihre Bestellung wurde aus Lagerverfügbarkeitsgründen storniert. Wir haben eine Rückerstattung auf Ihr Konto vorgenommen.<br><br>					</td>				</tr>				<!--ROW 5-->				<tr>					<td class=""blue3"">						<strong>Rücksendung erhalten</strong><br>					</td>					<td class=""grey3"">Wir haben Ihre Rücksendung erhalten. Aufgrund von ans falsche Lager adressierten Waren, die zunächst ans richtige Lager weitergeleitet werden müssen, kann es zu einer kurzen Verzögerung bei der Bearbeitung Ihrer Rückerstattung kommen.<br><br>					</td>				</tr>				<!--ROW 6-->				<tr>					<td class=""blue3"">						<strong>Bestellung zur Abholung bereit</strong><br>					</td>					<td class=""grey3"">						Ihre Bestellung steht im Geschäft Ihrer Wahl zur Abholung bereit.<br><br><strong><i>Hinweis:</i></strong> Bitte holen Sie Ihre Bestellung innerhalb von 14 Tagen nach Erhalt Ihrer Benachrichtigungs-E-Mail ab.<br><br>					</td>				</tr>				<!--ROW 7-->				<tr>					<td class=""blue3"">						<strong>Abgeholt</strong><br>					</td>					<td class=""grey3"">					Ihre Bestellung wurde abgeholt.<br><br>					</td>				</tr>				<!--ROW 8-->				<tr>					<td class=""blue3"">						<strong>Rücksendung wird bearbeitet</strong><br>					</td>					<td class=""grey3"">						Ihre Rücksendung wird gerade von uns bearbeitet.<br><br>					</td>				</tr>				<!--ROW 9-->				<tr>					<td class=""blue3"">						<strong>Rückerstattung für Rücksendung abgeschlossen</strong><br>					</td>					<td class=""grey3"">						Wir haben Ihre Rücksendung bearbeitet,<br><br><strong><i>Hinweis:</i></strong>  Manche Banken brauchen länger als andere, um Rückerstattungen zu bearbeiten.<br><br>					</td>				</tr>			</tbody>		</table>		<p></p>		<h3><a name=""b04""></a>Statusinformation Paketdienst</h3>		<p></p>		<table width=""100%"" cellspacing=""0"" cellpadding=""0"" border=""0"">			<tbody>				<tr>					<th>Status</th>					<th>Beschreibung</th>				</tr>			<!--ROW 1-->				<tr>					<td class=""blue3"">						<strong>Bestellung generiert</strong><br>					</td>					<td class=""grey3"">						Ihre Bestellung steht fertig zur Zustellung bereit und ist ansTransportsystem übergeben worden.<br>					</td>				</tr>				<!--ROW 2-->				<tr>					<td class=""blue3"">						<strong>Empfang im Depot </strong><br>					</td>					<td class=""grey3"">					Ihr Paket ist im Depot eingegangen. <br><br>					</td>				</tr>				<!--ROW 3-->				<tr>					<td class=""blue3"">						<strong>Im Depot bearbeitet</strong><br>					</td>					<td class=""grey3"">						Ihr Paket wurde im Depot bearbeitet und steht nun zum Weitertransport durch den Paketdienst bereit.<br><br>					</td>				</tr>				<!--ROW 4-->				<tr>					<td class=""blue3"">						<strong>Ausgang zur Zustellung durch Paketdienst</strong><br>					</td>					<td class=""grey3"">						Ihr Paket hat das Depot verlassen und ist zur Zustellung durch den Paketdienst unterwegs.<br><br>					</td>				</tr>				<!--ROW 5-->				<tr>					<td class=""blue3"">						<strong>Erneuter Zustellungsversuch durch Paketdienst</strong><br>					</td>					<td class=""grey3"">						Der Paketdienst hat versucht, Ihr Paket zuzustellen und wird später einen erneuten Versuch unternehmen. Sie erhalten eine Karte, auf der der Zustellversuch bestätigt wird.<br><br>					</td>				</tr>			<!--ROW 6-->				<tr>					<td class=""blue3"">						<strong>Zugestellt an</strong><br>					</td>					<td class=""grey3"">						Ihr Paket wurde zugestellt.<br><br>					</td>				</tr>			</tbody>		</table>		<p></p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>		<div class=""item_container"">		<h2><a name=""c00""></a>Registrierung</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""d00""></a>Ihr Online-Konto</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""e00""></a>Bestellungen</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""f00""></a>Werbeaktionen und Rabatte</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""g00""></a>Produkt- und allgemeine Informationen</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""h00""></a>Informationen zu Verkaufsstellen</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>	<div class=""item_container"">		<h2><a name=""i00""></a>Geschäftliche Kontakte</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>		<div class=""item_container"">		<h2><a name=""j00""></a>Einkaufsratgeber</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>		<div class=""item_container"">		<h2><a name=""k00""></a>Größenratgeber</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div>		<div class=""item_container"">		<h2><a name=""l00""></a>Datenschutz und Sicherheit</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">zurück zum Seitenanfang</a>	</div></div>"
+
+
+#          Category Landing Pages           *
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;mobile-landingpage-snow-EUR_de_a.jpg;$siteResource/images/landing_pages/mobile-landingpage-snow-EUR_de_a.jpg;;;""
+;;mobile-landingpage-snow-EUR_de_b.jpg;$siteResource/images/landing_pages/mobile-landingpage-snow-EUR_de_b.jpg;;;""
+;;mobile-landingpage-street-EUR_de_a.jpg;$siteResource/images/landing_pages/mobile-landingpage-street-EUR_de_a.jpg;;;""
+;;mobile-landingpage-street-EUR_de_b.jpg;$siteResource/images/landing_pages/mobile-landingpage-street-EUR_de_b.jpg;;;""
+;;mobile-landingpage-surf-EUR_de_a.jpg;$siteResource/images/landing_pages/mobile-landingpage-surf-EUR_de_a.jpg;;;""
+;;mobile-landingpage-surf-EUR_de_b.jpg;$siteResource/images/landing_pages/mobile-landingpage-surf-EUR_de_b.jpg;;;""
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;mobile-landingpage-snow-EUR_de_a;mobile-landingpage-snow-EUR_de_a.jpg
+;;mobile-landingpage-snow-EUR_de_b;mobile-landingpage-snow-EUR_de_b.jpg
+;;mobile-landingpage-street-EUR_de_a;mobile-landingpage-street-EUR_de_a.jpg
+;;mobile-landingpage-street-EUR_de_b;mobile-landingpage-street-EUR_de_b.jpg
+;;mobile-landingpage-surf-EUR_de_a;mobile-landingpage-surf-EUR_de_a.jpg
+;;mobile-landingpage-surf-EUR_de_b;mobile-landingpage-surf-EUR_de_b.jpg
+
+#          Brands Landing Pages           *
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+ ;;MobileAllBrands;$siteResource/images/banners/category_banners/300x250_Brand_Logos.jpg;;;"All Brands"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileAllBrandsBanner;MobileAllBrands
+
+# Dynamic banner component for Product Grid Page
+UPDATE  DynamicBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;MobileDynamicBrandBanner;mobile-apparel-category-banner
+

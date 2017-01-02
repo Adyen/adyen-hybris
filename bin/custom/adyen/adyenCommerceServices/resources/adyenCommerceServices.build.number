@@ -1,0 +1,8 @@
+#Ant properties
+#Fri May 08 14:12:03 UTC 2015
+builddate=20150508 1411
+description=adyenCommerceServices
+name=adyenCommerceServices
+vendor=hybris
+version=5.1.1.6
+version.api=5.1.1

@@ -1,0 +1,101 @@
+/*
+### MiniCart and addToCartLayer
+********************************************************************/
+
+
+.miniCart{
+	position:relative;
+	z-index:200;
+}
+
+.miniCart > a .count{
+	background:#464646;
+	color:#fff;
+	width:20px;
+	margin:0 5px;
+	font-size:0.833em;
+	display: inline-block;
+	text-align:center;
+}
+
+.miniCart > a .price{
+	color:#c7c7c7;
+	font-style:italic;
+}
+
+.miniCartPopup{
+	display:none;
+	position:absolute;
+	right:0;
+	background:#fff;
+	width:358px;
+	border:1px dotted #a5a5a5;
+	border-width:1px;
+	padding:15px;
+}
+
+#addToCartLayer{
+	display:none;
+	position:fixed;
+	top:35px;
+	z-index:200;
+	right:50%;
+	background:#fff;
+	width:358px;
+	border:1px dotted #a5a5a5;
+	border-width:1px;
+	padding:15px;
+	margin:0 -475px 0 0;
+}
+
+.miniCartPopup .legend,
+#addToCartLayer .legend{
+	border-bottom:1px dotted #a5a5a5;
+}
+
+.popupCartItem {
+	clear:both;
+	min-height:70px;
+	margin:10px 0;
+}
+
+#addToCartLayer  .popupCartItem {
+	border-bottom:1px dotted #a5a5a5;
+}
+
+.popupCartItem .itemThumb{
+	float:left;
+	margin:0 20px 0 0;
+}
+
+.popupCartItem .itemDesc{
+	margin-left: 85px;
+}
+
+.popupCartItem .itemDesc .label{
+	font-weight:bold;
+	margin:0 5px 0 0;
+}
+
+.popupCartItem .itemDesc .itemPrice{
+	text-align:right;
+}
+
+.miniCartPopup .total{
+	border-top:1px dotted #a5a5a5;
+	font-weight: bold;
+}
+
+#addToCartLayer  .button.positive,
+.miniCartPopup  .button.positive {
+	float: right;
+}
+
+.miniCartPopup .banner{
+	margin:10px 0;
+}
+
+#addToCartLayer .links,
+.miniCartPopup .links{
+	clear:both;
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2013 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+
+  
+--><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+   <extension abstractclassprefix="Generated" classprefix="AdyenCommerceServices" managername="AdyenCommerceServicesManager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenCommerceServices" usemaven="false">
+               
+      <!-- you should add all required extensions to this list, except platform extensions which are automatically required -->         
+      <!-- <requires-extension name="cms"/> -->         
+      <requires-extension name="adyenfacades"/>
+
+      <coremodule generated="true" manager="com.adyen.commerceservices.jalo.AdyenCommerceServicesManager" packageroot="com.adyen.commerceservices"/>
+
+      <webmodule jspcompile="false" webroot="/adyenCommerceServices"/>
+					
+	
+
+   </extension>
+      
+</extensioninfo>

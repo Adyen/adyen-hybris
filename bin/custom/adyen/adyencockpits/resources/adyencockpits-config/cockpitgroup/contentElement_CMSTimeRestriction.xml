@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSTimeRestriction" name="type.cmstimerestriction.name" 
+							description="type.cmstimerestriction.description" 
+							image="cmscockpit/images/RestrictionTime.gif" 
+							refImage="cmscockpit/images/RestrictionTimeReference.gif"/>
+
+</content-elements>

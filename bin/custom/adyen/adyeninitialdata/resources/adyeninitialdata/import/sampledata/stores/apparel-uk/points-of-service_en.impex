@@ -1,0 +1,94 @@
+# ImpEx for Apparel UK Stores
+# English localisations
+
+$lang=en
+$standardHours=apparel-uk-standard-hours
+$weekendHours=apparel-uk-weekend-hours
+
+UPDATE StoreLocatorFeature;code[unique=true];name[lang=$lang]
+;wheelchair;"Wheelchair Access"
+;creche;"Creche"
+;sundayWorkshops;"Sunday Workshops"
+;buyOnlinePickupInStore;"Buy Online Pick Up In Store"
+
+UPDATE SpecialOpeningDay;openingSchedule(code)[unique=true];date[unique=true,dateformat=dd.MM.yyyy];name[lang=$lang];message[lang=$lang]
+;$standardHours; 01.01.2013 ;"New Year's Day Holiday";""
+;$standardHours; 29.03.2013 ;"Good Friday";""
+;$standardHours; 01.04.2013 ;"Easter Monday";""
+;$standardHours; 06.05.2013 ;"Early May Bank Holiday";""
+;$standardHours; 27.05.2013 ;"Spring Bank Holiday";""
+;$standardHours; 26.08.2013 ;"Summer Bank Holiday";""
+;$standardHours; 26.12.2013 ;"Boxing Day";""
+;$standardHours; 25.12.2013 ;"Christmas Day Holiday";""
+
+;$weekendHours; 01.01.2013 ;"New Year's Day Holiday";""
+;$weekendHours; 29.03.2013 ;"Good Friday";""
+;$weekendHours; 01.04.2013 ;"Easter Monday";""
+;$weekendHours; 06.05.2013 ;"Early May Bank Holiday";""
+;$weekendHours; 27.05.2013 ;"Spring Bank Holiday";""
+;$weekendHours; 26.08.2013 ;"Summer Bank Holiday";""
+;$weekendHours; 26.12.2013 ;"Boxing Day";""
+;$weekendHours; 25.12.2013 ;"Christmas Day Holiday";""
+
+UPDATE PointOfService;name[unique=true];displayName;
+;Bedford;Bedford;
+;Carlton;Carlton;
+;St Peter Port;St Peter Port;
+;Jersey;Jersey;
+;Trinity;Trinity;
+;Cambridge Museum;Cambridge Museum;
+;Cambridge Lakes Golf Course;Cambridge Lakes Golf Course;
+;Cambridge University;Cambridge University;
+;Cambridge Coldham's;Cambridge Coldham's;
+;Cambridge Hospital;Cambridge Hospital;
+;London Hyde Park;Cambridge Hospital;
+;London Theater;London Theater;
+;London School;London School;
+;London Greenwich Park;London Greenwich Park;
+;London Hospital;London Hospital;
+;Manchester dental Hospital;Manchester dental Hospital;
+;Manchester United FC;Manchester United FC;
+;Manchester Holiday Inn;Manchester Holiday Inn;
+;Manchester Hospital;Manchester Hospital;
+;Manchester;Manchester;
+;Birmingham Villa Park;Birmingham Villa Park;
+;Birmingham Hospital;Birmingham Hospital;
+;Birmingham Symphony Hall;Birmingham Symphony Hall;
+;Birmingham Park;Birmingham Park;
+;Birmingham Kathedrale;Birmingham Kathedrale;
+;Glasgow Kathedrale;Glasgow Kathedrale;
+;Glasgow Ibrox Park;Glasgow Ibrox Park;
+;Glasgow Hospital;Glasgow Hospital;
+;Glasgow University;Glasgow University;
+;Glasgow;Glasgow;
+;Leeds Stadium;Leeds Stadium;
+;Leeds Cockpit;Leeds Cockpit;
+;Leeds Victoria Quarter;Leeds Victoria Quarter;
+;Leeds Moor;Leeds Moor;
+;Leeds;Leeds;
+;Sheffield Kathedrale;Sheffield Kathedrale;
+;Sheffield Arena;Sheffield Arena;
+;Sheffield United FC;Sheffield United FC;
+;Sheffield Hospital;Sheffield Hospital;
+;Sheffield;Sheffield;
+;Newcastle upon Tyne University;Newcastle upon Tyne University;
+;Newcastle upon Tyne Kathedrale;Newcastle upon Tyne Kathedrale;
+;Newcastle upon Tyne Hospital;Newcastle upon Tyne Hospital;
+;Newcastle upon Tyne College;Newcastle upon Tyne College;
+;Newcastle upon Tyne Gallery;Newcastle upon Tyne Gallery;
+;Nottingham Concert Hall;Nottingham Concert Hall;
+;Nottingham Hospital;Nottingham Hospital;
+;Nottingham Ice Center;Nottingham Ice Center;
+;Nottingham University;Nottingham University;
+;Nottingham;Nottingham;
+;Cardiff Museum;Cardiff Museum;
+;Cardiff Park;Cardiff Park;
+;Cardiff Castle;Cardiff Castle;
+;Cardiff University;Cardiff University;
+;Cardiff City Stadium;Cardiff City Stadium;
+;Edinburgh Castle;Edinburgh Castle;
+;Edinburgh University;Edinburgh University;
+;Edinburgh Hospital;Edinburgh Hospital;
+;Edinburgh Dynamic Earth;Edinburgh Dynamic Earth;
+;Edinburgh Park;Edinburgh Park;
+

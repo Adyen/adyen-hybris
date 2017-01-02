@@ -1,0 +1,18 @@
+#
+#	ImpEx for Apparel DE Site Email CMS Content
+#
+
+$contentCatalog=apparel-deContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# CMS Image Components
+INSERT_UPDATE CMSImageComponent;$contentCV[unique=true];uid[unique=true];name
+;;EmailBannerSaleNowOnImage;EmailBannerSaleNowOnImage
+;;EmailBannerFreeDeliveryImage;EmailBannerFreeDeliveryImage
+;;EmailSiteLogoImage;Email Site Logo Image;
+
+# Content Slots
+UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];cmsComponents(uid,$contentCV)
+;;EmailTopSlot;EmailBannerSaleNowOnImage
+;;EmailBottomSlot;EmailBannerFreeDeliveryImage
+;;EmailSiteLogoSlot;EmailSiteLogoImage

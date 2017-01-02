@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="list-view">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="group" type="group" />
+				<xs:element name="dynamicColumnProviders" type="dynamicColumnProviders" minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute name="unassigned-group-name" type="xs:string" use="optional" />
+			<xs:attribute name="allow-create-inline-items" type="xs:boolean" use="optional" />
+			<xs:attribute name="header-popup-bean" type="xs:string" use="optional" />
+		</xs:complexType>
+
+	</xs:element>
+
+	<xs:complexType name="group">
+		<xs:sequence>
+			<xs:element name="label" type="label" minOccurs="0" maxOccurs="unbounded" />
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="property" type="property" />
+				<xs:element name="custom" type="custom" />
+				<xs:element name="group" type="group" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="columnConfiguration" abstract="true">
+		<xs:sequence>
+			<xs:element name="renderer" type="cellRenderer" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="visible" type="xs:boolean" use="optional" default="false" />
+		<xs:attribute name="sortable" type="xs:boolean" use="optional" default="false" />
+		<xs:attribute name="editable" type="xs:boolean" use="optional" default="true" />
+		<xs:attribute name="name" type="xs:string" use="optional" />
+		<xs:attribute name="width" type="xs:string" use="optional" />
+		<xs:attribute name="position" type="xs:positiveInteger" use="optional" default="1"/>
+	</xs:complexType>
+
+	<xs:complexType name="property">
+		<xs:complexContent>
+			<xs:extension base="columnConfiguration">
+				<xs:sequence minOccurs="0" maxOccurs="1">
+					<xs:element name="language" type="language" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="qualifier" type="xs:string" use="required" />
+				<xs:attribute name="selectable" type="xs:boolean" use="optional" default="true" />
+				<xs:attribute name="editor" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="custom">
+		<xs:complexContent>
+			<xs:extension base="columnConfiguration">
+				<xs:sequence minOccurs="0" maxOccurs="1">
+					<xs:element name="label" type="label" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="class" type="xs:string" use="optional" />
+				<xs:attribute name="spring-bean" type="xs:string" use="optional" />
+				<xs:attribute name="selectable" type="xs:boolean" use="optional" default="false" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="language">
+		<xs:attribute name="isocode" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="parameter">
+		<xs:sequence>
+			<xs:element name="name" type="name" />
+			<xs:element name="value" type="value" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="cellRenderer">
+		<xs:attribute name="class" type="xs:string" use="optional" />
+		<xs:attribute name="spring-bean" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:simpleType name="name">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="value">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:complexType name="label">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="key" use="optional" type="xs:string" />
+				<xs:attribute name="lang" use="optional" type="xs:string" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="dynamicColumnProviders">
+		<xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="spring-bean" type="xs:string" />
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

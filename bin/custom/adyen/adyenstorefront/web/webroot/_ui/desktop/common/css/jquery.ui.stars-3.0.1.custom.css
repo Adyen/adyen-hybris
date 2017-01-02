@@ -1,0 +1,76 @@
+/*!
+ * jQuery UI Stars v3.0.1
+ * http://plugins.jquery.com/project/Star_Rating_widget
+ *
+ * Copyright (c) 2010 Marek "Orkan" Zajac (orkans@gmail.com)
+ * Dual licensed under the MIT and GPL licenses.
+ * http://docs.jquery.com/License
+ *
+ * $Rev: 164 $
+ * $Date:: 2010-05-01 #$
+ * $Build: 35 (2010-05-01)
+ *
+ */
+.ui-stars-star,
+.ui-stars-cancel {
+	float: left;
+	display: block;
+	overflow: hidden;
+	text-indent: -999em;
+	cursor: pointer;
+}
+.ui-stars-star a,
+.ui-stars-cancel a {
+	width: 16px;
+	height: 15px;
+	display: block;
+	background: url(../images/jquery.ui.stars.gif) no-repeat 0 0;
+}
+.ui-stars-star a {
+	background-position: 0 -32px;
+}
+.ui-stars-star-on a {
+	background-position: 0 -48px;
+}
+.ui-stars-star-hover a {
+	background-position: 0 -64px;
+}
+.ui-stars-cancel-hover a {
+	background-position: 0 -16px;
+}
+.ui-stars-star-disabled,
+.ui-stars-star-disabled a,
+.ui-stars-cancel-disabled a {
+	cursor: default !important;
+}
+
+#stars-wrapper img {
+	position: absolute;
+	top: -88px;
+	left: 0;
+	cursor: pointer;
+}
+
+#stars-wrapper img.no_star {
+	top: -60px;
+}
+
+#stars-wrapper label {
+	position: relative;
+	width: 1.8em;
+	height: 1.8em;
+	overflow: hidden;
+	float: left;
+	margin-right: 15px;
+	text-indent: -999em;
+	padding-right: 0;
+}
+
+#stars-wrapper label:hover, #stars-wrapper .selected {
+	opacity: 0.5;
+	filter: alpha(opacity=50)
+}
+
+#stars-wrapper br {
+	display: none;
+}

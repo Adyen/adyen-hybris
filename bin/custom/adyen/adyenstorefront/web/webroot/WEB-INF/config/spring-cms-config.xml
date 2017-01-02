@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!--
+	 requestContextData
+	 Request scoped spring bean that holds contextual information about the current request.
+	 This data can be used to render contextual CMS components.
+	-->
+	<alias alias="requestContextData" name="defaultRequestContextData" />
+	<bean id="defaultRequestContextData" class="de.hybris.platform.acceleratorcms.data.RequestContextData" scope="request"/>
+
+	<!-- Converter that creates the CMS Restriction Data -->
+	<bean id="requestContextRestrictionConverter" class="com.adyen.storefront.util.RequestContextRestrictionConverter" >
+		<property name="cmsDataFactory" ref="cmsDataFactory"/>
+	</bean>
+
+
+	<!-- CMS Component Renderers -->
+
+	<alias name="defaultCMSLinkComponentRenderer" alias="cmsLinkComponentRenderer"/>
+	<bean id="defaultCMSLinkComponentRenderer" class="com.adyen.storefront.renderer.CMSLinkComponentRenderer" >
+		<property name="categoryUrlConverter" ref="categoryUrlConverter"/>
+		<property name="productUrlConverter" ref="productUrlConverter"/>
+	</bean>
+
+	<alias alias="cmsComponentRendererRegistry" name="acceleratorCMSComponentRendererRegistry" />
+	<bean id="acceleratorCMSComponentRendererRegistry" parent="defaultCMSComponentRendererRegistry">
+		<property name="renderers">
+			<map merge="true">
+				<entry key="CMSLinkComponent" value-ref="cmsLinkComponentRenderer"/>
+			</map>
+		</property>
+	</bean>
+
+</beans>

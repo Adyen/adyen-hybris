@@ -1,0 +1,34 @@
+#
+# Import the Solr configuration for the Apparel DE store
+#
+
+# Index Type
+$solrIndexedType=apparel-deProductType
+
+# Language
+$lang=de
+
+# Solr Indexed Property
+UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];displayName[lang=$lang]
+ ;$solrIndexedType;brand;"Marke"
+ ;$solrIndexedType;category;"Kategorie"
+ ;$solrIndexedType;code;"Code"
+ ;$solrIndexedType;collection;"Kollektion"
+ ;$solrIndexedType;description;"Beschreibung"
+ ;$solrIndexedType;itemtype;"Typ"
+ ;$solrIndexedType;manufacturerName;"Name des Herstellers"
+ ;$solrIndexedType;name;"Name"
+ ;$solrIndexedType;price;"Preis"
+ ;$solrIndexedType;size;"Größe"
+ ;$solrIndexedType;style;"Stil"
+ ;$solrIndexedType;summary;"Zusammenfassung"
+ ;$solrIndexedType;swatchColors;"Farbe"
+
+# Define the available sorts
+UPDATE SolrSort;indexedType(identifier)[unique=true];code[unique=true];name[lang=$lang];useBoost
+ ;$solrIndexedType;name-asc;"Name (aufsteigend)";false
+ ;$solrIndexedType;name-desc;"Name (absteigend)";false
+ ;$solrIndexedType;price-asc;"Preis (niedrigster oben)";false
+ ;$solrIndexedType;price-desc;"Preis (höchster oben)";false
+ ;$solrIndexedType;relevance;"Relevanz";true
+ ;$solrIndexedType;topRated;"Beliebteste";false

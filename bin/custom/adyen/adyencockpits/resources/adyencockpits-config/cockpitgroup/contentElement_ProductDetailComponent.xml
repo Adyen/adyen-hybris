@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="ProductDetailComponent" name="type.productdetailelement.name"
+							description="type.productdetailelement.description"
+							image="cmscockpit/images/ContentElementProductDetails.gif"
+							refImage="cmscockpit/images/ContentElementProductDetailsReference.gif"
+							imageSmall="cmscockpit/images/ContentElementProductDetailsSmall.gif"/>
+
+</content-elements>

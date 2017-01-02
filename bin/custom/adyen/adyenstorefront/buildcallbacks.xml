@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+
+--><!--
+ All hybris buildcallbacks.xml macrodefinitions:
+
+ Build/Documentation
+
+	 before/after ant macro "clean"
+		 <macrodef name="adyenstorefront_before_clean"/>
+		 <macrodef name="adyenstorefront_after_clean"/>
+
+	 before/after ant macro "build"
+		 <macrodef name="adyenstorefront_before_build"/>
+		 <macrodef name="adyenstorefront_after_build"/>
+
+	 before/after ant macro "compile_core" - the core module of the extension
+		 <macrodef name="adyenstorefront_before_compile_core">
+		 <macrodef name="adyenstorefront_after_compile_core">
+
+	 before/after ant macro "compile_web" - the web module of the extension
+		 <macrodef name="adyenstorefront_before_compile_web" />
+		 <macrodef name="adyenstorefront_after_compile_web" />
+
+	 before/after ant macro "compile_hmc" - the hmc module of the extension
+		 <macrodef name="adyenstorefront_before_compile_hmc" />
+		 <macrodef name="adyenstorefront_after_compile_hmc" />
+
+ Preparing extension
+
+	 will be called in the beginning of the ant call and only once (also when using multiple 
+	 ant targets e.g. ant build yunittest)
+		 <macrodef name="adyenstorefront_only_once_prepare"/>
+
+ Creating ear module/production
+
+	 before/after ant macro "ear"
+		 <macrodef name="adyenstorefront_before_ear"/>
+		 <macrodef name="adyenstorefront_after_ear"/>
+
+	 before/after ant macro "production" - for hybris server only
+		 <macrodef name="adyenstorefront_before_production" />
+		 <macrodef name="adyenstorefront_after_production" />
+
+ JUnit Test
+
+	 before/after ant macro "yunitinit" 
+		 <macrodef name="adyenstorefront_before_yunitinit" />
+		 <macrodef name="adyenstorefront_after_yunitinit" />
+
+	 before/after ant macro "yunit"
+		 <macrodef name="adyenstorefront_before_yunit" />
+		 <macrodef name="adyenstorefront_after_yunit" /> 
+
+ Distribution package
+
+	 before/after ant macro "dist" - internal target; only for use when platform is available in source code
+		 <macrodef name="adyenstorefront_after_dist"/>
+		 <macrodef name="adyenstorefront_before_dist"/>
+
+	 before/after ant macro "dist_copy" - internal target; only for use when platform is available in source code
+		 <macrodef name="adyenstorefront_before_dist_copy"/>
+		 <macrodef name="adyenstorefront_after_dist_copy"/>
+
+--><project name="adyenstorefront_buildcallbacks">
+
+	<macrodef name="adyenstorefront_after_build">
+		<sequential>
+			<echo message="adyenstorefront_after_build"/>
+			<impexGenerate extname="adyenstorefront"/>
+			<containsExact separator=";" string="${extension.names}" substring="addonsupport">
+				<do>
+					<foreachext>
+						<do>
+							<for delimiter=";" list="${addon.folder}" param="addOnFile">
+								<sequential>
+									<if>
+										<available file="${ext.@{extname}.path}/acceleratoraddon/@{addOnFile}"/>
+										<then>
+											<echo message="Found addon:  @{extname}"/>
+											<echo message="addOnFile test:  @{addOnFile}"/>
+											<copyAddOnToExtension addonextension="@{extname}" addonresource="@{addOnFile}" target="adyenstorefront"/>
+										</then>
+									</if>
+								</sequential>
+							</for>
+						</do>
+					</foreachext>
+				</do>
+			</containsExact>
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="adyenstorefront_before_build">
+		<sequential>
+			<echo message="adyenstorefront_after_build"/>
+
+			<foreachext>
+				<do>
+					<if>
+						<available file="${ext.@{extname}.path}/commonweb"/>
+						<then>
+							<echo message="Found commonweb extension:  @{extname}"/>
+							<copyCommonWebToExtension commonwebextension="@{extname}" commonwebresource="/src" target="adyenstorefront"/>
+						</then>
+					</if>
+				</do>
+			</foreachext>
+
+		</sequential>
+
+
+	</macrodef>
+
+
+	<!-- 
+		Called whenever 'ant ear' is used. this callback can be used to modify the content of the ear file
+
+		${ear.path}: 			path to ear
+	 -->
+	<macrodef name="adyenstorefront_after_clean">
+		<sequential>
+			<!-- Addon folders in storefronts are always cleaned (even if there is no addonsupport on localextension list) -->
+			<addonclean/>
+			<commonwebclean/>
+		</sequential>
+	</macrodef>
+
+</project>

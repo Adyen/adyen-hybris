@@ -1,0 +1,159 @@
+/*
+## searchPOS
+********************************************************************/
+
+.searchPOS{
+	margin: 20px;
+	width: auto;
+	overflow:hidden;
+	height:555px;
+}
+
+
+
+
+.searchPOS .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1em;
+	font-weight: bold;
+	height: 30px;
+	line-height: 30px;
+	text-transform: uppercase;
+	margin:0 0 20px;
+}
+
+
+
+
+
+.searchPOS .prod_grid{
+	width:160px;
+	margin:0 20px 0 0;
+}
+
+.searchPOS .prod_grid img{
+	width:160px;
+
+}
+
+
+
+.searchPOS .searchPOSContent{
+	width:630px;
+	
+}
+
+
+.searchPOS .searchPOSForm{
+	margin:0;
+	
+}
+
+
+.searchPOS .searchPOSForm .control-group{
+	width:378px;
+	
+}
+
+.searchPOS .searchPOSForm .control-group input{
+	margin:1px 0;
+	
+}
+
+
+.searchPOS .searchPOSForm button{
+	margin: 0 6px;
+	line-height: 12px;
+}
+
+
+.searchPOS .searchPOSForm button#find_pickupStoresNearMe_button{
+	margin: 0
+	
+}
+
+
+
+
+
+
+
+
+
+.searchPOS .searchPOSResultsList{
+	margin:0 -20px 0 0;
+}
+
+
+.searchPOS li.searchPOSResult{
+	width:305px;
+	border-bottom: 1px dotted #A5A5A5;
+	margin:20px 20px 0 0;
+	height:120px;
+	position:relative;
+}
+
+.searchPOS li.searchPOSResult .address{
+	width:200px;
+}
+
+
+.searchPOS li.searchPOSResult .resultName{
+	font-weight:bold;
+	
+}
+
+.searchPOS li.searchPOSResult .resultDistance{
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+.searchPOS li.searchPOSResult .resultStock{
+	position:absolute;
+	top:20px;
+	right:0;
+}
+
+.searchPOS li.searchPOSResult .resultForm{
+	position:absolute;
+	bottom:0;
+	right:0;
+	margin:0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.searchPOS .searchPOSPaging{
+
+}
+
+
+.searchPOS .searchPOSPaging form,
+.searchPOS .searchPOSPaging div{
+	float:right;
+	margin:0;
+
+
+}
+
+
+.searchPOS .searchPOSPaging div button{
+	font-weight:bold;
+}
+
+
+
+
+
+
+

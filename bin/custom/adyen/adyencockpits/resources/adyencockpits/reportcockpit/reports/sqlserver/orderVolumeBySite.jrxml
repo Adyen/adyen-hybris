@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderVolume" language="groovy" pageWidth="595" pageHeight="420" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="background" isDefault="false" backcolor="#FFFFFF"/>
+	<subDataset name="groupByDay">
+		<parameter name="From" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="To" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[select max({o.creationtime}) as DAY, count({o.PK}) as TOTALPRICE
+from {Order as o LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where {o.creationtime} >= $P{From} and {o.creationtime} < $P{To} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+group by year({o.creationtime}), month({o.creationtime}), day({o.creationtime})]]>
+		</queryString>
+		<field name="DAY" class="java.sql.Timestamp"/>
+		<field name="TOTALPRICE" class="java.lang.Integer"/>
+	</subDataset>
+	<subDataset name="groupByWeek">
+		<parameter name="From" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="To" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[select max({o.creationtime}) as DAY, count({o.PK}) as TOTALPRICE
+from {Order as o LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where {o.creationtime} >= $P{From} and {o.creationtime} < $P{To} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+group by year({o.creationtime}), DATEPART(wk,{o.creationtime})]]>
+		</queryString>
+		<field name="DAY" class="java.sql.Timestamp"/>
+		<field name="TOTALPRICE" class="java.lang.Integer"/>
+	</subDataset>
+	<subDataset name="groupByHour">
+		<parameter name="From" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="To" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[select max({o.creationtime}) as DAY, count({o.PK}) as TOTALPRICE
+from {Order as o LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where {o.creationtime} >= $P{From} and {o.creationtime} < $P{To} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+group by DATEPART(hour,{o.creationtime})]]>
+		</queryString>
+		<field name="DAY" class="java.sql.Timestamp"/>
+		<field name="TOTALPRICE" class="java.lang.Integer"/>
+	</subDataset>
+	<subDataset name="groupByMonth">
+		<parameter name="From" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="To" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<queryString>
+			<![CDATA[select max({o.creationtime}) as DAY, count({o.PK}) as TOTALPRICE
+from {Order as o LEFT OUTER JOIN CMSSite as s ON {o.site}={s.PK}}
+where {o.creationtime} >= $P{From} and {o.creationtime} < $P{To} AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+group by year({o.creationtime}), month({o.creationtime})]]>
+		</queryString>
+		<field name="DAY" class="java.sql.Timestamp"/>
+		<field name="TOTALPRICE" class="java.lang.Integer"/>
+	</subDataset>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="timerange" class="java.lang.String">
+		<property name="type" value="ReportTimeRange"/>
+		<defaultValueExpression><![CDATA["LAST7DAYS"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="From" class="java.util.Date"/>
+	<parameter name="To" class="java.util.Date"/>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT {code} FROM {Order}]]>
+	</queryString>
+	<field name="Code" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement style="background" mode="Opaque" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="340" splitType="Stretch">
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForWeekGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Week">
+					<dataset>
+						<datasetRun subDataset="groupByWeek">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[str("series.ordervolume")]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.ordervolume.x3")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.ordervolume.y")]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForHourGranularity($P{timerange})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Hour">
+					<dataset>
+						<datasetRun subDataset="groupByHour">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[str("series.ordervolume")]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.ordervolume.x2")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.ordervolume.y")]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForMonthGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Month">
+					<dataset>
+						<datasetRun subDataset="groupByMonth">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[str("series.ordervolume")]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.ordervolume.x4")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.ordervolume.y")]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230">
+						<printWhenExpression><![CDATA[$P{REPORT_SCRIPTLET}.renderChartForDayGranularity($P{timerange},$P{From},$P{To})]]></printWhenExpression>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset>
+					<dataset>
+						<datasetRun subDataset="groupByDay">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[str("series.ordervolume")]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{DAY}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{TOTALPRICE}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.ordervolume.x1")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.ordervolume.y")]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getFrom($P{timerange},$P{From},$P{specificday})]]></domainAxisMinValueExpression>
+					<domainAxisMaxValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getTo($P{timerange},$P{To},$P{specificday})]]></domainAxisMaxValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="460" y="264" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{To}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="264" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="190" y="284" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="317" y="244" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.from" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="460" y="244" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{From}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="317" y="264" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'USERDEFINED']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.to" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="284" width="175" height="20">
+					<printWhenExpression><![CDATA[$P{timerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="190" y="264" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{timerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="15" y="244" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="190" y="244" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,29 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+# ImpEx for Promotions for Apparel Store
+
+# Language
+$lang=de
+
+
+UPDATE ProductPercentageDiscountPromotion;code[unique=true];enabled[default=true][unique=true];messageFired[lang=$lang];name[lang=$lang];
+ ;10DiscountShoes;;10% Rabatt erhalten;10% Rabatt;
+
+
+
+UPDATE ProductFixedPricePromotion;code[unique=true];enabled[default=true][unique=true];messageFired[lang=$lang];name[lang=$lang];
+ ;FixedPriceSunglasses;;Diese Sonnenbrillen kosten jetzt nur noch {1} - Sie sparen {3}!;Sonnenbrillen Rabatt;
+
+
+
+UPDATE ProductPerfectPartnerPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+ ;PerfectPartnerApparel;;Kaufen Sie eine Sonnenbrille von Anon Legion und Sie erhalten ein Rip Curl Cap für nur {1};Kaufen Sie eine Sonnenbrille von Anon Legion und Sie erhalten ein Rip Curl Cap für nur {1} - Sie sparen {3};Sonnenbrille von Anon Legion;
+
+
+
+UPDATE AcceleratorProductMultiBuyPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+ ;MultiBuyApparel;;Kaufen Sie {0,number,integer} Tools für {2} - Geben Sie {3,number,integer} ein, um teilzunehmen;Kaufen Sie {0,number,integer} für {2} - Sie sparen {4};Mengenrabatt;
+
+
+
+UPDATE AcceleratorProductBOGOFPromotion;code[unique=true];enabled[default=true][unique=true];messageCouldHaveFired[lang=$lang];messageFired[lang=$lang];name[lang=$lang];
+ ;BOGOFApparel;;Kaufen Sie {0,choice,1#choose one more item|1<another {0,number,integer} items}, um an der Aktion {1,number,integer} erhalten {2,number,integer} gratis! <br> <a href='$storefrontContextRoot/Categories/Others/Goggles/c/goggles'><b>GOGGLES</b></a><br><a href='$storefrontContextRoot/Categories/Clothes/Helmets/c/helmet'><b>HELMETS</b></a> <br> <a href='$storefrontContextRoot/Categories/Others/Backpacks/c/backpack'><b>BACKPACKS</b></a>;Sie haben das kostenlose {0} zum Preis von {1} Angebot erhalten. Sie sparen <b> {3}</b> bei diesen Artikeln.;1 kaufen - 1 gratis;

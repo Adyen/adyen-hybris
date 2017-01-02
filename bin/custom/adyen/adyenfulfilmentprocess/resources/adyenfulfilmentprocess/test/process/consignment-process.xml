@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition" start="waitBeforeTransmission" name="consignment-process-test" processClass="de.hybris.platform.ordersplitting.model.ConsignmentProcessModel">
+
+	<action id="waitBeforeTransmission" bean="test.waitBeforeTransmissionAction">
+		<transition name="NOK" to="waitBeforeTransmission"/>
+		<transition name="OK" to="sendConsignmentToWarehouse"/>
+	</action>
+
+	<action id="sendConsignmentToWarehouse" bean="test.sendConsignmentToWarehouseAction">
+		<transition name="OK" to="waitForWarehouse"/>
+	</action>
+
+	<wait id="waitForWarehouse" then="receiveConsignmentStatus" prependProcessCode="false">
+		<event>${process.code}_WaitForWarehouse</event>
+	</wait>
+
+	<action id="receiveConsignmentStatus" bean="test.receiveConsignmentStatusAction">
+		<transition name="OK" to="allowShipment"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+		<transition name="ERROR" to="error"/>
+	</action>
+
+	<action id="allowShipment" bean="test.allowShipmentAction">
+		<transition name="DELIVERY" to="sendDeliveryMessage"/>
+		<transition name="PICKUP" to="sendReadyForPickupMessage"/>
+		<transition name="ERROR" to="error"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+	</action>
+
+	<action id="sendDeliveryMessage" bean="test.sendDeliveryMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+	
+	<action id="sendReadyForPickupMessage" bean="test.sendReadyForPickupMessageAction">
+		<transition name="OK" to="waitForPickup"/>
+	</action>
+
+	<action id="cancelConsignment" bean="test.cancelConsignmentAction">
+		<transition name="OK" to="sendCancelMessage"/>
+	</action>
+
+	<action id="sendCancelMessage" bean="test.sendCancelMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+
+	<wait id="waitForPickup" then="confirmConsignmentPickup" prependProcessCode="false">
+		<event>${process.code}_ConsignmentPickup</event>
+	</wait>
+	
+	<action id="confirmConsignmentPickup" bean="test.confirmConsignmentPickupAction">
+		<transition name="OK" to="sendPickedUpMessage"/>
+		<transition name="CANCEL" to="cancelConsignment"/>
+		<transition name="ERROR" to="error"/>
+	</action>
+	
+	<action id="sendPickedUpMessage" bean="test.sendPickedUpMessageAction">
+		<transition name="OK" to="subprocessEnd"/>
+	</action>
+
+	<action id="subprocessEnd" bean="test.subprocessEndAction">
+		<transition name="OK" to="success"/>
+	</action>
+
+	<end id="error" state="ERROR">All went wrong.</end>
+	<end id="failed" state="FAILED">Order not placed.</end>
+	<end id="success" state="SUCCEEDED">Order placed.</end>
+</process>

@@ -1,0 +1,51 @@
+#
+# Localization de
+#
+$lang=de
+
+$facetSearchConfigName=apparel-deIndex
+$indexedType=apparel-deProductType
+$contentCatalogName=apparel-deContentCatalog
+$contentCatalogVersion=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalogName]),CatalogVersion.version[default=Staged])[default=$contentCatalogName:Staged]
+$productCatalog=apparelProductCatalog
+$productCatalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+
+# Solr Indexed Property
+UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true,default=$indexedType];name[unique=true];displayName[lang=$lang]
+
+# Redirect page URL
+UPDATE SolrURIRedirect;url[unique=true];&redirectRefID
+;"/cart";$contentCatalogName-redirectRefID-cart
+;"/cart";$contentCatalogName-redirectRefID-basket
+;"http://www.hybris.com/multichannel-accelerator";$contentCatalogName-redirectRefID-accelerator
+;"http://www.hybris.com/multichannel-accelerator";$contentCatalogName-redirectRefID-hymacc
+
+UPDATE SolrPageRedirect;redirectItem(uid,$contentCatalogVersion)[unique=true];&redirectRefID
+;faq;$contentCatalogName-redirectRefID-help
+;faq;$contentCatalogName-redirectRefID-shipping
+
+# Category Redirect (Must use INSERT_UPDATE here)
+INSERT_UPDATE SolrCategoryRedirect;redirectItem(code,$productCatalogVersion)[unique=true];&redirectRefID
+;snow;$productCatalog-redirectRefID-snow
+;350000;$productCatalog-redirectRefID-surf
+
+# Synonyms (Must use INSERT_UPDATE here)
+INSERT_UPDATE SolrSynonymConfig;facetSearchConfig(name)[unique=true,default=$facetSearchConfigName];language(isocode)[unique=true,default=$lang];synonymFrom[unique=true];synonymTo
+ ;;;"hats";"caps"
+ ;;;"shoes,sneaker,sneakers,trainer";"shoe"
+ ;;;"shades,glasses";"sunglasses"
+ 
+# Keyword Redirects (Must use INSERT_UPDATE here)
+INSERT_UPDATE SolrFacetSearchKeywordRedirect;facetSearchConfig(name)[unique=true,default=$facetSearchConfigName];language(isocode)[unique=true,default=$lang];keyword[unique=true];matchType(code)[unique=true];redirect(&redirectRefID);ignoreCase[default=true]
+ ;;;"accelerator";EXACT;$contentCatalogName-redirectRefID-accelerator;
+ ;;;"basket";EXACT;$contentCatalogName-redirectRefID-basket;
+ ;;;"cart";EXACT;$contentCatalogName-redirectRefID-cart;
+ ;;;"help";EXACT;$contentCatalogName-redirectRefID-help;
+ ;;;"hymacc";EXACT;$contentCatalogName-redirectRefID-hymacc;
+
+INSERT_UPDATE SolrFacetSearchKeywordRedirect;facetSearchConfig(name)[unique=true,default=$facetSearchConfigName];language(isocode)[unique=true,default=$lang];keyword[unique=true];matchType(code)[unique=true];redirect(&redirectRefID);ignoreCase[default=true]
+ ;;;"shipping";STARTS_WITH;$contentCatalogName-redirectRefID-shipping;
+
+INSERT_UPDATE SolrFacetSearchKeywordRedirect;facetSearchConfig(name)[unique=true,default=$facetSearchConfigName];language(isocode)[unique=true,default=$lang];keyword[unique=true];matchType(code)[unique=true];redirect(&redirectRefID);ignoreCase[default=true]
+ ;;;"(ski|skiing)";REGEX;$productCatalog-redirectRefID-snow;
+ ;;;"(surf|surfing|breach)";REGEX;$productCatalog-redirectRefID-surf;

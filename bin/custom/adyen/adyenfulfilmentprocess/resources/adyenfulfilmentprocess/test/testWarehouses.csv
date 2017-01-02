@@ -1,0 +1,15 @@
+INSERT_UPDATE BaseStore;uid[unique=true]
+;testStore
+
+INSERT_UPDATE Vendor;code[unique=true]
+;apparello
+
+# Create some Warehouses for the Vendor
+INSERT_UPDATE Warehouse;code[unique=true];baseStores(uid);vendor(code)[default='apparello'];default[default='true']
+;warehouse;testStore
+
+# Create Stock levels at the Warehouses for Products
+INSERT_UPDATE StockLevel;available[unique=true];warehouse(code);inStockStatus(code);maxPreOrder;maxStockLevelHistoryCount;overSelling;preOrder;productCode[unique=true];reserved
+;10;warehouse;forceInStock;0;-1;0;0;testProduct1;0
+;10;warehouse;forceInStock;0;-1;0;0;testProduct2;0
+;10;warehouse;forceInStock;0;-1;0;0;testProduct3;0

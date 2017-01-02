@@ -1,0 +1,33 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+
+$catalogVersion=catalogVersion(catalog(id[default='apparelProductCatalog']),version[default='Staged'])[unique=true,default='apparelProductCatalog:Staged']
+$categories=target(code, $catalogVersion)[unique=true]
+$supercategories=source(code, $catalogVersion)[unique=true]
+$lang=en
+
+# Language
+$lang=de
+
+
+# Create Categories
+UPDATE Category;code[unique=true];$catalogVersion;name[lang=$lang];description[lang=$lang]
+ ;667;;667;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;686;;686;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;69 Slam;;69 Slam;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Aesthetiker;;Aesthetiker;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Burton;;Burton;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Carhartt;;Carhartt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Femipleasure;;Femipleasure;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;GoPro Cam;;GoPro Cam;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Nixon;;Nixon;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Oakley;;Oakley;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Skim One;;Skim One;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Southpoint;;Southpoint;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Surftech;;Surftech;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;VIVO;;VIVO;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;Volcom;;Volcom;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;WLD;;WLD;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;adidas Originals;;adidas Originals;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+ ;droid;;droid.;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dapibus convallis magna eu placerat. Cras non tortor nulla, quis pharetra dui. Sed nisl tortor, lacinia nec molestie in, pellentesque ut metus. Nunc ut sapien ut augue vestibulum luctus.;
+
+

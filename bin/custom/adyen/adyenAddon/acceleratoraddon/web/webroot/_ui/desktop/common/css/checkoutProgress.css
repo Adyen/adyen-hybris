@@ -1,0 +1,44 @@
+/*
+## checkoutProgress
+********************************************************************/
+
+
+#checkoutProgress{
+	margin:0 0 20px 0;
+	height:30px;
+}
+
+#checkoutProgress li.step{
+	float:left;
+	width:25%;
+	background:#eee;
+	height:30px;
+	line-height:30px;
+	
+}
+
+
+#checkoutProgress li.step a{
+	display:block;
+	text-align:center;
+	color:inherit;
+}
+
+
+#checkoutProgress li.step.active{
+	color:#fff;
+	background:#333;
+}
+
+#checkoutProgress li.step.disabled{
+	
+}
+
+#checkoutProgress li.step.visited{
+	
+}
+
+
+
+
+

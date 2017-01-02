@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="RotatingImagesComponent" name="type.rotatingimageelement.name"
+							description="type.rotatingimageelement.description"
+							image="cmscockpit/images/ContentElementRotatingImages.gif"
+							refImage="cmscockpit/images/ContentElementRotatingImagesReference.gif"
+							imageSmall="cmscockpit/images/ContentElementRotatingImagesSmall.gif"/>
+
+</content-elements>

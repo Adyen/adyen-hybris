@@ -1,0 +1,10 @@
+#
+# Import the Apparel UK Store
+#
+
+# Language
+$lang=en
+
+# Create Base Store
+UPDATE BaseStore;uid[unique=true];name[lang=$lang]
+ ;apparel-uk;"Apparel Store UK"

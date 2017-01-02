@@ -1,0 +1,488 @@
+/*
+## checkoutContentPanel
+********************************************************************/
+
+
+#checkoutContentPanel{
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+	position:relative;
+	margin:0 0 30px 0;
+}
+
+#checkoutContentPanel .headline{
+	border-bottom: 1px solid #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 39px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+#checkoutContentPanel .description{
+	margin:0 0 20px 0;
+}
+
+#checkoutContentPanel .contentPanelRight,
+#checkoutContentPanel .contentPanelLeft{
+	width:244px;
+}
+
+
+#checkoutContentPanel .contentPanelLeft{
+	margin:0 20px 0 0;
+}
+
+
+
+
+
+
+#checkoutContentPanel .savedPaymentItem{
+	border: 1px dotted #A5A5A5;
+	margin:0 0 10px 0;
+}
+
+
+
+#checkoutContentPanel .i18nAddressForm,
+#checkoutContentPanel .billingAddressForm,
+#checkoutContentPanel .cardForm{
+	margin-right:-20px;
+}
+#checkoutContentPanel .control-group{
+	float:left;
+	width:244px;
+	margin-right:20px;
+}
+
+
+#checkoutContentPanel .form-actions{
+	position:absolute;
+	bottom:-60px;
+	right:0;
+	left: 0;
+}
+
+
+#checkoutContentPanel .form-actions button.positive{
+	margin-right:0;
+}
+
+
+#checkoutContentPanel .form-additionals{
+}
+
+
+#checkoutContentPanel .form-additionals .control-group{
+	width:100%;
+}
+
+
+#checkoutContentPanel .form-additionals button{
+	clear:both;
+
+	width:50%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#savedAddressListHolder,
+#savedPaymentListHolder{
+	display:none;
+}
+
+
+
+
+
+
+
+
+
+/*
+simplifyPickupPanel
+*/
+
+.simplifyPickupPanel{
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+	margin:0 0 20px 0;
+	position:relative;
+	background:#F6F6F6;
+}
+
+.simplifyPickupPanel .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1em;
+	font-weight: bold;
+	line-height: 17px;
+	padding-bottom: 5px;
+	margin:10px 0 20px 0;
+}
+
+
+
+.simplifyPickupPanel .description{
+	margin:0 0 20px 0;
+}
+
+.simplifyPickupPanel .content span{
+	display:block;
+	font-weight:normal;
+}
+
+.simplifyPickupPanel .content span.strong{
+
+	font-weight:bold;
+}
+
+.simplifyPickupPanel .content input{
+	float:left;
+}
+
+.simplifyPickupPanel .content span.pickupAdressList{
+	margin:0 0 0 30px;
+}
+
+
+.selectDeliverylocationItemLabel{}
+
+
+.simplifyPickupPanel .footline{
+	clear:both;
+	margin:20px 0 0 0;
+	padding:5px 0 0 0;
+	border-top: 1px dotted #A5A5A5;
+
+}
+
+.simplifyPickupPanel .footlineText{
+	float:left;
+	width:50%;
+	padding:8px 0 0 0;
+
+}
+
+#checkoutContentPanel .control-group.security{
+	width:150px;
+	margin:20px 0 0 0;
+}
+
+
+#checkoutContentPanel input.security{
+	width:50px;
+	float:left;
+}
+#checkoutContentPanel .security_code_what{
+	float:left;
+	display:block;
+	margin:7px;
+	line-height:30px;
+}
+
+
+
+
+
+
+fieldset.cardDate{
+ 	width:244px;
+	float:left;
+	margin:0 20px 0 0;
+}
+
+fieldset.cardDate legend{
+	border: 0;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 20px;
+	margin: 0 0 5px;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 244px;
+}
+
+fieldset.cardDate label{
+ 	display:none;
+}
+
+#checkoutContentPanel fieldset.cardDate .control-group{
+ 	width:111px ;
+	margin:0 0 0 20px;
+}
+
+#checkoutContentPanel fieldset.cardDate legend + .control-group{
+	margin:0;
+}
+
+
+
+
+
+
+
+#checkoutContentPanel .summaryDeliveryAddress,
+#checkoutContentPanel .summaryDeliveryMode,
+#checkoutContentPanel .summaryPayment{
+	position:relative;
+	padding: 0 0 20px 0;
+}
+
+#checkoutContentPanel .editButton{
+	position:absolute;
+	right:0;
+	bottom:20px;
+	margin:0;
+}
+
+
+
+#checkoutContentPanel hr{
+	background:0;
+	border:0;
+	border-bottom: 1px dotted #A5A5A5;
+	margin:0 0 20px 0;
+}
+
+
+#checkoutContentPanel.summaryFlow{
+	padding: 0 20px;
+}
+
+#checkoutContentPanel.summaryFlow strong{
+	margin:0 0 5px 0;
+	display:block;
+}
+
+
+
+
+
+/*
+#summaryDeliveryAddressOverlay .description{
+	margin:0 0 20px 0;
+}*/
+
+
+.summaryOverlay {
+	padding:20px;
+}
+
+
+.summaryOverlay .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 39px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+
+.summaryOverlay .description{
+	margin:0 0 20px 0;
+}
+
+
+
+
+.summaryOverlay form{
+
+	margin-right:-20px;
+}
+
+.summaryOverlay .control-group{
+	float:left;
+	width:387px;
+	margin-right:20px;
+}
+
+
+.summaryOverlay .form-actions{
+	
+}
+
+
+
+.summaryOverlay #summaryDeliveryAddressBook{
+	display:none;
+}
+
+
+
+
+.summaryPaymentOverlay form{
+	margin:0;
+}
+
+
+
+
+
+
+
+.summaryOverlay fieldset.cardDate{
+ 	width:387px;
+	float:left;
+	margin:0 20px 0 0;
+}
+ 
+.summaryOverlay fieldset.cardDate legend{
+	border: 0;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 20px;
+	margin: 0 0 5px;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 387px;
+}
+
+
+
+
+
+
+
+.summaryOverlay fieldset.cardDate .control-group{
+ 	width:183px ;
+	margin:0 0 0 20px;
+}
+
+.summaryOverlay fieldset.cardDate legend + .control-group{
+	margin:0;
+}
+
+
+.summaryOverlay fieldset.cardDate .control-group select{
+	margin-top:2px;
+}
+
+
+#summaryDeliveryAddressBook .addressList{
+
+	margin:0 -20px 0 0;
+}
+
+
+
+#summaryDeliveryAddressBook .addressEntry{
+	float:left;
+	width:387px;
+	margin:0 20px 20px 0;
+	border-bottom: 1px dotted #A5A5A5;
+	padding: 0 0 20px 0;
+}
+
+#summaryDeliveryAddressBook .addressEntry.default{
+	background:#f8f8f8;
+}
+
+
+#summaryDeliveryAddressBook .addressEntry button{
+	float:none;
+
+}
+
+
+
+#savedAddressList .addressList{
+
+	margin:0 -20px 0 0;
+}
+
+
+
+#savedAddressList .addressEntry{
+	float:left;
+	width:387px;
+	margin:0 20px 20px 0;
+	border-bottom: 1px dotted #A5A5A5;
+	padding: 0 0 20px 0;
+}
+
+#savedAddressList .addressEntry.default{
+	background:#f8f8f8;
+}
+
+
+#savedAddressList .addressEntry button{
+	float:none;
+
+}
+
+
+
+
+#savedPaymentList .paymentList{
+
+	margin:0 -20px 0 0;
+	max-height: 350px;
+	overflow: auto;
+}
+
+
+
+#savedPaymentList .paymentEntry{
+	float:left;
+	width:387px;
+	margin:0 20px 20px 0;
+	border-bottom: 1px dotted #A5A5A5;
+	padding: 0 0 20px 0;
+}
+
+
+
+
+#savedPaymentList .paymentEntry ul{
+	float:left;
+}
+
+#savedPaymentList .paymentEntry form{
+	clear:right;
+}
+
+#savedPaymentList .paymentEntry button{
+	margin: 0 20px 20px 20px;
+	
+}
+
+button.place-order {
+	font-size: 140%;
+	margin-top: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

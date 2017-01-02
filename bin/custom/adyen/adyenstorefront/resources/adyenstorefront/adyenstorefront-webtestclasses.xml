@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testclasses>
+  <adyenstorefront>
+    <testclass>com.adyen.storefront.interceptors.i18n.SetLanguageBeforeControllerHandlerTest</testclass>
+    <testclass>com.adyen.storefront.security.impl.CartUsurpProtectionUnitTest</testclass>
+    <testclass>com.adyen.storefront.controllers.pages.SearchPageControllerUnitTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.ProductCarouselComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.interceptors.CSRFHandlerInterceptorTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.ProductFeatureComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.filters.CommonResourcesAddOnFilterTest</testclass>
+    <testclass>com.adyen.storefront.controllers.pages.CartPageControllerTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.CartSuggestionComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.security.cookie.EnhancedCookieGeneratorTest</testclass>
+    <testclass>com.adyen.storefront.filters.AcceleratorAddOnFilterTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.MiniCartComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.NavigationBarComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.security.impl.WebHttpSessionRequestCacheUnitTest</testclass>
+    <testclass>com.adyen.storefront.filters.AnonymousCheckoutFilterTest</testclass>
+    <testclass>com.adyen.storefront.filters.CustomerLocationRestorationFilterTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.ProductReferencesComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.web.view.UiExperienceViewResolverTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.DefaultCMSComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.filters.AbstractAddOnFilterTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.PurchasedCategorySuggestionComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.controllers.cms.CategoryFeatureComponentControllerTest</testclass>
+    <testclass>com.adyen.storefront.filters.TagResourcesAddOnFilterTest</testclass>
+  </adyenstorefront>
+</testclasses>

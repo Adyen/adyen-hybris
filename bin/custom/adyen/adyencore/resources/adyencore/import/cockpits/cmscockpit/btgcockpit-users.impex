@@ -1,0 +1,9 @@
+#
+# Import Users and Groups for BTG Cockpit
+# 
+
+INSERT_UPDATE UserGroup;uid[unique=true];locname[lang=de];locname[lang=en];
+;btgmanager;btgmanager;btgmanager;
+
+INSERT_UPDATE Employee;uid[unique=true];groups(uid)[mode=append];
+;cmsmanager;btgmanager;

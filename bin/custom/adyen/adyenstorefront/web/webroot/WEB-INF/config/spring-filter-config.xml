@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- singleton scoped filter -->
+
+	<bean id="storefrontSingletonFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain">
+		<constructor-arg>
+			<list>
+				<!-- generic platform filters -->
+				<ref bean="log4jFilter"/>
+				<ref bean="storefrontTenantActivationFilter"/>
+				<ref bean="storefrontSystemNotInitializedRedirectFilter"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="storefrontTenantActivationFilter" class="de.hybris.platform.servicelayer.web.TenantActivationFilter">
+		<constructor-arg value="${tenantId}"/>
+	</bean>
+
+	<bean id="storefrontSystemNotInitializedRedirectFilter" class="de.hybris.platform.servicelayer.web.RedirectWhenSystemIsNotInitializedFilter">
+		<constructor-arg>
+			<value><!-- nothing - redirect to default maintenance page --></value>
+		</constructor-arg>
+	</bean>
+
+
+	<!-- tenant scoped filter -->
+
+	<bean id="storefrontTenantFilterChain" class="com.adyen.storefront.filters.UrlPathFilter" >
+		<property name="defaultFilter" ref="storefrontTenantDefaultFilterChain"/>
+		<property name="urlPathHelper">
+			<bean class="org.springframework.web.util.UrlPathHelper"/>
+		</property>
+		<property name="urlPathMapping">
+			<map>
+				<entry key="/integration/" value-ref="integrationTenantFilterChain"/>
+			</map>
+		</property>
+	</bean>
+
+	<alias name="defaultStorefrontTenantDefaultFilterChainList" alias="storefrontTenantDefaultFilterChainList" />
+	<util:list id="defaultStorefrontTenantDefaultFilterChainList">
+		<!-- generic platform filters -->
+		<ref bean="storefrontSessionFilter"/>
+		<ref bean="addOnDevelopmentFilter"/>
+		<!-- filter to log the current request -->
+		<ref bean="requestLoggerFilter"/>
+		<!-- filter to setup the cms integration -->
+		<ref bean="cmsSiteFilter"/>
+
+		<!-- filter to initialize the storefront -->
+		<ref bean="storefrontFilter"/>
+
+		<!-- filter to handle url encoding attributes -->
+		<ref bean="urlEncoderFilter"/>
+
+		<!-- Security -->
+		<ref bean="springSecurityFilterChain"/>
+
+		<!-- filter to log out guest user if he/she attempts to access a page outside of checkout flow -->
+		<ref bean="anonymousCheckoutFilter"/>
+
+		<!-- filter to restore items in cart -->
+		<ref bean="cartRestorationFilter"/>
+
+		<!-- filter to restore customer preferred location -->
+		<ref bean="customerLocationRestorationFilter"/>
+
+		<!-- btg filters -->
+		<!-- Remove these filters to disable BTG integration. Also remove the BtgSegmentBeforeViewHandler -->
+		<ref bean="refererHeaderBtgFilter"/>
+		<ref bean="requestParamsBtgFilter"/>
+		<ref bean="productVisitedBtgFilter"/>
+		<ref bean="categoryVisitedBtgFilter"/>
+		<ref bean="btgSegmentFilter"/>	
+	</util:list>
+	
+	<bean id="storefrontTenantDefaultFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain" >
+		<constructor-arg>
+			<ref bean="storefrontTenantDefaultFilterChainList"/>
+		</constructor-arg>
+	</bean>
+	
+	<alias name="defaultIntegrationTenantFilterChainList" alias="integrationTenantFilterChainList" />
+	<util:list id="defaultIntegrationTenantFilterChainList">
+		<!-- generic platform filters -->
+		<ref bean="storefrontSessionFilter"/>
+		<ref bean="addOnDevelopmentFilter"/>
+		<!-- filter to log the current request -->
+		<ref bean="requestLoggerFilter"/>	
+	</util:list>
+
+	<bean id="integrationTenantFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain" >
+		<constructor-arg>
+			<ref bean="integrationTenantFilterChainList" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="urlEncoderFilter" class="com.adyen.storefront.filters.UrlEncoderFilter" >
+		<property name="urlEncoderFacade" ref="urlEncoderFacade"/>
+		<property name="sessionService" ref="sessionService"/>
+	</bean>
+
+	<bean id="storefrontSessionFilter" class="de.hybris.platform.servicelayer.web.SessionFilter" >
+		<property name="sessionService" ref="sessionService"/>
+	</bean>
+
+	<bean id="addOnDevelopmentFilter" class="com.adyen.storefront.filters.AcceleratorAddOnFilter" >
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="requestLoggerFilter" class="com.adyen.storefront.filters.RequestLoggerFilter"/>
+
+	<bean id="cmsSiteFilter" class="com.adyen.storefront.filters.cms.CMSSiteFilter" >
+		<property name="previewDataModelUrlResolver" ref="previewDataModelUrlResolver"/>
+		<property name="cmsSiteService" ref="cmsSiteService"/>
+		<property name="cmsPreviewService" ref="cmsPreviewService"/>
+		<property name="baseSiteService" ref="baseSiteService"/>
+		<property name="commerceCommonI18NService" ref="commerceCommonI18NService"/>
+		<property name="sessionService" ref="sessionService"/>
+		<property name="contextInformationLoader" ref="contextInformationLoader"/>
+		<property name="cmsPageContextService" ref="cmsPageContextService"/>
+	</bean>
+
+	<bean id="storefrontFilter" class="com.adyen.storefront.filters.StorefrontFilter" >
+		<property name="storeSessionFacade" ref="storeSessionFacade"/>
+		<property name="browseHistory" ref="browseHistory"/>
+		<property name="cookieGenerator" ref="sessionCookieGenerator"/>
+	</bean>
+	
+	<bean id="cartRestorationFilter" class="com.adyen.storefront.filters.CartRestorationFilter" >
+		<property name="baseSiteService" ref="baseSiteService"/>
+		<property name="cartFacade" ref="cartFacade"/>
+		<property name="cartRestoreCookieGenerator" ref="cartRestoreCookieGenerator"/>
+		<property name="userService" ref="userService"/>
+		<property name="sessionService" ref="sessionService"/>	
+	</bean>
+
+	<bean id="anonymousCheckoutFilter" class="com.adyen.storefront.filters.AnonymousCheckoutFilter" >
+		<property name="checkoutCustomerStrategy"  ref="checkoutCustomerStrategy" />
+		<property name="cartService" ref="cartService" />
+		<property name="sessionService" ref="sessionService"/>
+	</bean>
+
+	<bean id="customerLocationRestorationFilter" class="com.adyen.storefront.filters.CustomerLocationRestorationFilter" >
+		<property name="customerLocationFacade" ref="customerLocationFacade"/>
+		<property name="customerLocationCookieGenerator" ref="customerLocationCookieGenerator"/>
+	</bean>
+
+	<alias name="defaultSessionCookieGenerator" alias="sessionCookieGenerator"/>
+	<bean id="defaultSessionCookieGenerator" class="com.adyen.storefront.security.cookie.EnhancedCookieGenerator" >
+		<property name="cookieSecure" value="false"/>
+		<property name="cookieName" value="JSESSIONID"/>
+		<property name="cookieMaxAge" value="-1"/>
+		<property name="useDefaultPath" value="false"/>
+		<property name="httpOnly" value="true"/>
+	</bean>
+	
+	<alias name="defaultCartRestoreCookieGenerator" alias="cartRestoreCookieGenerator"/>
+	<bean id="defaultCartRestoreCookieGenerator" class="com.adyen.storefront.security.cookie.CartRestoreCookieGenerator" >
+		<property name="cookieSecure" value="false"/>
+		<property name="cookieMaxAge" value="360000000"/>
+		<property name="useDefaultPath" value="false"/>
+		<property name="httpOnly" value="true"/>
+		<property name="baseSiteService" ref="baseSiteService"/>
+	</bean>
+
+	<alias name="defaultCustomerLocationCookieGenerator" alias="customerLocationCookieGenerator"/>
+	<bean id="defaultCustomerLocationCookieGenerator" class="com.adyen.storefront.security.cookie.CustomerLocationCookieGenerator" >
+		<property name="cookieSecure" value="false"/>
+		<property name="cookieMaxAge" value="360000000"/>
+		<property name="useDefaultPath" value="false"/>
+		<property name="httpOnly" value="true"/>
+		<property name="baseSiteService" ref="baseSiteService"/>
+	</bean>
+
+	<!-- BTG filters -->
+	<bean id="abstractBtgFilter" class="com.adyen.storefront.filters.btg.AbstractBtgFilter" abstract="true" >
+		<property name="eventService" ref="eventService"/>
+		<property name="siteConfigService" ref="siteConfigService"/>
+	</bean>
+
+	<bean id="refererHeaderBtgFilter" class="com.adyen.storefront.filters.btg.RefererHeaderBtgFilter" parent="abstractBtgFilter"/>
+
+	<bean id="requestParamsBtgFilter" class="com.adyen.storefront.filters.btg.RequestParamsBtgFilter" parent="abstractBtgFilter"/>
+
+	<bean id="productVisitedBtgFilter" class="com.adyen.storefront.filters.btg.ProductVisitedBtgFilter" parent="abstractBtgFilter">
+		<property name="pkResolvingStrategy" ref="productPkResolvingStrategy"/>
+	</bean>
+
+	<bean id="categoryVisitedBtgFilter" class="com.adyen.storefront.filters.btg.CategoryVisitedBtgFilter" parent="abstractBtgFilter">
+		<property name="pkResolvingStrategy" ref="categoryPkResolvingStrategy"/>
+	</bean>
+
+	<bean id="btgSegmentFilter" class="com.adyen.storefront.filters.btg.BTGSegmentFilter" >
+		<property name="btgSegmentStrategy" ref="btgSegmentStrategy"/>
+	</bean>
+
+</beans>

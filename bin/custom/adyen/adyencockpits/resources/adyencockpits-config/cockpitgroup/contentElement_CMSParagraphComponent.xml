@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="CMSParagraphComponent" name="type.paragraphelement.name" 
+							description="type.paragraphelement.description" 
+							image="cmscockpit/images/ContentElementParagraph.gif" 
+							refImage="cmscockpit/images/ContentElementParagraphReference.gif"
+							imageSmall="cmscockpit/images/ContentElementParagraphSmall.gif"/>
+
+</content-elements>

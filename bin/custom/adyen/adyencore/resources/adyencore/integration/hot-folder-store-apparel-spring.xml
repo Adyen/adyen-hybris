@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:file="http://www.springframework.org/schema/integration/file"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="baseDirectoryApparel" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/apparel" />
+	</bean>
+	<!-- 1) Scan for files -->
+	<file:inbound-channel-adapter id="batchFilesApparel" directory="#{baseDirectoryApparel}"
+		filename-regex="^(.*)-(\d+)\.csv" comparator="fileOrderComparator">
+		<int:poller fixed-rate="1000" />
+	</file:inbound-channel-adapter>
+	
+	<!-- 2) move the file to processing and create header -->
+	<file:outbound-gateway request-channel="batchFilesApparel" reply-channel="batchFilesApparelProc"
+		directory="#{baseDirectoryApparel}/processing" delete-source-files="true" />
+	<int:service-activator input-channel="batchFilesApparelProc" output-channel="batchFilesHeaderInit" ref="apparelHeaderSetupTask"
+		method="execute" />
+	<bean id="apparelHeaderSetupTask" class="de.hybris.platform.acceleratorservices.dataimport.batch.task.HeaderSetupTask">
+		<property name="catalog" value="apparelProductCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryApparel" />
+	</bean>
+	
+	<!-- Transformer converters mappings -->
+	<bean id="batchApparelProductConverterMapping" 
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping" 
+		  p:mapping="base_product" 
+		  p:converter-ref="batchApparelProductConverter"/>
+	
+	<bean id="batchSizeVariantConverterMapping" 
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping" 
+		  p:mapping="variant" 
+		  p:converter-ref="batchSizeVariantConverter"/>
+		  
+	<bean id="batchStyleVariantConverterMapping" 
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping" 
+		  p:mapping="variant" 
+		  p:converter-ref="batchStyleVariantConverter"/>
+	
+	<!-- Apparel specific converters -->
+	<bean id="batchApparelProductConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				# Insert Apparel Products
+				INSERT_UPDATE ApparelProduct;code[unique=true];varianttype(code);name[lang=$lang];description[lang=$lang];ean;manufacturerName;manufacturerAID;unit(code)[default=pieces];$approved;Europe1PriceFactory_PTG(code)[default=eu-vat-full];sequenceId[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.SequenceIdTranslator];$catalogVersion
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{S}</value>
+		</property>
+		<property name="rowFilter">
+			<bean class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexRowFilter">
+				<property name="expression" value="row[1]"/>
+			</bean>
+		</property>
+		<property name="type" value="ApparelProduct"/>
+	</bean>
+	<bean id="batchSizeVariantConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				$baseProduct=baseProduct(code,$catalogVersion)
+				# Insert size variant specific data
+				INSERT_UPDATE ApparelSizeVariantProduct;$baseProduct;code[unique=true];variantType(code);style[lang=$lang];size[lang=$lang];sequenceId[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.SequenceIdTranslator];$catalogVersion;$approved
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};{+1};{2};{3};{4};{S}</value>
+		</property>
+		<property name="rowFilter">
+			<bean class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexRowFilter">
+				<property name="expression" value="row[2] == 'ApparelSizeVariantProduct' || row[4]"/>
+			</bean>
+		</property>
+	</bean>
+	<bean id="batchStyleVariantConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				$baseProduct=baseProduct(code,$catalogVersion)
+				# Insert style variant specific data
+				INSERT_UPDATE ApparelStyleVariantProduct;$baseProduct;code[unique=true];variantType(code);style[lang=$lang];sequenceId[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.SequenceIdTranslator];$catalogVersion;$approved
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};{+1};{2};{3};{S}</value>
+		</property>
+		<property name="rowFilter">
+			<bean class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexRowFilter">
+				<property name="expression" value="row[2] == 'ApparelStyleVariantProduct' || (!row[2] &amp;&amp; !row[4])"/>
+			</bean>
+		</property>
+	</bean>
+</beans>

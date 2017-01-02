@@ -1,0 +1,10 @@
+#
+# Import the CMS Site configuration for the Apparel DE Store
+#
+
+# Language
+$lang=en
+
+# Create CMS Site
+UPDATE CMSSite;uid[unique=true];name[lang=$lang];locale[lang=$lang]
+ ;apparel-de;"Apparel Site DE";en_GB

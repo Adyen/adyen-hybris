@@ -1,0 +1,31 @@
+# -----------------------------------------------------------------------
+# [y] hybris Platform 
+# 
+# Copyright (c) 2000-2013 hybris AG
+# All rights reserved.
+#  
+# This software is the confidential and proprietary information of hybris 
+# ("Confidential Information"). You shall not disclose such Confidential
+# Information and shall use it only in accordance with the terms of the
+# license agreement you entered into with hybris.
+#
+#  
+# -----------------------------------------------------------------------
+
+# you can put key/value pairs here.
+# Use Config.getParameter(..) to retrieve the values during runtime.
+
+adyenAddon.key=value
+
+# Specifies the location of the spring context file putted automatically to the global platform application context.
+adyenAddon.application-context=adyenAddon-spring.xml
+
+adyenstorefront.additionalWebSpringConfigs.adyenAddon=classpath:/adyenAddon/web/spring/adyenAddon-web-spring.xml
+#yb2bacceleratorstorefront.additionalWebSpringConfigs.adyenAddon=classpath:/adyenAddon/web/spring/adyenAddon-web-spring.xml
+
+adyenAddon.javascript.paths.desktop=/desktop/common/js/adyenAddon.js;/desktop/common/js/acc.checkoutcartdetails.js;/desktop/common/js/acc.checkoutpickupdetails.js;/desktop/common/js/acc.deliverymode.js;/desktop/common/js/acc.deliverymodedescription.js;/desktop/common/js/acc.hopdebug.js;/desktop/common/js/acc.payment.js;/desktop/common/js/acc.placeorder.js;/desktop/common/js/acc.removepaymentdetails.js;/desktop/common/js/acc.silentorderpost.js;/desktop/common/js/acc.updatebillingaddress.js;/desktop/common/js/acc.termsandconditions.js;/desktop/common/js/acc.checkoutaddress.js
+adyenAddon.javascript.paths.mobile=/mobile/common/js/adyenAddon.js;/mobile/common/js/accmob.checkout.js;/mobile/common/js/accmob.silentorderpost.js;/mobile/common/js/accmob.termsandconditions.js
+
+adyenAddon.css.paths.desktop=/desktop/common/css/adyenAddon.css;/desktop/common/css/checkoutContentPanel.css;/desktop/common/css/checkoutOrderDetails.css;/desktop/common/css/checkoutProgress.css
+adyenAddon.css.paths.mobile=/mobile/common/css/adyenAddon.css
+

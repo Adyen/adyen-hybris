@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list-view.xsd"
+           unassigned-group-name="Other">
+	<group name="General">
+		<label key="cockpit.config.label.General" />
+		<custom class="de.hybris.platform.cockpit.services.config.impl.LineNumberColumn" name="Line nr" visible="false" selectable="true">
+			<label key="config.general.linenr" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowImgColumnConfiguration" name="Status" visible="true" selectable="true" />
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Workflow" visible="true" selectable="true" />
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Start" visible="true" selectable="true" />
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Step" visible="true" selectable="true">
+			<label key="config.general.currentstep" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Assigned user" visible="true" selectable="true">
+			<label key="config.general.assigneduser" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Since" visible="true" selectable="true">
+			<label key="config.general.since" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowImgColumnConfiguration" name="Thumbnail" visible="true" selectable="true">
+			<label key="config.general.thumbnail" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="ItemType" visible="true" selectable="true" />
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Code" visible="true" selectable="true">
+			<label key="config.general.id" />
+		</custom>
+		<custom class="de.hybris.platform.cockpit.services.config.impl.WorkflowColumnConfiguration" name="Name" visible="true" selectable="true" />
+	</group>
+</list-view>

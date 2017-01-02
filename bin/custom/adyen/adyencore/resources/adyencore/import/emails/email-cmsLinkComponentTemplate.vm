@@ -1,0 +1,2 @@
+#set ( $linkUrl = $ctx.urlResolutionService.getWebsiteUrlForSite($ctx.site,false,$ctx.link.url) )
+﻿<a class="headerLink" href="${linkUrl}" >${ctx.link.linkName}</a>

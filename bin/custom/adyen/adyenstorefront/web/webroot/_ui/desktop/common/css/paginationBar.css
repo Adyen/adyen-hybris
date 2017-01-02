@@ -1,0 +1,87 @@
+/*
+## paginationBar
+********************************************************************/
+
+
+.paginationBar{
+	clear:both;
+	line-height:4em;
+}
+
+.paginationBar.top{
+	border-bottom:1px dotted #303030;
+}
+
+.paginationBar.bottom{
+	border-top:1px dotted #303030;
+}
+
+
+
+.paginationBar .totalResults{
+	float:left;
+	color:#9e9e9e;
+	width:180px;
+}
+
+.paginationBar .sortForm{
+	float:left;
+	margin:0;
+}
+
+.paginationBar ul.pagination{
+	float:left;
+}
+
+.paginationBar ul.pagination li{
+	float:left;
+}
+
+.paginationBar ul.pagination li a,
+.paginationBar ul.pagination li strong{
+	display:block;
+	width:20px;
+	text-align:center;
+}
+
+
+.paginationBar ul.pagination li.prev a,
+.paginationBar ul.pagination li.next a{
+	width:25px;
+	overflow:hidden;
+	white-space:nowrap;
+	color:transparent;
+}
+
+
+.paginationBar ul.pagination li.next a{
+	background:url("../images/pagination-next.png") no-repeat center center ;
+}
+
+
+.paginationBar ul.pagination li.prev a{
+	background:url("../images/pagination-prev.png") no-repeat center center ;
+}
+
+
+
+
+
+.paginationBar ul.pagination li.first,
+.paginationBar ul.pagination li.last{
+	display:none;
+}
+
+
+
+.paginationBar .showAll,
+.paginationBar .showPagination{
+	float:left;
+	margin: 0.5em 0 0.5em 20px;
+	padding:0 20px;
+	line-height:3em;
+	border-left:1px solid #c0c0c0;
+	color:#808080;
+}
+
+

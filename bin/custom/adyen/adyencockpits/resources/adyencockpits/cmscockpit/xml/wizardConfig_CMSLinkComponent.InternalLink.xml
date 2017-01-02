@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wizard-config showPrefilledValues="true" selectMode="true" createMode="true" displaySubtypes="true">
+	<displayed-properties>
+		<property qualifier="CMSLinkComponent.linkName" />
+		<property qualifier="CMSLinkComponent.contentPage">
+			<parameter name="predefinedValuesStrategy" value="cmsItemPredefinedValuesStrategy"/>
+			<parameter name="allowCreate" value="false" />
+		</property>
+		<property qualifier="CMSLinkComponent.product">
+			<parameter name="allowCreate" value="false" />
+		</property>
+		<property qualifier="CMSLinkComponent.category">
+			<parameter name="allowCreate" value="false" />
+		</property>
+		<property qualifier="CMSLinkComponent.external" visible="false">
+			<parameter name="defaultValue" value="false"/>
+		</property>
+	</displayed-properties>
+</wizard-config>

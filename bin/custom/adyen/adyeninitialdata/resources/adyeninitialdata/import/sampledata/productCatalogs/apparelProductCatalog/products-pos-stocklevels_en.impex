@@ -1,0 +1,71 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+# ImpEx for Importing Products Store Stock Levels into Apparel Store
+
+# Macros / Replacement Parameter definitions
+
+# Language
+$lang=en
+
+
+# Create some Warehouses for the Vendor
+UPDATE Warehouse;code[unique=true];name[lang=$lang]
+ ;Bedford;Bedford;
+ ;Birmingham Hospital;Birmingham Hospital;
+ ;Birmingham Kathedrale;Birmingham Kathedrale;
+ ;Birmingham Park;Birmingham Park;
+ ;Birmingham Symphony Hall;Birmingham Symphony Hall;
+ ;Birmingham Villa Park;Birmingham Villa Park;
+ ;Cambridge Coldhams;Cambridge Coldham's;
+ ;Cambridge Hospital;Cambridge Hospital;
+ ;Cambridge Lakes Golf Course;Cambridge Lakes Golf Course;
+ ;Cambridge Museum;Cambridge Museum;
+ ;Cambridge University;Cambridge University;
+ ;Cardiff Castle;Cardiff Castle;
+ ;Cardiff City Stadium;Cardiff City Stadium;
+ ;Cardiff Museum;Cardiff Museum;
+ ;Cardiff Park;Cardiff Park;
+ ;Cardiff University;Cardiff University;
+ ;Carlton;Carlton;
+ ;Edinburgh Castle;Edinburgh Castle;
+ ;Edinburgh Dynamic Earth;Edinburgh Dynamic Earth;
+ ;Edinburgh Hospital;Edinburgh Hospital;
+ ;Edinburgh Park;Edinburgh Park;
+ ;Edinburgh University;Edinburgh University;
+ ;Glasgow;Glasgow;
+ ;Glasgow Hospital;Glasgow Hospital;
+ ;Glasgow Ibrox Park;Glasgow Ibrox Park;
+ ;Glasgow Kathedrale;Glasgow Kathedrale;
+ ;Glasgow University;Glasgow University;
+ ;Jersey;Jersey;
+ ;Leeds;Leeds;
+ ;Leeds Cockpit;Leeds Cockpit;
+ ;Leeds Moor;Leeds Moor;
+ ;Leeds Stadium;Leeds Stadium;
+ ;Leeds Victoria Quarter;Leeds Victoria Quarter;
+ ;London Greenwich Park;London Greenwich Park;
+ ;London Hospital;London Hospital;
+ ;London Hyde Park;London Hyde Park;
+ ;London School;London School;
+ ;London Theater;London Theater;
+ ;Manchester;Manchester;
+ ;Manchester dental Hospital;Manchester dental Hospital;
+ ;Manchester Holiday Inn;Manchester Holiday Inn;
+ ;Manchester Hospital;Manchester Hospital;
+ ;Manchester United FC;Manchester United FC;
+ ;Newcastle upon Tyne College;Newcastle upon Tyne College;
+ ;Newcastle upon Tyne Gallery;Newcastle upon Tyne Gallery;
+ ;Newcastle upon Tyne Hospital;Newcastle upon Tyne Hospital;
+ ;Newcastle upon Tyne Kathedrale;Newcastle upon Tyne Kathedrale;
+ ;Newcastle upon Tyne University;Newcastle upon Tyne University;
+ ;Nottingham;Nottingham;
+ ;Nottingham Concert Hall;Nottingham Concert Hall;
+ ;Nottingham Hospital;Nottingham Hospital;
+ ;Nottingham Ice Center;Nottingham Ice Center;
+ ;Nottingham University;Nottingham University;
+ ;Sheffield;Sheffield;
+ ;Sheffield Arena;Sheffield Arena;
+ ;Sheffield Hospital;Sheffield Hospital;
+ ;Sheffield Kathedrale;Sheffield Kathedrale;
+ ;Sheffield United FC;Sheffield United FC;
+ ;St Peter Port;St Peter Port;
+ ;Trinity;Trinity;

@@ -1,0 +1,126 @@
+/*
+## Navigation
+********************************************************************/
+
+#nav_main{
+	border:1px dotted #a5a5a5;
+	border-width:1px 0 ;
+
+	position:relative;
+	z-index:100;
+}
+
+
+/*
+#### 1. Navigation Level
+********************************************************************/
+
+#nav_main  li.La{
+	float:left;
+	text-align:center;
+
+}
+
+
+#nav_main  li.La > a{
+	display:block;
+	line-height:2.750em;
+	padding: 0 12px;
+}
+
+
+#nav_main li.La:hover{
+
+}
+
+#nav_main li.parent:hover > a{ 
+
+	background:#eee ;
+	margin:0 0 -1px 0;
+	padding-bottom:1px;
+	box-shadow: 4px 4px 4px rgba(0,0,0,0.4);
+}
+
+#nav_main li.parent:hover > a{ 
+	border-left:1px dotted #a5a5a5;
+	border-right:1px dotted #a5a5a5;
+	padding-left:11px;
+	padding-right:11px;
+}
+
+/*
+#### 2. Navigation Level
+********************************************************************/
+#nav_main ul.Lb{
+	display:none;
+}
+
+
+#nav_main li.La:hover ul.Lb,
+#nav_main li.La a:focus + ul.Lb{
+	display:block;
+}
+
+
+
+
+#nav_main ul.Lb{
+	position:absolute;
+	background:#eee;
+	left:0;
+	right: 0;
+	text-align:left;
+	padding:20px;
+	border:1px dotted #a5a5a5;
+	z-index:99;
+	border-top:0;
+	width: 908px;
+	top:34px;
+	box-shadow: 4px 4px 4px rgba(0,0,0,0.4);
+	
+}
+
+
+
+#nav_main ul.Lb li.Lb{
+	float:left;
+
+}
+
+
+#nav_main ul.Lb li.Lb span.nav-submenu-title{
+	display:block;
+	font-weight:bold;
+	text-transform:uppercase;
+	font-size:1.167em;
+	margin:0 0 10px 0;
+}
+
+
+
+
+#nav_main ul.Lb li.Lb .Lc{
+	float:left;
+	width:181px;
+}
+
+
+
+
+
+/*
+#### Special Offer
+********************************************************************/
+
+#nav_main > ul > li:last-child{
+	float:right;	
+}
+
+
+
+
+
+#nav_main .La.special_offer{
+	background:#eee;
+	
+}

@@ -1,0 +1,10 @@
+#
+# Import links for the Multi Channel Cockpit
+#
+
+# Language
+$lang=zh
+
+# DynamicLink
+UPDATE DynamicLink;code[unique=true];description[lang=$lang]
+ ;accelerator-site-links;"加速器店面"

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list-view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list-view.xsd"
+           unassigned-group-name="Other" header-popup-bean="listViewMenuPopupBuilderWithClassification">
+	<group name="General">
+		<custom
+			class="de.hybris.platform.cockpit.services.config.impl.LineNumberColumn"
+			name="" visible="true" selectable="true" >
+		</custom>
+		<property qualifier="product.thumbnail" editor="simpleMediaReferenceSelector" visible="true">
+			<renderer class="de.hybris.platform.cockpit.model.listview.impl.ImageCellRenderer"/>
+		</property>
+		<custom spring-bean="ProductContentBrowserStatusColumn" name="Status"
+			visible="true" selectable="true">
+			<label key="config.general.status" />
+		</custom>
+		<property qualifier="product.code" visible="true" />
+		<property qualifier="product.name" visible="true">
+			<language isocode="en" />
+			<language isocode="de" />
+		</property>
+		<property qualifier="product.approvalStatus" visible="false" />
+		<property qualifier="product.catalogversion" visible="false" editor="shortListEditor" />
+		<property qualifier="product.onlineDate" visible="false" />
+		<property qualifier="product.offlineDate" visible="false" />
+		<property qualifier="product.unit" visible="false" />
+		<property qualifier="product.description" visible="false" />
+		<group name="Price">
+			<label key="config.general.prices" />
+			<property qualifier="product.europe1Prices" editor="browserContextEditor"/>
+			<property qualifier="product.Europe1PriceFactory_PPG" />
+			<property qualifier="product.europe1Discounts" />
+			<property qualifier="product.Europe1PriceFactory_PTG" />
+			<property qualifier="product.Europe1PriceFactory_PDG" />
+			<property qualifier="product.minOrderQuantity" />
+			<property qualifier="product.maxOrderQuantity" />
+		</group>
+		<group name="Multimedia">
+			<label key="config.general.multimedia" />
+			<property qualifier="product.picture" editor="simpleMediaReferenceSelector">
+				<renderer class="de.hybris.platform.cockpit.model.listview.impl.ImageCellRenderer"/>
+			</property>
+			<property qualifier="product.data_sheet"/>
+			<property qualifier="product.detail" />
+			<property qualifier="product.logo" />
+			<property qualifier="product.normal" />
+			<property qualifier="product.others" />
+			<property qualifier="product.thumbnails"/>
+		</group>
+		<group name="Additional">
+			<label key="cockpit.config.label.Additional" />
+			<property qualifier="product.ean" />
+			<property qualifier="product.manufacturerAID" />
+			<property qualifier="product.manufacturerName" />
+			<property qualifier="product.deliveryTime" />
+			<property qualifier="product.contentUnit" />
+			<property qualifier="product.numberContentUnits" />
+			<property qualifier="product.remarks" />
+			<property qualifier="product.keywords" editor="multi" />
+		</group>
+		<group name="Variants">
+			<label key="config.general.variants" />
+			<property qualifier="product.variants" />
+		</group>
+		<group name="BMEcat">
+			<label key="config.general.bmecat" />
+			<property qualifier="product.manufacturertypeDescription" />
+			<property qualifier="product.supplierAlternativeAID" />
+			<property qualifier="product.erpGroupBuyer" />
+			<property qualifier="product.erpGroupSupplier" />
+			<property qualifier="product.segment" />
+			<property qualifier="product.order" />
+			<property qualifier="product.orderQuantityInterval" />
+		</group>
+	</group>
+	<dynamicColumnProviders>
+		<spring-bean>variantsDynamicColumnProvider</spring-bean>
+	</dynamicColumnProviders>
+</list-view>

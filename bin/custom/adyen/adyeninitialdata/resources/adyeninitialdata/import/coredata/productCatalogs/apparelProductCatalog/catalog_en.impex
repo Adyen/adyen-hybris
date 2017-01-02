@@ -1,0 +1,10 @@
+#
+# Import the Apparel Product Catalog
+#
+
+# Language
+$lang=en
+
+# Create Catalog
+UPDATE Catalog;id[unique=true];name[lang=$lang]
+ ;apparelProductCatalog;"Apparel Product Catalog"

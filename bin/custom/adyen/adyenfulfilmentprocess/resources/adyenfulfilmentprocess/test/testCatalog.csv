@@ -1,0 +1,37 @@
+
+$catalog-id=testCatalog
+$catalog-version=Online
+
+$testCategory0-id=testCategory0
+$testCategory1-id=testCategory1
+$testCategory2-id=testCategory2
+$testCategory3-id=testCategory3
+
+$testProduct0-id=testProduct0
+$testProduct1-id=testProduct1
+$testProduct2-id=testProduct2
+$testProduct3-id=testProduct3
+$testProduct4-id=testProduct4
+
+$catalogversion=catalogversion(catalog(id),version)[unique=true,default=$catalog-id:$catalog-version]
+$supercategories=supercategories(code,catalogversion(catalog(id[default=$catalog-id]),version[default=$catalog-version]))
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+
+INSERT_UPDATE Catalog;id[unique=true];name[lang=de];name[lang=en];defaultCatalog
+;$catalog-id;$catalog-id;$catalog-id;true
+
+INSERT_UPDATE CatalogVersion; catalog(id)[unique=true]; version[unique=true]; active;defaultCurrency(isocode)
+;$catalog-id;$catalog-version;true;EUR;de,en
+
+INSERT_UPDATE Category;code[unique=true];$catalogversion;name[lang=de];name[lang=en];$supercategories
+;$testCategory0-id;;$testCategory0-id;$testCategory0-id;
+;$testCategory1-id;;$testCategory1-id;$testCategory1-id;$testCategory0-id
+;$testCategory2-id;;$testCategory2-id;$testCategory2-id;$testCategory0-id
+;$testCategory3-id;;$testCategory3-id;$testCategory3-id;$testCategory2-id
+
+INSERT_UPDATE Product;code[unique=true];$catalogversion;name[lang=de];name[lang=en];unit(code);$prices;approvalStatus(code);owner(Principal.uid);startLineNumber;$supercategories
+;$testProduct0-id;;$testProduct0-idde;$testProduct0-iden;pieces;157,95 EUR;approved;admin;0;$testCategory0-id
+;$testProduct1-id;;$testProduct1-idde;$testProduct1-iden;pieces;157,95 EUR;approved;admin;0;$testCategory0-id,$testCategory1-id
+;$testProduct2-id;;$testProduct2-idde;$testProduct2-iden;pieces;157,95 EUR;approved;admin;0;$testCategory0-id,$testCategory2-id
+;$testProduct3-id;;$testProduct3-idde;$testProduct3-iden;pieces;157,95 EUR;approved;admin;0;$testCategory0-id,$testCategory3-id
+;$testProduct4-id;;$testProduct4-idde;$testProduct4-iden;pieces;157,95 EUR;approved;admin;0;$testCategory0-id,$testCategory3-id

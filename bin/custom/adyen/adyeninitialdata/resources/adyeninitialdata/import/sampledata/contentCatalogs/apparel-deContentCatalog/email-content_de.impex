@@ -1,0 +1,26 @@
+#
+#	ImpEx for Apparel DE Site Email CMS Content, German localisations
+#
+
+$contentCatalog=apparel-deContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$picture=media(code, $contentCV)
+$jarResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/contentCatalogs/$contentCatalog
+
+# Language
+$lang=de
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images']
+;;/images/email/banner-sale-now-on.jpg;banner-sale-now-on.jpg;$siteResource/images/email/banner-sale-now-on.jpg;
+;;/images/email/banner-free-delivery.jpg;banner-free-delivery.jpg;$siteResource/images/email/banner-free-delivery.jpg;
+;;/images/email/logo-hybris.png;logo-hybris.png;$siteResource/images/email/logo-hybris.png;
+
+
+# CMS Image Components
+UPDATE CMSImageComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;EmailBannerFreeDeliveryImage;/images/email/banner-free-delivery.jpg
+;;EmailBannerSaleNowOnImage;/images/email/banner-sale-now-on.jpg
+;;EmailSiteLogoImage;/images/email/logo-hybris.png
+

@@ -1,0 +1,22 @@
+# ImpEx for Importing Storefinder Media into Apparel DE Store
+
+# Macros / Replacement Parameter definitions
+$contentCatalog=apparel-deContentCatalog
+$catalogVersion=catalogversion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true,default=$contentCatalog:Staged]
+$media=@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/stores/apparel-de
+$medias=medias(code, $catalogVersion)
+
+# Create medias
+INSERT_UPDATE Media;mediaFormat(qualifier);$catalogVersion;code[unique=true];$media;mime[default='image/jpeg'];folder(qualifier)[default='images']
+;365Wx246H;;/365Wx246H/fashion_store_01;$siteResource/images/storefinder/fashion_store_365x246_01.jpg
+;365Wx246H;;/365Wx246H/fashion_store_02;$siteResource/images/storefinder/fashion_store_365x246_02.jpg
+;365Wx246H;;/365Wx246H/fashion_store_03;$siteResource/images/storefinder/fashion_store_365x246_03.jpg
+;65Wx65H;;/65Wx65H/fashion_store_01;$siteResource/images/storefinder/fashion_store_65x65_01.jpg
+;65Wx65H;;/65Wx65H/fashion_store_02;$siteResource/images/storefinder/fashion_store_65x65_02.jpg
+;65Wx65H;;/65Wx65H/fashion_store_03;$siteResource/images/storefinder/fashion_store_65x65_03.jpg
+
+INSERT_UPDATE MediaContainer;qualifier[unique=true];$medias;$catalogVersion
+;fashion_store_01;/365Wx246H/fashion_store_01,/65Wx65H/fashion_store_01;
+;fashion_store_02;/365Wx246H/fashion_store_02,/65Wx65H/fashion_store_02;
+;fashion_store_03;/365Wx246H/fashion_store_03,/65Wx65H/fashion_store_03;

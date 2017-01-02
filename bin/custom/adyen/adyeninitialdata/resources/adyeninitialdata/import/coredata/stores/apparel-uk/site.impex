@@ -1,0 +1,93 @@
+#
+# Import the CMS Site configuration for the Apparel UK Store
+#
+$productCatalog=apparelProductCatalog
+$contentCatalog=apparel-ukContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$defaultLanguage=en
+$storeUid=apparel-uk
+$siteUid=apparel-uk
+$webServiceSiteUid=$siteUidWS
+$siteMapUrlLimitPerFile=50000
+
+$siteMapLangCur=enGbp
+$siteMapPage=Homepage,Product,CategoryLanding,Category,Store,Content,Custom
+$customSiteMapUrls=/Categories/c/categories?q=:relevance:allPromotions:BOGOFApparel:allPromotions:10DiscountShoes:allPromotions:MultiBuyApparel:allPromotions:PerfectPartnerApparel:allPromotions:ProductBundleApparel,/Categories/Streetwear-youth/T-Shirts-youth/c/270100?q=%3Arelevance%3Abrand%3ABurton%3AswatchColors%3ABLACK&text=#,/Categories/Accessories/c/220000?q=%3Arelevance%3Abrand%3AQuiksilver%3AswatchColors%3AGREEN&text=#,/Brands/Fox/c/Fox?q=%3Arelevance%3AswatchColors%3ABLACK%3Agender%3AMALE,/Categories/Snowwear-women/Snow-Jackets-women/c/200100?q=%3Arelevance%3AswatchColors%3ABLACK%3Abrand%3AWLD
+
+$jarResource=jar:com.adyen.core.setup.CoreSystemSetup&/adyencore/import/common/
+
+# Import config properties into impex macros
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+
+# Load the storefront context root config param
+$storefrontContextRoot=$config-storefrontContextRoot
+
+# SiteMap Configuration
+INSERT_UPDATE SiteMapLanguageCurrency;&siteMapLanguageCurrency;language(isoCode)[unique=true];currency(isocode)[unique=true];
+;enGbp;en;GBP;
+
+INSERT_UPDATE CatalogUnawareMedia;&siteMapMediaId;code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];mime[default='text/plain']
+;$siteUid-siteMapMedia;$siteUid-siteMapMedia;siteMapTemplate.vm;$jarResource/site-siteMapTemplate.vm;
+
+INSERT_UPDATE RendererTemplate;&siteMapRenderer;code[unique=true];content(&siteMapMediaId);contextClass;rendererType(code)[default='velocity'];
+;$siteUid-siteMapTemplate;$siteUid-siteMapTemplate;$siteUid-siteMapMedia;de.hybris.platform.acceleratorservices.sitemap.renderer.SiteMapContext;
+
+INSERT_UPDATE SiteMapPage;&siteMapPage;code(code)[unique=true];frequency(code)[unique=true];priority[unique=true];active[default=true]
+;Homepage;Homepage;daily;1.0;;
+;Product;Product;weekly;0.6;;
+;CategoryLanding;CategoryLanding;daily;0.9;;
+;Category;Category;daily;0.8;;
+;Store;Store;weekly;0.6;;
+;Content;Content;monthly;0.4;;
+;Custom;Custom;daily;1.0;;
+
+INSERT_UPDATE SiteMapConfig;&siteMapConfigId;configId[unique=true];siteMapLanguageCurrencies(&siteMapLanguageCurrency);siteMapPages(&siteMapPage);siteMapTemplate(&siteMapRenderer)[unique=true];customUrls;
+;$siteUidSiteMapConfig;$siteUidSiteMapConfig;$siteMapLangCur;$siteMapPage;$siteUid-siteMapTemplate;$customSiteMapUrls;
+
+# CMS Site
+INSERT_UPDATE CMSSite;uid[unique=true];theme(code);channel(code);stores(uid);contentCatalogs(id);defaultCatalog(id);defaultLanguage(isoCode);siteMapConfig(&siteMapConfigId);urlPatterns;active;previewURL;startingPage(uid,$contentCV);urlEncodingAttributes;defaultPromotionGroup(Identifier)[default=apparelUKPromoGrp]
+;$siteUid;black;B2C;$storeUid;$contentCatalog;$productCatalog;$defaultLanguage;$siteUidSiteMapConfig;(?i)^https?://[^/]+(/[^?]*)?\?(.*\&)?(site=$siteUid)(|\&.*)$,(?i)^https?://$siteUid\.[^/]+(|/.*|\?.*)$,(?i)^https?://apparel\.uk\.[^/]+(|/.*|\?.*)$;true;$storefrontContextRoot/?site=$siteUid;homepage;language
+
+# Cart Cleanup CronJobs
+INSERT_UPDATE CartRemovalCronJob;code[unique=true];job(code)[default=cartRemovalJob];sites(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en]
+;$siteUid-CartRemovalJob
+
+# Uncollected orders cronjob
+INSERT_UPDATE UncollectedOrdersCronJob;code[unique=true];job(code)[default=uncollectedOrdersJob];sites(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en]
+;$siteUid-UncollectedOrdersJob
+
+# Sitemap Generation CronJobs
+INSERT_UPDATE SiteMapMediaCronJob;code[unique=true];job(code)[default=siteMapMediaJob];contentSite(uid)[default=$siteUid];sessionLanguage(isoCode)[default=en];siteMapUrlLimitPerFile;
+;$siteUid-SiteMapMediaJob;;;;$siteMapUrlLimitPerFile;
+
+INSERT_UPDATE Trigger;cronJob(code)[unique=true];second;minute;hour;day;month;year;relative;active;maxAcceptableDelay
+;$siteUid-CartRemovalJob;0;5;4;-1;-1;-1;false;true;-1
+;$siteUid-UncollectedOrdersJob;0;0;6;-1;-1;-1;true;false;-1
+;$siteUid-SiteMapMediaJob;0;0;6;-1;-1;-1;true;false;-1
+
+UPDATE CMSSite;uid[unique=true];adyenMerchantAccount;adyenAPIAccount;adyenAPIPassword;adyenCSEKey;
+;apparel-uk;ScenericCOM;ws@Company.Sceneric;#/A/xJxyD=e@7NF#7DHp#%9tW;10001|9AC44368B2C12BDB11A28ED46D60FD9A3D2238AB9A21635231F1B6BFCAD5D1FE7E7646F1F82E1815239630A562D1E6491137D140F2D531C9FD620F7D4F84B3E3FE792E93ACEEF388F614287359CBFFF59BF7E6AB902C3D3B22ED58F7C4F1E10E1D9343E29E778218C616E14F284E9F78A8110DCAC1160CA5AA3306DB0951C9CAE996AE60831F8F8A9905DCA3DEA097A81D2E747AEFE59F20A99E21FD91AFC51FF81D1290F412639FC04932CF940BADB508E89C8E4C1B28E24AECF1258B139EDFF3D5A11001FDE1BC43FEBC02004116241869A39A40240CBCA70737873A9B8A6194F258CA205956EFD4DE11DBECF38B3624754EEEC1954FE846C25C8BB645367D
+
+INSERT_UPDATE AdyenPaymentMethod;adyenPaymentMethodCode[unique=true];captureNeeded[default=true]
+;amex;
+;bankTransfer_IBAN;
+;bcmc;
+;boleto;
+;boletobancario_hsbc;
+;boletobancario_itau;
+;boletobancario_santander;
+;diners;false
+;directEbanking;
+;discover;
+;dotpay;
+;ebanking_FI;
+;elv;
+;giropay;
+;ideal;false
+;maestro;
+;mc;
+;sepadirectdebit;
+;visa;
+
+UPDATE CMSSite;uid[unique=true];siteAdyenPaymentMethods(adyenPaymentMethodCode);
+;apparel-uk;amex,bankTransfer_IBAN,bcmc,boleto,boletobancario_hsbc,boletobancario_itau,boletobancario_santander,diners,directEbanking,discover,dotpay,ebanking_FI,elv,giropay,ideal,maestro,mc,sepadirectdebit,visa;

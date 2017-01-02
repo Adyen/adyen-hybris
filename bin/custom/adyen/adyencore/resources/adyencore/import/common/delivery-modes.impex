@@ -1,0 +1,177 @@
+#
+# Import Delivery Modes / Zones
+#
+#% impex.setLocale(Locale.GERMAN)
+
+# Currencies
+$ukCurrency=GBP
+$jpCurrency=JPY
+$usCurrency=USD
+$europeCurrency=EUR
+
+# Delivery Zones
+INSERT_UPDATE Zone                  ; code[unique=true]               ; countries(isocode)
+                                    ; uk                              ; GB,GG,IM,JE
+                                    ; continentalEurope               ; AD,AL,AT,BA,BE,BG,BY,CH,CY,CZ,DE,DK,EE,ES,FI,FO,FR,GI,GL,GR,HR,HU,IE,IS,IT,LI,LT,LU,LV,MC,MD,ME,MK,MT,NL,NO,PL,PT,RO,RS,RU,SE,SI,SK,SM,TR,UA,VA
+                                    ; usa                             ; US
+                                    ; ca                              ; CA
+                                    ; japan                           ; JP
+                                    ; china                           ; CN
+
+# Zone Delivery Modes
+INSERT_UPDATE ZoneDeliveryMode      ; code[unique=true]               ; net                                                                                                                                             ; active[default=true]
+                                    ; premium-net                     ; true
+                                    ; standard-net                    ; true
+                                    ; premium-gross                   ; false
+                                    ; standard-gross                  ; false
+                                    ; free-standard-shipping          ; true                                                                                                                                            ; false                          ;
+
+
+# UK
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='uk'][unique=true]                                                                                                           ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 10,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 14,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 19,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 17,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 5,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 7,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 9,99   ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 9,99   ; 0,00
+
+
+
+# Continental Europe
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='continentalEurope'][unique=true]                                                                                            ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 11,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 14,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 15,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 109,99 ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 19,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 6,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 7,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 8,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 69,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 8,99   ; 0,00
+
+# USA
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='usa'][unique=true]                                                                                                          ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 16,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 19,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 119,99 ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 16,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 21,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 9,99   ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 11,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 79,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 9,99   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 12,99  ; 0,00
+
+
+
+
+# Canada
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='ca'][unique=true]                                                                                                           ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 14,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 99,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 16,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 22,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 14,49  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 7,49   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 59,49  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 13,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 8,49   ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 7,49   ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+
+
+
+# Japan
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='japan'][unique=true]                                                                                                        ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 14,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 99,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 26,99  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 20,49  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 24,49  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 11,49  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 16,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 7,49   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 59,49  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 17,49  ; 0,00
+
+
+# China
+INSERT_UPDATE ZoneDeliveryModeValue ; deliveryMode(code)[unique=true] ; zone(code)[default='china'][unique=true]                                                                                                        ; currency(isocode)[unique=true] ; value  ; minimum[unique=true]
+                                    ; premium-gross                   ;                                                                                                                                                 ; $usCurrency                    ; 14,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $jpCurrency                    ; 99,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $ukCurrency                    ; 18,49  ; 0,00
+                                    ; premium-gross                   ;                                                                                                                                                 ; $europeCurrency                ; 27,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $jpCurrency                    ; 99,99  ; 0,00
+                                    ; premium-net                     ;                                                                                                                                                 ; $usCurrency                    ; 26,49  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $europeCurrency                ; 18,99  ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $ukCurrency                    ; 9,49   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $usCurrency                    ; 7,49   ; 0,00
+                                    ; standard-gross                  ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $jpCurrency                    ; 59,99  ; 0,00
+                                    ; standard-net                    ;                                                                                                                                                 ; $usCurrency                    ; 18,49  ; 0,00
+
+# Pickup Delivery Mode
+INSERT_UPDATE PickUpDeliveryMode    ; code[unique=true]               ; active[default=true]                                                                                                                            ; supportedMode(code)
+                                    ; pickup                          ;                                                                                                                                                 ; BUY_AND_COLLECT
+
+##############################
+# Insert DeliveryMode taxes
+##############################
+INSERT_UPDATE ProductTaxCode        ; productCode[unique=true]        ; taxCode                                                                                                                                         ; taxArea[unique=true]
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; GB
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; GB
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; GB
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; GB
+                                    ; pickup                          ; FR000000                                                                                                                                        ; GB
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; US
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; US
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; US
+                                    ; pickup                          ; FR000000                                                                                                                                        ; US
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; US
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; JP
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; JP
+                                    ; pickup                          ; FR000000                                                                                                                                        ; JP
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; JP
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; JP
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; FR
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; FR
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; FR
+                                    ; pickup                          ; FR000000                                                                                                                                        ; FR
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; FR
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; PL
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; PL
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; PL
+                                    ; pickup                          ; FR000000                                                                                                                                        ; PL
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; PL
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; DE
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; DE
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; DE
+                                    ; pickup                          ; FR000000                                                                                                                                        ; DE
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; DE
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; CA
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; CA
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; CA
+                                    ; pickup                          ; FR000000                                                                                                                                        ; CA
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; CA
+                                    ; premium-gross                   ; FR000000                                                                                                                                        ; CN
+                                    ; standard-gross                  ; FR000000                                                                                                                                        ; CN
+                                    ; standard-net                    ; FR000000                                                                                                                                        ; CN
+                                    ; pickup                          ; FR000000                                                                                                                                        ; CN
+                                    ; premium-net                     ; FR000000                                                                                                                                        ; CN
+
+

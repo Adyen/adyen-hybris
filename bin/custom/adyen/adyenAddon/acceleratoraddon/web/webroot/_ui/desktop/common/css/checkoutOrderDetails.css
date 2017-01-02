@@ -1,0 +1,106 @@
+/*
+## checkoutOrderDetails
+********************************************************************/
+
+
+#checkoutOrderDetails .deliveryCartItems{
+	width:100%;
+	margin:40px 0 ;
+}
+
+#checkoutOrderDetails .deliveryCartItems thead td{
+	border-bottom:1px solid #a5a5a5;
+	height:30px;
+	line-height:30px;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.2em;
+	padding-left: 5px;
+	background-color: #f6f6f6;
+}
+
+#checkoutOrderDetails .deliveryCartItems .thumb{
+	width:50px;
+	padding:20px 10px 0 0;
+	vertical-align:top;
+}
+
+#checkoutOrderDetails .deliveryCartItems .thumb img {
+	width:50px;
+}
+
+#checkoutOrderDetails .deliveryCartItems .desc{
+	vertical-align:top;
+	padding:20px 0 0 0;
+}
+
+#checkoutOrderDetails .deliveryCartItems .name{
+	font-weight:bold;
+}
+
+
+#checkoutOrderDetails .deliveryCartItems .priceRow{
+	width:33%;
+	border-bottom:1px dotted #a5a5a5;
+}
+
+#checkoutOrderDetails .pickupCartItems{
+	margin:40px 0 ;
+}
+
+.pickupCartItems{
+	width:100%;
+}
+
+.pickupCartItems thead td{
+	border-bottom:1px solid #a5a5a5;
+	height:30px;
+	line-height:30px;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1.2em;
+	padding-left: 5px;
+	background-color: #f6f6f6;
+}
+
+
+.pickupCartItems .address td{
+	border-bottom:1px dotted #a5a5a5;
+	padding:10px 0;
+}
+
+.pickupCartItems .address .storeName{
+	font-weight:bold;
+}
+
+
+.pickupCartItems .thumb{
+	width:50px;
+	padding:20px 10px 0 0;
+	vertical-align:top;
+}
+
+.pickupCartItems .thumb img{
+	width:50px;
+}
+
+.pickupCartItems .desc{
+	vertical-align:top;
+	padding:20px 0 0 0;
+}
+
+.pickupCartItems .name{
+	font-weight:bold;
+}
+
+
+
+
+.pickupCartItems .priceRow{
+	width:33%;
+	border-bottom:1px dotted #a5a5a5;
+}
+
+
+
+

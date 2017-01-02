@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- [y] hybris Platform Copyright (c) 2000-2014 hybris AG All rights reserved. 
+	This software is the confidential and proprietary information of hybris ("Confidential 
+	Information"). You shall not disclose such Confidential Information and shall 
+	use it only in accordance with the terms of the license agreement you entered 
+	into with hybris. -->
+
+
+<!-- WARNING: This is the Spring WEB configuration file. If you want to replace 
+	items or managers you have to do this from the extensions core configuration 
+	file (cmscockpit/resources/cmscockpit-application-context.xml) -->
+
+<!-- WARNING: This file is imported in cmscockpit-web-spring.xml therfore you don't need 
+	to list it in your deployment descriptor -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd"
+	default-autowire="byName">
+
+	<!--#### Catalog perspective for Accelerator starts  #### -->
+	<bean id="CatalogPerspective"
+		class="com.adyen.cockpits.cmscockpit.session.impl.DefaultWCMSPerspective"
+		scope="session" parent="BasePerspective" autowire="byName">
+		<property name="uid" value="cmscockpit.perspective.catalog" />
+		<property name="label" value="cmscockpit.perspective.catalog" />
+		<property name="customCsaURI" value="/cmscockpit/catalogCSA.zul" />
+		<!-- default site to be activated -->
+		<!-- <property name="activeSiteCode" value="site"/> -->
+		<property name="navigationArea">
+			<ref bean="CatalogNavigationArea" />
+		</property>
+		<property name="browserArea">
+			<bean
+				class="com.adyen.cockpits.cmscockpit.session.impl.DefaultCatalogBrowserArea">
+				<property name="cmsCatalogBrowserModelFactory" ref="cmsCatalogBrowserModelFactory" />
+				<property name="rootSearchTypeCode" value="AbstractPage" />
+				<property name="viewURI" value="/cmscockpit/catalogBrowser.zul" />
+				<property name="welcomeBrowserModel" ref="CatalogWelcomeBrowserModel" />
+				<property name="defaultBrowserViewMapping">
+					<map>
+						<entry key="cockpitgroup" value="GRID" />
+						<entry key="cmsmanagergroup" value="GRID" />
+					</map>
+				</property>
+				<property name="multiSelectActions">
+					<ref bean="PageContentBrowserActionColumn" />
+				</property>
+				<property name="additionalToolbarActions">
+					<ref bean="PageContentAdditionalToolbarActionColumn" />
+				</property>
+				<property name="inspectorRenderer" ref="coverageInspectorRenderer"/>
+				<property name="openInspectorOnSelect" value="true"/>	
+			</bean>
+		</property>
+		<property name="editorArea">
+			<bean id="CatalogEditorAreaModel" parent="BaseEditorAreaModel">
+				<property name="editorAreaController">
+					<ref bean="CatalogViewEditorAreaController" />
+				</property>
+			</bean>
+		</property>
+		<property name="popupEditorArea">
+			<bean id="CmsCatalogPopupEditor" parent="BasePopupEditor">
+				<property name="editorAreaController">
+					<ref bean="CmsPopupEditorAreaController" />
+				</property>
+			</bean>
+		</property>
+		<property name="cockpitTypeService" ref="cockpitTypeService" />
+	</bean>
+	
+	 <bean id="coverageInspectorRenderer" class="de.hybris.platform.cockpit.components.inspector.impl.DefaultCoverageInspectorRenderer" scope="session">
+		<property name="showOnlyVisibleRows" value="false"/>
+	</bean>  
+	
+	<bean id="catalogContentBrowserStatusColumn" class="de.hybris.platform.cockpit.components.listview.impl.DefaultActionColumnConfiguration"
+		scope="prototype">
+		<constructor-arg value="Status" />
+		<property name="actions">
+			<list>
+				<ref bean="CoverageInfoAction" />
+			</list>
+		</property>
+	</bean>
+		
+	<bean id="PageContentBrowserActionColumn" class="de.hybris.platform.cockpit.components.listview.impl.DefaultActionColumnConfiguration"
+		scope="prototype">
+		<constructor-arg value="Actions" />
+		<property name="actions">
+			<list>
+				<ref bean="ApprovalPageStatusAction" />
+				<ref bean="SynchronizationAction" />
+				<ref bean="EditPageBrowserAction" />
+				<ref bean="RemovePageBrowserAction" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="PageContentAdditionalToolbarActionColumn" class="de.hybris.platform.cockpit.components.listview.impl.DefaultActionColumnConfiguration"
+		scope="prototype">
+		<constructor-arg value="Actions" />
+		<property name="actions">
+			<list>
+				<ref bean="NewPageBrowserAction" />
+			</list>
+		</property>
+	</bean>
+
+	<!--#### Catalog perspective: Navigation area #### -->
+	<bean id="CatalogNavigationArea"
+		class="de.hybris.platform.cmscockpit.session.impl.CatalogNavigationArea"
+		scope="session" parent="BaseNavigationArea">
+		<property name="cmsCatalogBrowserModelFactory" ref="cmsCatalogBrowserModelFactory"/>
+		<property name="sectionModel">
+			<ref bean="CatalogNavigationAreaModel" />
+		</property>
+		<property name="infoSlotRenderer">
+			<bean
+				class="de.hybris.platform.cockpit.components.navigationarea.renderer.InfoBoxRenderer" />
+		</property>
+		<property name="infoSlotAttachmentTypes">
+			<ref bean="WorkflowAttachmentData" />
+		</property>
+		<property name="sections">
+			<list>
+				<ref bean="CatalogSpecialCollectionsSection" />
+				<ref bean="SiteSelectorSection" />
+				<ref bean="CatalogQuerySection" />
+				<ref bean="CmsUndoSection" />
+			</list>
+		</property>
+		<property name="cockpitTypeService" ref="cockpitTypeService" />
+	</bean>
+	<bean id="CatalogNavigationAreaModel"
+		class="de.hybris.platform.cmscockpit.components.navigationarea.CatalogNavigationAreaModel"
+		scope="session">
+		<property name="specialCollectionTypes">
+			<list>
+				<value>blacklist</value>
+				<value>quickcollection</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="CmsUndoSection"
+		class="de.hybris.platform.cockpit.components.navigationarea.NavigationPanelSection"
+		scope="prototype">
+		<property name="localizedLabel" value="navigationarea.history" />
+		<property name="visible" value="true" />
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cockpit.components.navigationarea.renderer.UndoSectionRenderer" />
+		</property>
+	</bean>
+
+	<bean id="CatalogSpecialCollectionsSection"
+		class="de.hybris.platform.cockpit.components.navigationarea.NavigationPanelSection"
+		scope="session">
+		<property name="localizedLabel" value="navigationarea.shortcuts" />
+		<property name="visible" value="true" />
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cockpit.components.navigationarea.renderer.SpecialCollectionSectionRenderer">
+				<property name="allItemsLabel" value="cms_general.all_pages" />
+				<property name="allowedTypes">
+					<list value-type="java.lang.String">
+						<value>AbstractPage</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<!--#### CMSSite selector section #### -->
+	<bean id="SiteSelectorSection"
+		class="de.hybris.platform.cmscockpit.components.sectionpanel.SiteSectionSelectorSection"
+		scope="session" autowire="byName">
+		<property name="localizedLabel" value="navigationarea.websites" />
+		<property name="initiallySelected" value="false" />
+		<property name="visible" value="true" />
+		<property name="subSections">
+			<list>
+				<ref bean="CatalogVersionSelectorSection" />
+			</list>
+		</property>
+		<!-- comment out the next lines in order to use the default cockpit selector 
+			renderer -->
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cmscockpit.components.sectionpanel.renderer.SiteSectionSelectorSectionRenderer"
+				autowire="byName" />
+		</property>
+		<property name="navigationAreaModel" ref="CatalogNavigationAreaModel" />
+	</bean>
+
+	<!--#### content catalog version selector section #### -->
+	<bean id="CatalogVersionSelectorSection"
+		class="de.hybris.platform.cmscockpit.components.sectionpanel.CatalogVersionSectionSelectorSection"
+		scope="prototype" autowire="byName">
+		<property name="cmsCatalogBrowserModelFactory" ref="cmsCatalogBrowserModelFactory"/>
+		<property name="localizedLabel" value="navigationarea.catalogs" />
+		<property name="initiallySelected" value="false" />
+		<property name="visible" value="true" />
+		<property name="subSections">
+			<list>
+				<ref bean="CategorySelectorSection" />
+			</list>
+		</property>
+		<!-- comment out the next lines in order to use the default cockpit selector 
+			renderer -->
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cmscockpit.components.sectionpanel.renderer.CatalogVersionSectionSelectorSectionRenderer"
+				autowire="byName" />
+		</property>
+		<property name="navigationAreaModel" ref="CatalogNavigationAreaModel" />
+	</bean>
+
+	<!--#### category selector section #### -->
+	<bean id="CategorySelectorSection"
+		class="de.hybris.platform.cmscockpit.components.sectionpanel.CategoryDrillableSelectorSection"
+		scope="prototype" autowire="byName">
+		<property name="localizedLabel" value="navigationarea.categories" />
+		<property name="initiallySelected" value="true" />
+		<property name="visible" value="true" />
+		<!-- -->
+		<!-- drilldownLevel - means how many levels should be displayed (-1 as 
+			many as is available) -->
+		<property name="drilldownLevel" value="-1" />
+		<!-- -->
+		<!-- comment out the next lines in order to use the default cockpit selector 
+			renderer -->
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cmscockpit.components.sectionpanel.renderer.CategoryDrillableSectionRenderer"
+				autowire="byName" />
+		</property>
+		<property name="navigationAreaModel" ref="CatalogNavigationAreaModel" />
+	</bean>
+
+	<bean id="CatalogQuerySection"
+		class="de.hybris.platform.cockpit.components.navigationarea.NavigationPanelSection"
+		scope="session">
+		<property name="localizedLabel" value="navigationarea.queries" />
+		<property name="visible" value="true" />
+		<property name="renderer">
+			<bean
+				class="de.hybris.platform.cockpit.components.navigationarea.renderer.QuerySectionRenderer" />
+		</property>
+	</bean>
+
+	<bean id="CatalogViewEditorAreaController"
+		class="de.hybris.platform.cmscockpit.session.impl.CmsEditorAreaControllerImpl"
+		scope="session">
+		<property name="sectionRowRenderer">
+			<bean id="CatalogViewEditorSectionRowRenderer" parent="EditorSectionRowRenderer" />
+		</property>
+		<property name="editorFactory">
+			<ref bean="EditorFactory" />
+		</property>
+	</bean>
+
+	<!--#### Catalog perspective end #### -->
+</beans>

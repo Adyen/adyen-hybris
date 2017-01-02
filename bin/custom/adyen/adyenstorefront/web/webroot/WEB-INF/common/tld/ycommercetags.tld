@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.1"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd">
+
+	<tlib-version>1.0</tlib-version>
+	<short-name>ycommerce</short-name>
+	<uri>http://hybris.com/tld/ycommercetags</uri>
+
+	<tag>
+		<name>testId</name>
+		<tag-class>com.adyen.storefront.tags.TestIdTag</tag-class>
+		<body-content>scriptless</body-content>
+		<info>Render a text id wrapper</info>
+		<attribute>
+			<name>code</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<function>
+		<description>
+			Get the primary image for the ProductData specified in the format specified.
+		</description>
+		<name>productImage</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>de.hybris.platform.commercefacades.product.data.ImageData getPrimaryImageForProductAndFormat(de.hybris.platform.commercefacades.product.data.ProductData,java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<description>
+			Get the store image for the PointOfServiceData specified in the format specified.
+		</description>
+		<name>storeImage</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>de.hybris.platform.commercefacades.product.data.ImageData getImageForStoreAndFormat(de.hybris.platform.commercefacades.storelocator.data.PointOfServiceData,java.lang.String))</function-signature>
+	</function>
+
+	<function>
+		<description>
+			Test if an order entry number in a cart has an applied promotion.
+		</description>
+		<name>doesAppliedPromotionExistForOrderEntry</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>boolean doesAppliedPromotionExistForOrderEntry(de.hybris.platform.commercefacades.order.data.CartData,int)</function-signature>
+	</function>
+
+	<function>
+		<description>
+			Test if an order entry number in a cart has a potential promotion.
+		</description>
+		<name>doesPotentialPromotionExistForOrderEntry</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>boolean doesPotentialPromotionExistForOrderEntry(de.hybris.platform.commercefacades.order.data.CartData,int)</function-signature>
+	</function>
+
+	<function>
+		<description>
+			Encodes given URL
+		</description>
+		<name>encodeUrl</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>java.lang.String encodeUrl(java.lang.String)</function-signature>
+	</function>
+	
+	<function>
+		<description>
+			Evaluate restrictions.
+		</description>
+		<name>evaluateRestrictions</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>boolean evaluateRestrictions(de.hybris.platform.cms2.model.contents.components.AbstractCMSComponentModel)</function-signature>
+	</function>
+
+	<function>
+		<description>
+		   Checks if PickupStore is enabled for a base store.
+		</description>
+		<name>checkIfPickupEnabledForStore</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>boolean checkIfPickupEnabledForStore()</function-signature>
+	</function>
+
+	<function>
+		<description>
+			Check if an extension is installed
+		</description>
+		<name>isExtensionInstalled</name>
+		<function-class>com.adyen.storefront.tags.Functions</function-class>
+		<function-signature>boolean isExtensionInstalled(java.lang.String)</function-signature>
+	</function>
+
+</taglib>

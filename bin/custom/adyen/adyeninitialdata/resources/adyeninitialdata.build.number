@@ -1,0 +1,9 @@
+#Ant properties
+#Fri Feb 21 21:38:46 CET 2014
+builddate=20140221 2138
+description=adyeninitialdata
+name=adyeninitialdata
+releasedate=20140221 1411
+vendor=hybris
+version=5.1.1.0
+version.api=5.1.1

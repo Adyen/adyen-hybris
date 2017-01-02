@@ -1,0 +1,441 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+#
+#	ImpEx for Apparel UK Site CMS Content, en localisations
+#
+
+$contentCatalog=apparel-ukContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$productCatalog=apparelProductCatalog
+$productCV=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$picture=media(code, $contentCV)
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/contentCatalogs/$contentCatalog
+$jarResourceCms=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/cockpits/cmscockpit
+
+# Language
+$lang=en
+
+# Import config properties into impex macros
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+
+# Load the storefront context root config param
+$storefrontContextRoot=$config-storefrontContextRoot
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;/images/theme/logo-hybris.png;logo-hybris.png;$siteResource/images/theme/logo-hybris.png;image/png;;"hybris Accelerator"
+
+# Site Logo Component
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;SiteLogoComponent;/images/theme/logo-hybris.png
+
+
+# CMS Link Components
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=en]
+;;AboutAcceleratorLink;"About Commerce Accelerator"
+;;AboutHybrisLink;"About hybris"
+;;AccessoriesBandanasLink;"Bandanas"
+;;AccessoriesBeachTowelsLink;"Beach Towels"
+;;AccessoriesBeaniesLink;"Beanies"
+;;AccessoriesBeltsLink;"Belts"
+;;AccessoriesCamerasLink;"Cameras"
+;;AccessoriesCapsLink;"Caps"
+;;AccessoriesElectronicLink;"Electronic"
+;;AccessoriesGlovesLink;"Gloves"
+;;AccessoriesHeadphonesLink;"Headphones"
+;;AccessoriesJewelleryLink;"Jewellery"
+;;AccessoriesLink;"Accessories"
+;;AccessoriesOthersLink;"Others"
+;;AccessoriesSocksLink;"Socks"
+;;AccessoriesVideocameraLink;"Videocamera"
+;;AccessoriesWalletsLink;"Wallets"
+;;AccessoriesWatchesLink;"Watches"
+;;AccessoriesWomenBagsLink;"Bag"
+;;AccessoriesWomenBandanasLink;"Bandanas"
+;;AccessoriesWomenBeachTowelsLink;"Beach Towels"
+;;AccessoriesWomenBeaniesLink;"Beanies"
+;;AccessoriesWomenBeltsLink;"Belts"
+;;AccessoriesWomenCapsLink;"Caps"
+;;AccessoriesWomenGlovesLink;"Gloves"
+;;AccessoriesWomenJewelleryLink;"Jewellery"
+;;AccessoriesWomenLink;"Accessories for Women"
+;;AccessoriesWomenOthersLink;"Others"
+;;AccessoriesWomenScarvesLink;"Scarves"
+;;AccessoriesWomenSocksLink;"Socks"
+;;AccessoriesWomenStickerLink;"Sticker"
+;;AccessoriesWomenUnderwearLink;"Underwear"
+;;AccessoriesWomenWalletsLink;"Wallets"
+;;AccessoriesWomenWatchesLink;"Watches"
+;;AgileCommerceBlogLink;"Agile Commerce Blog"
+;;AllBrandsLink;"Brands"
+;;AllCategoriesLink;"Categories"
+;;AnonLink;"Anon"
+;;AnonSunglassesLink;"Anon"
+;;BackpacksLink;"Backpacks"
+;;BlueTomatoLink;"Blue Tomato"
+;;BoardsAlMerrickLink;"Al Merrick"
+;;BoardsBrowseAllLink;"> Browse All"
+;;BoardsSkimOneLink;"Skim One"
+;;BoardsSouthpointLink;"Southpoint"
+;;BoardsSurftechLink;"Surftech"
+;;BrandsBrowseAllLink;"> Browse All"
+;;BrowseAllAccessoriesLink;"> Browse All"
+;;BrowseAllAccessoriesWomenLink;"> Browse All"
+;;BrowseAllSandalsLink;"> Browse All"
+;;BrowseAllStreetwearYouthBoardshortsLink;"> Browse All"
+;;BrowseAllStreetwearYouthTShirtsLink;"> Browse All"
+;;CapsLink;"Caps"
+;;ClothesLink;"Clothes"
+;;ContactUsLink;"Contact Us"
+;;DaineseLink;"Dainese"
+;;DaineseShirtsLink;"Dainese"
+;;DakineBackpacksLink;"Dakine"
+;;DakineLink;"Dakine"
+;;DocumentationLink;"Documentation"
+;;F2-FTWOLink;"F2-FTWO"
+;;F2-FTWOShoesLink;"F2-FTWO"
+;;FAQLink;"FAQ"
+;;FacebookLink;"Facebook"
+;;FoxLink;"Fox"
+;;FoxSunglassesLink;"Fox"
+;;GogglesLink;"Goggles"
+;;GuidesLink;"Guides"
+;;HelmetLink;"Helmet"
+;;HomepageNavLink;"Home"
+;;LinkedInLink;"Linked In"
+;;OthersLink;"Others"
+;;PlayboardLink;"Playboard"
+;;PlayboardShirtsLink;"Playboard"
+;;ProTecLink;"Pro Tec"
+;;QuiksilverLink;"Quiksilver"
+;;QuiksilverSunglassesLink;"Quiksilver"
+;;RipCurlLink;"Rip Curl"
+;;RoxyLink;"Roxy"
+;;RoxySunglassesLink;"Roxy"
+;;SandalsLink;"Sandals"
+;;SandalsReefLink;"Reef"
+;;SandalsRoxyLink;"Roxy"
+;;SandalsVolcomLink;"Volcom"
+;;ShadesAnonLink;"Anon"
+;;ShadesBrowseAllLink;"> Browse All"
+;;ShadesFoxLink;"Fox"
+;;ShadesQuiksilverLink;"Quiksilver"
+;;ShadesRoxyLink;"Roxy"
+;;ShadesVonZipperLink;"Von Zipper"
+;;ShirtsLink;"Shirts"
+;;ShoesLink;"Shoes"
+;;SkiGearLink;"Ski Gear"
+;;SpecialOffersLink;"Special Offers"
+;;StreetwearYouthBoardshorts69SlamLink;"69 Slam"
+;;StreetwearYouthBoardshortsBillabongLink;"Billabong"
+;;StreetwearYouthBoardshortsQuiksilverLink;"Quiksilver"
+;;StreetwearYouthBoardshortsVolcomLink;"Volcom"
+;;StreetwearYouthTShirtsBillabongLink;"Billabong"
+;;StreetwearYouthTShirtsBlueTomatoLink;"Blue Tomato"
+;;StreetwearYouthTShirtsBurtonLink;"Burton"
+;;StreetwearYouthTShirtsDCLink;"DC"
+;;StreetwearYouthTShirtsQuiksilverLink;"Quiksilver"
+;;SunglassesLink;"Sunglasses"
+;;SurfLink;"Surf"
+;;TShirtsAlienWorkshopLink;"Alien Workshop"
+;;TShirtsBillabongLink;"Billabong"
+;;TShirtsBlueTomatoLink;"Blue Tomato"
+;;TShirtsBrowseAllLink;"> Browse All"
+;;TShirtsBurtonLink;"Burton"
+;;TShirtsCarharttLink;"Carhartt"
+;;TShirtsDCLink;"DC"
+;;TShirtsElementLink;"Element"
+;;TShirtsHorsefeathersLink;"Horsefeathers"
+;;TShirtsQuiksilverLink;"Quiksilver"
+;;TShirtsRoxyLink;"Roxy"
+;;TShirtsVolcomLink;"Volcom"
+;;TShirtsZimtsternLink;"Zimtstern"
+;;TokoLink;"Toko"
+;;ToolsLink;"Tools"
+;;TwitterLink;"Twitter"
+;;VansLink;"Vans"
+;;VansShoesLink;"Vans"
+;;VonZipperLink;"Von Zipper"
+;;VonZipperSunglassesLink;"Von Zipper"
+;;YouthLink;"Youth"
+
+
+# CMS Mini Cart Component
+UPDATE MiniCartComponent;$contentCV[unique=true];uid[unique=true];title[lang=en]
+;;MiniCart;"Your Shopping Bag"
+
+# CMS Navigation Nodes 
+UPDATE CMSNavigationNode;$contentCV[unique=true];uid[unique=true];title[lang=en]
+;;AcceleratorNavNode;"Accelerator"
+;;AccessoriesMenNavNodeMenu;"Men"
+;;AccessoriesNavigationNode;"Accessories"
+;;AccessoriesWomenNavNodeMenu;"Women"
+;;AllBrandsNavNode;"All Brands"
+;;AllCategoriesNavNode;"All Categories"
+;;ApparelUKNavNode;"Apparel UK Site"
+;;BackpacksBrandsNavNode;"Brands"
+;;BackpacksNavNode;"Backpacks"
+;;BrandsNavNode;"Brands"
+;;CapsNavNode;"Caps"
+;;CategoriesNavNode;"Categories"
+;;ClothesCategoriesNavNode;"Clothes"
+;;ClothesNavNode;"Clothes"
+;;FollowUsNavNode;"Follow Us"
+;;GogglesNavNode;"Goggles"
+;;GuidesNavNode;"Guides"
+;;HelmetNavNode;"Helmet"
+;;HybrisNavNode;"Hybris"
+;;OthersNavNode;"Others"
+;;ShirtsBrandsNavNode;"Brands"
+;;ShirtsNavNode;"Shirts"
+;;ShoesBrandsNavNode;"Brands"
+;;ShoesNavNode;"Shoes"
+;;SkiGearCategoriesNavNode;"Ski Gear"
+;;SkiGearNavNode;"Ski Gear"
+;;SnowKitNavNodeMenu;"Kit"
+;;SnowNavigationNode;"Snow"
+;;SnowwearMenNavNodeMenu;"Men"
+;;SnowwearWomenNavNodeMenu;"Women"
+;;SnowwearYouthNavNodeMenu;"Youth"
+;;StreetwearMenNavNodeMenu;"Men"
+;;StreetwearNavigationNode;"Streetwear"
+;;StreetwearWomenNavNodeMenu;"Women"
+;;StreetwearYouthBoardshortsNavNode;"Boardshorts"
+;;StreetwearYouthNavNode;"Youth"
+;;StreetwearYouthNavNodeMenu;"Youth"
+;;StreetwearYouthTShirtNavNode;"T-Shirts"
+;;SunglassesBrandsNavNode;"Brands"
+;;SunglassesNavNode;"Sunglasses"
+;;SurfBoardsNavNodeMenu;"Boards"
+;;SurfSandalsNavNodeMenu;"Sandals"
+;;SurfTShadesNavNodeMenu;"Shades"
+;;SurfTShirtNavNodeMenu;"T-Shirt"
+;;ToolsNavNode;"Tools"
+
+# CMS tabs components 
+UPDATE CMSTabParagraphComponent;$contentCV[unique=true];uid[unique=true];title[lang=en];content[lang=en]
+;;deliveryTab;Delivery;"<table border=""0"" cellspacing=""0"" cellpadding=""10"" style=""border-collapse: collapse; empty-cells: show; font-size: 12px; padding: 0px; margin: 0px; border: 0px initial initial;"">  <tbody>    <tr style=""padding: 0px; margin: 0px;"">      <td colspan=""4"" style=""vertical-align: top; text-align: left; font-weight: normal; padding: 0px; margin: 0px;"">        <div style=""padding-top: 10px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #8edf75;  border-top-width: 1px; border-top-style: solid; border-top-color: #8edf75; margin: 0px;"">          <p align=""justify"">Lorem ipsum dolor sit amet, dolor sed, ut nam ut. Senectus mauris egestas a massa, enim placeat wisi congue purus fermentum. Ut aptent mauris dapibus congue in sit. Sed dolor varius amet feugiat volutpat dignissim, pede a rhoncus sodales aliquam adipiscing, dapibus massa fusce. Dui egestas ornare urna nibh facilisi, cras posuere.</p><p align=""justify"">Lorem aliquam accumsan eleifend sem libero lorem, aliquam sequi sed urna nec. Eget dolor quisque dolor, amet suspendisse ullamcorper minus elit lectus nunc, est mattis dui id eu et facilisis, conubia sit tristique. Ac fusce gravida condimentum iaculis neque, a platea curabitur accumsan porttitor vel justo. Amet potenti ac, eget amet ducimus sit nulla, ac porttitor rhoncus, justo proin tortor integer turpis nulla vitae. Egestas mollis litora nunc platea dui, eu semper mauris diam, erat quam, porta maecenas fusce libero non aliquet. Amet tellus taciti ligula sed sollicitudin, nonummy cursus enim, hendrerit nec, sed lacus sed at sit quis, semper a arcu mollis sapien nec pretium. Ante mauris eros nec, nonummy mauris, nulla lacinia vel. Volutpat luctus velit eu.</p>        </div>      </td>    </tr>  </tbody></table>"
+
+# CMS Footer Component
+UPDATE FooterComponent;$contentCV[unique=true];uid[unique=true];notice[lang=en]
+;;FooterComponent;"© 2013 hybris software"
+
+# CMS Paragraph Component (Contact information)
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en]
+;;ContactInfo;"Call us: +44 (0)20 / 7429 4175"
+
+# Generic Banners (banners are not localizable so we must create a separate banner per language)
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Generic_148x300_MobileApp_EN_01.jpg;$siteResource/images/banners/site/Generic_148x300_MobileApp_EN_01.jpg;;;"Always up to date! Download our mobile app"
+;;Generic_788x120_FacebookOffers_EN_01.jpg;$siteResource/images/banners/site/Generic_788x120_FacebookOffers_EN_01.jpg;;;"Up to 30% off! Sign up on facebook for exclusive offers"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;FacebookOffersBanner;Generic_788x120_FacebookOffers_EN_01.jpg
+;;MobileAppBanner;Generic_148x300_MobileApp_EN_01.jpg
+
+# CMS ProductReferences Components
+UPDATE ProductReferencesComponent;$contentCV[unique=true];uid[unique=true];title[lang=en]
+;;CrossSelling;"Complete the look"
+;;Others;"Accessories"
+;;Similar;"You may also like..."
+;;accessories;"Accessories"
+
+# CMS CartSuggestion Components
+UPDATE CartSuggestionComponent;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+;;CartSuggestions;"You may also like..."
+
+# Apparel UK Homepage
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];altText;&imageRef;folder(qualifier)[default='images']
+;;homepage-hero-summer-classics_EN.jpg;$siteResource/images/banners/homepage/homepage-hero-summer-classics_EN.jpg;;New Summer Classics;homepage-hero-summer-classics_EN.jpg
+
+UPDATE ImageMapComponent;$contentCV[unique=true];uid[unique=true];imageMapHTML[lang=en];$picture[lang=$lang]
+;;SummerClassicsBanner;"<area shape='rect' coords='863,504,949,527' href='$storefrontContextRoot/Brands/c/brands' alt='all-brands' /><area shape='rect' coords='782,493,843,527' href='$storefrontContextRoot/Brands/F2-FTWO/c/F2-FTWO' alt='f2' /><area shape='rect' coords='673,493,777,527' href='$storefrontContextRoot/Brands/Quiksilver/c/Quiksilver' alt='quiksilver' /><area shape='rect' coords='617,493,671,527' href='$storefrontContextRoot/Brands/Roxy/c/Roxy' alt='roxy' /><area shape='rect' coords='511,493,614,527' href='$storefrontContextRoot/Brands/Dakine/c/Dakine' alt='dakine' /><area shape='rect' coords='433,493,507,527' href='$storefrontContextRoot/Brands/Fox/c/Fox' alt='fox' /><area shape='rect' coords='356,493,426,527' href='$storefrontContextRoot/Brands/Rip-Curl/c/Rip Curl' alt='ripcurl' /><area shape='rect' coords='287,493,354,527' href='$storefrontContextRoot/Brands/Toko/c/Toko' alt='toko' /><area shape='rect' coords='169,493,280,527' href='$storefrontContextRoot/Brands/Dainese/c/Dainese' alt='dainese' /><area shape='rect' coords='82,493,165,527' href='$storefrontContextRoot/Brands/Playboard/c/Playboard' alt='playboard' /><area shape='rect' coords='9,493,77,527' href='$storefrontContextRoot/Brands/Vans/c/Vans' alt='vans' /><area shape='poly' coords='66,166' href='#' /><area shape='poly' coords='5,212,66,169,156,162,249,215,285,332,260,351,274,473,5,474' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Raster-SS/p/M34704_B' alt='Playboard Raster' /><area shape='poly' coords='296,386,375,392,397,358,552,338,542,430,515,467,386,470,291,418' href='$storefrontContextRoot/Brands/Fox/Shades-Fox-The-Median-polished-black-warm-gray/p/300024964' alt='Fox The Median' /><area shape='poly' coords='624,427,788,474,923,466,928,411,757,324,644,321' href='$storefrontContextRoot/Brands/Vans/Slip-On-Vans-Classic-Slip-On/p/M35392' alt='Vans Classic Slip On' /><area shape='poly' coords='738,312,929,297,945,4,750,9,703,130,758,151' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Logo/p/M35364_R' alt='Playboard Logo Tee' />";homepage-hero-summer-classics_EN.jpg
+
+
+# Apparel Sunglasses Category Landing Page
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Appa_788x467_SunglassesBrands_EN_01.jpg;$siteResource/images/banners/category_banners/Appa_788x467_SunglassesBrands_EN_01.jpg;;;""
+
+UPDATE ImageMapComponent;$contentCV[unique=true];uid[unique=true];imageMapHTML[lang=en];$picture[lang=$lang]
+;;SunglassesImageMapComponent;"<area shape=""rect"" coords=""10,51,256,231"" href=""$storefrontContextRoot/Anon/Sonnenbrille-Anon-Convict-black-fade-gray-gradient/p/300044617"" alt=""Sonnenbrille Anon Convict black fade gray gradient"" title=""Sonnenbrille Anon Convict black fade gray gradient ""/>	<area shape=""rect"" coords=""274,54,520,234"" href=""$storefrontContextRoot/Fox/Sonnenbrille-Fox-The-Median-polished-black-warm-gray/p/300024964"" alt=""Sonnenbrille Fox The Median polished black warm gray"" title=""Sonnenbrille Fox The Median polished black warm gray""/>	<area shape=""rect"" coords=""539,50,763,234"" href=""$storefrontContextRoot/Quiksilver/Sonnenbrille-Quiksilver-Dinero-black-white-red-gray/p/300045375"" alt=""Sonnenbrille Quiksilver Dinero black white red gray"" title=""Sonnenbrille Quiksilver Dinero black white red gray""/>	<area shape=""rect"" coords=""131,250,368,444"" href=""$storefrontContextRoot/Roxy/Damen-Sonnenbrille-Roxy-Tee-Dee-Gee-dark-tortoise-brown-gray/p/300047195"" alt=""Damen Sonnenbrille Roxy Tee Dee Gee dark tortoise brown gray "" title=""Damen Sonnenbrille Roxy Tee Dee Gee dark tortoise brown gray""/>	<area shape=""rect"" coords=""400,265,649,444"" href=""$storefrontContextRoot/Von-Zipper/Shades-Von-Zipper-Fernstein-gold-moss-gradient/p/300015407"" alt=""Shades Von Zipper Fernstein gold moss gradient"" title=""Shades Von Zipper Fernstein gold moss gradient""/>";Appa_788x467_SunglassesBrands_EN_01.jpg
+
+
+# Apparel Shirts Category Landing Page
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Appa_788x467_CaliforniaLook_EN_01.jpg;$siteResource/images/banners/category_banners/Appa_788x467_CaliforniaLook_EN_01.jpg;;;""
+
+UPDATE ImageMapComponent;$contentCV[unique=true];uid[unique=true];imageMapHTML[lang=en];$picture[lang=$lang]
+;;ShirtsImageMapComponent;"<area shape='circle' alt='T-Shirt Men Playboard Logo' coords='284,328,98' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Logo/p/300067375' /><area shape='circle' alt='T-Shirt Men Playboard Raster SS' coords='496,66,93' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Raster-SS/p/300046043' /><area shape='circle' alt='T-Shirt Men Playboard Raster SS' coords='652,410,108' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Raster-SS/p/300046028' /><area shape='circle' alt='T-Shirt Men Playboard Logo' coords='687,92,109' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Logo/p/300147511' /><area shape='circle' alt='T-Shirt Men Playboard Raster SS' coords='710,251,94' href='$storefrontContextRoot/Brands/Playboard/T-Shirt-Men-Playboard-Raster-SS/p/300067366' />";Appa_788x467_CaliforniaLook_EN_01.jpg
+
+
+# Apparel Search Results Page
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Appa_788x80_Save_EN_01.jpg;$siteResource/images/banners/site/Appa_788x80_Save_EN_01.jpg;;;"Buy online & save. Look out for huge savings across our store"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;BuyOnlineSimpleBannerComponent;Appa_788x80_Save_EN_01.jpg
+
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en]
+;;NoSearchResultsParagraphComponent;"<h2>Sorry, we couldn't find any results for your search</h2><p>Suggestions:</p><ul>	<li>You may have typed your keywords incorrectly - please check for misspellings.</li>	<li>You may have been too specific - please broaden your search by using fewer keywords.</li>	<li>Browse our products by selecting a category above.</li></ul>"
+
+
+# Apparel Cart Page 
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Appa_148x148_Help_EN_01.jpg;$siteResource/images/banners/site/Appa_148x148_Help_EN_01.jpg;;;"Need Help? Click here for help with checking out"
+;;Appa_788x80_FreeDelivery_EN_01.jpg;$siteResource/images/banners/site/Appa_788x80_FreeDelivery_EN_01.jpg;;;"Order before 6pm for next day delivery"
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;FreeDeliverySimpleBannerComponent;Appa_788x80_FreeDelivery_EN_01.jpg
+;;HelpWithCheckoutSimpleBannerComponent;Appa_148x148_Help_EN_01.jpg
+
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en]
+;;EmptyCartParagraphComponent;"<h2>Your shopping bag is empty</h2><p>Suggestions</p><ul>	<li>Browse our products by selecting a category above</li></ul>"
+;;HelpParagraphComponent;"<div class=""helpBanner""><span class=""bannerHeadline"" >NEED HELP?</span><span class=""bannerText"">Click here for help with checking out<a href=""#"" >GO > ></a></span></div>"
+
+
+# Apparel Brands Landing Page
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;Appa_710x421_GeneralBrands_EN_01.jpg;$siteResource/images/banners/category_banners/Appa_710x421_GeneralBrands_EN_01.jpg;;;""
+
+UPDATE ImageMapComponent;$contentCV[unique=true];uid[unique=true];imageMapHTML[lang=en];$picture[lang=$lang]
+;;BrandsImageMapComponent;"<map name=""map""><area href=""$storefrontContextRoot/Brands/Vans/c/Vans"" alt=""vans"" coords=""18,18,235,105"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Dainese/c/Dainese"" alt=""dainese"" coords=""18,106,248,173"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Toko/c/Toko"" alt=""toko"" coords=""19,175,236,258"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Dakine/c/Dakine"" alt=""dakine"" coords=""18,261,244,314"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Blue-Tomato/c/Blue Tomato"" alt=""blue tomato"" coords=""18,316,247,403"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Von-Zipper/c/Von Zipper"" alt=""von zipper"" coords=""237,18,477,105"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Playboard/c/Playboard"" alt=""playboard"" coords=""479,18,689,105"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Fox/c/Fox"" alt=""fox"" coords=""251,107,497,169"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Anon/c/Anon"" alt=""anon"" coords=""498,106,692,222"" shape=""rect""><area href=""$storefrontContextRoot/Brands/F2-FTWO/c/F2-FTWO"" alt=""f2"" coords=""499,224,690,313"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Quiksilver/c/Quiksilver"" alt=""quicksilver"" coords=""469,314,691,403"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Rip-Curl/c/Rip Curl"" alt=""ripcurl"" coords=""249,287,468,401"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Roxy/c/Roxy"" alt=""roxy"" coords=""375,171,497,286"" shape=""rect""><area href=""$storefrontContextRoot/Brands/Pro-Tec/c/Pro Tec"" alt=""pro-tec"" coords=""245,173,373,285"" shape=""rect""></map>";Appa_710x421_GeneralBrands_EN_01.jpg
+
+
+# Apparel FAQ Page 
+
+# CMS Paragraph Component (Contact information)
+# CMSParagraphComponent
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en];
+;;faqMenuParagraph;"<div class=""nav_column"">	<div class=""title_holder"">		<div class=""title"">			<div class=""title-top"">				<span></span>			</div>		</div>		<h2>Frequently asked questions</h2>	</div>	<div class=""item"">		<ul class=""facet_block indent"">			<li><a href=""#a00"">Returns and refunds</a></li>			<li><a href=""#b00"">Delivery information</a></li>			<li><a href=""#c00"">Registration</a></li>			<li><a href=""#d00"">Your online account</a></li>			<li><a href=""#e00"">Orders</a></li>			<li><a href=""#f00"">Promotions and discounts</a></li>			<li><a href=""#g00"">Product and general Informations</a></li>			<li><a href=""#h00"">Store information</a></li>			<li><a href=""#i00"">Business contacts</a></li>			<li><a href=""#j00"">Buying guides</a></li>			<li><a href=""#k00"">Size guides</a></li>			<li><a href=""#l00"">Privacy and security</a></li>		</ul>	</div></div>";
+;;faqTextParagraph;"<a name=""00""></a><div class=""textpage textpage-faqs""><div class=""item_container"">		<h2><a name=""a00""></a>Returns and refunds</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""b00""></a>Delivery information</h2>		<a class=""faq-menulink"" href=""#b01"">Delivery Options</a>		<a class=""faq-menulink"" href=""#b02"">Delivery times &amp; charges</a>		<a class=""faq-menulink"" href=""#b03"">Order tracking information</a>		<a class=""faq-menulink"" href=""#b04"">Courier status information</a>			<h3><a name=""b01""></a>Delivery Options</h3>		<p>			The delivery options available to you are shown in the Checkout area under Delivery Method.<br><br>			Based on your deliver address, these options may not all be available:			</p><ul>			<li>					<b>Home Delivery</b> - Free UK standard delivery on all orders over L50 within 4 working days (*exceptions may apply)				</li>				<li>					<b>Standard delivery</b> -  1 to 2 business days				</li>				<li>					<b>Other delivery method</b>  &ndash; 3 to 5 business days				</li>				<li>				<b>International delivery</b> &ndash; 7 to 10 business days (not all countries are available)				</li>			</ul>		<p></p>		<h3><a name=""b02""></a>Delivery times &amp; charges</h3>		<p>			We deliver the majority of our orders within 4 working days* for L3.99 or FREE on orders over L50 (*exceptions apply, see table below).			</p><ul>				<li>					Deliveries to UK addresses are made Monday to Friday between 9am to 6pm, excluding Bank Holidays. 				</li>				<li>					Deliveries to the Scottish Highlands and Islands, offshore locations and Northern Ireland may take a little longer.<br>					For delivery to ROI addresses please visit our Irish website at hybris.com				</li>				<li>					Multiple items may be delivered in more than one parcel and at different times.				</li>			</ul>		<p></p>	<h3><a name=""b03""></a>Order tracking information</h3>		<p>			We will send you email updates through every stage of your order. In each email your current order's status will be shown. Each order status is explained in the table below. We deliver most parcels via our courier. You can track these parcels by clicking on the parcel reference link on your email. Once you have clicked on the link you will be directed to the courier website. For information on courier statuses please <a href=""#b04"">click here</a>.		</p>		<table width=""100%"" cellspacing=""0"" cellpadding=""0"" border=""0"">			<tbody>				<tr>					<th>Status</th>					<th>Description</th>				</tr>				<!--ROW 1-->				<tr>					<td class=""blue3"">						<strong>Processing</strong><br>					</td>					<td class=""grey3"">						Your order is being processed.<br>					</td>				</tr>				<!--ROW 2-->	<tr>					<td class=""blue3"">						<strong>Despatched</strong><br>					</td>					<td class=""grey3"">						Your order has been despatched to the courier.<br><br>    For heavy and large products your order is ready to be despatched by our carrier. The carrier will contact you to arrange a suitable date for delivery.<br><br>For Collect from store orders you will receive a further order status update when your item(s) are ready to collect (see below for more information on collect from store statuses)<br><br>					</td>				</tr>				<!--ROW 3-->				<tr>					<td class=""blue3"">						<strong>Cancelled<br>Unable to fulfill<br> payment reversal</strong><br>					</td>					<td class=""grey3"">						Your order has been cancelled due to stock availability, no payment has been taken.<br><br>					</td>				</tr>				<!--ROW 4-->				<tr>					<td class=""blue3"">						<strong>Cancelled<br>Unable to fulfil<br>Payment refunded</strong><br>				</td>					<td class=""grey3"">						Your order has been cancelled due to stock availability. We have processed a refund to your payment card.<br><br>					</td>				</tr>				<!--ROW 5-->				<tr>					<td class=""blue3"">						<strong>Return received</strong><br>					</td>					<td class=""grey3"">Your return has been received. However, due to goods being addressed to the incorrect warehouse there may be a short delay in your refund being processes while the goods are being re-directed.<br><br>					</td>				</tr>				<!--ROW 6-->				<tr>					<td class=""blue3"">						<strong>Order ready for collection</strong><br>					</td>					<td class=""grey3"">						Your order is ready for collection at your chosen store.<br><br><strong><i>Please note:</i></strong> You must collect your order within 14 days of receiving your notification email.<br><br>					</td>				</tr>				<!--ROW 7-->				<tr>					<td class=""blue3"">						<strong>Collected</strong><br>					</td>					<td class=""grey3"">					Your order has been collected.<br><br>					</td>				</tr>				<!--ROW 8-->				<tr>					<td class=""blue3"">						<strong>Return in progress</strong><br>					</td>					<td class=""grey3"">						We are processing your return.<br><br>					</td>				</tr>				<!--ROW 9-->				<tr>					<td class=""blue3"">						<strong>Return refund complete</strong><br>					</td>					<td class=""grey3"">						We have processed your return.<br><br><strong><i>Please note:</i></strong>  Some banks may take longer than others to process refunds.<br><br>					</td>				</tr>			</tbody>		</table>		<p></p>		<h3><a name=""b04""></a>Courier status information</h3>		<p></p>		<table width=""100%"" cellspacing=""0"" cellpadding=""0"" border=""0"">			<tbody>				<tr>					<th>Status</th>					<th>Description</th>				</tr>			<!--ROW 1-->				<tr>					<td class=""blue3"">						<strong>Order generated</strong><br>					</td>					<td class=""grey3"">						Your order is ready for delivery and has entered into the courier system.<br>					</td>				</tr>				<!--ROW 2-->				<tr>					<td class=""blue3"">						<strong>Receipt at depot </strong><br>					</td>					<td class=""grey3"">					Your parcel has been received at the depot. <br><br>					</td>				</tr>				<!--ROW 3-->				<tr>					<td class=""blue3"">						<strong>Processed at depot</strong><br>					</td>					<td class=""grey3"">						Your parcel has processed through the depot operation and is ready for onward despatch to the courier.<br><br>					</td>				</tr>				<!--ROW 4-->				<tr>					<td class=""blue3"">						<strong>Out for delivery to courier</strong><br>					</td>					<td class=""grey3"">						Your parcel has left the depot for delivery to courier.<br><br>					</td>				</tr>				<!--ROW 5-->				<tr>					<td class=""blue3"">						<strong>Courier to re-attempt</strong><br>					</td>					<td class=""grey3"">						The courier has attempted to deliver your parcel and will try again. You will receive a card to confirm delivery has been attempted.<br><br>					</td>				</tr>			<!--ROW 6-->				<tr>					<td class=""blue3"">						<strong>Delivered to</strong><br>					</td>					<td class=""grey3"">						Your parcel has been delivered.<br><br>					</td>				</tr>			</tbody>		</table>		<p></p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""c00""></a>Registration</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""d00""></a>Your online account</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""e00""></a>Orders</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""f00""></a>Promotions and discounts</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""g00""></a>Product and general informations</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""h00""></a>Store information</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""i00""></a>Business contacts</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""j00""></a>Buying guides</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""k00""></a>Size guides</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""l00""></a>Privacy and security</h2>		<p>Text</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div></div>";
+
+# Apparel Order Expired Page
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en];
+;;orderExpiredMenuParagraph;;
+;;orderExpiredTextParagraph;"<div class='cms-content order-expired'><div class='information_message neutral'><span class='single'></span><p>This page has expired.</p></div><h2>Dear Customer,</h2><p>Order Status for guest users are only kept for 3 months following the date the order was placed.<br>If you have not received your delivery or have other inquiries, please contact our Customer Service Dept.</p><h3>Be prepared with:</h3><ul class='bullet-list'><li>Your Name</li><li>Order Number (Your Order Number can be found on the confirmation email sent shortly after your order was placed.)</li><li>Order Delivery Address or Pick Up in Store Location</li></ul><p>Our Customer Service professionals will be happy to update you on the status of your order.</p><p class='cms-content-emphasized-big'>Thank you for shopping at hybrisstore.</p></div>";
+
+# Apparel Terms and Conditions Page
+
+# CMS Paragraph Component (Contact information)
+# CMSParagraphComponent
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=en];
+;;termsAndConditionsMenuParagraph;"<div class=""nav_column"">	<div class=""title_holder"">		<div class=""title"">			<div class=""title-top"">				<span></span>			</div>		</div>		<h2>Terms and Conditions</h2>	</div>	<div class=""item"">		<ul class=""facet_block indent"">			<li><a href=""#a00"">Registration</a></li>			<li><a href=""#b00"">Eligibility to purchase</a></li>			<li><a href=""#c00"">Orders</a></li>			<li><a href=""#d00"">Pricing policy</a></li>			<li><a href=""#e00"">Sales price adjustment policy</a></li>			<li><a href=""#f00"">Acceptance of your order</a></li>			<li><a href=""#g00"">Payment</a></li>			<li><a href=""#h00"">Insurance and delivery</a></li>			<li><a href=""#i00"">Returns and exchanges</a></li>			<li><a href=""#j00"">Intellectual property rights</a></li>			<li><a href=""#k00"">Content</a></li>			<li><a href=""#l00"">No commercial use</a></li>			<li><a href=""#m00"">Your activity</a></li>			<li><a href=""#n00"">Third party</a></li>			<li><a href=""#o00"">General</a></li>			<li><a href=""#p00"">Indemnification</a></li>			<li><a href=""#q00"">General legal terms</a></li>		</ul>	</div></div>";
+;;termsAndConditionsTextParagraph;"<a name=""00""></a><div class=""textpage textpage-termsAndConditions""><div class=""item_container"">		<h2><a name=""a00""></a>Registration</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""b00""></a>Eligibility to purchase</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""c00""></a>Orders</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""d00""></a>Pricing policy</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""e00""></a>Sales price adjustment policy</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""f00""></a>Acceptance of your order</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>	<div class=""item_container"">		<h2><a name=""g00""></a>Payment</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""h00""></a>Insurance and delivery</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""i00""></a>Returns and exchanges</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""j00""></a>Intellectual property rights</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""k00""></a>Content</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""l00""></a>No commercial use</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""m00""></a>Your activity</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""n00""></a>Third party</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""o00""></a>General</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""p00""></a>Indemnification</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div>		<div class=""item_container"">		<h2><a name=""q00""></a>General legal terms</h2>		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lorem augue, luctus interdum pellentesque ut, luctus congue ligula. Sed adipiscing lacus sit amet libero accumsan volutpat. Sed porta semper dui ut interdum. Suspendisse vitae eleifend quam. Nunc eu felis in diam ultricies ultricies nec at arcu. Etiam vehicula enim arcu, vel viverra arcu. Vivamus varius adipiscing posuere.</br>Maecenas interdum varius metus, sed feugiat lorem iaculis non. Donec congue, nulla quis ultrices euismod, dui odio fringilla risus, ac ultrices sapien ipsum sed lectus. Quisque accumsan ligula tincidunt arcu condimentum at dignissim lacus dapibus. Pellentesque fermentum nunc eget lectus vestibulum sagittis. Aenean iaculis, nulla sit amet condimentum suscipit, sapien odio pretium dui, sed euismod nunc risus cursus nibh. Sed volutpat, ante in scelerisque cursus, elit elit pellentesque magna, eu semper tellus magna et massa. Nullam erat lorem, porttitor eget mollis tempus, blandit quis velit. Curabitur turpis orci, sollicitudin eget dapibus a, pulvinar sed lorem. Sed ac felis metus, sed tempor odio.</p>		<a class=""pagetop-link"" href=""#00"">back to top</a>	</div></div>";
+
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=en]
+;;667Link;"667"
+;;686Link;"686"
+;;69SlamLink;"69 Slam"
+;;AlMerrickLink;"Al Merrick"
+;;AlienWorkshopLink;"Alien Workshop"
+;;AnalogLink;"Analog"
+;;AnonLink;"Anon"
+;;ArmadaLink;"Armada"
+;;BenchLink;"Bench"
+;;BillabongLink;"Billabong"
+;;BlueTomatoLink;"Blue Tomato"
+;;BurtonLink;"Burton"
+;;CarharttLink;"Carhartt"
+;;DCLink;"DC"
+;;DaineseLink;"Dainese"
+;;DakineLink;"Dakine"
+;;DalbelloLink;"Dalbello"
+;;ElementLink;"Element"
+;;ElmLink;"Elm"
+;;F2-FTWOLink;"F2-FTWO"
+;;FemipleasureLink;"Femipleasure"
+;;FoursquareLink;"Foursquare"
+;;FoxLink;"Fox"
+;;HorsefeathersLink;"Horsefeathers"
+;;HurleyLink;"Hurley"
+;;LandingLink;"Landing"
+;;Nike6.0Link;"Nike 6.0"
+;;NikeLink;"Nike"
+;;NixonLink;"Nixon"
+;;OakleyLink;"Oakley"
+;;OrageLink;"Orage"
+;;PYUALink;"PYUA"
+;;PlayboardLink;"Playboard"
+;;ProTecLink;"Pro Tec"
+;;QuiksilverLink;"Quiksilver"
+;;RedLink;"Red"
+;;ReefLink;"Reef"
+;;SessionsLink;"Sessions"
+;;SpecialBlendLink;"Special Blend"
+;;TokoLink;"Toko"
+;;VIVOLink;"VIVO"
+;;VansLink;"Vans"
+;;VolcomLink;"Volcom"
+;;VonZipperLink;"Von Zipper"
+;;WLDLink;"WLD"
+;;ZimtsternLink;"Zimtstern"
+;;adidasOriginalsLink;"adidas Originals"
+;;droidLink;"droid."
+
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=en]
+;;BindingsLink;"Bindings"
+;;HelmetsLink;"Helmets"
+;;SnowLink;"Snow"
+;;SnowboardsLink;"Boards"
+;;SnowwearMenPantsLink;"Pants"
+;;SnowwearMensJacketsLink;"Jackets"
+;;SnowwearMensLink;"Mens Snowwear"
+;;SnowwearWomensJacketsLink;"Jackets"
+;;SnowwearWomensLink;"Womens Snowwear"
+;;SnowwearWomensPantsLink;"Pants"
+;;SnowwearYouthJacketsLink;"Jackets"
+;;SnowwearYouthLink;"Youth Snowwear"
+;;SnowwearYouthPantsLink;"Pants"
+;;StreetwearLink;"Streetwear"
+;;StreetwearMenBagsLink;"Bags"
+;;StreetwearMenLink;"Mens Streetwear"
+;;StreetwearMenShortsLink;"Shorts"
+;;StreetwearMenTShirtsLink;"T-Shirts"
+;;StreetwearMensBeltsLink;"Belts"
+;;StreetwearWomenBagsLink;"Bags"
+;;StreetwearWomenLink;"Womens Streetwear"
+;;StreetwearWomenPantsLink;"Pants"
+;;StreetwearWomenSkirtsLink;"Skirts & Dresses"
+;;StreetwearWomenTShirtsLink;"T-Shirts"
+;;StreetwearWomenTopsLink;"Tops"
+;;StreetwearYouthBoardshortsLink;"Boardshorts"
+;;StreetwearYouthLink;"Youth Streetwear"
+;;StreetwearYouthTShirtsLink;"T-Shirts"
+;;ToolsLink;"Tools"
+
+UPDATE CMSNavigationNode;$contentCV[unique=true];uid[unique=true];title[lang=en]
+;;SnowKitNavNodeMenu;"Kit"
+;;SnowwearMenNavNodeMenu;"Men"
+;;SnowwearWomenNavNodeMenu;"Women"
+;;SnowwearYouthNavNodeMenu;"Youth"
+;;StreetwearMenNavNodeMenu;"Men"
+;;StreetwearWomenNavNodeMenu;"Women"
+;;StreetwearYouthNavNodeMenu;"Youth"
+
+
+# Landing Pages
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;homepage-snow-GBP_en.jpg;$siteResource/images/landing_pages/homepage-snow-GBP_en.jpg;;;""
+;;homepage-street-GBP_en.jpg;$siteResource/images/landing_pages/homepage-street-GBP_en.jpg;;;""
+;;homepage-surf-GBP_en.jpg;$siteResource/images/landing_pages/homepage-surf-GBP_en.jpg;;;""
+
+UPDATE ImageMapComponent;$contentCV[unique=true];uid[unique=true];imageMapHTML[lang=en];$picture[lang=$lang]
+;;SnowImageMapComponent;"<area shape='rect' alt='Fade Beanie' title='Fade Beanie' coords='260,370,394,484' href='$storefrontContextRoot/Categories/Accessories/Beanies/Fade-Beanie/p/300415611' target='_self' />	<area shape='rect' alt='Beacon Jacket' title='Beacon Jacket' coords='328,109,489,309' href='$storefrontContextRoot/Categories/Snowwear-men/Snow-Jackets/Beacon-Jacket/p/300441363' target='_self' />	<area shape='rect' alt='Kyrpton Rampage' title='Kyrpton Rampage' coords='516,286,719,430' href='$storefrontContextRoot/Categories/Freeski/Ski-Boots/Kyrpton-Rampage-11-12/p/300467249' target='_self' />	<area shape='rect' alt='Team 153' title='Team 153' coords='753,62,897,390' href='$storefrontContextRoot/Categories/Snowboards/Freestyle%2BFreeride/Team-153-11-12/p/300515235' target='_self' />	<area shape='rect' alt='Anon Hawkeye' title='Anon Hawkeye' coords='775,433,920,483' href='$storefrontContextRoot/Categories/Eyewear/Goggles/Hawkeye-Painted-white/p/96502_dark_smoke' target='_self' />	<area shape='rect' alt='Burton' title='Burton' coords='0,524,68,543' href='$storefrontContextRoot/Brands/Burton/c/Burton' target='_self' />	<area shape='rect' alt='Volcom' title='Volcom' coords='74,516,132,551' href='$storefrontContextRoot/Brands/Volcom/c/Volcom' target='_self' />	<area shape='rect' alt='Billabong' title='Billabong' coords='139,514,177,554' href='$storefrontContextRoot/Brands/Billabong/c/Billabong' target='_self' />	<area shape='rect' alt='Fox' title='Fox' coords='183,520,235,546' href='$storefrontContextRoot/Brands/Fox/c/Fox' target='_self' />	<area shape='rect' alt='Roxy' title='Roxy' coords='242,524,297,544' href='$storefrontContextRoot/Brands/Roxy/c/Roxy' target='_self' />	<area shape='rect' alt='DC' title='DC' coords='304,519,330,547' href='$storefrontContextRoot/Brands/DC/c/DC' target='_self' />	<area shape='rect' alt='Element' title='Element' coords='335,522,391,544' href='$storefrontContextRoot/Brands/Element/c/Element' target='_self' />	<area shape='rect' alt='Oakley' title='Oakley' coords='399,518,457,547' href='$storefrontContextRoot/Brands/Oakley/c/Oakley' target='_self' />	<area shape='rect' alt='Quiksilver' title='Quiksilver' coords='469,516,501,551' href='$storefrontContextRoot/Brands/Quiksilver/c/Quiksilver' target='_self' />	<area shape='rect' alt='Nike 6.0' title='Nike 6.0' coords='510,518,556,549' href='$storefrontContextRoot/Brands/Nike/c/Nike' target='_self' />	<area shape='rect' alt='Nixon' title='Nixon' coords='564,529,616,544' href='$storefrontContextRoot/Brands/Nixon/c/Nixon' target='_self' />	<area shape='rect' alt='Hurley' title='Hurley' coords='625,525,676,544' href='$storefrontContextRoot/Brands/Hurley/c/Hurley' target='_self' />	<area shape='rect' alt='Zimtstern' title='Zimtstern' coords='683,525,738,544' href='$storefrontContextRoot/Brands/Zimtstern/c/Zimtstern' target='_self' />	<area shape='rect' alt='Vans' title='Vans' coords='745,525,792,549' href='$storefrontContextRoot/Brands/Vans/c/Vans' target='_self' />	<area shape='rect' alt='Show all' title='Show all' coords='862,527,946,548' href='$storefrontContextRoot/Collections/Snow/c/snow?q=:topRated' target='_self' />";homepage-snow-GBP_en.jpg
+;;StreetImageMapComponent;"<area shape='rect' alt='Vans Old Skool' title='Vans Old Skool' coords='81,272,252,323' href='$storefrontContextRoot/Brands/Vans/Sneakers-Vans-Old-Skool/p/300036394' target='_self' />	<area shape='rect' alt='System Tee' title='System Tee' coords='276,44,449,210' href='$storefrontContextRoot/Categories/Streetwear-men/T-Shirts/System-Tee-SS/p/122312_aquatic_blue' target='_self' />	<area shape='rect' alt='Incision Leather Belt' title='Incision Leather Belt' coords='328,306,484,347' href='$storefrontContextRoot/Categories/Accessories/Belts/Incision-Leather-Belt/p/300608307' target='_self' />	<area shape='rect' alt='Quiksilver' title='Quiksilver' coords='354,400,531,456' href='$storefrontContextRoot/Brands/Quiksilver/Shades-Quiksilver-Dinero-black-white-red-grey/p/300045375' target='_self' />	<area shape='rect' alt='Seizure Satchel' title='Seizure Satchel' coords='570,231,704,356' href='$storefrontContextRoot/Categories/Bags%2BBoardbags/Bags/Seizure-Satchel/p/300613490' target='_self' />	<area shape='rect' alt='Pledge Short' title='Pledge Short' coords='726,68,885,225' href='$storefrontContextRoot/Categories/Streetwear-men/Shorts/Pledge-Short/p/300755976' target='_self' />	<area shape='rect' alt='The Player' title='The Player' coords='812,331,939,391' href='$storefrontContextRoot/Categories/Accessories/Watches/The-Player/p/300555911' target='_self' />	<area shape='rect' alt='Burton' title='Burton' coords='0,524,68,543' href='$storefrontContextRoot/Brands/Burton/c/Burton' target='_self' />	<area shape='rect' alt='Volcom' title='Volcom' coords='74,516,132,551' href='$storefrontContextRoot/Brands/Volcom/c/Volcom' target='_self' />	<area shape='rect' alt='Billabong' title='Billabong' coords='139,514,177,554' href='$storefrontContextRoot/Brands/Billabong/c/Billabong' target='_self' />	<area shape='rect' alt='Fox' title='Fox' coords='183,520,235,546' href='$storefrontContextRoot/Brands/Fox/c/Fox' target='_self' />	<area shape='rect' alt='Roxy' title='Roxy' coords='242,524,297,544' href='$storefrontContextRoot/Brands/Roxy/c/Roxy' target='_self' />	<area shape='rect' alt='DC' title='DC' coords='304,519,330,547' href='$storefrontContextRoot/Brands/DC/c/DC' target='_self' />	<area shape='rect' alt='Element' title='Element' coords='335,522,391,544' href='$storefrontContextRoot/Brands/Element/c/Element' target='_self' />	<area shape='rect' alt='Oakley' title='Oakley' coords='399,518,457,547' href='$storefrontContextRoot/Brands/Oakley/c/Oakley' target='_self' />	<area shape='rect' alt='Quiksilver' title='Quiksilver' coords='469,516,501,551' href='$storefrontContextRoot/Brands/Quiksilver/c/Quiksilver' target='_self' />	<area shape='rect' alt='Nike 6.0' title='Nike 6.0' coords='510,518,556,549' href='$storefrontContextRoot/Brands/Nike/c/Nike' target='_self' />	<area shape='rect' alt='Nixon' title='Nixon' coords='564,529,616,544' href='$storefrontContextRoot/Brands/Nixon/c/Nixon' target='_self' />	<area shape='rect' alt='Hurley' title='Hurley' coords='625,525,676,544' href='$storefrontContextRoot/Brands/Hurley/c/Hurley' target='_self' />	<area shape='rect' alt='Zimtstern' title='Zimtstern' coords='683,525,738,544' href='$storefrontContextRoot/Brands/Zimtstern/c/Zimtstern' target='_self' />	<area shape='rect' alt='Vans' title='Vans' coords='745,525,792,549' href='$storefrontContextRoot/Brands/Vans/c/Vans' target='_self' />	<area shape='rect' alt='Show all' title='Show all' coords='862,527,946,548' href='$storefrontContextRoot/Collections/Streetwear/c/streetwear?q=:topRated' target='_self' />";homepage-street-GBP_en.jpg
+;;SurfImageMapComponent;"<area shape='rect' alt='Gusty Tote Ball Bag' title='Gusty Tote Ball Bag' coords='96,301,255,456' href='$storefrontContextRoot/Categories/Accessories-women/Bags-women/Gusty-Tote-Ball-Bag-Women/p/300613859' target='_self' />	<area shape='rect' alt='Control Short' title='Control Short' coords='156,153,340,277' href='$storefrontContextRoot/Categories/Streetwear-men/Shorts/Control-Short/p/300313722' target='_self' />	<area shape='rect' alt='Adapt New Era Cap' title='Adapt New Era Cap' coords='376,397,521,467' href='$storefrontContextRoot/Categories/Accessories/Caps/Adapt-New-Era/p/300398794' target='_self' />	<area shape='rect' alt='Burton Pennant SS' title='Burton Pennant SS' coords='385,143,556,313' href='$storefrontContextRoot/Categories/Streetwear-men/T-Shirts/Pennant-SS/p/300417310' target='_self' />	<area shape='rect' alt='Assortment Web Belt Blue' title='Assortment Web Belt Blue' coords='616,334,743,390' href='$storefrontContextRoot/Categories/Accessories/Belts/Assortment-Web-Belt/p/300785802' target='_self' />	<area shape='rect' alt='SUP 9.0 Bonga Perkins' title='SUP 9.0 Bonga Perkins' coords='785,107,902,462' href='$storefrontContextRoot/Categories/Surf/Long-%2B-Funboards/SUP-9-0-Bonga-Perkins/p/300562200' target='_self' />	<area shape='rect' alt='Burton' title='Burton' coords='0,524,68,543' href='$storefrontContextRoot/Brands/Burton/c/Burton' target='_self' />	<area shape='rect' alt='Volcom' title='Volcom' coords='74,516,132,551' href='$storefrontContextRoot/Brands/Volcom/c/Volcom' target='_self' />	<area shape='rect' alt='Billabong' title='Billabong' coords='139,514,177,554' href='$storefrontContextRoot/Brands/Billabong/c/Billabong' target='_self' />	<area shape='rect' alt='Fox' title='Fox' coords='183,520,235,546' href='$storefrontContextRoot/Brands/Fox/c/Fox' target='_self' />	<area shape='rect' alt='Roxy' title='Roxy' coords='242,524,297,544' href='$storefrontContextRoot/Brands/Roxy/c/Roxy' target='_self' />	<area shape='rect' alt='DC' title='DC' coords='304,519,330,547' href='$storefrontContextRoot/Brands/DC/c/DC' target='_self' />	<area shape='rect' alt='Element' title='Element' coords='335,522,391,544' href='$storefrontContextRoot/Brands/Element/c/Element' target='_self' />	<area shape='rect' alt='Oakley' title='Oakley' coords='399,518,457,547' href='$storefrontContextRoot/Brands/Oakley/c/Oakley' target='_self' />	<area shape='rect' alt='Quiksilver' title='Quiksilver' coords='469,516,501,551' href='$storefrontContextRoot/Brands/Quiksilver/c/Quiksilver' target='_self' />	<area shape='rect' alt='Nike 6.0' title='Nike 6.0' coords='510,518,556,549' href='$storefrontContextRoot/Brands/Nike/c/Nike' target='_self' />	<area shape='rect' alt='Nixon' title='Nixon' coords='564,529,616,544' href='$storefrontContextRoot/Brands/Nixon/c/Nixon' target='_self' />	<area shape='rect' alt='Hurley' title='Hurley' coords='625,525,676,544' href='$storefrontContextRoot/Brands/Hurley/c/Hurley' target='_self' />	<area shape='rect' alt='Zimtstern' title='Zimtstern' coords='683,525,738,544' href='$storefrontContextRoot/Brands/Zimtstern/c/Zimtstern' target='_self' />	<area shape='rect' alt='Vans' title='Vans' coords='745,525,792,549' href='$storefrontContextRoot/Brands/Vans/c/Vans' target='_self' />	<area shape='rect' alt='Show all' title='Show all' coords='862,527,946,548' href='$storefrontContextRoot/Collections/Surf/c/surf?q=:topRated' target='_self' />";homepage-surf-GBP_en.jpg
+
+UPDATE  DynamicBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;DynamicBrandBanner;apparel-category-banner;

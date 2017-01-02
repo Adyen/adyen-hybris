@@ -1,0 +1,10 @@
+#
+# Import the Apparel DE Catalog
+#
+
+# Language
+$lang=en
+
+# Create Content Catalog
+UPDATE ContentCatalog;id[unique=true];name[lang=$lang]
+ ;apparel-deContentCatalog;"Apparel DE Content Catalog"

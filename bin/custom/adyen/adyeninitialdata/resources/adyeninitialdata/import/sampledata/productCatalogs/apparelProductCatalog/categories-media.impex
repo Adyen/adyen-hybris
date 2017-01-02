@@ -1,0 +1,156 @@
+# ImpEx for Importing Category Brands Medias into Apparel Store
+
+# Macros / Replacement Parameter definitions
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$media=@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/productCatalogs/$productCatalog
+$logos=logo(code, $catalogVersion)
+$picture=picture(code, $catalogVersion)
+
+
+# Create medias
+INSERT_UPDATE Media;mediaFormat(qualifier);code[unique=true];$media;mime[default='image/jpeg'];$catalogVersion;folder(qualifier)
+;96Wx96H;brand-logo-69Slam;$siteResource/images/96Wx96H/69_Slam.jpg;;;images
+;96Wx96H;brand-logo-667;$siteResource/images/96Wx96H/667.jpg;;;images
+;96Wx96H;brand-logo-686;$siteResource/images/96Wx96H/686.jpg;;;images
+;96Wx96H;brand-logo-adidas;$siteResource/images/96Wx96H/adidas.jpg;;;images
+;96Wx96H;brand-logo-AlienWorkshop;$siteResource/images/96Wx96H/alienworkshop.jpg;;;images
+;96Wx96H;brand-logo-AlMerrick;$siteResource/images/96Wx96H/almerrick.jpg;;;images
+;96Wx96H;brand-logo-Analog;$siteResource/images/96Wx96H/analog.jpg;;;images
+;96Wx96H;brand-logo-Anon;$siteResource/images/96Wx96H/anon.jpg;;;images
+;96Wx96H;brand-logo-Armada;$siteResource/images/96Wx96H/armada.jpg;;;images
+;96Wx96H;brand-logo-Bench;$siteResource/images/96Wx96H/bench.jpg;;;images
+;96Wx96H;brand-logo-Billabong;$siteResource/images/96Wx96H/billabong.jpg;;;images
+;96Wx96H;brand-logo-BlueTomato;$siteResource/images/96Wx96H/bluetomato.jpg;;;images
+;96Wx96H;brand-logo-Burton;$siteResource/images/96Wx96H/burton.jpg;;;images
+;96Wx96H;brand-logo-Carhartt;$siteResource/images/96Wx96H/carhartt.jpg;;;images
+;96Wx96H;brand-logo-Dainese;$siteResource/images/96Wx96H/dainese.jpg;;;images
+;96Wx96H;brand-logo-Dalbello;$siteResource/images/96Wx96H/dalbello.jpg;;;images
+;96Wx96H;brand-logo-DC;$siteResource/images/96Wx96H/dc.jpg;;;images
+;96Wx96H;brand-logo-droid;$siteResource/images/96Wx96H/droid.jpg;;;images
+;96Wx96H;brand-logo-Element;$siteResource/images/96Wx96H/element.jpg;;;images
+;96Wx96H;brand-logo-Elm;$siteResource/images/96Wx96H/elm.jpg;;;images
+;96Wx96H;brand-logo-Femipleasure;$siteResource/images/96Wx96H/femipleasure.jpg;;;images
+;96Wx96H;brand-logo-Foursquare;$siteResource/images/96Wx96H/foursquare.jpg;;;images
+;96Wx96H;brand-logo-Fox;$siteResource/images/96Wx96H/fox.jpg;;;images
+;96Wx96H;brand-logo-F2-FTWO;$siteResource/images/96Wx96H/ftwo.jpg;;;images
+;96Wx96H;brand-logo-Horsefeathers;$siteResource/images/96Wx96H/horsefeathers.jpg;;;images
+;96Wx96H;brand-logo-Hurley;$siteResource/images/96Wx96H/hurley.jpg;;;images
+;96Wx96H;brand-logo-Landing;$siteResource/images/96Wx96H/Landing.jpg;;;images
+;96Wx96H;brand-logo-Nike;$siteResource/images/96Wx96H/nike.jpg;;;images
+;96Wx96H;brand-logo-Nike6.0;$siteResource/images/96Wx96H/nike60.jpg;;;images
+;96Wx96H;brand-logo-Nixon;$siteResource/images/96Wx96H/nixon.jpg;;;images
+;96Wx96H;brand-logo-Oakley;$siteResource/images/96Wx96H/oakley.jpg;;;images
+;96Wx96H;brand-logo-Orage;$siteResource/images/96Wx96H/orage.jpg;;;images
+;96Wx96H;brand-logo-Playboard;$siteResource/images/96Wx96H/playboard.jpg;;;images
+;96Wx96H;brand-logo-ProTec;$siteResource/images/96Wx96H/protec.jpg;;;images
+;96Wx96H;brand-logo-PYUA;$siteResource/images/96Wx96H/pyua.jpg;;;images
+;96Wx96H;brand-logo-Quiksilver;$siteResource/images/96Wx96H/quicksilver.jpg;;;images
+;96Wx96H;brand-logo-Red;$siteResource/images/96Wx96H/red.jpg;;;images
+;96Wx96H;brand-logo-Reef;$siteResource/images/96Wx96H/reef.jpg;;;images
+;96Wx96H;brand-logo-RipCurl;$siteResource/images/96Wx96H/ripcurl.jpg;;;images
+;96Wx96H;brand-logo-Roxy;$siteResource/images/96Wx96H/roxy.jpg;;;images
+;96Wx96H;brand-logo-Sessions;$siteResource/images/96Wx96H/sessions.jpg;;;images
+;96Wx96H;brand-logo-SpecialBlend;$siteResource/images/96Wx96H/specialblend.jpg;;;images
+;96Wx96H;brand-logo-Toko;$siteResource/images/96Wx96H/toko.jpg;;;images
+;96Wx96H;brand-logo-Vans;$siteResource/images/96Wx96H/vans.jpg;;;images
+;96Wx96H;brand-logo-VIVO;$siteResource/images/96Wx96H/vivo.jpg;;;images
+;96Wx96H;brand-logo-Volcom;$siteResource/images/96Wx96H/volcom.jpg;;;images
+;96Wx96H;brand-logo-VonZipper;$siteResource/images/96Wx96H/vonzipper.jpg;;;images
+;96Wx96H;brand-logo-WeSC;$siteResource/images/96Wx96H/wesc.jpg;;;images
+;96Wx96H;brand-logo-WLD;$siteResource/images/96Wx96H/wld.jpg;;;images
+;96Wx96H;brand-logo-Zimtstern;$siteResource/images/96Wx96H/zimtstern.jpg;;;images
+;96Wx96H;brand-logo-comingsoon;$siteResource/images/96Wx96H/comingsoon.jpg;;;images
+;96Wx96H;brand-logo-adidaseyewear;$siteResource/images/96Wx96H/adidaseyewear.jpg;;;images
+;96Wx96H;brand-logo-adidasoriginals;$siteResource/images/96Wx96H/adidasoriginals.jpg;;;images
+;96Wx96H;brand-logo-Aesthetiker;$siteResource/images/96Wx96H/aesthetiker.jpg;;;images
+;96Wx96H;brand-logo-Dakine;$siteResource/images/96Wx96H/dakine.jpg;;;images
+;96Wx96H;brand-logo-GoProCam;$siteResource/images/96Wx96H/gopro.jpg;;;images
+;96Wx96H;brand-logo-Nikita;$siteResource/images/96Wx96H/nikita.jpg;;;images
+;96Wx96H;brand-logo-PeriplusACIonGuides;$siteResource/images/96Wx96H/periplus.jpg;;;images
+;96Wx96H;brand-logo-Ride;$siteResource/images/96Wx96H/ride.jpg;;;images
+;96Wx96H;brand-logo-SkimOne;$siteResource/images/96Wx96H/skmone.jpg;;;images
+;96Wx96H;brand-logo-Skullcandy;$siteResource/images/96Wx96H/skullcandy.jpg;;;images
+;96Wx96H;brand-logo-Southpoint;$siteResource/images/96Wx96H/soutpoint.jpg;;;images
+;96Wx96H;brand-logo-Spy;$siteResource/images/96Wx96H/spy.jpg;;;images
+;96Wx96H;brand-logo-Surftech;$siteResource/images/96Wx96H/surftech.jpg;;;images
+;96Wx96H;brand-logo-TSG;$siteResource/images/96Wx96H/tsg.jpg;;;images
+
+
+# Update Categories with medias
+UPDATE Category;code[unique=true];$picture;$logos;$catalogVersion
+;69 Slam;;brand-logo-69Slam;
+;667;;brand-logo-667;
+;686;;brand-logo-686;
+;adidas;;brand-logo-adidas;
+;Alien Workshop;;brand-logo-AlienWorkshop;
+;Al Merrick;;brand-logo-AlMerrick;
+;Analog;;brand-logo-Analog;
+;Anon;;brand-logo-Anon;
+;Armada;;brand-logo-Armada;
+;Bench;;brand-logo-Bench;
+;Billabong;;brand-logo-Billabong;
+;Blue Tomato;;brand-logo-BlueTomato;
+;Burton;;brand-logo-Burton;
+;Carhartt;;brand-logo-Carhartt;
+;Dainese;;brand-logo-Dainese;
+;Dalbello;;brand-logo-Dalbello;
+;DC;;brand-logo-DC;
+;droid;;brand-logo-droid;
+;Element;;brand-logo-Element;
+;Elm;;brand-logo-Elm;
+;Femipleasure;;brand-logo-Femipleasure;
+;Foursquare;;brand-logo-Foursquare;
+;Fox;;brand-logo-Fox;
+;F2-FTWO;;brand-logo-F2-FTWO;
+;Horsefeathers;;brand-logo-Horsefeathers;
+;Hurley;;brand-logo-Hurley;
+;Landing;;brand-logo-Landing;
+;Nike;;brand-logo-Nike;
+;Nike 6.0;;brand-logo-Nike6.0;
+;Nixon;;brand-logo-Nixon;
+;Oakley;;brand-logo-Oakley;
+;Orage;;brand-logo-Orage;
+;Playboard;;brand-logo-Playboard;
+;Pro Tec;;brand-logo-ProTec;
+;PYUA;;brand-logo-PYUA;
+;Quiksilver;;brand-logo-Quiksilver;
+;Red;;brand-logo-Red;
+;Reef;;brand-logo-Reef;
+;Rip Curl;;brand-logo-RipCurl;
+;Roxy;;brand-logo-Roxy;
+;Sessions;;brand-logo-Sessions;
+;Special Blend;;brand-logo-SpecialBlend;
+;Toko;;brand-logo-Toko;
+;Vans;;brand-logo-Vans;
+;VIVO;;brand-logo-VIVO;
+;Volcom;;brand-logo-Volcom;
+;Von Zipper;;brand-logo-VonZipper;
+;WeSC;;brand-logo-WeSC;
+;WLD;;brand-logo-WLD;
+;Zimtstern;;brand-logo-Zimtstern;
+;adidas eyewear;;brand-logo-adidaseyewear;
+;adidas Originals;;brand-logo-adidasoriginals;
+;Aesthetiker;;brand-logo-Aesthetiker;
+;GoPro Cam;;brand-logo-GoProCam;
+;Periplus AC+Ion Guides;;brand-logo-PeriplusACIonGuides;
+;Skim One;;brand-logo-SkimOne;
+;Skullcandy;;brand-logo-Skullcandy;
+;Southpoint;;brand-logo-Southpoint;
+;Spy;;brand-logo-Spy;
+;Surftech;;brand-logo-Surftech;
+;TSG;;brand-logo-TSG;
+;Nikita;;brand-logo-Nikita;
+;Ride;;brand-logo-Ride;
+;Dakine;;brand-logo-Dakine;
+;brands;;brand-logo-comingsoon;
+
+
+
+
+
+
+
+

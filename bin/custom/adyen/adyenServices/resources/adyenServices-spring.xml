@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2013 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="customObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+	
+
+	<bean id="adyenCMSSiteModelValidateInterceptor"
+	      class="com.adyen.interceptor.AdyenCMSSiteModelValidateInterceptor">
+		<property name="l10NService" ref="l10nService"/>
+	</bean>
+
+	<bean id="AdyenCMSSiteModelValidateInterceptorMapping"
+	      class="de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping">
+		<property name="interceptor" ref="adyenCMSSiteModelValidateInterceptor"/>
+		<property name="typeCode" value="CMSSite"/>
+	</bean>
+	
+	<alias name="defaultAdyenPaymentService" alias="paymentService"/>
+	<bean id="defaultAdyenPaymentService" class="com.adyen.services.impl.DefaultAdyenPaymentService" parent="defaultPaymentService">
+		<property name="cmsSiteService" ref="cmsSiteService"/>
+		<property name="userService" ref="userService" />
+		<property name="adyenService" ref="adyenService"></property>
+		<property name="modelService" ref="modelService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
+		<property name="flexibleSearchService" ref="flexibleSearchService"/>
+		<property name="cartService" ref="cartService"/>
+	</bean>
+	
+	<alias name="defaultAdyenService" alias="adyenService"/>
+	<bean id="defaultAdyenService" class="com.adyen.services.integration.impl.DefaultAdyenService">
+		<property name="objectMapper" ref="customObjectMapper" />
+		<property name="configurationService" ref="configurationService"></property>
+		<property name="generateMerchantTransactionCodeStrategy" ref="generateMerchantTransactionCodeStrategy"/>
+		<property name="modelService" ref="modelService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
+		<property name="cartService" ref="cartService"/>
+		<property name="cmsSiteService" ref="cmsSiteService"/>
+	</bean>
+			
+	<alias name="adyenCommerceCheckoutService" alias="commerceCheckoutService"/>
+	<bean id="adyenCommerceCheckoutService" class="com.adyen.services.impl.AdyenCommerceCheckoutService" parent="defaultCommerceCheckoutService">
+		<property name="sessionService" ref="sessionService"/>
+	</bean>
+	
+	<alias alias="orderService" name="extOrderService"/>
+	<bean id="extOrderService" parent="acceleratorDefaultOrderService">
+		<property name="submitOrderStrategies">
+			<list merge="false">
+				<ref bean="adyenEventPublishingSubmitOrderStrategy"/>				
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="adyenEventPublishingSubmitOrderStrategy"
+			class="com.adyen.services.order.strategies.impl.EventPublishingSubmitOrderStrategy">
+		<property name="eventService" ref="eventService"/>
+	</bean>
+	
+	<bean id="submitAdyenOrderEventListener" class="com.adyen.services.order.events.SubmitAdyenOrderEventListener" parent="abstractSiteEventListener">
+		<property name="businessProcessService" ref="businessProcessService"/>
+		<property name="modelService" ref="modelService"/>
+		<property name="baseStoreService" ref="baseStoreService"/>
+	</bean>
+	
+
+	<bean id="adyenOrderCancelPaymentServiceAdapter"
+		class="com.adyen.services.impl.AdyenOrderCancelPaymentServiceAdapter">
+		<property name="calculationService" ref="calculationService" />
+		<property name="adyenPaymentService" ref="paymentService" />
+	</bean>
+	<!-- <bean id="immediateCancelRequestExecutor"
+		class="de.hybris.platform.ordercancel.impl.executors.ImmediateCancelRequestExecutor"
+		scope="prototype">
+		<property name="modelService" ref="modelService" />
+		<property name="orderCancelRecordsHandler" ref="orderCancelRecordsHandler" />
+		<property name="completeCancelStatusChangeStrategy" ref="setCancellledStrategy" />
+		<property name="paymentServiceAdapter" ref="adyenOrderCancelPaymentServiceAdapter" />
+	</bean> -->
+	
+	<alias alias="customerAccountService" name="extCustomerAccountService"/>
+	<bean id="extCustomerAccountService" class="com.adyen.services.customer.impl.AdyenCustomerAccountService" parent="defaultCustomerAccountService"></bean>
+	
+	<alias alias="orderCancelService" name="adyenOrderCancelService" />
+	<bean id="adyenOrderCancelService"
+		class="com.adyen.services.ordercancel.AdyenOrderCancelService" parent="defaultOrderCancelService"
+		scope="tenant">
+		<property name="calculationService" ref="calculationService" />
+		<property name="adyenPaymentService" ref="paymentService" />
+		<property name="requestExecutorsMap">
+			<map>
+				<entry key="PENDINGORHOLDINGAREA" value-ref="immediateCancelRequestExecutor" />
+				<entry key="SENTTOWAREHOUSE" value-ref="immediateCancelRequestExecutor" />
+				<entry key="SHIPPING" value-ref="immediateCancelRequestExecutor" />
+				<entry key="PARTIALLYSHIPPED" value-ref="immediateCancelRequestExecutor" />
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="partialCancelRulesViolationStrategy"
+		class="de.hybris.platform.ordercancel.impl.denialstrategies.PartialCancelRulesViolationStrategy"
+		scope="prototype">
+
+		<!-- provide a reson for the denial strategy -->
+		<property name="reason">
+			<bean class="de.hybris.platform.ordercancel.DefaultOrderCancelDenialReason">
+				<property name="code" value="4" />
+				<property name="description"
+					value="Order Cancel Configuration has been disabled partial order cancel." />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="immediateCancelRequestExecutor"
+		class="de.hybris.platform.ordercancel.impl.executors.ImmediateCancelRequestExecutor"
+		scope="prototype">
+		<property name="modelService" ref="modelService" />
+		<property name="orderCancelRecordsHandler" ref="orderCancelRecordsHandler" />
+		<property name="completeCancelStatusChangeStrategy" ref="enterCancellingStrategy" />
+		<!-- <property name="partialCancelStatusChangeStrategy" ref=""/> Provide 
+			a strategy here if Order's state should change when partially cancelled. -->
+		<!-- THESE DEPENDENCIES MUST BE PROVIDED BY USERS OF THE ORDER CANCEL SERVICE 
+			<property name="paymentServiceAdapter" ref="orderCancelPaymentServiceAdapter"/> 
+			<property name="notificationServiceAdapter" ref="orderCancelNotificationServiceAdapter"/> -->
+	</bean>
+	
+	<bean id="adyenNotificationListener"
+		class="com.adyen.services.listener.AdyenNotificationListener"
+		parent="abstractEventListener">
+		<property name="notificationHandlerMap" >
+			<map>
+				<entry key="AUTHORISATION" value-ref="adyenAuthorisedNotificationStrategy" />
+				<entry key="CANCELLATION" value-ref="abstractAdyenNotificationStrategy" />
+				<entry key="CANCEL_OR_REFUND" value-ref="adyenCancelOrRefundNotificationStrategy" />
+				<entry key="REFUND" value-ref="adyenRefundNotificationStrategy" />
+				<entry key="REFUND_FAILED" value-ref="adyenRefundNotificationStrategy" />
+				<entry key="REFUND_REVERSED" value-ref="abstractAdyenNotificationStrategy" />
+				<entry key="CAPTURE" value-ref="adyenCaptureNotificationStrategy" />
+				<entry key="CAPTURE_FAILED" value-ref="abstractAdyenNotificationStrategy" />
+				<entry key="PENDING" value-ref="adyenPendingNotificationStrategy" />
+			</map>
+		</property>
+		<property name="defaultHandler" ref="abstractAdyenNotificationStrategy" />
+	</bean>
+
+
+	<bean id="abstractAdyenNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AbstractAdyenNotificationStrategy">
+		<property name="modelService" ref="modelService" />
+		<property name="flexibleSearchService" ref="flexibleSearchService" />
+		<property name="eventCode2Type" >
+			<map>
+				<entry key="AUTHORISATION" value="AUTHORIZATION"/>
+				<entry key="CANCELLATION" value="CANCEL" />
+				<entry key="CANCEL_OR_REFUND" value="CANCEL_OR_REFUND" />
+				<entry key="REFUND" value="REFUND_FOLLOW_ON" />
+				<entry key="REFUND_FAILED" value="REFUND_FOLLOW_ON" />
+				<entry key="REFUND_REVERSED" value="REFUNDED_REVERSED" />
+				<entry key="CAPTURE" value="CAPTURE" />
+				<entry key="CAPTURE_FAILED" value="CAPTURE_FAILED" />
+				<entry key="PENDING" value="PENDING" />
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="adyenCancelOrRefundNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenCancelOrRefundNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+	</bean>
+	<bean id="adyenCancellationNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenCancellationNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+	</bean>
+	<bean id="adyenAuthorisedNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenAuthorisedNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+		<property name="orderService" ref="orderService"/>
+		<property name="commerceCheckoutService" ref="commerceCheckoutService"/>
+		<property name="cartService" ref="cartService"/>
+		<property name="calculationService" ref="calculationService"/>
+		<property name="promotionsService" ref="promotionsService"/>
+		<property name="externalTaxesService" ref="externalTaxesService"/>
+	</bean>
+	<bean id="adyenCaptureNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenCaptureNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+		<property name="businessProcessService" ref="businessProcessService"/>
+	</bean>
+	<bean id="adyenPendingNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenPendingNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+	</bean>
+	<bean id="adyenRefundNotificationStrategy"
+		class="com.adyen.services.strategy.impl.AdyenRefundNotificationStrategy" parent="abstractAdyenNotificationStrategy">
+		<property name="returnService" ref="returnService"/>
+		<property name="refundService" ref="refundService"/>
+		<property name="catalogVersionService" ref="catalogVersionService"/>
+	</bean>
+
+</beans>

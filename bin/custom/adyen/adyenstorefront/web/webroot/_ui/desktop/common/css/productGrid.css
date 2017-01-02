@@ -1,0 +1,75 @@
+/*
+## productGrid
+********************************************************************/
+
+
+.template-pages-category-productGridPage .section2 .dynamic_disp-img{
+	position:relative;
+}
+
+.template-pages-category-productGridPage .section2 .title{
+	position:absolute;
+	top:0;
+	line-height:29px;
+	padding:0 0 0 20px;
+	color:#fff;
+	font-size: 16px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.template-pages-category-productGridPage .section2 .thumb{
+	
+}
+
+.template-pages-category-productGridPage .section2 .details{
+	position:absolute;
+	top:40px;
+	width:500px;
+	padding: 0 0 0 20px;
+	color:#fff;
+}
+
+.productGrid .productGridItem {
+	margin:40px 5px 40px;
+}
+
+.productGrid .productGridItem .productMainLink{
+	min-height:305px;
+	display: block;
+}
+
+.productGrid .productGridItem .thumb{
+	border-bottom:1px dotted #c1c1c1;
+	margin:0 0 5px 0;
+	padding:0 0 20px 0;
+}
+
+.productGrid .productGridItem .thumb img{ 
+	width:100%;
+}
+
+.productGrid .productGridItem .details{
+	color:#8f8f8f;
+	padding:0 40px 4px 0;
+	line-height: 120%;
+}
+
+.productGrid .productGridItem  button.pickupInStoreButton, .productGrid .productGridItem  button.addToCartButton {
+    font-weight: normal;
+    min-height: 25px;
+    text-transform: none;
+}
+
+.productGrid .productGridItem .priceContainer{
+	float:right;
+}
+
+.productGrid .productGridItem .cart .add_to_cart_form{
+	float:right;
+	width:49%;
+}
+
+.productGrid .productGridItem .cart .collect_from_store{
+	width:49%;
+}

@@ -1,0 +1,73 @@
+<div>
+	<table width="100%" cellspacing="0" style="margin:0;padding:0;table-layout:auto;border:1px solid #1E4EBF;">
+		<tbody>
+			<tr>
+				<td colspan="3" rowspan="2" class="structureViewSection">
+					<cockpit code="NavigationMenuBar" />
+				</td>
+				<td width="30%" style="vertical-align:top;" rowspan="2" class="structureViewSection">
+					<div>Minicart</div>
+				</td>
+			</tr>
+			<tr></tr>
+			<tr>
+				<td colspan="2" rowspan="2" style="vertical-align:top;" class="structureViewSection">
+					<cockpit code="SiteLogo" />
+				</td>
+				<td colspan="2" rowspan="2" style="vertical-align:top;" class="structureViewSection">
+					<cockpit code="SearchBox" />
+				</td>
+			</tr>
+			<tr></tr>
+			<tr>
+				<td colspan="4" style="vertical-align:top;" class="structureViewSection">
+					<cockpit code="Section1" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="Section2" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="Section3" />
+				</td>
+			</tr>
+			<tr>
+				<td height="249px" rowspan="2" colspan="4" class="structureViewSection">
+					<div>Product Grid</div>
+				</td>
+			</tr>
+			<tr></tr>
+			<tr>
+				<td height="89px" colspan="4" class="structureViewSection">
+					<div>Pagination</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="Section4" />
+				</td>
+			</tr>
+			<tr>
+				<td height="270px" colspan="4" class="structureViewSection">
+					<cockpit code="Footer" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="NavContent" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="NavigationBar" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div style="width:100%; border-top: 2px solid #bbb" class="cmsContentEditor">
+		<cockpit code="editor" />
+	</div>
+</div>

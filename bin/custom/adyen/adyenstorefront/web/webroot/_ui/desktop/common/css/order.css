@@ -1,0 +1,136 @@
+/*
+## Order
+********************************************************************/
+
+
+
+.orderBoxes{
+	margin:20px 0;
+}
+
+.orderBox{
+	float:left;
+	margin:0 20px 0 0;
+	border:1px dotted #a5a5a5;
+	padding:0 20px 20px;
+	width:180px;
+	height:190px;
+}
+
+
+
+
+.orderBox.payment{
+	margin:0;
+	width:424px;
+}
+
+
+.orderBox.payment .left{
+	width:50%;
+}
+
+
+
+
+.orderBox .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1em;
+	font-weight: bold;
+	height: 30px;
+	line-height: 30px;
+	text-transform: uppercase;
+	margin:0 0 20px;
+}
+
+
+
+
+
+
+
+
+
+
+.orderList{
+	
+	border:1px dotted #a5a5a5;
+	padding:0 20px 20px;
+	margin:0 0 20px 0;
+
+}
+
+
+.orderList .headline{
+	border-bottom: 1px dotted #A5A5A5;
+	font-size: 1em;
+	font-weight: bold;
+	height: 30px;
+	line-height: 30px;
+	text-transform: uppercase;
+	margin:0 0 20px;
+}
+
+
+
+.orderList .orderListTable{
+	width:100%;
+}
+
+
+
+
+.orderList .orderListTable thead th{
+	border-bottom:1px dotted #a5a5a5;
+	height:30px;
+	line-height:30px;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:1em;
+}
+
+
+
+
+.orderList .orderListTable .item td{
+	vertical-align:top;
+	border-bottom:1px dotted #a5a5a5;
+	padding:20px 0 0 0;
+}
+
+.orderList .orderListTable .item td.thumb{
+	border-bottom:0;
+	padding-right:20px;
+	width: 96px;
+}
+
+.orderList .orderListTable tbody td {
+	vertical-align:top;
+	padding-top: 5px;
+}
+
+.orderList .orderListTable tbody td p {
+	margin-bottom: 5px;
+}
+
+.orderList .orderListTable tbody td a {
+	text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

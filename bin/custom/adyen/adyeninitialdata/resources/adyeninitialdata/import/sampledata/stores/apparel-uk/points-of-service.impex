@@ -1,0 +1,252 @@
+# ImpEx for Apparel UK Stores
+#% impex.setLocale( Locale.GERMAN ); 
+
+$storeUid=apparel-uk
+$contentCatalog=apparel-ukContentCatalog
+$catalogVersion=catalogversion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true,default=$contentCatalog:Staged]
+$storeImage=storeImage(qualifier, $catalogVersion)
+
+INSERT_UPDATE StoreLocatorFeature;code[unique=true]
+;wheelchair
+;creche
+;sundayWorkshops
+;buyOnlinePickupInStore
+
+
+$standardHours=apparel-uk-standard-hours
+$weekendHours=apparel-uk-weekend-hours
+
+INSERT_UPDATE OpeningSchedule;code[unique=true];
+;$standardHours;
+;$weekendHours;
+
+INSERT_UPDATE WeekdayOpeningDay;openingSchedule(code)[unique=true];dayOfWeek(code)[unique=true];openingTime[dateformat=hh:mm];closingTime[dateformat=hh:mm];
+;$standardHours;MONDAY   ; 09:00; 20:00
+;$standardHours;TUESDAY  ; 09:00; 20:00
+;$standardHours;WEDNESDAY; 09:00; 20:00
+;$standardHours;THURSDAY ; 09:00; 20:00
+;$standardHours;FRIDAY   ; 09:00; 20:00
+;$standardHours;SATURDAY ; 10:00; 20:00
+
+;$weekendHours;MONDAY   ; 09:00; 20:00
+;$weekendHours;TUESDAY  ; 09:00; 20:00
+;$weekendHours;WEDNESDAY; 09:00; 20:00
+;$weekendHours;THURSDAY ; 09:00; 20:00
+;$weekendHours;FRIDAY   ; 09:00; 20:00
+;$weekendHours;SATURDAY ; 10:00; 20:00
+;$weekendHours;SUNDAY   ; 10:00; 16:00
+
+INSERT_UPDATE SpecialOpeningDay;openingSchedule(code)[unique=true];date[unique=true,dateformat=dd.MM.yyyy];closed;openingTime[dateformat=hh:mm];closingTime[dateformat=hh:mm]
+;$standardHours; 01.01.2013 ;true     
+;$standardHours; 29.03.2013 ;true     
+;$standardHours; 01.04.2013 ;true     
+;$standardHours; 06.05.2013 ;true     
+;$standardHours; 27.05.2013 ;true     
+;$standardHours; 26.08.2013 ;true     
+;$standardHours; 26.12.2013 ;true     
+;$standardHours; 25.12.2013 ;true     
+
+;$weekendHours; 01.01.2013 ;true
+;$weekendHours; 29.03.2013 ;true
+;$weekendHours; 01.04.2013 ;true
+;$weekendHours; 06.05.2013 ;true
+;$weekendHours; 27.05.2013 ;true
+;$weekendHours; 26.08.2013 ;true
+;$weekendHours; 26.12.2013 ;true
+;$weekendHours; 25.12.2013 ;true
+
+
+INSERT_UPDATE PointOfService;name[unique=true];type(code);address(&addrID);latitude;longitude;geocodeTimestamp[dateformat=dd.MM.yyyy];$storeImage;features(code);basestore(uid)[default=$storeUid];openingSchedule(code)
+;Bedford;STORE;addr1;52,13651;-0,47238;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;Carlton;STORE;addr2;52,18751;-0,60308;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;St Peter Port;STORE;addr3;49,45;-2,53;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Jersey;STORE;addr4;49,18;-2,1;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Trinity;STORE;addr5;49,23;-2,09;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Cambridge Museum;STORE;addr6;52,200782;0,119287;29.04.2011;fashion_store_03;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Cambridge Lakes Golf Course;STORE;addr7;52,1866526;0,1206501;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Cambridge University;STORE;addr8;52,202784;0,108853;29.04.2011;fashion_store_02;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Cambridge Coldham's;STORE;addr9;52,210533;0,156842;29.04.2011;;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Cambridge Hospital;STORE;addr10;52,198358;0,142014;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;London Hyde Park;STORE;addr11;51,5109471;-0,1861297;29.04.2011;fashion_store_01;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;London Theater;STORE;addr12;51,509157;-0,13243;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;London School;STORE;addr13;51,513779;-0,1167;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;London Greenwich Park;STORE;addr14;51,48354;-0,000315;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;London Hospital;STORE;addr15;51,477259;0,051145;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Manchester dental Hospital;STORE;addr16;53,4766782;-2,2449657;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Manchester United FC;STORE;addr17;53,464009;-2,289768;29.04.2011;fashion_store_03;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Manchester Holiday Inn;STORE;addr18;53,469931;-2,286683;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Manchester Hospital;STORE;addr19;53,51964;-2,230175;29.04.2011;fashion_store_02;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Manchester;STORE;addr20;53,4761385;-0,22455749;29.04.2011;;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Birmingham Villa Park;STORE;addr21;52,509211;-1,885288;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Birmingham Hospital;STORE;addr22;52,47687;-1,855545;29.04.2011;fashion_store_01;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Birmingham Symphony Hall;STORE;addr23;52,479175;-1,910516;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;Birmingham Park;STORE;addr24;52,484048;-1,856375;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;Birmingham Kathedrale;STORE;addr25;52,480183;-1,90223;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Glasgow Kathedrale;STORE;addr26;55,86514;-4,235778;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Glasgow Ibrox Park;STORE;addr27;55,852451;-4,3098;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Glasgow Hospital;STORE;addr28;55,890213;-4,215952;29.04.2011;fashion_store_03;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Glasgow University;STORE;addr29;55,871752;-4,28836;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Glasgow;STORE;addr30;55,855453;-4,252345;29.04.2011;fashion_store_02;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Leeds Stadium;STORE;addr31;53,818286;-1,57796;29.04.2011;;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Leeds Cockpit;STORE;addr32;53,794435;-1,544244;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Leeds Victoria Quarter;STORE;addr33;53,788503;-1,520378;29.04.2011;fashion_store_01;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Leeds Moor;STORE;addr34;53,808993;-1,563071;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;Leeds;STORE;addr35;53,800948;-1,545671;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;Sheffield Kathedrale;STORE;addr36;53,382497;-1,469882;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Sheffield Arena;STORE;addr37;53,399777;-1,41881;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Sheffield United FC;STORE;addr38;53,369325;-1,471845;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Sheffield Hospital;STORE;addr39;53,411526;-1,477275;29.04.2011;fashion_store_03;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Sheffield;STORE;addr40;53,41304;-1,412461;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Newcastle upon Tyne University;STORE;addr41;54,984008;-1,625226;29.04.2011;fashion_store_02;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Newcastle upon Tyne Kathedrale;STORE;addr42;54,970367;-1,611013;29.04.2011;;wheelchair,buyOnlinePickupInStore;;$weekendHours;Newcastle upon Tyne Hospital;Newcastle upon Tyne Hospital;STORE;addr43;54,980623;-1,623803;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Newcastle upon Tyne Hospital;STORE;addr43;54,980623;-1,623803;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Newcastle upon Tyne College;STORE;addr44;54,965545;-1,663195;29.04.2011;fashion_store_01;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Newcastle upon Tyne Gallery;STORE;addr45;54,974375;-1,601462;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;Nottingham Concert Hall;STORE;addr46;52,955849;-1,151702;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;Nottingham Hospital;STORE;addr47;52,943338;-1,200632;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Nottingham Ice Center;STORE;addr48;52,95264;-1,139276;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Nottingham University;STORE;addr49;52,957506;-1,15;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Nottingham;STORE;addr50;52,948661;-1,151981;29.04.2011;fashion_store_03;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Cardiff Museum;STORE;addr51;51,48563;-3,177216;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Cardiff Park;STORE;addr52;51,484249;-3,217344;29.04.2011;fashion_store_02;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Cardiff Castle;STORE;addr53;51,481009;-3,183454;29.04.2011;;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Cardiff University;STORE;addr54;51,486587;-3,181725;29.04.2011;fashion_store_01;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Cardiff City Stadium;STORE;addr55;51,466415;-3,210564;29.04.2011;fashion_store_01;wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Edinburgh Castle;STORE;addr56;55,948763;-3,199198;29.04.2011;fashion_store_01;wheelchair,creche,buyOnlinePickupInStore;;$standardHours
+;Edinburgh University;STORE;addr57;55,956119;-3,116424;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$standardHours
+;Edinburgh Hospital;STORE;addr58;55,938099;-3,189236;29.04.2011;;creche,sundayWorkshops,buyOnlinePickupInStore;;$standardHours
+;Edinburgh Dynamic Earth;STORE;addr59;55,95069;-3,174748;29.04.2011;fashion_store_01;creche,sundayWorkshops,wheelchair,buyOnlinePickupInStore;;$weekendHours
+;Edinburgh Park;STORE;addr60;55,937661;-3,203169;29.04.2011;fashion_store_02;wheelchair,buyOnlinePickupInStore;;$weekendHours
+
+INSERT_UPDATE PoS2WarehouseRel;source(name)[unique=true];target(code)[unique=true]
+;Bedford;Bedford;
+;Birmingham Kathedrale;Birmingham Kathedrale;
+;Birmingham Park;Birmingham Park;
+;Birmingham Symphony Hall;Birmingham Symphony Hall;
+;Birmingham Villa Park;Birmingham Villa Park;
+;Cambridge Coldham's;Cambridge Coldhams;
+;Cambridge Hospital;Cambridge Hospital;
+;Cambridge Lakes Golf Course;Cambridge Lakes Golf Course;
+;Cambridge Museum;Cambridge Museum;
+;Cambridge University;Cambridge University;
+;Cardiff Castle;Cardiff Castle;
+;Cardiff City Stadium;Cardiff City Stadium;
+;Cardiff Museum;Cardiff Museum;
+;Cardiff Park;Cardiff Park;
+;Cardiff University;Cardiff University;
+;Carlton;Carlton;
+;Edinburgh Dynamic Earth;Edinburgh Dynamic Earth;
+;Edinburgh Hospital;Edinburgh Hospital;
+;Edinburgh Park;Edinburgh Park;
+;Edinburgh University;Edinburgh University;
+;Glasgow;Glasgow;
+;Glasgow Ibrox Park;Glasgow Ibrox Park;
+;Glasgow Kathedrale;Glasgow Kathedrale;
+;Glasgow University;Glasgow University;
+;Jersey;Jersey;
+;Leeds;Leeds;
+;Leeds Cockpit;Leeds Cockpit;
+;Leeds Moor;Leeds Moor;
+;Leeds Stadium;Leeds Stadium;
+;Leeds Victoria Quarter;Leeds Victoria Quarter;
+;London Greenwich Park;London Greenwich Park;
+;London Hyde Park;London Hyde Park;
+;London School;London School;
+;London Theater;London Theater;
+;Manchester;Manchester;
+;Manchester dental Hospital;Manchester dental Hospital;
+;Manchester Holiday Inn;Manchester Holiday Inn;
+;Manchester Hospital;Manchester Hospital;
+;Manchester United FC;Manchester United FC;
+;Newcastle upon Tyne College;Newcastle upon Tyne College;
+;Newcastle upon Tyne Gallery;Newcastle upon Tyne Gallery;
+;Newcastle upon Tyne Hospital;Newcastle upon Tyne Hospital;
+;Newcastle upon Tyne Kathedrale;Newcastle upon Tyne Kathedrale;
+;Newcastle upon Tyne University;Newcastle upon Tyne University;
+;Nottingham;Nottingham;
+;Nottingham Concert Hall;Nottingham Concert Hall;
+;Nottingham Hospital;Nottingham Hospital;
+;Nottingham Ice Center;Nottingham Ice Center;
+;Nottingham University;Nottingham University;
+;Sheffield Arena;Sheffield Arena;
+;Sheffield Hospital;Sheffield Hospital;
+;Sheffield Kathedrale;Sheffield Kathedrale;
+;Sheffield United FC;Sheffield United FC;
+;St Peter Port;St Peter Port;
+;Trinity;Trinity;
+
+#One Point Of Service many warehouses example
+INSERT_UPDATE PoS2WarehouseRel;source(name)[unique=true];target(code)[unique=true]
+;Birmingham Hospital;Birmingham Hospital;
+;Birmingham Hospital;Birmingham Kathedrale;
+;Birmingham Hospital;Birmingham Park;
+;Edinburgh Castle;Edinburgh Castle;
+;Edinburgh Castle;Edinburgh Dynamic Earth;
+;Glasgow Hospital;Glasgow Hospital;
+;Glasgow Hospital;Glasgow Ibrox Park;
+;London Hospital;London Hospital;
+;London Hospital;London Hyde Park;
+;Sheffield;Sheffield;
+;Sheffield;Sheffield Arena;
+
+INSERT_UPDATE Address;&addrID;streetname;streetnumber;postalcode;town;country(isocode);phone1;owner(PointOfService.name)[unique=true];
+;addr1;2A Greyfriars,;;MK40 1HP;Bedford;GB;+44 20 8653 3471;Bedford;
+;addr2;Carlton Rd;;MK43 7JL;Bedford;GB;+44 20 50017070;Carlton;
+;addr3;South Esplanade;Guernsey;GY1 1AH;St Peter Port;GG;+44 29 8159 4871;St Peter Port;
+;addr4;Maritime House;;JE1 1HB;Jersey;JE;+44 20 3980 1991;Jersey;
+;addr5;La Rue Coutanche;Trinity;JE3 5DU;Jersey;JE;+44 29 3975 1583;Trinity;
+;addr6;Trumpington Street;;CB2 1RB;Cambridge;GB;+44 20 3286 5703;Cambridge Museum;
+;addr7;21 Trumpington Road;;CB2 8AJ;Cambridge;GB;+44 116 739 4689;Cambridge Lakes Golf Course;
+;addr8;West Road;;CB3 9DR;Cambridge;GB;+44 29 7804 6812;Cambridge University;
+;addr9;Whitehill Road;;CB5 8LN;Cambridge;GB;+44 20 5228 1840;Cambridge Coldham's;
+;addr10;Mill Road;;CB1 3DF;Cambridge;GB;+44 20 2916 0904;Cambridge Hospital;
+;addr11;2 Inverness Terrace;;W2 3HU;London;GB;+44 116 817 9483;London Hyde Park;
+;addr12;57 Haymarket;;SW1Y 4QL;London;GB;+44 20 3987 1420;London Theater;
+;addr13;Houghton Street;;WC2A 2AE;London;GB;+44 29 3484 4888;London School;
+;addr14;Greenwich Pk;;SE10 8QY;London;GB;+44 20 6385 9106;London Greenwich Park;
+;addr15;Stadium Road;;SE18 4QH;London;GB;+44 20 2199 7080;London Hospital;
+;addr16;Higher Cambridge Street;;M15 6FH;Manchester;GB;+44 20 5987 4351;Manchester dental Hospital;
+;addr17;Sir Matt Busby Way;;M32 0SF;Manchester;GB;+44 29 5451 6486;Manchester United FC;
+;addr18;Waterfront Quay;;M50 3XW;Manchester;GB;+44 29 6401 8356;Manchester Holiday Inn;
+;addr19;Delaunays Road;;M8 5RB;Manchester;GB;+44 20 3598 3548;Manchester Hospital;
+;addr20;Lower Mosley Street;;M2 3DW;Manchester;GB;+44 20 1701 5172;Manchester;
+;addr21;Villa Park;;B6 6HE;Birmingham;GB;+44 116 742 3688;Birmingham Villa Park;
+;addr22;Bordesley Green East;;B9 5SS;Birmingham;GB;+44 116 168 3551;Birmingham Hospital;
+;addr23;Broad Street;;B1 2EW;Birmingham;GB;+44 20 7829 8279;Birmingham Symphony Hall;
+;addr24;Bordesley Green Road;;B9 4SU;Birmingham;GB;+44 20 4449 9722;Birmingham Park;
+;addr25;130 Colmore Row;;B3 2QB;Birmingham ;GB;+44 29 6138 5472;Birmingham Kathedrale;
+;addr26;Castle Street;;G4 0QZ;Glasgow;GB;+44 116 304 9234;Glasgow Kathedrale;
+;addr27;150 Edmiston Drive;;G51 2XD;Glasgow;GB;+44 20 6889 4123;Glasgow Ibrox Park;
+;addr28;133 Balornock Road;;G21 3UW;Glasgow;GB;+44 20 3741 8840;Glasgow Hospital;
+;addr29;University Avenue;;G12 8QQ;Glasgow;GB;+44 29 4890 1503;Glasgow University;
+;addr30;90 Dunlop Street;;G1 4ER;Glasgow;GB;+44 29 7704 6473;Glasgow;
+;addr31;St Michael's Lane;;LS6 3BU;Leeds;GB;+44 20 9653 0080;Leeds Stadium;
+;addr32;Swinegate;;LS1 4AG;Leeds;GB;+44 20 4586 7808;Leeds Cockpit;
+;addr33;4 Cross Arcade;;LS1 6AZ;Leeds;GB;+44 116 850 3432;Leeds Victoria Quarter;
+;addr34;Moorland Road;;LS6 3BU;Leeds;GB;+44 20 7183 6999;Leeds Moor;
+;addr35;2 Great George Street;;LS1 3BR;Leeds;GB;+44 20 8106 8472;Leeds;
+;addr36;Church Street;;S1 1HA;Sheffield;GB;+44 116 764 0910;Sheffield Kathedrale;
+;addr37;Broughton Ln;;S9 2DF;Sheffield;GB;+44 116 153 4179;Sheffield Arena;
+;addr38;Bramall Lane;;S2 4RF;Sheffield;GB;+44 20 1385 5693;Sheffield United FC;
+;addr39;Herries Road;;S5 7AU;Sheffield;GB;+44 20 9323 2242;Sheffield Hospital;
+;addr40;The Oasis;;S9 1EP;Sheffield;GB;+44 116 987 5657;Sheffield;
+;addr41;Claremont Road;;NE1 7RU;Newcastle upon Tyne;GB;+44 116 889 7060;Newcastle upon Tyne University;
+;addr42;St Nicholas Churchyard;;NE1 1PF;Newcastle upon Tyne;GB;+44 20 6849 3705;Newcastle upon Tyne Kathedrale;
+;addr43;Richardson Road;;NE2 4AZ;Newcastle upon Tyne;GB;+44 20 4289 1453;Newcastle upon Tyne Hospital;
+;addr44;Scotswood Road;;NE4 7SA;Newcastle upon Tyne;GB;+44 29 9607 0956;Newcastle upon Tyne College;
+;addr45;New Bridge St;;NE1 8AG;Newcastle upon Tyne;GB;+44 29 1006 9325;Newcastle upon Tyne Gallery;
+;addr46;Theatre Square;;NG1 5ND;Nottingham;GB;+44 20 6124 4113;Nottingham Concert Hall;
+;addr47;Derby Road;;NG7 2UH;Nottingham;GB;+44 20 3097 1369;Nottingham Hospital;
+;addr48;Bolero Square;;NG1 1LA;Nottingham;GB;+44 116 723 5234;Nottingham Ice Center;
+;addr49;14 Shakespeare St;;NG1 4FQ;Nottingham;GB;+44 29 8803 7515;Nottingham University;
+;addr50;1 Brewhouse Yard;;NG1 6AD;Nottingham;GB;+44 20 1836 7419;Nottingham;
+;addr51;Cathays Park;;CF10 3NP;Cardiff;GB;+44 20 6474 7627;Cardiff Museum;
+;addr52;Victoria Park Road East;;CF5 1EG;Cardiff;GB;+44 116 467 4705;Cardiff Park;
+;addr53;Castle Street;;CF10 3RB;Cardiff;GB;+44 29 5081 2580;Cardiff Castle;
+;addr54;King Edward VII Ave;;CF10 3NS;Cardiff;GB;+44 20 1956 4328;Cardiff University;
+;addr55;Leckwith Road;;CF11 8AU;Cardiff;GB;+44 20 4416 5391;Cardiff City Stadium;
+;addr56;Castlehill;;EH1 2NG;Edinburgh;GB;+44 20 5684 3290;Edinburgh Castle;
+;addr57;South Bridge;;EH8 9YL;Edinburgh;GB;+44 116 821 3770;Edinburgh University;
+;addr58;9 Sciennes Road;;EH9 1LF;Edinburgh;GB;+44 116 891 7825;Edinburgh Hospital;
+;addr59;112 Holyrood Road;;EH8 8AS;Edinburgh;GB;+44 20 6892 6277;Edinburgh Dynamic Earth;
+;addr60;4 Alvanley Terrace;;EH9 1DU;Edinburgh;GB;+44 20 6061 6707;Edinburgh Park;

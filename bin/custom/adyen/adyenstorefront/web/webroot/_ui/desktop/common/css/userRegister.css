@@ -1,0 +1,33 @@
+/*
+## userRegister
+********************************************************************/
+
+.userRegister{
+	border: 1px dotted #A5A5A5;
+	padding:0 20px 20px 20px;
+}
+
+.userRegister .headline{
+	border-bottom: 1px solid #A5A5A5;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 33px;
+	line-height: 39px;
+	text-transform: uppercase;
+	margin:0 0 20px 0;
+}
+
+
+.userRegister .description{
+	margin:0 0 20px 0;
+}
+
+.userRegister  form{
+	margin:0;
+}
+
+
+
+#recaptcha_widget{
+	margin:20px 0 0 0;
+}

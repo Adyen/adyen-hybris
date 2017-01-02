@@ -1,0 +1,94 @@
+# ImpEx for Apparel DE Stores
+# German localisations
+
+$lang=de
+$standardHours=apparel-de-standard-hours
+$weekendHours=apparel-de-weekend-hours
+
+UPDATE StoreLocatorFeature;code[unique=true];name[lang=$lang]
+;wheelchair;"Rollstuhlzugang"
+;creche;"Kinderkrippe"
+;sundayWorkshops;"Sonntagsworkshops"
+
+UPDATE SpecialOpeningDay;openingSchedule(code)[unique=true];date[unique=true,dateformat=dd.MM.yyyy];name[lang=$lang];message[lang=$lang]
+;$standardHours; 01.01.2013 ;"NeujahrstagNew";""
+;$standardHours; 29.03.2013 ;"Karfreitag";""
+;$standardHours; 01.04.2013 ;"Ostermontag";""
+;$standardHours; 01.05.2013 ;"Tag der Arbeit";""
+;$standardHours; 09.05.2013 ;"Christi Himmelfahrt";""
+;$standardHours; 20.05.2013 ;"Pfingstmontag";""
+;$standardHours; 03.10.2013 ;"Tag der Deutschen Einheit";""
+;$standardHours; 25.12.2013 ;"Weihnachtstag";""
+;$standardHours; 26.12.2013 ;"Zweiter Weihnachtsfeiertag";""
+
+;$weekendHours; 01.01.2013 ;"NeujahrstagNew";""
+;$weekendHours; 29.03.2013 ;"Karfreitag";""
+;$weekendHours; 01.04.2013 ;"Ostermontag";""
+;$weekendHours; 01.05.2013 ;"Tag der Arbeit";""
+;$weekendHours; 09.05.2013 ;"Christi Himmelfahrt";""
+;$weekendHours; 20.05.2013 ;"Pfingstmontag";""
+;$weekendHours; 03.10.2013 ;"Tag der Deutschen Einheit";""
+;$weekendHours; 25.12.2013 ;"Weihnachtstag";""
+;$weekendHours; 26.12.2013 ;"Zweiter Weihnachtsfeiertag";""
+
+UPDATE PointOfService;name[unique=true];displayName;
+;Berlin Siegessäule;Berlin Siegessäule;
+;Berlin Museum;Berlin Museum;
+;Berlin Dom;Berlin Dom;
+;Berlin Zoo;Berlin Zoo;
+;Berlin Hospital;Berlin Hospital;
+;Hamburg Hotel;Hamburg Hotel;
+;Hamburg Hospital;Hamburg Hospital;
+;Hamburg Planetarium;Hamburg Planetarium;
+;Hamburg Kirche;Hamburg Kirche;
+;Hamburg Schauspielhaus;Hamburg Schauspielhaus;
+;Munich Neue Pinakothek;Munich Neue Pinakothek;
+;Munich Altstadt;Munich Altstadt;
+;Munich Isarvorstadt;Munich Isarvorstadt;
+;Munich Museum;Munich Museum;
+;Munich Staatsoper;Munich Staatsoper;
+;Cologne SchokoMuseum;Cologne SchokoMuseum;
+;Cologne Hospital;Cologne Hospital;
+;Cologne Museum;Cologne Museum;
+;Cologne Kolumba;Cologne Kolumba;
+;Cologne Volksgarten;Cologne Volksgarten;
+;Frankfurt European Central Bank;Frankfurt European Central Bank;
+;Frankfurt Zoo;Frankfurt Zoo;
+;Frankfurt Hospital;Frankfurt Hospital;
+;Frankfurt Goethe Haus;Frankfurt Goethe Haus;
+;Frankfurt Friedhof;Frankfurt Friedhof;
+;Stuttgart Markthalle;Stuttgart Markthalle;
+;Stuttgart Fernsehturm;Stuttgart Fernsehturm;
+;Stuttgart Museum;Stuttgart Museum;
+;Stuttgart Variete;Stuttgart Variete;
+;Stuttgart Hospital;Stuttgart Hospital;
+;Düsseldorf Kulturzentrum;Düsseldorf Kulturzentrum;
+;Düsseldorf Rheinpark;Düsseldorf Rheinpark;
+;Düsseldorf Hospital;Düsseldorf Hospital;
+;Düsseldorf Hbf;Düsseldorf Hbf;
+;Düsseldorf Hospital2;Düsseldorf Hospital2;
+;Dortmund Konzerthaus;Dortmund Konzerthaus;
+;Dortmund Altes Hafenamt;Dortmund Altes Hafenamt;
+;Dortmund Museum;Dortmund Museum;
+;Dortmund University;Dortmund University;
+;Dortmund Zoo;Dortmund Zoo;
+;Essen Theater;Essen Theater;
+;Essen Gruga;Essen Gruga;
+;Essen University;Essen University;
+;Essen Museum;Essen Museum;
+;Essen Hospital;Essen Hospital;
+;Bremen Kunsthalle;Bremen Kunsthalle;
+;Bremen Schulschiff;Bremen Schulschiff;
+;Bremen Hospital;Bremen Hospital;
+;Bremen Hochschule;Bremen Hochschule;
+;Bremen Arena;Bremen Arena;
+;Hannover Denkmal;Hannover Denkmal;
+;Hannover Georgengarten;Hannover Georgengarten;
+;Hannover Hochschule;Hannover Hochschule;
+;Hannover Tiergarten;Hannover Tiergarten;
+;Hannover Arena;Hannover Arena;
+;Leipzig Altes Rathaus;Leipzig Altes Rathaus;
+;Leipzig Opernhaus;Leipzig Opernhaus;
+;Leipzig Stadion;Leipzig Stadion;
+;Leipzig University;Leipzig University;
+;Leipzig Hospital;Leipzig Hospital;

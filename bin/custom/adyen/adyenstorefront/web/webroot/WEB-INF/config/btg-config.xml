@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="productPkResolvingStrategy" class="com.adyen.storefront.filters.btg.support.impl.ProductPkResolvingStrategy" >
+		<property name="urlParsingStrategy" ref="productUrlParsingStrategy" />
+		<property name="productService" ref="productService" />
+	</bean>
+
+	<bean id="productUrlParsingStrategy" class="com.adyen.storefront.filters.btg.support.impl.DefaultUrlParsingStrategy" >
+		<property name="regex" value="^/.+/p/(\w+)$" />
+	</bean>
+
+	<bean id="categoryPkResolvingStrategy" class="com.adyen.storefront.filters.btg.support.impl.CategoryPkResolvingStrategy" >
+		<property name="urlParsingStrategy" ref="categoryUrlParsingStrategy" />
+		<property name="categoryService" ref="commerceCategoryService" />
+	</bean>
+	<bean id="categoryUrlParsingStrategy" class="com.adyen.storefront.filters.btg.support.impl.DefaultUrlParsingStrategy" >
+		<property name="regex" value="^/.+/c/(\w+)$" />
+	</bean>
+
+	<alias name="defaultBTGSegmentStrategy" alias="btgSegmentStrategy" />
+	<bean id="defaultBTGSegmentStrategy" class="com.adyen.storefront.filters.btg.support.impl.DefaultBTGSegmentStrategy" >
+		<property name="btgEvaluationService" ref="btgEvaluationService"/>
+		<property name="btgResultService" ref="btgResultService"/>
+		<property name="cmsSiteService" ref="cmsSiteService"/>
+		<property name="sessionService" ref="sessionService"/>
+		<property name="userService" ref="userService"/>
+		<property name="evaluateAnonymousSessions" value="true"/>
+		<property name="siteConfigService" ref="siteConfigService"/>
+		<property name="cmsPageContextService" ref="cmsPageContextService"/>
+	</bean>
+
+</beans>

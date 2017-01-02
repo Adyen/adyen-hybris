@@ -1,0 +1,2 @@
+#set ( $mediaUrl = $ctx.urlResolutionService.getMediaUrlForSite($ctx.site,false,$ctx.media.url) )
+<img src="${mediaUrl}" alt="#if(${ctx.media.altText})${ctx.media.altText}#end" border="0"/>

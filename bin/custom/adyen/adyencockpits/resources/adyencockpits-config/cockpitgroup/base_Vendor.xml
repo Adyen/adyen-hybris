@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="base.xsd">
+	<search>
+		<search-properties>
+			<property qualifier="Vendor.code"/>
+			<property qualifier="Vendor.name"/>
+		</search-properties>
+		<sort-properties>
+			<property qualifier="Vendor.code"/>
+			<property qualifier="Vendor.name"/>
+		</sort-properties>
+	</search>
+	<label>
+		<property qualifier="Vendor.code"/>
+	</label>
+</base>

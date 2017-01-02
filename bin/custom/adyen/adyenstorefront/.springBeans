@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.8.1.201111220115-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[true]]></enableImports>
+	<configs>
+		<config>web/webroot/WEB-INF/config/spring-mvc-config.xml</config>
+		<config>web/webroot/WEB-INF/config/spring-security-config.xml</config>
+		<config>web/webroot/WEB-INF/config/web-application-config.xml</config>
+		<config>web/webroot/WEB-INF/config/spring-filter-config.xml</config>
+	</configs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

@@ -1,0 +1,50 @@
+# Test batch configuration
+#
+$productCatalog=apparelProductCatalog
+$defaultCurrency=EUR
+$languages=en
+$defaultLanguage=en
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+$catalogVersion=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default='$productCatalog:Staged']
+$product=product(code, $catalogVersion)
+
+INSERT_UPDATE Language;isocode[unique=true];active
+;de;true
+;en;true
+
+INSERT_UPDATE Currency;isocode[unique=true];name[lang=de];name[lang=en];active;base;conversion;digits;symbol
+;EUR;Euro;Euro;true;true;1;2;€
+
+INSERT_UPDATE Catalog;id[unique=true];name[lang=de];name[lang=en];defaultCatalog
+;$productCatalog;$productCatalog;$productCatalog;true
+
+# Catalog versions for content catalogs
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];active;defaultCurrency(isocode);languages(isoCode)
+;$productCatalog;Staged;false;$defaultCurrency;$languages
+;$productCatalog;Online;true;$defaultCurrency;$languages
+
+INSERT_UPDATE Unit;unitType[unique=true];code[unique=true];name[lang=de];name[lang=en];conversion;;;
+;pieces;pieces;pieces;pieces;1
+;weight;kg;kg;kg;1
+
+INSERT_UPDATE ProductTaxGroup;code[unique=true]
+;eu-vat-full;
+;eu-vat-half;
+
+INSERT_UPDATE Vendor;code[unique=true];name
+;default;Default Vendor
+
+INSERT_UPDATE Warehouse;code[unique=true];name;vendor(code)[default=default];default
+;default;Default Warehouse;;true
+
+INSERT_UPDATE MediaFolder;qualifier[unique=true]
+;root
+;images
+
+INSERT_UPDATE MediaFormat;qualifier[unique=true]
+;1200Wx1200H
+;515Wx515H
+;300Wx300H
+;96Wx96H
+;65Wx65H
+;30Wx30H

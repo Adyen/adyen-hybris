@@ -1,0 +1,24 @@
+#******************************This file is generated - please do not edit it. It will be regenerated after every build.********************************#
+# ImpEx for Importing Products stock levels into Apparel Store
+
+# Macros / Replacement Parameter definitions
+
+# Language
+$lang=en
+
+
+# Create Vendor for Apparel Store
+UPDATE Vendor;code[unique=true];name[lang=$lang]
+ ;apparello;Apparello;
+
+
+# Create some Warehouses for the Vendor
+UPDATE Warehouse;code[unique=true];name[lang=$lang]
+ ;ap_us_warehouse_e;Warehouse US East;
+ ;ap_us_warehouse_n;Warehouse US North;
+ ;ap_us_warehouse_s;Warehouse US South;
+ ;ap_us_warehouse_w;Warehouse US West;
+ ;ap_warehouse_e;Warehouse East;
+ ;ap_warehouse_n;Warehouse North;
+ ;ap_warehouse_s;Warehouse South;
+ ;ap_warehouse_w;Warehouse West;

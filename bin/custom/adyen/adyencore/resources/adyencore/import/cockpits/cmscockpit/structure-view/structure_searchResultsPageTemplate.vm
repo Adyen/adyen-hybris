@@ -1,0 +1,69 @@
+<div>
+	<table width="100%" cellspacing="0" style="margin:0;padding:0;table-layout:auto;border:1px solid #1E4EBF;">
+		<tbody>
+			<tr>
+				<td colspan="2" height="125px" width="25%" rowspan="2" class="structureViewSection">
+					<cockpit code="SiteLogo" />
+				</td>
+				<td colspan="4" class="structureViewSection">
+					<cockpit code="HeaderLinks" />
+					<cockpit code="SearchBox" />
+				</td>
+				<td width="20%" rowspan="2" class="structureViewSection">
+					<cockpit code="MiniCart" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" height="89px" class="structureViewSection">
+					<div>Header</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="7" class="structureViewSection">
+					<cockpit code="NavigationBar" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="7" height="58px" style="vertical-align:middle;" class="structureViewSection">
+					<div>Breadcrumb</div>
+				</td>
+			</tr>
+			<tr>
+				<td rowspan="5" width="15%" style="vertical-align:middle;" class="structureViewSection">
+					<div>LeftNav</div>
+				</td>
+			</tr>
+			<tr>
+				<td width="75%" height="89px" colspan="6" style="vertical-align:top;" class="structureViewSection">
+					<cockpit code="Section2" />
+				</td>
+			</tr>
+			<tr>
+				<td width="25%" height="89px" colspan="5" style="vertical-align:middle;" class="structureViewSection">
+					<div>Pagination</div>
+				</td>
+				<td width="25%" colspan="2" rowspan="3" height="249px" style="vertical-align:top;" class="structureViewSection">
+					<cockpit code="Section4" />
+				</td>
+			</tr>
+			<tr>
+				<td height="249px" colspan="5" style="vertical-align:middle;" class="structureViewSection">
+					<div>Product List</div>
+				</td>
+			</tr>
+			<tr>
+				<td width="75%" height="89px" colspan="5" style="vertical-align:middle;" class="structureViewSection">
+					<div>Pagination</div>
+				</td>
+			</tr>
+			<tr>
+				<td height="270px" colspan="7" class="structureViewSection">
+					<cockpit code="Footer" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div style="width:100%; border-top: 2px solid #bbb" class="cmsContentEditor">
+		<cockpit code="editor" />
+	</div>
+</div>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition" start="checkOrder" name="order-process-test" processClass="de.hybris.platform.orderprocessing.model.OrderProcessModel">
+
+	<action id="checkOrder" bean="test.checkOrderAction">
+		<transition name="OK" to="checkAuthorizeOrderPayment"/>
+		<transition name="NOK" to="error"/>
+	</action>
+
+	<action id="checkAuthorizeOrderPayment" bean="test.checkAuthorizeOrderPaymentAction">
+		<transition name="OK" to="reserveAmount"/>
+		<transition name="NOK" to="authorizationFailedNotification"/>
+	</action>
+
+	<action id="reserveAmount" bean="test.reserveOrderAmountAction">
+		<transition name="OK" to="checkTransactionReviewStatus"/>
+		<transition name="NOK" to="sendPaymentFailedNotification"/>
+	</action>
+
+	<action id="checkTransactionReviewStatus" bean="test.checkTransactionReviewStatusAction">
+		<transition name="OK" to="fraudCheck"/>
+		<transition name="NOK" to="notifyCustomer"/>
+		<transition name="WAIT" to="waitForReviewDecision"/>
+	</action>
+
+	<wait id="waitForReviewDecision" then="checkTransactionReviewStatus" prependProcessCode="false">
+  		<event>${process.order.code}_ReviewDecision</event>
+	</wait>
+
+	<action id="fraudCheck" bean="test.fraudCheckOrderInternalAction">
+		<transition name="OK" to="sendOrderPlacedNotification"/>
+		<transition name="POTENTIAL" to="manualOrderCheckCSA" />
+		<transition name="FRAUD" to="notifyCustomer" />
+	</action>
+	
+	<action id="manualOrderCheckCSA" bean="test.prepareOrderForManualCheckAction">
+		<transition name="OK" to="waitForManualOrderCheckCSA"/>
+	</action>
+
+	<wait id="waitForManualOrderCheckCSA" then="orderManualChecked" prependProcessCode="false" >
+		<event>${process.code}_CSAOrderVerified</event>
+	</wait>
+	
+	<action id="orderManualChecked" bean="test.orderManualCheckedAction">
+		<transition name="OK" to="sendOrderPlacedNotification"/>
+		<transition name="NOK" to="waitForCleanUp"/>
+		<transition name="UNDEFINED" to="waitForManualOrderCheckCSA"/>
+	</action>
+	
+	<action id="notifyCustomer" bean="test.notifyCustomerAboutFraudAction">
+		<transition name="OK" to="waitForCleanUp"/>
+	</action>
+	
+	<wait id="waitForCleanUp" then="scheduleForCleanUp" prependProcessCode="false">
+		<event>${process.code}_CleanUpEvent</event>
+	</wait>
+	
+	<action id="scheduleForCleanUp" bean="test.scheduleForCleanUpAction">
+		<transition name="OK" to="cancelOrder"/>
+		<transition name="NOK" to="orderManualChecked" /> 
+	</action>
+
+	<action id="sendOrderPlacedNotification" bean="test.sendOrderPlacedNotificationAction">
+		<transition name="OK" to="takePayment"/>
+	</action>
+	
+	<action id="takePayment" bean="test.takePaymentAction">
+		<transition name="OK" to="splitOrder"/>
+		<transition name="NOK" to="sendPaymentFailedNotification"/>
+	</action>
+
+	<action id="cancelOrder" bean="test.cancelWholeOrderAuthorizationAction">
+		<transition name="OK" to="failed"/>
+	</action>
+
+	<action id="authorizationFailedNotification" bean="test.sendAuthorizationFailedNotificationAction">
+		<transition name="OK" to="failed"/>
+	</action>
+
+	<action id="sendPaymentFailedNotification" bean="test.sendPaymentFailedNotificationAction">
+		<transition name="OK" to="failed"/>
+	</action>
+
+	<action id="splitOrder" bean="test.splitOrderAction">
+		<transition name="OK" to="waitForWarehouseSubprocessEnd"/>
+	</action>
+
+	<wait id="waitForWarehouseSubprocessEnd" then="isProcessCompleted" prependProcessCode="false" >
+		<event>${process.code}_ConsignmentSubprocessEnd</event>
+	</wait>
+
+	<action id="isProcessCompleted" bean="test.subprocessesCompletedAction">
+		<transition name="OK" to="sendOrderCompletedNotification"/>
+		<transition name="NOK" to="waitForWarehouseSubprocessEnd"/>
+	</action>
+
+	<action id="sendOrderCompletedNotification" bean="test.sendOrderCompletedNotificationAction">
+		<transition name="OK" to="success"/>
+	</action>
+
+	<end id="error" state="ERROR">All went wrong.</end>
+	<end id="failed" state="FAILED">Order not placed.</end>
+	<end id="success" state="SUCCEEDED">Order placed.</end>
+
+</process>

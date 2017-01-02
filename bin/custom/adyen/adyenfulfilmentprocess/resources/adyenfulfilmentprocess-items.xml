@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+
+  
+-->
+<items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+			xsi:noNamespaceSchemaLocation="items.xsd">
+	
+	<itemtypes>
+			<itemtype code="ConsignmentProcess" autocreate="false" generate="false" >
+			<attributes>
+				<attribute qualifier="done" type="boolean">
+					<description>Mark process as done</description>
+					<modifiers optional="false" initial="false"/>
+					<persistence type="property" />
+					<defaultvalue>Boolean.FALSE</defaultvalue>					
+				</attribute>			
+				
+				<attribute qualifier="waitingForConsignment" type="boolean">
+					<description>Mark that process is waiting for consignment</description>
+					<modifiers optional="false" initial="false"/>
+					<persistence type="property" />
+					<defaultvalue>Boolean.FALSE</defaultvalue>					
+				</attribute>			
+				
+				<attribute qualifier="warehouseConsignmentState" type="WarehouseConsignmentState">
+					<description>State of warehouse process.</description>
+					<persistence type="property" />
+					<modifiers initial="false" optional="true" />
+				</attribute>
+					
+			</attributes>
+			</itemtype>
+	</itemtypes>
+</items>

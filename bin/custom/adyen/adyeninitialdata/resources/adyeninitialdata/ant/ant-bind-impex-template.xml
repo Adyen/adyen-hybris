@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project name="bindImpexTemplates">
+
+	<property name="contentCatalogToken" value="__CONTENT_CATALOG_NAME__"/>
+	<property name="productCatalogToken" value="__PRODUCT_CATALOG_NAME__"/>
+	<property name="storeNameToken" value="__STORE_NAME__"/>
+	<property name="classificationCatalogToken" value="__CLASSIFICATION_CATALOG_NAME__"/>
+	<property name="storeUidToken" value="__STORE_UID__"/>
+	<property name="defaultPromoGrpToken" value="__DEFAULT_PROMO_GRP__"/>
+	<property name="contentCatalogNameToken" value="__CONTENT_CATALOG_FULL_NAME__"/>
+	<property name="productCatalogNameToken" value="__PRODUCT_CATALOG_FULL_NAME__"/>
+	<property name="vendorToken" value="__VENDOR_NAME__"/>
+	<property name="indexedTypeToken" value="__INDEXED_TYPE__"/>
+	<property name="facetSearchConfigNameToken" value="__FACET_SEARCH_CONFIG_NAME__"/>
+
+	<macrodef name="bindImpexTemplate">
+		<attribute name="addonname"/>
+		<attribute name="contentCatalog" default="${contentCatalogToken}"/>
+		<attribute name="productCatalog" default="${productCatalogToken}"/>
+		<attribute name="storeName" default="${storeNameToken}"/>
+		<attribute name="classificationCatalog" default="${classificationCatalogToken}"/>
+		<attribute name="storeUid" default="${storeUidToken}"/>
+		<attribute name="defaultPromoGrp" default="${defaultPromoGrpToken}"/>
+		<attribute name="contentCatalogName" default="${contentCatalogNameToken}"/>
+		<attribute name="productCatalogName" default="${productCatalogNameToken}"/>
+		<attribute name="vendor" default="${vendorToken}"/>
+		<attribute name="indexedType" default="${indexedTypeToken}"/>
+		<attribute name="facetSearchConfigName" default="${facetSearchConfigNameToken}"/>
+		<sequential>
+			<for list="coredata,sampledata" param="data">
+				<sequential>
+					<for list="contentCatalogs/@{contentCatalog},productCatalogs/@{productCatalog},stores/@{storeName}" param="catalog">
+						<sequential>
+							<var name="destPath" value="${ext.@{addonname}.path}/resources/@{addonname}/import/@{data}/@{catalog}/"/>
+							<if>
+								<available file="${destPath}"/>
+								<then>
+									<replace dir="${destPath}" token="${contentCatalogToken}" value="@{contentCatalog}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${contentCatalogToken}] was replaced by [@{contentCatalog}]"/>
+
+									<replace dir="${destPath}" token="${productCatalogToken}" value="@{productCatalog}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${productCatalogToken}] was replaced by [@{productCatalog}]"/>
+
+									<replace dir="${destPath}" token="${storeNameToken}" value="@{storeName}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${storeNameToken}] was replaced by [@{storeName}]"/>
+
+									<replace dir="${destPath}" token="${classificationCatalogToken}" value="@{classificationCatalog}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${classificationCatalogToken}] was replaced by [@{classificationCatalog}]"/>
+
+									<replace dir="${destPath}" token="${storeUidToken}" value="@{storeUid}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${storeUidToken}] was replaced by [@{storeUid}]"/>
+
+									<replace dir="${destPath}" token="${defaultPromoGrpToken}" value="@{defaultPromoGrp}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${defaultPromoGrpToken}] was replaced by [@{defaultPromoGrp}]"/>
+
+									<replace dir="${destPath}" token="${contentCatalogNameToken}" value="@{contentCatalogName}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${contentCatalogNameToken}] was replaced by [@{contentCatalogName}]"/>
+
+									<replace dir="${destPath}" token="${productCatalogNameToken}" value="@{productCatalogName}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${productCatalogNameToken}] was replaced by [@{productCatalogName}]"/>
+
+									<replace dir="${destPath}" token="${vendorToken}" value="@{vendor}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${vendorToken}] was replaced by [@{vendor}]"/>
+
+									<replace dir="${destPath}" token="${indexedTypeToken}" value="@{indexedType}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${indexedTypeToken}] was replaced by [@{indexedType}]"/>
+
+									<replace dir="${destPath}" token="${facetSearchConfigNameToken}" value="@{facetSearchConfigName}">
+										<include name="**/*.impex"/>
+									</replace>
+									<echo message="@{addonname}: token [${facetSearchConfigNameToken}] was replaced by [@{facetSearchConfigName}]"/>
+								</then>
+								<else>
+									<echo message="No impex templates found for @{addonname}, location: ${destPath}"/>
+								</else>
+							</if>
+						</sequential>
+					</for>
+				</sequential>
+			</for>
+		</sequential>
+	</macrodef>
+
+</project>

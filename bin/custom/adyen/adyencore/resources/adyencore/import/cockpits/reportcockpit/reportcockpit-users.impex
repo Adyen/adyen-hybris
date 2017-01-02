@@ -1,0 +1,6 @@
+#
+# Import Users and Groups for Report Cockpit
+#
+
+INSERT_UPDATE UserGroup;UID[unique=true];groups(uid)[mode=append]
+;analyticsperspectivegroup;cockpitgroup,employeegroup

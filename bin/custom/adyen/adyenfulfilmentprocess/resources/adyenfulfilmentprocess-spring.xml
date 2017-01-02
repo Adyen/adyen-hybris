@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2014 hybris AG
+ All rights reserved.
+
+ This software is the confidential and proprietary information of hybris
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with hybris.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Listeners -->
+	
+	<bean id="pickupConfirmationEventListener" class="com.adyen.fulfilmentprocess.listeners.PickupConfirmationEventListener" parent="abstractEventListener">
+		<property name="businessProcessService" ref="businessProcessService"/>
+	</bean>
+	
+	<!-- Process Adapters -->
+
+	<alias name="mockProcess2WarehouseAdapter" alias="process2WarehouseAdapter"/>
+	<bean id="mockProcess2WarehouseAdapter" class="com.adyen.fulfilmentprocess.warehouse.MockProcess2WarehouseAdapter" >
+		<property name="modelService" ref="modelService"/>
+		<property name="warehouse2ProcessAdapter" ref="warehouse2ProcessAdapter"/>
+		<property name="timeService" ref="timeService"/>
+	</bean>
+
+	<alias name="defaultWarehouse2ProcessAdapter" alias="warehouse2ProcessAdapter"/>
+	<bean id="defaultWarehouse2ProcessAdapter" class="com.adyen.fulfilmentprocess.warehouse.DefaultWarehouse2ProcessAdapter" >
+		<property name="modelService" ref="modelService"/>
+		<property name="statusMap">
+			<map key-type="de.hybris.platform.warehouse.WarehouseConsignmentStatus" value-type="de.hybris.platform.commerceservices.enums.WarehouseConsignmentState">
+				<entry key="CANCEL" value="CANCEL"/>
+				<entry key="COMPLETE" value="COMPLETE"/>
+				<entry key="PARTIAL" value="PARTIAL"/>
+			</map>
+		</property>
+		<property name="businessProcessService" ref="businessProcessService"/>
+	</bean>
+	
+	<!-- Process Definitions -->
+
+	<bean id="orderProcessDefinitionResource" class="de.hybris.platform.processengine.definition.ProcessDefinitionResource" >
+		<property name="resource" value="classpath:/adyenfulfilmentprocess/process/order-process.xml"/>
+	</bean>
+
+	<bean id="consignmentProcessDefinitionResource" class="de.hybris.platform.processengine.definition.ProcessDefinitionResource" >
+		<property name="resource" value="classpath:/adyenfulfilmentprocess/process/consignment-process.xml"/>
+	</bean>
+
+	<!-- Process Actions -->
+
+	<import resource="/adyenfulfilmentprocess/process/order-process-spring.xml"/>
+	<import resource="/adyenfulfilmentprocess/process/consignment-process-spring.xml"/>
+
+
+	<!-- Order Check Service -->
+	<!-- Performs some basic validation for the order as part of the first stage of the process. -->
+
+	<alias name="defaultCheckOrderService" alias="checkOrderService"/>
+	<bean id="defaultCheckOrderService" class="com.adyen.fulfilmentprocess.impl.DefaultCheckOrderService" />
+	
+	<!-- Order Splitting -->
+	<alias name="adyenfulfilmentprocessOrderSplittingService" alias="orderSplittingService"/>
+	<bean id="adyenfulfilmentprocessOrderSplittingService" parent="defaultOrderSplittingService" >
+		<property name="strategiesList">
+			<list>
+				<ref bean="splitByAvailableCount"/>
+				<ref bean="splitByDeliveryMode" />
+				<ref bean="splitByPoS" />
+				<ref bean="splitByNamedDeliveryDate" />
+				<ref bean="splitByEntryDeliveryAddress" />
+				<ref bean="splitByWarehouse" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Split Strategies -->
+	
+	<alias name="defaultSplitByPoS" alias="splitByPoS"/>
+	<bean id="defaultSplitByPoS" class="com.adyen.fulfilmentprocess.strategy.impl.SplitByPoS" />
+	
+	<alias name="defaultSplitByEntryDeliveryAddress" alias="splitByEntryDeliveryAddress"/>
+	<bean id="defaultSplitByEntryDeliveryAddress" class="com.adyen.fulfilmentprocess.strategy.impl.SplitByEntryDeliveryAddress"  />
+	
+	<alias name="defaultSplitByDeliveryMode" alias="splitByDeliveryMode"/>
+	<bean id="defaultSplitByDeliveryMode" class="com.adyen.fulfilmentprocess.strategy.impl.SplitByDeliveryMode" >
+		<property name="pickupDeliveryModeDao" ref="pickupDeliveryModeDao"/>
+	</bean>
+	
+	<alias name="defaultSplitByAvailableCount" alias="splitByAvailableCount"/>
+	<bean id="defaultSplitByAvailableCount" class="com.adyen.fulfilmentprocess.strategy.impl.SplitByAvailableCount" >
+		<property name="commerceStockService" ref="commerceStockService"/>
+	</bean>
+	
+	<alias name="defaultSplitByWarehouse" alias="splitByWarehouse"/>
+	<bean id="defaultSplitByWarehouse" class="com.adyen.fulfilmentprocess.strategy.impl.SplitByWarehouse" />
+	
+	<!--  Jobs -->
+	
+	<bean id="cleanUpFraudOrderJob" class="com.adyen.fulfilmentprocess.jobs.CleanUpFraudOrderJob"  >
+		<property name="modelService" ref="modelService"/>
+		<property name="flexibleSearchService" ref="flexibleSearchService"/>
+		<property name="businessProcessService" ref="businessProcessService"/>
+		<property name="sessionService" ref="sessionService"/>
+	</bean>
+	
+</beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/platform"/>
+	<classpathentry exported="true" kind="src" path="/btg"/>
+	<classpathentry exported="true" kind="src" path="/acceleratorstorefrontcommons"/>
+	<classpathentry exported="true" kind="src" path="/adyenfacades"/>
+	<classpathentry exported="true" kind="src" path="/b2ccheckoutaddon"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.9.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl-1.9.11.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/granule-1.0.9.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/json-taglib-0.4.1.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/jsoup-1.6.1.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/jstl-api-1.2.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/jstl-impl-1.2.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/spring-security-taglibs-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/spring-webmvc-3.2.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources"/>
+	<classpathentry kind="src" output="eclipsebin/web/classes" path="web/src"/>
+	<classpathentry kind="src" output="eclipsebin/web/classes" path="web/testsrc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/adyenAddon"/>
+	<classpathentry kind="output" path="eclipsebin/notused"/>
+</classpath>

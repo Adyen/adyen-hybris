@@ -1,0 +1,41 @@
+
+.ui-easydialog-container{
+	border:5px solid #111;
+	position:absolute;
+	left:50%;
+	width:270px;
+	margin-left:-140px;
+	z-index:9999;
+}
+
+.ui-easydialog-container .ui-header{
+	padding: 0.6em 14% 0.8em;
+	text-align:center;
+	height:18px;
+}
+
+.ui-easydialog-container .ui-easydialog-close {
+	position:absolute;
+	top:7px;
+	left:10px;
+	z-index:999999;	
+	margin:0;
+}
+
+.ui-easydialog-screen{
+    background-color: #000;
+    -moz-opacity:.8;
+	opacity:.80;
+	filter:alpha(opacity=80);
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index:9998;
+}
+
+
+.ui-easydialog-hidden{
+	display:none
+}

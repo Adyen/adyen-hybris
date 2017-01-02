@@ -1,0 +1,494 @@
+#	ImpEx for Apparel UK Site CMS Content
+#
+$contentCatalog=apparel-ukContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$productCV=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$siteResource=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/contentCatalogs/$contentCatalog
+$jarResourceCms=jar:com.adyen.initialdata.constants.AdyenInitialDataConstants&/adyeninitialdata/import/sampledata/cockpits/cmscockpit
+
+# CMS Site Settings
+UPDATE CMSSite;uid[unique=true];defaultPreviewCategory(code, $productCV);defaultPreviewProduct(code, $productCV)
+;apparel-uk;caps;300441142
+
+# Site Logo Component
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;urlLink
+;;MobileSiteLogoComponent;MobileSite Logo Component;MobileSiteLogoComponent;"/"
+
+# CMS Link Components #
+INSERT_UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];name;url;&linkRef;&componentRef;category(code, $productCV);target(code)[default='sameWindow'];styleAttributes
+;;MobileAccountLink;Account Link;/my-account;MobileAccountLink;MobileAccountLink;;;;
+;;MobileStoresLink;Store Finder;/store-finder;MobileStoresLink;MobileStoresLink;;;;
+;;MobileConnectFooterLink;Connect Footer Link;javascript:void(0);MobileConnectFooterLink;MobileConnectFooterLink;;;id="connect-button" data-icon="custom ui-icon-custom-connect";
+;;MobileCartFooterLink;Cart Footer Link;/cart;MobileCartFooterLink;MobileCartFooterLink;;;data-icon="custom ui-icon-custom-cart" data-transition="slidedown";
+;;MobileHomeFooterLink;Home Footer Link;/;MobileHomeFooterLink;MobileHomeFooterLink;;;data-icon="custom ui-icon-custom-home" data-transition="slide";
+;;MobileStoreFooterLink;Store Footer Link;/store-finder;MobileStoreFooterLink;MobileStoreFooterLink;;;data-icon="custom ui-icon-custom-stores" data-transition="slidedown";
+
+# CMS Mini Cart Component #
+INSERT_UPDATE MiniCartComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;totalDisplay(code);shownProductCount
+;;MobileMiniCart;Mini Cart;MobileMiniCart;SUBTOTAL;3
+
+
+# CMS Navigation Nodes #
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;children(uid,$contentCV)[mode=append]
+;root;;root;;
+
+# CMS Navigation Nodes #
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;parent(uid, $contentCV);links(uid, $contentCV);&nodeRef;;
+;MobileAccountNavNode;;Account;MobileApparelUKNavNode;MobileAccountLink,MobileStoresLink;MobileAccountNavNode;;
+;MobileFollowUsNavNode;;Follow Us;MobileApparelUKNavNode;LinkedInLink,FacebookLink,TwitterLink,FAQLink;MobileFollowUsNavNode;;
+;MobileFooterNavNode;;MobileFooter;MobileApparelUKNavNode;MobileHomeFooterLink,MobileStoreFooterLink,MobileCartFooterLink,MobileConnectFooterLink;MobileFooterNavNode;;
+
+# CMS Navigation Nodes #
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;parent(uid, $contentCV);links(uid, $contentCV);&nodeRef;;
+;MobileAcceleratorNavNode;;Accelerator Pages;MobileApparelUKNavNode;AboutAcceleratorLink,DocumentationLink;MobileAcceleratorNavNode;;
+;MobileAllBrandsNavNode;;Brand Links;MobileBrandsNavNode;;MobileAllBrandsNavNode;;
+;MobileAllCategoriesNavNode;;Category Links;MobileCategoriesNavNode;ClothesLink,OthersLink,CapsLink,SkiGearLink,SunglassesLink,ShoesLink,GogglesLink,ShirtsLink,HelmetLink,ToolsLink,GuidesLink,BackpacksLink;MobileAllCategoriesNavNode;;
+;MobileApparelUKNavNode;;Apparel UK Site;MobileSiteRootNode;HomepageNavLink;ApparelUKNavNode;;
+;MobileBackpacksBrandsNavNode;;Backpacks Brand Links;BackpacksNavNode;DakineBackpacksLink;MobileBackpacksBrandsNavNode;;
+;MobileBackpacksNavNode;;Backpacks Category;MobileApparelUKNavNode;;MobileBackpacksNavNode;;
+;MobileBrandsNavNode;;All Brands;MobileApparelUKNavNode;;MobileBrandsNavNode;;
+;MobileCapsNavNode;;Caps Category;MobileClothesCategoriesNavNode;;MobileCapsNavNode;;
+;MobileCategoriesNavNode;;All Categories;MobileApparelUKNavNode;;MobileCategoriesNavNode;;
+;MobileClothesCategoriesNavNode;;Clothes Category Links;ClothesNavNode;CapsLink,HelmetLink,ShirtsLink,ShoesLink,SunglassesLink;MobileClothesCategoriesNavNode;;
+;MobileClothesNavNode;;Clothes Category;MobileApparelUKNavNode;;MobileClothesNavNode;;
+;MobileGogglesNavNode;;Goggles Category;MobileSkiGearCategoriesNavNode;;MobileGogglesNavNode;;
+;MobileGuidesNavNode;;Guides Category;MobileApparelUKNavNode;;MobileGuidesNavNode;;
+;MobileHelmetNavNode;;Helmet Category;MobileClothesCategoriesNavNode;;MobileHelmetNavNode;;
+;MobileHybrisNavNode;;Hybris Pages;MobileApparelUKNavNode;AboutHybrisLink,ContactUsLink;MobileHybrisNavNode;;
+;MobileOthersNavNode;;Others Category;MobileApparelUKNavNode;;MobileOthersNavNode;;
+;MobileShirtsBrandsNavNode;;Shirts Brand Links;MobileShirtsNavNode;PlayboardShirtsLink,DaineseShirtsLink;MobileShirtsBrandsNavNode;;
+;MobileShirtsNavNode;;Shirts Category;MobileClothesCategoriesNavNode;;MobileShirtsNavNode;;
+;MobileShoesBrandsNavNode;;Shoes Brand Links;MobileShoesNavNode;VansShoesLink,F2-FTWOShoesLink;MobileShoesBrandsNavNode;;
+;MobileShoesNavNode;;Shoes Category;MobileClothesCategoriesNavNode;;MobileShoesNavNode;;
+;MobileSiteRootNode;;MobileSiteRootNode;root;;MobileSiteRootNode;;
+;MobileSkiGearCategoriesNavNode;;Ski Gear Category Links;MobileSkiGearNavNode;GogglesLink,ToolsLink;MobileSkiGearCategoriesNavNode;;
+;MobileSkiGearNavNode;;Ski Gear Category;MobileApparelUKNavNode;;MobileSkiGearNavNode;;
+;MobileSunglassesBrandsNavNode;;Sunglasses Brand Links;MobileSunglassesNavNode;VonZipperSunglassesLink,FoxSunglassesLink,RoxySunglassesLink,AnonSunglassesLink,QuiksilverSunglassesLink;MobileSunglassesBrandsNavNode;;
+;MobileSunglassesNavNode;;Sunglasses Category;MobileClothesCategoriesNavNode;;MobileSunglassesNavNode;;
+;MobileToolsNavNode;;Tools Category;MobileSkiGearCategoriesNavNode;;MobileToolsNavNode;;
+
+# All Brands CMS Navigation nodes
+UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];links(uid,$contentCV);
+;MobileAllBrandsNavNode;;667Link,686Link,69SlamLink,adidasOriginalsLink,AlMerrickLink,AlienWorkshopLink,AnalogLink,AnonLink,ArmadaLink,BenchLink,BrandsBrowseAllLink
+
+# Map CMS Navigation nodes with child menu nodes
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;parent(uid, $contentCV);children(uid,$contentCV);links(uid, $contentCV)
+;MobileStreetwearNavigationNode;;Streetwear Menu;MobileApparelUKNavNode;MobileStreetwearMenNavNodeMenu,MobileStreetwearWomenNavNodeMenu,MobileStreetwearYouthNavNodeMenu;;
+;MobileSnowNavigationNode;;Snow Menu;MobileApparelUKNavNode;MobileSnowwearMenNavNodeMenu,MobileSnowwearWomenNavNodeMenu,MobileSnowwearYouthNavNodeMenu,MobileSnowKitNavNodeMenu;;
+;MobileSurfNavigationNode;;Surf Menu;MobileApparelUKNavNode;MobileSurfTShirtNavNodeMenu,MobileSurfSandalsNavNodeMenu,MobileSurfTShadesNavNodeMenu,MobileSurfBoardsNavNodeMenu;;
+;MobileAccessoriesNavigationNode;;Accessories Menu;MobileApparelUKNavNode;MobileAccessoriesMenNavNodeMenu,MobileAccessoriesWomenNavNodeMenu;;
+;MobileYouthNavigationNode;;Youth Menu;MobileApparelUKNavNode;MobileYouthTShirtNavNode,MobileYouthBoardshortsNavNode;;
+
+# Create child menu nav nodes and map with links
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;parent(uid, $contentCV);links(uid, $contentCV)
+;MobileStreetwearMenNavNodeMenu;;Mobile Streetwear Men Nav Menu;MobileStreetwearNavigationNode;StreetwearMenBagsLink,StreetwearMensBeltsLink,StreetwearMenShortsLink,StreetwearMenTShirtsLink
+;MobileStreetwearWomenNavNodeMenu;;Mobile Streetwear Women Nav Menu;MobileStreetwearNavigationNode;StreetwearWomenBagsLink,StreetwearWomenPantsLink,StreetwearWomenTShirtsLink,StreetwearWomenTopsLink,StreetwearWomenSkirtsLink
+;MobileStreetwearYouthNavNodeMenu;;Mobile Streetwear Youth Nav Menu;MobileStreetwearNavigationNode;StreetwearYouthBoardshortsLink,StreetwearYouthTShirtsLink
+;MobileSnowwearMenNavNodeMenu;;Mobile Snowwear Men Nav Menu;MobileSnowNavigationNode;SnowwearMensJacketsLink,SnowwearMenPantsLink
+;MobileSnowwearWomenNavNodeMenu;;Mobile Snowwear Women Nav Menu;MobileSnowNavigationNode;SnowwearWomensJacketsLink,SnowwearWomensPantsLink
+;MobileSnowwearYouthNavNodeMenu;;Mobile Snowwear Youth Nav Menu;MobileSnowNavigationNode;SnowwearYouthJacketsLink,SnowwearYouthPantsLink
+;MobileSnowKitNavNodeMenu;;Mobile Snow Kit Nav Menu;MobileSnowNavigationNode;SnowboardsLink,BindingsLink,HelmetsLink,ToolsLink
+;MobileSurfTShirtNavNodeMenu;;Mobile Surf T-Shirt Nav Menu;MobileSurfNavigationNode;TShirtsAlienWorkshopLink,TShirtsBillabongLink,TShirtsBurtonLink,TShirtsBlueTomatoLink,TShirtsCarharttLink,TShirtsDCLink,TShirtsElementLink,TShirtsHorsefeathersLink,TShirtsQuiksilverLink,TShirtsRoxyLink,TShirtsVolcomLink,TShirtsZimtsternLink,TShirtsBrowseAllLink
+;MobileSurfSandalsNavNodeMenu;;Mobile Surf Sandals Nav Menu;MobileSurfNavigationNode;SandalsReefLink,SandalsRoxyLink,SandalsVolcomLink,BrowseAllSandalsLink
+;MobileSurfTShadesNavNodeMenu;;Mobile Surf Shades Nav Menu;MobileSurfNavigationNode;ShadesAnonLink,ShadesFoxLink,ShadesRoxyLink,ShadesQuiksilverLink,ShadesVonZipperLink,ShadesBrowseAllLink
+;MobileSurfBoardsNavNodeMenu;;Mobile Surf Boards Nav Menu;MobileSurfNavigationNode;BoardsAlMerrickLink,BoardsSkimOneLink,BoardsSouthpointLink,BoardsSurftechLink,BoardsBrowseAllLink
+;MobileAccessoriesMenNavNodeMenu;;Mobile Accessories Nav Men Menu;MobileAccessoriesNavigationNode;AccessoriesBandanasLink,AccessoriesBeaniesLink,AccessoriesBeltsLink,AccessoriesCapsLink,AccessoriesGlovesLink,AccessoriesSocksLink,AccessoriesWatchesLink,BrowseAllAccessoriesLink;;
+;MobileAccessoriesWomenNavNodeMenu;;Mobile Accessories Women Nav Menu;MobileAccessoriesNavigationNode;AccessoriesWomenBagsLink,AccessoriesWomenBeltsLink,AccessoriesWomenWatchesLink,BrowseAllAccessoriesWomenLink;;
+;MobileYouthTShirtNavNode;;Mobile Youth TShirt Brand Nav Menu;MobileYouthNavigationNode;StreetwearYouthTShirtsBillabongLink,StreetwearYouthTShirtsBlueTomatoLink,StreetwearYouthTShirtsBurtonLink,StreetwearYouthTShirtsDCLink,StreetwearYouthTShirtsQuiksilverLink,BrowseAllStreetwearYouthTShirtsLink;;
+;MobileYouthBoardshortsNavNode;;Mobile Youth Board Brand Nav Menu;MobileYouthNavigationNode;StreetwearYouthBoardshortsBillabongLink,StreetwearYouthBoardshorts69SlamLink,StreetwearYouthBoardshortsQuiksilverLink,StreetwearYouthBoardshortsVolcomLink,BrowseAllStreetwearYouthBoardshortsLink;;
+
+# Navigation Bar Component
+INSERT_UPDATE NavigationBarComponent;$contentCV[unique=true];uid[unique=true];name;wrapAfter;link(uid, $contentCV);styleClass;&componentRef;navigationNode(&nodeRef)
+;;MobileBrandsBarComponent;Mobile Brands Bar Component;10;AllBrandsLink;;MobileBrandsBarComponent;MobileBrandsNavNode
+;;MobileSpecialOffersBarComponent;Mobile Special Offers Bar Component;10;SpecialOffersLink;special_offer;MobileSpecialOffersBarComponent
+
+# Map parent navigation node with navigation bar component
+INSERT_UPDATE NavigationBarComponent;$contentCV[unique=true];uid[unique=true];name;wrapAfter;link(uid, $contentCV);styleClass;navigationNode(uid,$contentCV)
+;;MobileStreetwearBarComponent;Streetwear Menu Bar Item;10;StreetwearLink;;MobileStreetwearNavigationNode
+;;MobileSnowBarComponent;Snow Menu Bar Item;10;SnowLink;;MobileSnowNavigationNode
+;;MobileSurfBarComponent;Surf Menu Bar Item;10;SurfLink;;MobileSurfNavigationNode
+;;MobileAccessoriesBarComponent;Accessories Menu Bar Item;10;AccessoriesLink;;MobileAccessoriesNavigationNode
+;;MobileYouthBarComponent;Youth Menu Bar Item;10;YouthLink;;MobileYouthNavigationNode
+
+# Content Slots
+UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];cmsComponents(uid, $contentCV)
+;;MobileUpSellingSlot;MobileOthers
+;;MobileCrossSellingSlot;MobileSimilar
+;;MobileSuggestionSlot;MobileCartSuggestions
+;;MobileFooterSlot;MobileFooterComponent
+;;MobileNavContentSlot;MobileNavContent
+;;MobileNavigationBarSlot;MobileBrandsBarComponent,MobileStreetwearBarComponent,MobileSnowBarComponent,MobileSurfBarComponent,MobileAccessoriesBarComponent,MobileYouthBarComponent,MobileSpecialOffersBarComponent
+;;MobileNavigationMenuBarSlot;MobileBrandsBarComponent,MobileStreetwearBarComponent,MobileSnowBarComponent,MobileSurfBarComponent,MobileAccessoriesBarComponent,MobileYouthBarComponent,MobileSpecialOffersBarComponent
+;;MobileSiteLogoSlot;MobileSiteLogoComponent
+;;MobileSearchBoxSlot;MobileSearchBox
+;;MobileTabsSlot;MobileTabPanelContainer
+
+# Preview Image for use in the CMS Cockpit for special ContentPages
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];folder(qualifier)[default='images'];;
+;;MobileaccountPagePreview;text/png;AccountPage.png;$jarResourceCms/preview-images/apparel_uk/MobileAccountPage.png;;;
+;;MobileaddEditAddressPagePreview;text/png;AddEditAddressPage.png;$jarResourceCms/preview-images/apparel_uk/MobileAddEditAddressPage.png;;;
+;;MobileaddressBookPagePreview;text/png;AddressBook.png;$jarResourceCms/preview-images/apparel_uk/MobileAddressBookPage.png;;;
+;;MobilecartPagePreview;text/png;CartPage.png;$jarResourceCms/preview-images/apparel_uk/MobileCartPage.png;;;
+;;MobilecheckoutLoginPagePreview;text/png;CheckoutLoginPage.png;$jarResourceCms/preview-images/apparel_uk/MobileCheckoutLoginPage.png;;;
+;;MobiledefaultCategoryPagePreview;text/png;DefaultCategoryPage.png;$jarResourceCms/preview-images/apparel_uk/MobileDefaultCategoryPage.png;;;
+;;MobilefrequentlyAskedQuestionsPage;text/png;FrequentlyAskedQuestionsPage.png;$jarResourceCms/preview-images/apparel_uk/MobileFrequentlyAskedQuestionsPage.png;;;
+;;MobilehomepagePreview;text/png;Homepage.png;$jarResourceCms/preview-images/apparel_uk/MobileHomepage.png;;;
+;;MobileloginPagePreview;text/png;LoginPage.png;$jarResourceCms/preview-images/apparel_uk/MobileLoginPage.png;;;
+;;MobilemultiStepCheckoutSummaryPagePreview;text/png;MultiStepCheckoutSummaryPage.png;$jarResourceCms/preview-images/apparel_uk/MobileMultiStepCheckoutSummaryPage.png;;;
+;;MobilenotFoundPagePreview;text/png;NotFoundPage.png;$jarResourceCms/preview-images/apparel_uk/MobileNotFoundPage.png;;;
+;;MobileorderConfirmationPagePreview;text/png;OrderConfirmationPage.png;$jarResourceCms/preview-images/apparel_uk/MobileOrderConfirmationPage.png;;;
+;;MobileorderDetailsPagePreview;text/png;OrderDetailsPage.png;$jarResourceCms/preview-images/apparel_uk/MobileOrderDetailsPage.png;;;
+;;MobileorderHistoryPagePreview;text/png;OrderHistoryPage.png;$jarResourceCms/preview-images/apparel_uk/MobileOrderHistoryPage.png;;;
+;;MobilepaymentDetailsPagePreview;text/png;PaymentDetailsPage.png;$jarResourceCms/preview-images/apparel_uk/MobilePaymentDetailsPage.png;;;
+;;MobileproductDetailsPagePreview;text/png;ProductDetailsPage.png;$jarResourceCms/preview-images/apparel_uk/MobileProductDetailsPage.png;;;
+;;MobileproductGridPagePreview;text/png;ProductGridPage.png;$jarResourceCms/preview-images/apparel_uk/MobileProductGridPage.png;;;
+;;MobileproductListPagePreview;text/png;ProductListPage.png;$jarResourceCms/preview-images/apparel_uk/MobileProductGridPage.png;;;
+;;MobileprofilePagePreview;text/png;ProfilePage.png;$jarResourceCms/preview-images/apparel_uk/MobileProfilePage.png;;;
+;;MobilesearchResultsEmptyPagePreview;text/png;SearchResultsEmptyPage.png;$jarResourceCms/preview-images/apparel_uk/MobileSearchResultsEmptyPage.png;;;
+;;MobilesearchResultsPagePreview;text/png;SearchResultsPage.png;$jarResourceCms/preview-images/apparel_uk/MobileSearchResultsPage.png;;;
+;;MobilestorefinderPagePreview;text/png;StoreFinderPage.png;$jarResourceCms/preview-images/apparel_uk/MobileStoreFinderPage.png;;;
+;;MobiletermsAndConditionsPage;text/png;MobileTermsAndConditionsPage.png;$jarResourceCms/preview-images/apparel_uk/MobileTermsAndConditionsPage.png;;;
+;;MobileupdateForgottenPasswordPagePreview;text/png;UpdateForgottenPasswordPage.png;$jarResourceCms/preview-images/apparel_uk/MobileUpdateForgottenPasswordPage.png;;;
+
+# Site-wide Homepage
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-homepage;MobilehomepagePreview;;;;;
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-account;MobileaccountPagePreview;;;;;
+;;mobile-add-edit-address;MobileaddEditAddressPagePreview;;;;;
+;;mobile-address-book;MobileaddressBookPagePreview;;;;;
+;;mobile-cartPage;MobilecartPagePreview;;;;;
+;;mobile-checkout-login;MobilecheckoutLoginPagePreview;;;;;
+;;mobile-login;MobileloginPagePreview;;;;;
+;;mobile-multiStepCheckoutSummaryPage;MobilemultiStepCheckoutSummaryPagePreview;;;;;
+;;mobile-notFound;MobilenotFoundPagePreview;;;;;
+;;mobile-order;MobileorderDetailsPagePreview;;;;;
+;;mobile-orderConfirmationPage;MobileorderConfirmationPagePreview;;;;;
+;;mobile-orders;MobileorderHistoryPagePreview;;;;;
+;;mobile-payment-details;MobilepaymentDetailsPagePreview;;;;;
+;;mobile-profile;MobileprofilePagePreview;;;;;
+;;mobile-search;MobilesearchResultsPagePreview;;;;;
+;;mobile-searchEmpty;MobilesearchResultsEmptyPagePreview;;;;;
+;;mobile-storefinderPage;MobilestorefinderPagePreview;;;;;
+;;mobile-updatePassword;MobileupdateForgottenPasswordPagePreview;;;;;
+
+
+
+# CMS tabs components #
+INSERT_UPDATE CMSTabParagraphComponent;$contentCV[unique=true];uid[unique=true];name;visible;&componentRef;;;
+;;MobiledeliveryTab;Mobile Delivery tab;true;MobiledeliveryTab;;;
+
+INSERT_UPDATE CMSTabParagraphContainer;$contentCV[unique=true];uid[unique=true];name;visible;simpleCMSComponents(uid, $contentCV);&componentRef;;
+;;MobileTabPanelContainer;Tab container;true;MobiledeliveryTab;MobileTabPanelContainer;;
+
+# CMS Footer Component
+INSERT_UPDATE FooterComponent;$contentCV[unique=true];uid[unique=true];wrapAfter;navigationNodes(&nodeRef);&componentRef;;;
+;;MobileFooterComponent;2;MobileFooterNavNode;MobileFooterComponent;;;
+;;MobileNavContent;2;MobileFollowUsNavNode;MobileNavContent;;;
+
+# CMS Paragraph Component (Contact information)
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobileContactInfo;Contact information;MobileContactInfo;;;;
+
+# CMS SubCategoryList Component
+INSERT_UPDATE SubCategoryListComponent;$contentCV[unique=true];uid[unique=true];&componentRef
+;;MobileSubCategoryListComponent;SubCategoryListComponent
+
+# Generic Banners
+
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;urlLink;;;
+;;MobileFacebookOffersBanner;Facebook Offers Banner;MobileFacebookOffersBanner;http://www.facebook.com/hybrissoftware;;;
+;;MobileMobileAppBanner;Mobile App Banner;MobileMobileAppBanner;http://www.hybris.com/hybris/en/e-commerce-software/mobile-commerce-software.html;;;
+
+# CMS ProductReferences Components
+INSERT_UPDATE ProductReferencesComponent;$contentCV[unique=true];uid[unique=true];name;productReferenceTypes(code);maximumNumberProducts;&componentRef;;
+;;MobileCrossSelling;Mobile Cross Selling;CROSSELLING;5;MobileCrossSelling;;
+;;MobileOthers;Others;OTHERS;5;MobileOthers;;
+;;MobileSimilar;Similar;SIMILAR;5;MobileSimilar;;
+;;Mobileaccessories;Accessories;ACCESSORIES;5;Mobileaccessories;;
+
+# CMS CartSuggestion Components
+INSERT_UPDATE CartSuggestionComponent;$contentCV[unique=true];uid[unique=true];name;productReferenceTypes(code);maximumNumberProducts;filterPurchased;&componentRef
+;;MobileCartSuggestions;Mobile Cart Suggestions;CROSSELLING,DIFF_ORDERUNIT,CONSISTS_OF,FOLLOWUP,OTHERS;20;true;MobileCartSuggestions
+
+# CMS SearchBox Components
+INSERT_UPDATE SearchBoxComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef
+;;MobileSearchBox;Mobile Search Box;MobileSearchBox
+
+# Simple Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-faq;MobilefrequentlyAskedQuestionsPage;;;;;
+
+#UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-termsAndConditions;MobiletermsAndConditionsPage;;;;;
+
+# Product Details Page
+UPDATE ProductPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-productDetails;MobileproductDetailsPagePreview;;;;;
+
+# Category Pages
+UPDATE CategoryPage;$contentCV[unique=true];uid[unique=true];previewImage(code, $contentCV);;;;;
+;;mobile-category;MobiledefaultCategoryPagePreview;;;;;
+;;mobile-productGrid;MobileproductGridPagePreview;;;;;
+;;mobile-productList;MobileproductListPagePreview;;;;;
+
+# Apparel UK Homepage #
+
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;urlLink;;;
+;;MobileSunglassesBrandsBanner;Mobile Sunglasses Banner;MobileSunglassesBrandsBanner;/Categories/Clothes/Sunglasses/c/sunglasses;;;
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];;;;;;
+;;MobileSunglassesBrandsBanner;;;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileSection1Slot-ApparelUKHomepage;Mobile Section1 Slot for ApparelUKHomepage;true;MobileSunglassesBrandsBanner;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-homepage'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection1-ApparelUKHomepageSection1MobileSection1Slot-ApparelUKHomepage;Section1;;MobileSection1Slot-ApparelUKHomepage;;;
+
+
+# Mobile Apparel Brands Landing Page #
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;urlLink;;;
+;;MobileAllBrandsBanner;Mobile All Brands Banner;MobileAllBrandsBanner;/Brands/c/brands;;;
+
+INSERT_UPDATE CMSCategoryRestriction;$contentCV[unique=true];uid[unique=true];name;categories(code, $productCV)
+;;MobileBrands-LandingPageRestriction;Restriction for MobileBrands;brands
+
+INSERT_UPDATE CategoryPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved'];previewImage(code, $contentCV);restrictions(uid,$contentCV)[default='MobileExperienceRestriction'];onlyOneRestrictionMustApply[default='false']
+;;mobile-BrandsCategoryPage;Mobile Brands Category Page;MobileCategoryGridPageTemplate;false;;MobiledefaultCategoryPagePreview;MobileExperienceRestriction,MobileBrands-LandingPageRestriction
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileSection2Slot-BrandsCategoryPage;Section2 Slot for Mobile Brands Page;true;MobileAllBrandsBanner;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-BrandsCategoryPage'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection2-BrandsCategoryPage;Section2;;MobileSection2Slot-BrandsCategoryPage;;;
+
+
+# Apparel Search Results Page #
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobileBuyOnlineSimpleBannerComponent;Buy Online Simple Banner Component;MobileBuyOnlineSimpleBannerComponent;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileSection2Slot-search;Mobile Section2 Slot for Search Page;true;MobileBuyOnlineSimpleBannerComponent;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-search'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection2-search;Section2;;MobileSection2Slot-search;;;
+
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobileNoSearchResultsParagraphComponent;No Search Results Paragraph Component;MobileNoSearchResultsParagraphComponent;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileMiddleContent-searchEmpty;Mobile Middle Slot for searchEmpty;true;MobileNoSearchResultsParagraphComponent;;;
+;;MobileSideContent-searchEmpty;Mobile Narrow Slot for searchEmpty;true;;;;
+;;MobileTopContent-searchEmpty;Mobile Top Slot for searchEmpty;true;;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-searchEmpty'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileMiddle-searchEmpty;MiddleContent;;MobileMiddleContent-searchEmpty;;;
+;;MobileSide-searchEmpty;SideContent;;MobileSideContent-searchEmpty;;;
+;;MobileTop-searchEmpty;TopContent;;MobileTopContent-searchEmpty;;;
+
+# Apparel Cart Page #
+
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobileFreeDeliverySimpleBannerComponent;Free Delivery Simple Banner Component;MobileFreeDeliverySimpleBannerComponent;;;;
+;;MobileHelpWithCheckoutSimpleBannerComponent;Help With Checkout Simple Banner Component;MobileHelpWithCheckoutSimpleBannerComponent;;;;
+
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobileEmptyCartParagraphComponent;Empty Cart Paragraph Component;MobileEmptyCartParagraphComponent;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileMiddleContent-cartPage;Mobile Middle Slot for Cart Page;true;MobileEmptyCartParagraphComponent
+;;MobileSideContent-cartPage;Mobile Side Slot for Cart Page;true;MobileHelpWithCheckoutSimpleBannerComponent
+;;MobileTopContent-cartPage;Mobile Top Content Slot for Cart Page;true;MobileFreeDeliverySimpleBannerComponent
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-cartPage'];contentSlot(uid,$contentCV)[unique=true]
+;;MobileMiddle-cartPage;MiddleContent;;MobileMiddleContent-cartPage
+;;MobileSide-cartPage;SideContent;;MobileSideContent-cartPage
+;;MobileTop-cartPage;TopContent;;MobileTopContent-cartPage
+
+# Apparel Checkout Summary / Proceed to Checkout Page #
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileSideContent-checkoutSummaryPage;Mobile Side Slot for checkoutSummaryPage;true;MobileHelpWithCheckoutSimpleBannerComponent;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-multiStepCheckoutSummaryPage'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSide-checkoutSummaryPage;SideContent;;MobileSideContent-checkoutSummaryPage;;;
+
+
+# Apparel UK FAQ Page #
+
+# CMS Paragraph Component (Contact information)
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobilefaqMenuParagraph;FAQ Paragraph;MobileFAQMenuParagraph;;;;
+;;MobilefaqTextParagraph;Mobile FAQ Paragraph;MobileFAQTextParagraph;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileSection2ASlot-FAQ;Mobile Section2A Slot for FAQ Page;true;MobileFAQMenuParagraph;;;
+;;MobileSection2BSlot-FAQ;Mobile Section2B Slot for FAQ Page;true;MobileFAQTextParagraph;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-faq'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection2A-FAQ;Section2A;;MobileSection2ASlot-FAQ;;;
+;;MobileSection2B-FAQ;Section2B;;MobileSection2BSlot-FAQ;;;
+
+# Apparel UK Terms and Conditions Page #
+
+# CMS Paragraph Component (Contact information)
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;
+;;MobiletermsAndConditionsMenuParagraph;Mobile Terms and Conditions Paragraph;MobileTermsAndConditionsMenuParagraph;;;;
+;;MobiletermsAndConditionsTextParagraph;Mobile Terms and Conditions Paragraph;MobileTermsAndConditionsTextParagraph;;;;
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef);;;
+;;MobileSection2ASlot-TermsAndConditions;Mobile Section2A Slot for Terms and Conditions Page;true;MobileTermsAndConditionsMenuParagraph;;;
+;;MobileSection2BSlot-TermsAndConditions;Mobile Section2B Slot for Terms and Conditions Page;true;MobileTermsAndConditionsTextParagraph;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-termsAndConditions'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection2A-TermsAndConditions;Section2A;;MobileSection2ASlot-TermsAndConditions;;;
+;;MobileSection2B-TermsAndConditions;Section2B;;MobileSection2BSlot-TermsAndConditions;;;
+
+
+#############################################
+#          Category Landing Pages           #
+#############################################
+
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];folder(qualifier)[default='images']
+;;Mobile-SnowCategoryPagePreviewUK;text/png;Mobile-SnowCategoryPage.png;$jarResourceCms/preview-images/apparel_uk/Mobile-SnowCategoryPage.png
+;;Mobile-StreetCategoryPagePreviewUK;text/png;Mobile-StreetCategoryPage.png;$jarResourceCms/preview-images/apparel_uk/Mobile-StreetCategoryPage.png
+;;Mobile-SurfCategoryPagePreviewUK;text/png;Mobile-SurfCategoryPage.png;$jarResourceCms/preview-images/apparel_uk/Mobile-SurfCategoryPage.png
+
+INSERT_UPDATE CategoryPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved'];previewImage(code, $contentCV);restrictions(uid,$contentCV)[default='MobileExperienceRestriction'];onlyOneRestrictionMustApply[default='false']
+;;mobile-SnowCategoryPage;Mobile Snow Category Page;MobileProductGridDynamicPageTemplate;false;;Mobile-SnowCategoryPagePreviewUK
+;;mobile-StreetCategoryPage;Mobile Street Category Page;MobileProductGridDynamicPageTemplate;false;;Mobile-StreetCategoryPagePreviewUK
+;;mobile-SurfCategoryPage;Mobile Surf Category Page;MobileProductGridDynamicPageTemplate;false;;Mobile-SurfCategoryPagePreviewUK
+
+INSERT_UPDATE CMSCategoryRestriction;$contentCV[unique=true];uid[unique=true];name;categories(code, $productCV);pages(uid, $contentCV)
+;;MobileSnow-LandingPageRestriction;Restriction for Mobile Snow Category;snow;mobile-SnowCategoryPage
+;;MobileStreet-LandingPageRestriction;Restriction for Street Category;streetwear;mobile-StreetCategoryPage
+;;MobileSurf-LandingPageRestriction;Restriction for Surf Category;surf;mobile-SurfCategoryPage
+
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];&componentRef;urlLink
+;;mobile-landingpage-snow-GBP_en_a;mobile-landingpage-snow-GBP_en_a;/Snowwear-men/Snow-Jackets/Kampai-Jacket/p/97602_black+black+dark_copper
+;;mobile-landingpage-snow-GBP_en_b;mobile-landingpage-snow-GBP_en_b;/Freeski/Ski-Boots/Kyrpton-Rampage-11-12/p/104905_citron+blue
+;;mobile-landingpage-street-GBP_en_a;mobile-landingpage-street-GBP_en_a;/Bags%2BBoardbags/Bags/Seizure-Satchel/p/300613490
+;;mobile-landingpage-street-GBP_en_b;mobile-landingpage-street-GBP_en_b;/Accessories/Belts/Incision-Leather-Belt/p/300608307
+;;mobile-landingpage-surf-GBP_en_a;mobile-landingpage-surf-GBP_en_a;/Streetwear-men/T-Shirts-men/Pennant-SS/p/300417310
+;;mobile-landingpage-surf-GBP_en_b;mobile-landingpage-surf-GBP_en_b;/Surf/Long-%2B-Funboards/SUP-9-0-Bonga-Perkins/p/300562200
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileSection2Slot-SnowCategoryPage;Mobile Category Image Banners Slot for Mobile Snow Category Page;true;mobile-landingpage-snow-GBP_en_a,mobile-landingpage-snow-GBP_en_b
+;;MobileSection2Slot-StreetCategoryPage;Mobile Category Image Banners Slot for Mobile Street Category Page;true;mobile-landingpage-street-GBP_en_a,mobile-landingpage-street-GBP_en_b
+;;MobileSection2Slot-SurfCategoryPage;Mobile Category Image Banners Slot for Mobile Surf Category Page;true;mobile-landingpage-surf-GBP_en_a,mobile-landingpage-surf-GBP_en_b
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-SnowCategoryPage'];contentSlot(uid,$contentCV)[unique=true]
+;;MobileSection2-MobileSnowCategoryPage;Section2;;MobileSection2Slot-SnowCategoryPage
+;;MobileSection2-StreetCategoryPage;Section2;;MobileSection2Slot-StreetCategoryPage
+;;MobileSection2-SurfCategoryPage;Section2;;MobileSection2Slot-SurfCategoryPage
+
+# SubCategoryList Component for Product List Page #
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileSection3Slot-productList;Section3 slot for Product List Page;true;SubCategoryListComponent
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-productList'];contentSlot(uid,$contentCV)[unique=true]
+;;MobileSection3-productList;Section3;;MobileSection3Slot-productList
+
+
+# SubCategoryList Component for Product Grid Page #
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileSection3Slot-productGrid;Section3 slot for Product Grid Page;true;SubCategoryListComponent
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-productGrid'];contentSlot(uid,$contentCV)[unique=true]
+;;MobileSection3-productGrid;Section3;;MobileSection3Slot-productGrid
+
+# SubCategoryList Component for Product Grid Dynamic Page #
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;MobileSection3Slot-productGridDynamic;Section3 slot for Product Grid Dynamic Page;true;SubCategoryListComponent
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-productGridDynamic'];contentSlot(uid,$contentCV)[unique=true]
+;;MobileSection3-productGridDynamic;Section3;;MobileSection3Slot-productGridDynamic
+
+##################################################
+# Dynamic banner component for Product Grid Page #
+##################################################
+INSERT_UPDATE DynamicBannerComponent;$contentCV[unique=true];uid[unique=true];name;mediaCodePattern
+;;MobileDynamicBrandBanner;Mobile Dynamic brand banner component;mobile-apparel-brand-banner-{VARIABLE}
+
+# ContentSlot
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(uid,$contentCV)
+;;MobileSection2Slot-ProductGridDynamicPage;Section2 Slot for Mobile Brands Page;true;MobileDynamicBrandBanner;
+
+# ContentSlotForPage
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='mobile-productGridDynamic'];contentSlot(uid,$contentCV)[unique=true];;;
+;;MobileSection2-ProductGridDynamicPage;Section2;;MobileSection2Slot-ProductGridDynamicPage;;;
+
+# Brand banners
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];mime;realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];folder(qualifier)[default='images'];;
+;;mobile-apparel-category-banner;;mobile-apparel-category-banner.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-category-banner.jpg;;;
+;;mobile-apparel-brand-banner-69 Slam;;mobile-apparel-brand-banner_69slam.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_69slam.jpg;;;
+;;mobile-apparel-brand-banner-667;;mobile-apparel-brand-banner_667.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_667.jpg;;;
+;;mobile-apparel-brand-banner-686;;mobile-apparel-brand-banner_686.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_686.jpg;;;
+;;mobile-apparel-brand-banner-adidas;;mobile-apparel-brand-banner_adidas.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_adidas.jpg;;;
+;;mobile-apparel-brand-banner-Alien Workshop;;mobile-apparel-brand-banner_alienworkshop.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_alienworkshop.jpg;;;
+;;mobile-apparel-brand-banner-Al Merrick;;mobile-apparel-brand-banner_almerrick.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_almerrick.jpg;;;
+;;mobile-apparel-brand-banner-Analog;;mobile-apparel-brand-banner_analog.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_analog.jpg;;;
+;;mobile-apparel-brand-banner-Anon;;mobile-apparel-brand-banner_anon.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_anon.jpg;;;
+;;mobile-apparel-brand-banner-Armada;;mobile-apparel-brand-banner_armada.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_armada.jpg;;;
+;;mobile-apparel-brand-banner-Bench;;mobile-apparel-brand-banner_bench.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_bench.jpg;;;
+;;mobile-apparel-brand-banner-Billabong;;mobile-apparel-brand-banner_billabong.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_billabong.jpg;;;
+;;mobile-apparel-brand-banner-Blue Tomato;;mobile-apparel-brand-banner_bluetomato.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_bluetomato.jpg;;;
+;;mobile-apparel-brand-banner-Burton;;mobile-apparel-brand-banner_burton.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_burton.jpg;;;
+;;mobile-apparel-brand-banner-Carhartt;;mobile-apparel-brand-banner_carhartt.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_carhartt.jpg;;;
+;;mobile-apparel-brand-banner-Dainese;;mobile-apparel-brand-banner_dainese.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_dainese.jpg;;;
+;;mobile-apparel-brand-banner-Dalbello;;mobile-apparel-brand-banner_dalbello.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_dalbello.jpg;;;
+;;mobile-apparel-brand-banner-DC;;mobile-apparel-brand-banner_dc.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_dc.jpg;;;
+;;mobile-apparel-brand-banner-droid;;mobile-apparel-brand-banner_droid.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_droid.jpg;;;
+;;mobile-apparel-brand-banner-Element;;mobile-apparel-brand-banner_element.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_element.jpg;;;
+;;mobile-apparel-brand-banner-Elm;;mobile-apparel-brand-banner_elm.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_elm.jpg;;;
+;;mobile-apparel-brand-banner-Femipleasure;;mobile-apparel-brand-banner_femipleasure.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_femipleasure.jpg;;;
+;;mobile-apparel-brand-banner-Foursquare;;mobile-apparel-brand-banner_foursquare.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_foursquare.jpg;;;
+;;mobile-apparel-brand-banner-Fox;;mobile-apparel-brand-banner_fox.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_fox.jpg;;;
+;;mobile-apparel-brand-banner-F2-FTWO;;mobile-apparel-brand-banner_ftwo.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_ftwo.jpg;;;
+;;mobile-apparel-brand-banner-Horsefeathers;;mobile-apparel-brand-banner_horsefeathers.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_horsefeathers.jpg;;;
+;;mobile-apparel-brand-banner-Hurley;;mobile-apparel-brand-banner_hurley.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_hurley.jpg;;;
+;;mobile-apparel-brand-banner-Landing;;mobile-apparel-brand-banner_landing.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_landing.jpg;;;
+;;mobile-apparel-brand-banner-Nike;;mobile-apparel-brand-banner_nike.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_nike.jpg;;;
+;;mobile-apparel-brand-banner-Nike 6.0;;mobile-apparel-brand-banner_nike6.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_nike6.jpg;;;
+;;mobile-apparel-brand-banner-Nixon;;mobile-apparel-brand-banner_nixon.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_nixon.jpg;;;
+;;mobile-apparel-brand-banner-Oakley;;mobile-apparel-brand-banner_oakley.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_oakley.jpg;;;
+;;mobile-apparel-brand-banner-Orage;;mobile-apparel-brand-banner_orage.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_orage.jpg;;;
+;;mobile-apparel-brand-banner-Playboard;;mobile-apparel-brand-banner_playboard.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_playboard.jpg;;;
+;;mobile-apparel-brand-banner-Pro Tec;;mobile-apparel-brand-banner_protec.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_protec.jpg;;;
+;;mobile-apparel-brand-banner-PYUA;;mobile-apparel-brand-banner_pyua.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_pyua.jpg;;;
+;;mobile-apparel-brand-banner-Quiksilver;;mobile-apparel-brand-banner_quiksilver.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_quiksilver.jpg;;;
+;;mobile-apparel-brand-banner-Red;;mobile-apparel-brand-banner_red.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_red.jpg;;;
+;;mobile-apparel-brand-banner-Reef;;mobile-apparel-brand-banner_reef.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_reef.jpg;;;
+;;mobile-apparel-brand-banner-Rip Curl;;mobile-apparel-brand-banner_ripcurl.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_ripcurl.jpg;;;
+;;mobile-apparel-brand-banner-Roxy;;mobile-apparel-brand-banner_roxy.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_roxy.jpg;;;
+;;mobile-apparel-brand-banner-Sessions;;mobile-apparel-brand-banner_sessions.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_sessions.jpg;;;
+;;mobile-apparel-brand-banner-Special Blend;;mobile-apparel-brand-banner_specialblend.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_specialblend.jpg;;;
+;;mobile-apparel-brand-banner-Toko;;mobile-apparel-brand-banner_toko.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_toko.jpg;;;
+;;mobile-apparel-brand-banner-Vans;;mobile-apparel-brand-banner_vans.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_vans.jpg;;;
+;;mobile-apparel-brand-banner-VIVO;;mobile-apparel-brand-banner_vivo.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_vivo.jpg;;;
+;;mobile-apparel-brand-banner-Volcom;;mobile-apparel-brand-banner_volcom.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_volcom.jpg;;;
+;;mobile-apparel-brand-banner-Von Zipper;;mobile-apparel-brand-banner_vonzipper.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_vonzipper.jpg;;;
+;;mobile-apparel-brand-banner-WeSC;;mobile-apparel-brand-banner_wesc.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_wesc.jpg;;;
+;;mobile-apparel-brand-banner-WLD;;mobile-apparel-brand-banner_wld.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_wld.jpg;;;
+;;mobile-apparel-brand-banner-Zimtstern;;mobile-apparel-brand-banner_zimtstern.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_zimtstern.jpg;;;
+;;mobile-apparel-brand-banner-Aesthetiker;;mobile-apparel-brand-banner_asthetiker.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_asthetiker.jpg;;;
+;;mobile-apparel-brand-banner-Dakine;;mobile-apparel-brand-banner_dakine.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_dakine.jpg;;;
+;;mobile-apparel-brand-banner-GoPro Cam;;mobile-apparel-brand-banner_gopro.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_gopro.jpg;;;
+;;mobile-apparel-brand-banner-Nikita;;mobile-apparel-brand-banner_nikita.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_nikita.jpg;;;
+;;mobile-apparel-brand-banner-Periplus AC+Ion Guides;;mobile-apparel-brand-banner_periplus.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_periplus.jpg;;;
+;;mobile-apparel-brand-banner-Ride;;mobile-apparel-brand-banner_ride.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_ride.jpg;;;
+;;mobile-apparel-brand-banner-Skim One;;mobile-apparel-brand-banner_skmone.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_skmone.jpg;;;
+;;mobile-apparel-brand-banner-Skullcandy;;mobile-apparel-brand-banner_skullcandy.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_skullcandy.jpg;;;
+;;mobile-apparel-brand-banner-Southpoint;;mobile-apparel-brand-banner_southpoint.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_southpoint.jpg;;;
+;;mobile-apparel-brand-banner-Spy;;mobile-apparel-brand-banner_spy.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_spy.jpg;;;
+;;mobile-apparel-brand-banner-Surftech;;mobile-apparel-brand-banner_surftech.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_surftech.jpg;;;
+;;mobile-apparel-brand-banner-adidas eyewear;;mobile-apparel-brand-banner_adidaseye.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_adidaseye.jpg;;;
+;;mobile-apparel-brand-banner-TSG;;mobile-apparel-brand-banner_tsg.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_tsg.jpg;;;
+;;mobile-apparel-brand-banner-adidas Originals;;mobile-apparel-brand-banner_adidas.jpg;$jarResourceCms/brand-images/apparel_uk/mobile/mobile-apparel-brand-banner_adidas.jpg;;;
+

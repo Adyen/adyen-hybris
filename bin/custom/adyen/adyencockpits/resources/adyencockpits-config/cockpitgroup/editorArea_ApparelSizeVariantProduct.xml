@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="editor.xsd">
+	
+	<group qualifier="General" visible="true" initially-opened="true">
+		<label key="cockpit.config.label.General" />
+		<property qualifier="product.code" />
+		<property qualifier="product.name" />
+		<property qualifier="product.catalogversion"  editor="shortListEditor"/>
+		<property qualifier="product.approvalStatus" />
+		<property qualifier="product.onlineDate" />
+		<property qualifier="product.offlineDate" />
+		<property qualifier="product.unit" />
+		<property qualifier="product.ean" />
+		<property qualifier="product.description" editor="wysiwyg"/>
+		<property qualifier="product.summary"/>
+		<property qualifier="variantproduct.baseProduct"/>
+	</group>
+
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.ClassAttrEditorSectionConfiguration" 
+		qualifier="classification"
+		initially-opened="false"
+		show-if-empty="false">
+		<label key="config.general.attributes" />
+	</custom-group>
+
+	<group qualifier="Category" visible="true" initially-opened="false">
+		<label key="config.general.categorysystem" />
+		<property qualifier="product.supercategories"/>
+		<property qualifier="product.productReferences" editor="browserContextEditor"/>
+	</group>
+
+	<group qualifier="Price" visible="true" initially-opened="false">
+		<label key="config.general.prices" />
+		<property qualifier="product.europe1Prices"  editor="browserContextEditor"/>
+		<property qualifier="product.Europe1PriceFactory_PPG" />
+		<property qualifier="product.europe1Discounts"  editor="browserContextEditor"/>
+		<property qualifier="product.Europe1PriceFactory_PTG"  visible="false"/>
+		<property qualifier="product.Europe1PriceFactory_PDG"  visible="false"/>
+		<property qualifier="product.minOrderQuantity"  visible="false"/>
+		<property qualifier="product.maxOrderQuantity"  visible="false"/>
+	</group>
+
+	<custom-group spring-bean="externalTaxesSection" 
+		qualifier="product.externalTaxes" initially-opened="false" visible="true">
+		<label key="adyencockpits.product.externalTaxes" />
+	</custom-group>
+
+	<group qualifier="Multimedia" visible="true" initially-opened="false">
+		<label key="config.general.multimedia" />
+		<property qualifier="product.galleryImages" />
+		<property qualifier="product.picture" editor="simpleMediaReferenceSelector">
+			<parameter>
+				<name>mimeTypes</name>
+				<value>image/jpeg;image/gif;image/png</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>imageHeight</name>
+				<value>80px</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+
+		<property qualifier="product.thumbnail" editor="simpleMediaReferenceSelector">
+			<parameter>
+				<name>mimeTypes</name>
+				<value>image/jpeg;image/gif;image/png</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>thumbnail</value>
+			</parameter>
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+			<parameter>
+				<name>predefinedValuesStrategy</name>
+				<value>imageMediaPredefinedValuesStrategy</value>
+			</parameter>
+		</property>
+		<property qualifier="product.data_sheet" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+		</property>
+		<property qualifier="product.detail" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+		</property>
+		<property qualifier="product.logo" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+		</property>
+		<property qualifier="product.normal" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+		</property>
+		<property qualifier="product.others" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>picture</value>
+			</parameter>
+		</property>
+		<property qualifier="product.thumbnails" editor="celumMediaReferenceCollectionSelector">
+			<parameter>
+				<name>allowCreate</name>
+				<value>true</value>
+			</parameter>
+			<parameter>
+				<name>celumMediaFormat</name>
+				<value>thumbnail</value>
+			</parameter>
+			<parameter>
+				<name>restrictToCreateTypes</name>
+				<value>Media,CelumAsset+</value>
+			</parameter>
+		</property>
+	</group>
+
+	<group qualifier="variants" visible="true" initially-opened="true">
+		<label key="config.general.variants" />
+		<property qualifier="product.variantType">
+			<parameter>
+				<name>allowCreate</name>
+				<value>false</value>
+			</parameter>
+		</property>
+		<property qualifier="apparelSizeVariantProduct.size" />
+	</group>
+
+	<group qualifier="additional" visible="true" initially-opened="false">
+		<label key="cockpit.config.label.Additional" />
+		
+		<property qualifier="product.manufacturerAID" />
+		<property qualifier="product.manufacturerName" />
+		<property qualifier="product.deliveryTime"  visible="false"/>
+		<property qualifier="product.contentUnit" />
+		<property qualifier="product.numberContentUnits"  visible="false"/>
+		<property qualifier="product.remarks" />
+		<property qualifier="product.keywords"  editor="multi"/>
+	</group>
+
+
+	<group qualifier="bmecat" visible="true" initially-opened="false">
+		<label key="config.general.bmecat" />
+		<property qualifier="product.manufacturertypeDescription" />
+		<property qualifier="product.supplierAlternativeAID" />
+		<property qualifier="product.erpGroupBuyer" />
+		<property qualifier="product.erpGroupSupplier" />
+		<property qualifier="product.segment" />
+		<property qualifier="product.order" />
+		<property qualifier="product.orderQuantityInterval" />
+	</group>
+	
+	<custom-group 
+		spring-bean="CommentsSection"
+		qualifier="comments"
+		initially-opened="false"
+		visible="true">
+		<label key="config.general.comments" />
+	</custom-group>
+
+	<group qualifier="admin" visible="true" initially-opened="false">
+		<label key="config.general.administration" />
+		<property qualifier="Item.pk" />
+		<property qualifier="Item.creationTime" />
+		<property qualifier="Item.modifiedtime" />
+		<property qualifier="Item.assignedCockpitItemTemplates"/>
+	</group>
+
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.UnassignedEditorSectionConfiguration" 
+		qualifier="unassigned"
+		initially-opened="false"
+		visible="false">
+		<label key="cockpit.config.label.Other" />
+	</custom-group>
+	
+	<custom-group 
+		class="de.hybris.platform.cockpit.services.config.impl.LastChangesSectionConfiguration" 
+		qualifier="savedValues"
+		initially-opened="false"
+		visible="false">
+		<label key="config.general.lastchanges" />
+	</custom-group>
+	
+</editor>

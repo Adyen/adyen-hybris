@@ -1,0 +1,32 @@
+#
+# Create the Apparel DE Store
+#
+$productCatalog=apparelProductCatalog
+$currencies=EUR
+$net=false
+$storeUid=apparel-de
+$paymentProvider=Mockup
+
+$defaultCurrency=EUR
+$languages=de
+$defaultLanguage=de
+$europeNotUK=AD,AL,AT,BA,BE,BG,BY,CH,CY,CZ,DE,DK,EE,ES,FI,FO,FR,GI,GL,GR,HR,HU,IE,IS,IT,LI,LT,LU,LV,MC,MD,ME,MK,MT,NL,NO,PL,PT,RO,RS,RU,SE,SI,SK,SM,TR,UA,VA
+$deliveryCountries=$europeNotUK
+$orderProcessCode=order-process
+$pickupInStoreMode=DISABLED
+$expressCheckoutEnabled=false
+
+INSERT_UPDATE PromotionGroup;Identifier[unique=true];
+;apparelDEPromoGrp;
+
+# Base Store
+INSERT_UPDATE BaseStore;uid[unique=true];catalogs(id);currencies(isocode);net;taxGroup(code);storelocatorDistanceUnit(code);defaultCurrency(isocode);languages(isocode);defaultLanguage(isocode);deliveryCountries(isocode);submitOrderProcessCode;pickupInStoreMode(code);paymentProvider;expressCheckoutEnabled;maxRadiusForPoSSearch;
+;$storeUid;$productCatalog;$currencies;$net;de-taxes;km;$defaultCurrency;$languages;$defaultLanguage;$deliveryCountries;$orderProcessCode;$pickupInStoreMode;$paymentProvider;$expressCheckoutEnabled;300;
+
+INSERT_UPDATE BaseStore2DeliveryModeRel;source(uid)[unique=true];target(code)[unique=true]
+;apparel-de;premium-net
+;apparel-de;standard-net
+;apparel-de;premium-gross
+;apparel-de;standard-gross
+;apparel-de;pickup
+;apparel-de;free-standard-shipping

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content-elements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="content-element.xsd">
+
+	<content-element type="PurchasedCategorySuggestionComponent" name="type.PurchasedCategorySuggestionComponent.name"
+							description="type.PurchasedCategorySuggestionComponent.description"
+							image="cmscockpit/images/component-icon-productpurchased.gif" 
+							refImage="cmscockpit/images/component-icon-productpurchased-reference.gif"
+							imageSmall="cmscockpit/images/component-icon-productpurchased-small.gif"
+							/>
+
+</content-elements>

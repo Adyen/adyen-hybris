@@ -1,0 +1,19 @@
+#
+# Import Sample CMS Cockpit User
+# 
+
+$passwordEncoding=md5
+$defaultPassword=1234
+$setPassword=@password[translator=de.hybris.platform.impex.jalo.translators.ConvertPlaintextToEncodedUserPasswordTranslator][default='$passwordEncoding:$defaultPassword']
+
+INSERT_UPDATE UserGroup;UID[unique=true];groups(uid)[mode=append]
+;cmsmanagergroup;cockpitgroup,employeegroup
+
+INSERT_UPDATE Employee;UID[unique=true];$setPassword;description;name;groups(uid)[mode=append];sessionLanguage(isocode);sessionCurrency(isocode)
+;cmsmanager;;CMS manager;CMS Manager;cmsmanagergroup;en;USD
+
+UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];writePrincipals(uid);
+;apparel-ukContentCatalog;Online;cmsmanagergroup,cmsmanager;
+;apparel-ukContentCatalog;Staged;cmsmanagergroup,cmsmanager;
+;apparel-deContentCatalog;Online;cmsmanagergroup,cmsmanager;
+;apparel-deContentCatalog;Staged;cmsmanagergroup,cmsmanager;

@@ -1,0 +1,182 @@
+# ImpEx for Apparel DE Stores
+#% impex.setLocale( Locale.GERMAN ); 
+
+$storeUid=apparel-de
+$contentCatalog=apparel-deContentCatalog
+$catalogVersion=catalogversion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true,default=$contentCatalog:Staged];;;;;;;;;
+$storeImage=storeImage(qualifier, $catalogVersion)
+
+INSERT_UPDATE StoreLocatorFeature;code[unique=true]
+;wheelchair
+;creche
+;sundayWorkshops
+
+
+$standardHours=apparel-de-standard-hours
+$weekendHours=apparel-de-weekend-hours
+
+INSERT_UPDATE OpeningSchedule;code[unique=true];
+;$standardHours;
+;$weekendHours;
+
+INSERT_UPDATE WeekdayOpeningDay;openingSchedule(code)[unique=true];dayOfWeek(code)[unique=true];openingTime[dateformat=hh:mm];closingTime[dateformat=hh:mm];
+;$standardHours;MONDAY   ; 09:00; 20:00
+;$standardHours;TUESDAY  ; 09:00; 20:00
+;$standardHours;WEDNESDAY; 09:00; 20:00
+;$standardHours;THURSDAY ; 09:00; 20:00
+;$standardHours;FRIDAY   ; 09:00; 20:00
+;$standardHours;SATURDAY ; 10:00; 20:00
+
+;$weekendHours;MONDAY   ; 09:00; 20:00
+;$weekendHours;TUESDAY  ; 09:00; 20:00
+;$weekendHours;WEDNESDAY; 09:00; 20:00
+;$weekendHours;THURSDAY ; 09:00; 20:00
+;$weekendHours;FRIDAY   ; 09:00; 20:00
+;$weekendHours;SATURDAY ; 10:00; 20:00
+;$weekendHours;SUNDAY   ; 10:00; 16:00
+
+INSERT_UPDATE SpecialOpeningDay;openingSchedule(code)[unique=true];date[unique=true,dateformat=dd.MM.yyyy];closed;openingTime[dateformat=hh:mm];closingTime[dateformat=hh:mm]
+;$standardHours; 01.01.2013 ;true  
+;$standardHours; 29.03.2013 ;true  
+;$standardHours; 01.04.2013 ;true  
+;$standardHours; 01.05.2013 ;true  
+;$standardHours; 09.05.2013 ;true  
+;$standardHours; 20.05.2013 ;true  
+;$standardHours; 03.10.2013 ;true  
+;$standardHours; 25.12.2013 ;true  
+;$standardHours; 26.12.2013 ;true  
+
+;$weekendHours; 01.01.2013 ;true
+;$weekendHours; 29.03.2013 ;true
+;$weekendHours; 01.04.2013 ;true
+;$weekendHours; 01.05.2013 ;true
+;$weekendHours; 09.05.2013 ;true
+;$weekendHours; 20.05.2013 ;true
+;$weekendHours; 03.10.2013 ;true
+;$weekendHours; 25.12.2013 ;true
+;$weekendHours; 26.12.2013 ;true
+
+
+INSERT_UPDATE PointOfService;name[unique=true];type(code);address(&addrID);latitude;longitude;geocodeTimestamp[dateformat=dd.MM.yyyy];$storeImage;features(code);basestore(uid)[default=$storeUid];openingSchedule(code)
+;Berlin Siegessäule;STORE;addr100;52,514524;13,35029;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Berlin Museum;STORE;addr101;52,517687;13,396888;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Berlin Dom;STORE;addr102;52,519164;13,400105;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Berlin Zoo;STORE;addr103;52,5036;13,32895;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Berlin Hospital;STORE;addr104;52,52535;13,43724;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Hamburg Hotel;STORE;addr105;53,55567;9,99142;29.04.2011;;wheelchair,creche;;$standardHours
+;Hamburg Hospital;STORE;addr106;53,54879;9,96885;29.04.2011;fashion_store_01;wheelchair;;$standardHours
+;Hamburg Planetarium;STORE;addr107;53,59823;10,0137;29.04.2011;fashion_store_02;creche,sundayWorkshops;;$standardHours
+;Hamburg Kirche;STORE;addr108;53,54869;9,97799;29.04.2011;fashion_store_03;creche,sundayWorkshops,wheelchair;;$weekendHours
+;Hamburg Schauspielhaus;STORE;addr109;53,554538;10,008363;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Munich Neue Pinakothek;STORE;addr110;48,149431;11,57083;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Munich Altstadt;STORE;addr111;48,13964;11,57064;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Munich Isarvorstadt;STORE;addr112;48,12206;11,57642;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Munich Museum;STORE;addr113;48,1769;11,56134;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Munich Staatsoper;STORE;addr114;48,13961;11,57977;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Cologne SchokoMuseum;STORE;addr115;50,931766;6,964216;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Cologne Hospital;STORE;addr116;50,927721;6,924999;29.04.2011;;wheelchair,creche;;$standardHours
+;Cologne Museum;STORE;addr117;50,9373;6,95842;29.04.2011;fashion_store_01;wheelchair;;$standardHours
+;Cologne Kolumba;STORE;addr118;50,93856;6,95404;29.04.2011;fashion_store_02;creche,sundayWorkshops;;$standardHours
+;Cologne Volksgarten;STORE;addr119;50,92249;6,9475;29.04.2011;fashion_store_03;creche,sundayWorkshops,wheelchair;;$weekendHours
+;Frankfurt European Central Bank;STORE;addr120;50,109742;8,673425;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Frankfurt Zoo;STORE;addr121;50,115766;8,698613;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Frankfurt Hospital;STORE;addr122;50,12638;8,63733;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Frankfurt Goethe Haus;STORE;addr123;50,11118;8,67759;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Frankfurt Friedhof;STORE;addr124;50,13571;8,68502;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Stuttgart Markthalle;STORE;addr125;48,77608;9,17948;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Stuttgart Fernsehturm;STORE;addr126;48,75589;9,19029;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Stuttgart Museum;STORE;addr127;48,78815;9,23405;29.04.2011;;wheelchair,creche;;$standardHours
+;Stuttgart Variete;STORE;addr128;48,78107;9,17689;29.04.2011;fashion_store_01;wheelchair;;$standardHours
+;Stuttgart Hospital;STORE;addr129;48,772;9,18775;29.04.2011;fashion_store_02;creche,sundayWorkshops;;$standardHours
+;Düsseldorf Kulturzentrum;STORE;addr130;51,2344;6,7729;29.04.2011;fashion_store_03;creche,sundayWorkshops,wheelchair;;$weekendHours
+;Düsseldorf Rheinpark;STORE;addr131;51,2498;6,76499;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Düsseldorf Hospital;STORE;addr132;51,19639;6,79343;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Düsseldorf Hbf;STORE;addr133;51,22042;6,79304;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Düsseldorf Hospital2;STORE;addr134;51,2331;6,72749;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Dortmund Konzerthaus;STORE;addr135;51,51599;7,46619;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Dortmund Altes Hafenamt;STORE;addr136;51,52594;7,44244;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Dortmund Museum;STORE;addr137;51,5187;7,33329;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Dortmund University;STORE;addr138;51,484899;7,413168;29.04.2011;;wheelchair,creche;;$standardHours
+;Dortmund Zoo;STORE;addr139;51,47412;7,46801;29.04.2011;fashion_store_01;wheelchair;;$standardHours
+;Essen Theater;STORE;addr140;51,45472;7,01137;29.04.2011;fashion_store_02;creche,sundayWorkshops;;$standardHours
+;Essen Gruga;STORE;addr141;51,430662;7,001256;29.04.2011;fashion_store_03;creche,sundayWorkshops,wheelchair;;$weekendHours
+;Essen University;STORE;addr142;51,46348;7,00377;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Essen Museum;STORE;addr143;51,44224;7,00478;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Essen Hospital;STORE;addr144;51,47605;6,95038;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Bremen Kunsthalle;STORE;addr145;53,07286;8,81337;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Bremen Schulschiff;STORE;addr146;53,16681;8,62641;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Bremen Hospital;STORE;addr147;53,07502;8,8366;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Bremen Hochschule;STORE;addr148;53,07264;8,79382;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Bremen Arena;STORE;addr149;53,08827;8,81346;29.04.2011;;wheelchair,creche;;$standardHours
+;Hannover Denkmal;STORE;addr150;52,37373;9,73772;29.04.2011;fashion_store_01;wheelchair;;$standardHours
+;Hannover Georgengarten;STORE;addr151;52,38428;9,70992;29.04.2011;fashion_store_02;creche,sundayWorkshops;;$standardHours
+;Hannover Hochschule;STORE;addr152;52,384611;9,803946;29.04.2011;fashion_store_03;creche,sundayWorkshops,wheelchair;;$weekendHours
+;Hannover Tiergarten;STORE;addr153;52,36208;9,84011;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Hannover Arena;STORE;addr154;52,35891;9,72888;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+;Leipzig Altes Rathaus;STORE;addr155;51,340348;12,375141;29.04.2011;;creche,sundayWorkshops;;$standardHours
+;Leipzig Opernhaus;STORE;addr156;51,34058;12,38235;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Leipzig Stadion;STORE;addr157;51,34591;12,35046;29.04.2011;fashion_store_01;wheelchair;;$weekendHours
+;Leipzig University;STORE;addr158;51,33097;12,39395;29.04.2011;fashion_store_01;creche,sundayWorkshops;;$standardHours
+;Leipzig Hospital;STORE;addr159;51,34266;12,32217;29.04.2011;fashion_store_02;wheelchair;;$weekendHours
+
+INSERT_UPDATE Address;&addrID;streetname;streetnumber;postalcode;town;country(isocode);phone1;owner(PointOfService.name)[unique=true];
+;addr100;Großer Stern 1;;10785;Berlin;DE;+49 5413 439358;Berlin Siegessäule;
+;addr101;Unter den Linden 2;;10117;Berlin;DE;+49 2866 455372;Berlin Museum;
+;addr102;Am Lustgarten;;10178;Berlin;DE;+49 6289 452135;Berlin Dom;
+;addr103;Kurfürstendamm 25;;10719;Berlin;DE;+49 7458 982891;Berlin Zoo;
+;addr104;Landsberger Allee 49;;10249;Berlin;DE;+49 7736 254758;Berlin Hospital;
+;addr105;Neuer Jungfernstieg 9;;20354;Hamburg;DE;+49  7661 521056;Hamburg Hotel;
+;addr106;Zirkusweg 11;;20359;Hamburg;DE;+49 1941 143240;Hamburg Hospital;
+;addr107;Hindenburgstraße 1b;;22303;Hamburg;DE;+49 1865 108677;Hamburg Planetarium;
+;addr108;Englische Planke 1;;20459;Hamburg;DE;+49 1269 414848;Hamburg Kirche;
+;addr109;Kirchenallee 39;;20099;Hamburg;DE;+49 6562 877837;Hamburg Schauspielhaus;
+;addr110;Barer Strasse 29;;80799;Munich;DE;+49 1685 102882;Munich Neue Pinakothek;
+;addr111;Maxburgstrasse 1;;80333;Munich;DE;+49 6710 412730;Munich Altstadt;
+;addr112;Kolumbusstrasse 5;;81534;Munich;DE;+49  7869 100550;Munich Isarvorstadt;
+;addr113;Petuelring 130;;80809;Munich;DE;+49 3358 855365;Munich Museum;
+;addr114;Max-Joseph-Platz 2;;80539;Munich;DE;+49 6588 146542;Munich Staatsoper;
+;addr115;Am Schokoladenmuseum 1a;;50678;Cologne;DE;+49 9067 870487;Cologne SchokoMuseum;
+;addr116;Weyertal 76;;50931;Cologne;DE;+49 9629 104896;Cologne Hospital;
+;addr117;Martinstrasse 39;;50667;Cologne;DE;+49 2015 018008;Cologne Museum;
+;addr118;Kolumbastrasse 4;;50667;Cologne;DE;+49 3669 850989;Cologne Kolumba;
+;addr119;Volksgartenstrasse 27;;50677;Cologne;DE;+49 2358 891650;Cologne Volksgarten;
+;addr120;Kaiserstrasse 29;;60311;Frankfurt;DE;+49 9559 174171;Frankfurt European Central Bank;
+;addr121;Alfred-Brehm-Platz 16;;60316;Frankfurt;DE;+49 3970 449180;Frankfurt Zoo;
+;addr122;Ginnheimer Strasse 3;;60487;Frankfurt;DE;+49 8669 983595;Frankfurt Hospital;
+;addr123;Großer Hirschgraben 23;;60311;Frankfurt;DE;+49 3971 417956;Frankfurt Goethe Haus;
+;addr124;Eckenheimer Landstraße 194;;60320;Frankfurt;DE;+49 8517 113633;Frankfurt Friedhof;
+;addr125;Dorotheenstraße 4;;70173;Stuttgart;DE;+49 8522 884863;Stuttgart Markthalle;
+;addr126;Jahnstrasse 120;;70597;Stuttgart;DE;+49  4113 149080;Stuttgart Fernsehturm;
+;addr127;Mercedesstrasse 100;;70372;Stuttgart;DE;+49 4588 445039;Stuttgart Museum;
+;addr128;Friedrichstraße 24;;70174;Stuttgart;DE;+49 5731 146118;Stuttgart Variete ;
+;addr129;Hohenheimer Strasse 21;;70180;Stuttgart;DE;+49 5141 015609;Stuttgart Hospital;
+;addr130;Ehrenhof 4;;40479;Düsseldorf;DE;+49 1548 110161;Düsseldorf Kulturzentrum;
+;addr131;Kaiserswerther Strasse 228;;40474;Düsseldorf;DE;+49 7059 74688;Düsseldorf Rheinpark;
+;addr132;Moorenstrasse 5;;40225;Düsseldorf;DE;+49 4620 114686;Düsseldorf Hospital;
+;addr133;Konrad-Adenauer-Platz 14;;40210;Düsseldorf;DE;+49 9392 142473;Düsseldorf Hbf;
+;addr134;Krankenhaus;Am Heerdter 2;40549;Düsseldorf;DE;+49 9993 113543;Düsseldorf Hospital2;
+;addr135;Brückstrasse 21;;44135;Dortmund;DE;+49 9636 472312;Dortmund Konzerthaus;
+;addr136;Sunderweg 130;;44147;Dortmund;DE;+49 2497 140049;Dortmund Altes Hafenamt;
+;addr137;Grubenweg 5;;44388;Dortmund;DE;+49 9574 110248;Dortmund Museum;
+;addr138;August-Schmidt-Strasse 6;;44227;Dortmund;DE;+49 2478 989991;Dortmund University;
+;addr139;Mergelteichstrasse 76;;44225;Dortmund;DE;+49 3390 141949;Dortmund Zoo;
+;addr140;Theaterplatz 11;;45127;Essen;DE;+49 6827 141515;Essen Theater;
+;addr141;Grugaplatz;;45131;Essen;DE;+49 4159 448218;Essen Gruga;
+;addr142;Universitätsstrasse 2;;45141;Essen;DE;+49 9542 177704;Essen University;
+;addr143;Museumsplatz 1;;45128;Essen;DE;+49 3131 941609;Essen Museum;
+;addr144;Hülsmannstraße 17;;45355;Essen;DE;+49 9258 474302;Essen Hospital;
+;addr145;Am Wall 207;;28195;Bremen;DE;+49 4068 115633;Bremen Kunsthalle;
+;addr146;Zum Alten Speicher 15;;28759;Bremen;DE;+49 3319 477458;Bremen Schulschiff;
+;addr147;St-Jürgen-Strasse 1;;28205;Bremen;DE;+49 3436 145116;Bremen Hospital;
+;addr148;Neustadtswall 30;;28199;Bremen;DE;+49 8827 014889;Bremen Hochschule;
+;addr149;Bürgerweide 62;;28209;Bremen;DE;+49 3480 454381;Bremen Arena;
+;addr150;Karmarschstrasse 14;;30159;Hannover;DE;+49 8287 1110630;Hannover Denkmal;
+;addr151;Georgengarten 1;;30167;Hannover;DE;+49 2509 141182;Hannover Georgengarten;
+;addr152;Carl-Neuberg-Straße 1;;30625;Hannover;DE;+49 1320 049154;Hannover Hochschule;
+;addr153;Tiergartenstraße 149;;30559;Hannover;DE;+49 8147 115845;Hannover Tiergarten;
+;addr154;Arthur-Menge-Ufer 5;;30169;Hannover;DE;+49 6466 87525;Hannover Arena;
+;addr155;Markt 1;;04109;Leipzig;DE;+49 2011 2743915;Leipzig Altes Rathaus;
+;addr156;Augustusplatz 12;;04109;Leipzig;DE;+49 5397 442414;Leipzig Opernhaus;
+;addr157;Am Sportforum 3;;04109;Leipzig;DE;+49 3573 444809;Leipzig Stadion;
+;addr158;Johannisallee 21;;04103;Leipzig;DE;+49 1321 441962;Leipzig University;
+;addr159;Georg-Schwarz-Straße 49;;04177;Leipzig;DE;+49 8391 142639;Leipzig Hospital;

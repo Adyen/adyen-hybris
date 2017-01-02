@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wizard-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="wizard-config.xsd"
+               showPrefilledValues="false" selectMode="true" createMode="false" activateAfterCreate="true" createWithinPopup="false" createWithinEditor="true">
+	<displayed-properties>
+		<property qualifier="Product.name"/>
+	</displayed-properties>
+</wizard-config>
+
+
+	 

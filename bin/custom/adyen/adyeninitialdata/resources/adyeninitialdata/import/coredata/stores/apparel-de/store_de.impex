@@ -1,0 +1,10 @@
+#
+# Import the Apparel DE Store
+#
+
+# Language
+$lang=de
+
+# Create Base Store
+UPDATE BaseStore;uid[unique=true];name[lang=$lang]
+ ;apparel-de;"Bekleidungs-Store DE"

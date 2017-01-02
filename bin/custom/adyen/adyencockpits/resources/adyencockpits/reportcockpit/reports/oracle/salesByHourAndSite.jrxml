@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesByHour" language="groovy" pageWidth="595" pageHeight="420" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.hybris.platform.cockpit.reports.scriptlets.DateTimeScriptlet" resourceBundle="localization/jasperreports">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dayDS">
+		<parameter name="From" class="java.util.Date"/>
+		<parameter name="To" class="java.util.Date"/>
+		<parameter name="FromDayBefore" class="java.util.Date"/>
+		<parameter name="ToDayBefore" class="java.util.Date"/>
+		<parameter name="FromLastMonth" class="java.util.Date"/>
+		<parameter name="ToLastMonth" class="java.util.Date"/>
+		<parameter name="Currency" class="java.lang.Long">
+			<property name="type" value="Currency"/>
+		</parameter>
+		<parameter name="Site" class="java.lang.Long">
+			<property name="type" value="CMSSite"/>
+		</parameter>
+		<parameter name="onedaytimerange" class="java.lang.String">
+			<property name="type" value="OneDayRange"/>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT SERIE, CAST(DATEVALUE as DATE) as DATEVALUE, AVGPRICE
+FROM
+({{
+SELECT 'startdate' as SERIE, min({o.creationtime}) as DATEVALUE, avg({o:totalPrice} * {curr2.conversion}/{curr1.conversion}) as AVGPRICE
+FROM {OrderEntry AS o JOIN Order as order ON {o.order}={order.PK} JOIN Currency as curr1 ON {order.currency}={curr1.PK} JOIN Currency as curr2 ON {curr2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {order.site}={s.PK}}
+WHERE {o.creationtime} > to_date($P{From}) AND {o.creationtime} < to_date($P{To}) AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY TO_CHAR({o.creationtime},'HH24')
+}}
+UNION ALL
+{{
+SELECT 'daybefore' as SERIE, min({o.creationtime}) as DATEVALUE, avg({o:totalPrice} * {curr2.conversion}/{curr1.conversion}) as AVGPRICE
+FROM {OrderEntry AS o JOIN Order as order ON {o.order}={order.PK} JOIN Currency as curr1 ON {order.currency}={curr1.PK} JOIN Currency as curr2 ON {curr2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {order.site}={s.PK}}
+WHERE {o.creationtime} > to_date($P{FromDayBefore}) AND {o.creationtime} < to_date($P{ToDayBefore}) AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY TO_CHAR({o.creationtime},'HH24')
+}}
+UNION ALL
+{{
+SELECT 'lastmonth' as SERIE, min({o.creationtime}) as DATEVALUE, avg({o:totalPrice} * {curr2.conversion}/{curr1.conversion}) as AVGPRICE
+FROM {OrderEntry AS o JOIN Order as order ON {o.order}={order.PK} JOIN Currency as curr1 ON {order.currency}={curr1.PK} JOIN Currency as curr2 ON {curr2.pk}= $P{Currency}
+LEFT OUTER JOIN CMSSite as s ON {order.site}={s.PK}}
+WHERE {o.creationtime} > to_date($P{FromLastMonth}) AND {o.creationtime} < to_date($P{ToLastMonth}) AND ($P{Site} IS NULL OR {s.pk}=$P{Site})
+GROUP BY TO_CHAR({o.creationtime},'HH24')
+}})]]>
+		</queryString>
+		<field name="SERIE" class="java.lang.String"/>
+		<field name="DATEVALUE" class="java.sql.Timestamp"/>
+		<field name="AVGPRICE" class="java.math.BigDecimal"/>
+	</subDataset>
+	<parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="onedaytimerange" class="java.lang.String">
+		<property name="type" value="OneDayRange"/>
+	</parameter>
+	<parameter name="specificday" class="java.util.Date"/>
+	<parameter name="Currency" class="java.lang.Long">
+		<property name="type" value="Currency"/>
+	</parameter>
+	<parameter name="Site" class="java.lang.Long">
+		<property name="type" value="CMSSite"/>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT {code} FROM {Order}]]>
+	</queryString>
+	<field name="CODE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80">
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="595" height="80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="340" splitType="Immediate">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="11" y="260" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.timerange" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="315" y="240" width="143" height="20">
+					<printWhenExpression><![CDATA[$P{onedaytimerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.specificday" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy HH:mm">
+				<reportElement x="186" y="240" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="186" y="260" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "series." + $P{onedaytimerange}.toLowerCase() )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="11" y="280" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.currency" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMM yyyy">
+				<reportElement x="458" y="240" width="114" height="20">
+					<printWhenExpression><![CDATA[$P{onedaytimerange} == 'SPECIFICDAY']]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{specificday}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="11" y="240" width="175" height="20"/>
+				<textElement>
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_RESOURCE_BUNDLE}.getString( "legend.created" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="186" y="280" width="114" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency})]]></textFieldExpression>
+			</textField>
+			<timeSeriesChart>
+				<chart>
+					<reportElement x="0" y="0" width="595" height="230"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset timePeriod="Hour">
+					<dataset>
+						<datasetRun subDataset="dayDS">
+							<datasetParameter name="From">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getSpecificDayFrom(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeFrom(new Date()) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getSpecificDayFrom($P{specificday}) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="To">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getSpecificDayTo(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeTo(new Date()) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getSpecificDayTo($P{specificday}) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FromDayBefore">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeFrom(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeFrom($P{REPORT_SCRIPTLET}.getDayBeforeFrom(new Date())) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeFrom($P{REPORT_SCRIPTLET}.getSpecificDayFrom($P{specificday})) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ToDayBefore">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeTo(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeTo($P{REPORT_SCRIPTLET}.getDayBeforeTo(new Date())) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getDayBeforeTo($P{REPORT_SCRIPTLET}.getSpecificDayTo($P{specificday})) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="FromLastMonth">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthFrom(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthFrom($P{REPORT_SCRIPTLET}.getDayBeforeFrom(new Date())) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthFrom($P{specificday}) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ToLastMonth">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange} == "TODAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthTo(new Date()) :
+$P{onedaytimerange} == "YESTERDAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthTo($P{REPORT_SCRIPTLET}.getDayBeforeTo(new Date())) :
+$P{onedaytimerange} == "SPECIFICDAY" ?
+$P{REPORT_SCRIPTLET}.getLastMonthTo($P{specificday}) :
+new Date(0)]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="Currency">
+								<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="onedaytimerange">
+								<datasetParameterExpression><![CDATA[$P{onedaytimerange}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA[($P{onedaytimerange} == "TODAY" && $F{SERIE} == "startdate") ? str("series.today") :
+($P{onedaytimerange} == "TODAY" && $F{SERIE} == "daybefore") ? str("series.yesterday") :
+($P{onedaytimerange} == "TODAY" && $F{SERIE} == "lastmonth") ? str("series.lastmonth") :
+($P{onedaytimerange} == "YESTERDAY" && $F{SERIE} == "startdate") ? str("series.yesterday") :
+($P{onedaytimerange} == "YESTERDAY" && $F{SERIE} == "daybefore") ? str("series.daybeforeyesterday") :
+($P{onedaytimerange} == "YESTERDAY" && $F{SERIE} == "lastmonth") ? str("series.lastmonth") :
+($P{onedaytimerange} == "SPECIFICDAY" && $F{SERIE} == "startdate") ? str("series.specificday") :
+($P{onedaytimerange} == "SPECIFICDAY" && $F{SERIE} == "daybefore") ? str("series.daybeforespecificday") :
+($P{onedaytimerange} == "SPECIFICDAY" && $F{SERIE} == "lastmonth") ? str("series.monthbeforespecificday") :
+""]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new java.sql.Timestamp(new org.joda.time.DateTime(new org.joda.time.DateMidnight()).withHourOfDay(new org.joda.time.DateTime($F{DATEVALUE}).getHourOfDay()).getMillis())]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{AVGPRICE}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowLines="true">
+					<plot/>
+					<timeAxisLabelExpression><![CDATA[str("axis.hour")]]></timeAxisLabelExpression>
+					<timeAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</timeAxisFormat>
+					<valueAxisLabelExpression><![CDATA[str("axis.sales") + " [" + $P{REPORT_SCRIPTLET}.getLabelForItem($P{Currency}) + "]"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<domainAxisMinValueExpression><![CDATA[$P{REPORT_SCRIPTLET}.getSpecificDayFrom( new java.util.Date() )]]></domainAxisMinValueExpression>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,44 @@
+# Test batch configuration
+#
+$productCatalog=productCatalog
+$contentCatalog=contentCatalog
+$defaultCurrency=EUR
+$languages=en
+$defaultLanguage=en
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+$stagedProduct=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default='$productCatalog:Staged']
+$onlineProduct=catalogVersion(catalog(id[default=$productCatalog]),version[default='Online'])[unique=true,default='$productCatalog:Online']
+$stagedContent=catalogVersion(catalog(id[default=$contentCatalog]),version[default='Staged'])[unique=true,default='$contentCatalog:Staged']
+$onlineContent=catalogVersion(catalog(id[default=$contentCatalog]),version[default='Online'])[unique=true,default='$contentCatalog:Online']
+
+INSERT_UPDATE Language;isocode[unique=true];active
+;de;true
+;en;true
+
+INSERT_UPDATE Currency;isocode[unique=true];name[lang=de];name[lang=en];active;base;conversion;digits;symbol
+;EUR;Euro;Euro;true;true;1;2;€
+
+INSERT_UPDATE Catalog;id[unique=true];name[lang=de];name[lang=en];defaultCatalog
+;$productCatalog;$productCatalog;$productCatalog;true
+;$contentCatalog;$contentCatalog;$contentCatalog;true
+
+# Catalog versions for content catalogs
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];active;defaultCurrency(isocode);languages(isoCode)
+;$productCatalog;Staged;false;$defaultCurrency;$languages
+;$productCatalog;Online;true;$defaultCurrency;$languages
+;$contentCatalog;Staged;false;$defaultCurrency;$languages
+;$contentCatalog;Online;true;$defaultCurrency;$languages
+
+INSERT_UPDATE Category;$stagedProduct;code[unique=true]
+;;category1
+;;category2
+
+INSERT_UPDATE Category;$onlineProduct;code[unique=true]
+;;category1
+
+INSERT_UPDATE Product;$stagedProduct;code[unique=true]
+;;product1
+;;product2
+
+INSERT_UPDATE Product;$onlineProduct;code[unique=true]
+;;product1

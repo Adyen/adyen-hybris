@@ -1,0 +1,30 @@
+#
+# Import the German CMS content for the Apparel Site DE
+#
+
+$contentCatalog=apparel-deContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+
+# Language
+$lang=de
+
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;account;"Ihr Konto"
+ ;;add-edit-address;"Adresse hinzufügen/bearbeiten"
+ ;;address-book;"Adressbuch"
+ ;;cartPage;"Ihr Einkaufstasche"
+ ;;checkout-login;"Zur Kasse gehen"
+ ;;faq;"Häufig gestellte Fragen"
+ ;;homepage;"Homepage"
+ ;;login;"Anmelden"
+ ;;multiStepCheckoutSummaryPage;"Kasse"
+ ;;notFound;"Nicht gefunden"
+ ;;order;"Bestelldetails"
+ ;;orderConfirmationPage;"Bestellbestätigung"
+ ;;orders;"Bestellverlauf"
+ ;;payment-details;"Zahlungsdetails"
+ ;;profile;"Profil"
+ ;;searchEmpty;"Keine Ergebnisse"
+ ;;storefinderPage;"Händlersuche"
+ ;;updatePassword;"Vergessenes Kennwort aktualisieren"

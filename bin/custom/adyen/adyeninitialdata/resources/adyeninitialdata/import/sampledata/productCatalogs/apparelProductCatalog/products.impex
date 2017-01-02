@@ -1,0 +1,1997 @@
+﻿# ImpEx for Importing Products into Apparel Store
+#% impex.setLocale( Locale.GERMAN ); 
+
+# Macros / Replacement Parameter definitions
+$productCatalog=apparelProductCatalog
+$productCatalogName=Apparel Product Catalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+$baseProduct=baseProduct(code, catalogVersion(catalog(id[default='$productCatalog']),version[default='Staged']))
+$approved=approvalstatus(code)[default='approved']
+$taxGroup=Europe1PriceFactory_PTG(code)[default=eu-vat-full]
+
+# Apparel products use Variants with a structure:
+# ApparelProduct > ApparelStyleVariantProduct > ApparelSizeVariantProduct
+# Apparel products may have no variations, only colour (style) variations or both colour and size variations.
+
+# Create products
+INSERT_UPDATE ApparelProduct;code[unique=true];$catalogVersion;unit(code);$prices;supercategories(code,$catalogVersion);varianttype(code);$approved;$taxGroup;ean;genders(code)
+;300441142;;pieces;8,46 GBP, 9,70 EUR, 13,11 USD;Blue Tomato,caps;;;;1022436212;MALE
+;29531;;pieces;21,21 GBP, 24,31 EUR, 32,87 USD;Toko,skigear;;;;989514105;FEMALE
+;29532;;pieces;21,21 GBP, 24,31 EUR, 32,87 USD;Toko,skigear;;;;953539556;MALE
+;29533;;pieces;50,96 GBP, 58,40 EUR, 78,98 USD;Toko,skigear;;;;836246217;FEMALE
+;30404;;pieces;67,96 GBP, 77,88 EUR, 105,33 USD;Von Zipper,sunglasses;;;;299052695;FEMALE
+;300047513;;pieces;67,96 GBP, 77,88 EUR, 105,33 USD;Von Zipper,sunglasses;;;;383203982;MALE
+;45572;;pieces;12,86 GBP, 14,74 EUR, 19,93 USD;Toko,skigear;;;;886280602;FEMALE
+;45573;;pieces;30,56 GBP, 35,02 EUR, 47,36 USD;Toko,skigear;;;;586341472;MALE
+;45574;;pieces;4,26 GBP, 4,88 EUR, 6,60 USD;Toko,skigear;;;;815087779;MALE
+;45576;;pieces;12,86 GBP, 14,74 EUR, 19,93 USD;Toko,skigear;;;;111644105;MALE
+;45577;;pieces;5,12 GBP, 5,87 EUR, 7,93 USD;Toko,skigear;;;;548206858;FEMALE
+;300046592;;pieces;101,96 GBP, 116,85 EUR, 158,03 USD;Fox,sunglasses;;;;1019425517;MALE
+;300005449;;pieces;135,96 GBP, 155,81 EUR, 210,73 USD;adidas eyewear,goggles;;;;627880620;MALE
+;300013358;;pieces;16,96 GBP, 19,44 EUR, 26,28 USD;Red,tools;;;;919294226;MALE
+;300015407;;pieces;76,46 GBP, 87,63 EUR, 118,51 USD;Von Zipper,sunglasses;;;;1033044592;FEMALE
+;300020294;;pieces;19,51 GBP, 22,36 EUR, 30,24 USD;Spy,goggles;;;;406756884;FEMALE
+;300022348;;pieces;42,65 GBP, 48,88 EUR, 66,10 USD;Toko,skigear;;;;577158351;MALE
+;300022349;;pieces;33,59 GBP, 38,49 EUR, 52,06 USD;Toko,skigear;;;;509408267;MALE
+;300022352;;pieces;40,99 GBP, 46,98 EUR, 63,53 USD;Toko,skigear;;;;449207984;FEMALE
+;300022356;;pieces;29,71 GBP, 34,05 EUR, 46,05 USD;Toko,skigear;;;;632871132;MALE
+;300024964;;pieces;101,11 GBP, 115,87 EUR, 156,72 USD;Fox,sunglasses;;;;780746040;MALE
+;300040462;;pieces;67,96 GBP, 77,88 EUR, 105,33 USD;Roxy,sunglasses;;;;893541837;MALE
+;300044323;;pieces;29,71 GBP, 34,05 EUR, 46,05 USD;Red,tools;;;;1032600241;FEMALE
+;300044596;;pieces;42,44 GBP, 48,64 EUR, 65,78 USD;Toko,skigear;;;;364794161;MALE
+;300044599;;pieces;33,96 GBP, 38,92 EUR, 52,63 USD;Toko,skigear;;;;619638137;FEMALE
+;300044600;;pieces;39,06 GBP, 44,76 EUR, 60,54 USD;Toko,skigear;;;;894972010;MALE
+;300044601;;pieces;15,26 GBP, 17,49 EUR, 23,65 USD;Toko,skigear;;;;665812657;MALE
+;300044617;;pieces;67,96 GBP, 77,88 EUR, 105,33 USD;Anon,sunglasses;;;;225522251;MALE
+;300044623;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Anon,sunglasses;;;;651338417;MALE
+;300044624;;pieces;67,96 GBP, 77,88 EUR, 105,33 USD;Anon,sunglasses;;;;475330206;MALE
+;300045375;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Quiksilver,sunglasses;;;;657195251;MALE
+;300046522;;pieces;33,96 GBP, 38,92 EUR, 52,63 USD;Periplus AC+Ion Guides,guides;;;;646720493;MALE
+;300046587;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Fox,sunglasses;;;;476861583;FEMALE
+;300051511;;pieces;40,63 GBP, 46,56 EUR, 62,97 USD;Rip Curl,caps;;;;661773209;MALE
+;300047195;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Roxy,sunglasses;;;;209936540;FEMALE
+;300047196;;pieces;93,46 GBP, 107,11 EUR, 144,86 USD;Roxy,sunglasses;;;;684262402;MALE
+;300047199;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Roxy,sunglasses;;;;346696791;FEMALE
+;300047436;;pieces;89,21 GBP, 102,24 EUR, 138,27 USD;Roxy,sunglasses;;;;167296285;MALE
+;300310070;;pieces;84,96 GBP, 97,37 EUR, 131,68 USD;Dakine,backpack;;;;889164390;MALE
+;300310086;;pieces;42,46 GBP, 48,66 EUR, 65,81 USD;Dakine,backpack;;;;986739944;MALE
+;300310163;;pieces;50,96 GBP, 58,40 EUR, 78,98 USD;Dakine,backpack;;;;754612929;MALE
+;300310180;;pieces;26,68 GBP, 30,58 EUR, 41,35 USD;Dakine,others;;;;1046940957;FEMALE
+;300310300;;pieces;33,96 GBP, 38,92 EUR, 52,63 USD;Dakine,others;;;;542440755;MALE
+;M18729_B;;pieces;;Vans,shoes;ApparelStyleVariantProduct;;;;FEMALE
+;M25687;;pieces;;Playboard,shirts;ApparelStyleVariantProduct;;;;FEMALE
+;M27160_B;;pieces;;Dainese,shirts;ApparelStyleVariantProduct;;;;MALE
+;M28323_B;;pieces;;Vans,shoes;ApparelStyleVariantProduct;;;;FEMALE
+;M28324_B;;pieces;;Vans,shoes;ApparelStyleVariantProduct;;;;MALE
+;M32946_B;;pieces;;Dainese,shirts;ApparelStyleVariantProduct;;;;MALE
+;M33307_B;;pieces;;F2-FTWO,shoes;ApparelStyleVariantProduct;;;;FEMALE
+;M33477_B;;pieces;;TSG,helmet;ApparelStyleVariantProduct;;;;MALE
+;M34130_B;;pieces;;Pro Tec,skigear;ApparelStyleVariantProduct;;;;MALE
+;M34704;;pieces;;Playboard,shirts;ApparelStyleVariantProduct;;;;FEMALE
+;M34705_B;;pieces;;Playboard,shirts;ApparelStyleVariantProduct;;;;MALE
+;M35364;;pieces;;Playboard,shirts;ApparelStyleVariantProduct;;;;FEMALE
+;M35392_B;;pieces;;Vans,shoes;ApparelStyleVariantProduct;;;;FEMALE
+
+# Create ApparelStyleVariantProduct variants
+INSERT_UPDATE ApparelStyleVariantProduct;code[unique=true];$catalogVersion;$baseProduct;unit(code);swatchColors(code);supercategories(code,$catalogVersion);varianttype(code);$approved
+;M25687_B;;M25687;pieces;BLACK;Playboard,shirts;ApparelSizeVariantProduct
+;M25687_W;;M25687;pieces;WHITE;Playboard,shirts;ApparelSizeVariantProduct
+;M27160;;M27160_B;pieces;BLACK,SILVER;Dainese,shirts;ApparelSizeVariantProduct
+;M28323;;M28323_B;pieces;BLACK,WHITE;Vans,shoes;ApparelSizeVariantProduct
+;M32946;;M32946_B;pieces;WHITE;Dainese,shirts;ApparelSizeVariantProduct
+;M33307;;M33307_B;pieces;BLACK;F2-FTWO,shoes;ApparelSizeVariantProduct
+;M33477;;M33477_B;pieces;BLACK;TSG,helmet;ApparelSizeVariantProduct
+;M34130;;M34130_B;pieces;BLACK,RED;Pro Tec,skigear;ApparelSizeVariantProduct
+;M35364_R;;M35364;pieces;RED;Playboard,shirts;ApparelSizeVariantProduct
+;M35365_G;;M35364;pieces;GREEN;Playboard,shirts;ApparelSizeVariantProduct
+;M35366_B;;M35364;pieces;BLACK;Playboard,shirts;ApparelSizeVariantProduct
+;M28324;;M18729_B;pieces;BLACK,WHITE;Vans,shoes;ApparelSizeVariantProduct
+;M18729;;M18729_B;pieces;BLACK;Vans,shoes;ApparelSizeVariantProduct
+;M35392;;M18729_B;pieces;BLACK;Vans,shoes;ApparelSizeVariantProduct
+;M34704_R;;M34704;pieces;RED;Playboard,shirts;ApparelSizeVariantProduct
+;M34704_W;;M34704;pieces;WHITE;Playboard,shirts;ApparelSizeVariantProduct
+;M34704_B;;M34704;pieces;BLACK;Playboard,shirts;ApparelSizeVariantProduct
+;M34704_P;;M34704;pieces;PURPLE;Playboard,shirts;ApparelSizeVariantProduct
+;M34705_N;;M34705_B;pieces;BLACK;Playboard,shirts;ApparelSizeVariantProduct
+;M34705_W;;M34705_B;pieces;WHITE;Playboard,shirts;ApparelSizeVariantProduct
+
+# Create ApparelSizeVariantProduct variants
+INSERT_UPDATE ApparelSizeVariantProduct;code[unique=true];$catalogVersion;$baseProduct;ean;unit(code);$prices;swatchColors(code);supercategories(code,$catalogVersion);;$approved;$taxGroup
+;35099;;M18729;0700053336407;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35100;;M18729;0700053336414;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35101;;M18729;0700053336421;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35102;;M18729;0700053336445;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35104;;M18729;0700053336377;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35105;;M18729;0700053336384;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35106;;M18729;0700053336391;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;35135;;M18729;0700053336360;pieces;50,96 GBP , 58,40 EUR;BLACK;Vans,shoes
+;300147490;;M25687_B;4260125824707;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300147493;;M25687_B;4260203210132;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300147503;;M25687_W;4260125824639;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300147505;;M25687_W;4260203210118;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300020465;;M27160;8030016531726;pieces;126,61 GBP , 145,10 EUR;BLACK,SILVER;Dainese,shirts
+;300020466;;M27160;8030016531740;pieces;126,61 GBP , 145,10 EUR;BLACK,SILVER;Dainese,shirts
+;300026672;;M28323;0700053803930;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026673;;M28323;0700053803947;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026674;;M28323;0700053803954;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026675;;M28323;0700053803978;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026676;;M28323;0700053803862;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026677;;M28323;0700053803879;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026678;;M28323;0700053803923;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300036392;;M28323;0700053803961;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300036393;;M28323;0700053803985;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300036394;;M28323;0658100329981;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300062466;;M28323;0700053803794;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300076932;;M28323;0700053803732;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300076933;;M28323;0700053803749;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300076934;;M28323;0700053803756;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300076935;;M28323;0700053803770;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300076936;;M28323;0700053803848;pieces;59,46 GBP , 68,14 EUR;BLACK,WHITE;Vans,shoes
+;300026679;;M28324;0700053334083;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026680;;M28324;0700053334090;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026681;;M28324;0700053334106;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026682;;M28324;0700053334120;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026684;;M28324;0700053334007;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026685;;M28324;0700053334014;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026686;;M28324;0700053334021;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026687;;M28324;0700053334038;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026688;;M28324;0700053334045;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026689;;M28324;0700053334052;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026690;;M28324;0700053334069;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300026691;;M28324;0700053334076;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300068437;;M28324;0700053334113;pieces;50,96 GBP , 58,40 EUR;BLACK,WHITE;Vans,shoes
+;300040585;;M32946;8030016532105;pieces;75,61 GBP , 86,65 EUR;WHITE;Dainese,shirts
+;300060389;;M33307;9008415155910;pieces;101,11 GBP , 115,87 EUR;BLACK;F2-FTWO,shoes
+;300062456;;M33477;7640128779759;pieces;67,96 GBP , 77,88 EUR;BLACK;TSG,helmet
+;300060401;;M34130;9009044003603;pieces;46,71 GBP , 53,53 EUR;BLACK,RED;Pro Tec,skigear
+;300066928;;M34130;9009044003382;pieces;46,71 GBP , 53,53 EUR;BLACK,RED;Pro Tec,skigear
+;300046028;;M34704_R;4260125824806;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300046029;;M34704_R;4260125824813;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300046030;;M34704_R;4260125824820;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300046031;;M34704_R;4260125824790;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300046032;;M34704_W;4260125824721;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300046033;;M34704_W;4260125824738;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300046035;;M34704_W;4260125824714;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300067366;;M34704_B;4260125824769;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067367;;M34704_B;4260125824776;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067368;;M34704_B;4260125824783;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067369;;M34704_B;4260125824752;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067371;;M34704_P;4260125826206;pieces;26,68 GBP , 30,58 EUR;PURPLE;Playboard,shirts
+;300067372;;M34704_P;4260125826190;pieces;26,68 GBP , 30,58 EUR;PURPLE;Playboard,shirts
+;300046036;;M34705_N;4260125825049;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300046037;;M34705_N;4260125825056;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300046038;;M34705_N;4260125825063;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300046039;;M34705_N;4260125825032;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300046043;;M34705_W;4260125825070;pieces;26,68 GBP , 30,58 EUR;WHITE;Playboard,shirts
+;300052678;;M35364_R;4260203210385;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300067374;;M35366_B;4260203210361;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067375;;M35366_B;4260203210354;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067376;;M35366_B;4260203210347;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300067377;;M35366_B;4260203210378;pieces;26,68 GBP , 30,58 EUR;BLACK;Playboard,shirts
+;300076093;;M35364_R;4260203210408;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300076094;;M35364_R;4260203210392;pieces;26,68 GBP , 30,58 EUR;RED;Playboard,shirts
+;300147511;;M35365_G;4260203210439;pieces;26,68 GBP , 30,58 EUR;GREEN;Playboard,shirts
+;300147512;;M35365_G;4260203210422;pieces;26,68 GBP , 30,58 EUR;GREEN;Playboard,shirts
+;300147513;;M35365_G;4260203210453;pieces;26,68 GBP , 30,58 EUR;GREEN;Playboard,shirts
+;300050252;;M35392;0658100317780;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050253;;M35392;0658100317803;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050254;;M35392;0658100317810;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050255;;M35392;0658100317827;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050256;;M35392;0658100317834;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050257;;M35392;0658100317841;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300050258;;M35392;0658100317858;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300065500;;M35392;0658100317766;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300065501;;M35392;0658100317797;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+;300150177;;M35392;0658100317773;pieces;46,71 GBP , 53,53 EUR;BLACK;Vans,shoes
+
+# Apparel products use Variants with a structure:
+# ApparelProduct > ApparelStyleVariantProduct > ApparelSizeVariantProduct
+# Apparel products may have no variations, only colour (style) variations or both colour and size variations.
+
+# Create products
+INSERT_UPDATE ApparelProduct;code[unique=true];$catalogVersion;unit(code)[default='pieces'];$prices;supercategories(code,$catalogVersion);varianttype(code);$approved;$taxGroup;ean;genders(code)
+;103410;;pieces;64,76 GBP , 79,95 EUR;190100,snow,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;100191;;pieces;101,21 GBP , 124,95 EUR;190100,snow,Armada;ApparelStyleVariantProduct;;;;MALE
+;94474;;pieces;113,36 GBP , 139,95 EUR;190100,snow,Special Blend;ApparelStyleVariantProduct;;;;MALE
+;95385;;pieces;129,56 GBP , 159,95 EUR;190100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;97602;;pieces;72,86 GBP , 89,95 EUR;190100,snow,Nike 6.0;ApparelStyleVariantProduct;;;;MALE
+;94462;;pieces;97,16 GBP , 119,95 EUR;190100,snow,Special Blend;ApparelStyleVariantProduct;;;;MALE
+;132871;;pieces;485,96 GBP , 599,95 EUR;190100,snow,PYUA;ApparelStyleVariantProduct;;;;MALE
+;96977;;pieces;97,16 GBP , 119,95 EUR;50100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;96990;;pieces;101,21 GBP , 124,95 EUR;50100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;7907;;pieces;80,96 GBP , 99,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;74036;;pieces;25,88 GBP , 31,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;5203;;pieces;4,01 GBP , 4,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;21618;;pieces;12,92 GBP , 15,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;135304;;pieces;4,82 GBP , 5,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;102277;;pieces;40,46 GBP , 49,95 EUR;450100,snow,Red;ApparelStyleVariantProduct;;;;MALE
+;111160;;pieces;20,21 GBP , 24,95 EUR;221600,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;130663;;pieces;283,46 GBP , 349,95 EUR;222000,GoPro Cam;ApparelStyleVariantProduct;;;;MALE
+;117211;;pieces;16,16 GBP , 19,95 EUR;220500,droid;ApparelStyleVariantProduct;;;;MALE
+;104668;;pieces;14,54 GBP , 17,95 EUR;220500,Elm;ApparelStyleVariantProduct;;;;MALE
+;105979;;pieces;26,69 GBP , 32,95 EUR;220500,Landing;ApparelStyleVariantProduct;;;;MALE
+;96022;;pieces;28,31 GBP , 34,95 EUR;220500,Burton;ApparelStyleVariantProduct;;;;MALE
+;93762;;pieces;14,54 GBP , 17,95 EUR;220500,VIVO;ApparelStyleVariantProduct;;;;MALE
+;105977;;pieces;15,35 GBP , 18,95 EUR;220500,Landing;ApparelStyleVariantProduct;;;;MALE
+;100988;;pieces;28,31 GBP , 34,95 EUR;220500,DC;ApparelStyleVariantProduct;;;;MALE
+;94172;;pieces;16,16 GBP , 19,95 EUR;220500,Nixon;ApparelStyleVariantProduct;;;;MALE
+;96026;;pieces;24,26 GBP , 29,95 EUR;220500,Burton;ApparelStyleVariantProduct;;;;MALE
+;111159;;pieces;24,26 GBP , 29,95 EUR;221600,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;97693;;pieces;24,26 GBP , 29,95 EUR;190700,Oakley;ApparelStyleVariantProduct;;;;MALE
+;95521;;pieces;32,36 GBP , 39,95 EUR;190700,Burton;ApparelStyleVariantProduct;;;;MALE
+;95288;;pieces;20,21 GBP , 24,95 EUR;221100,Burton;ApparelStyleVariantProduct;;;;MALE
+;95290;;pieces;17,78 GBP , 21,95 EUR;221100,Burton;ApparelStyleVariantProduct;;;;MALE
+;97692;;pieces;36,41 GBP , 44,95 EUR;190700,Oakley;ApparelStyleVariantProduct;;;;MALE
+;95464;;pieces;97,16 GBP , 119,95 EUR;190300,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;94491;;pieces;97,16 GBP , 119,95 EUR;190300,snow,Special Blend;ApparelStyleVariantProduct;;;;MALE
+;97788;;pieces;89,06 GBP , 109,95 EUR;190300,snow,Vans;ApparelStyleVariantProduct;;;;MALE
+;94489;;pieces;97,16 GBP , 119,95 EUR;190300,snow,Special Blend;ApparelStyleVariantProduct;;;;MALE
+;94714;;pieces;97,16 GBP , 119,95 EUR;190300,snow,Zimtstern;ApparelStyleVariantProduct;;;;MALE
+;97607;;pieces;80,96 GBP , 99,95 EUR;190300,snow,Nike 6.0;ApparelStyleVariantProduct;;;;MALE
+;94374;;pieces;89,06 GBP , 109,95 EUR;190300,snow,Foursquare;ApparelStyleVariantProduct;;;;MALE
+;100378;;pieces;275,36 GBP , 339,95 EUR;10100,snow,Ride;ApparelStyleVariantProduct;;;;MALE
+;110839;;pieces;178,16 GBP , 219,95 EUR;10100,snow,Aesthetiker;ApparelStyleVariantProduct;;;;MALE
+;101580;;pieces;226,76 GBP , 279,95 EUR;10100,snow,DC;ApparelStyleVariantProduct;;;;MALE
+;117452;;pieces;307,76 GBP , 379,95 EUR;10100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;97199;;pieces;259,16 GBP , 319,95 EUR;10100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;108295;;pieces;291,56 GBP , 359,95 EUR;10100,snow,F2-FTWO;ApparelStyleVariantProduct;;;;MALE
+;97252;;pieces;161,96 GBP , 199,95 EUR;10100,snow,Burton;ApparelStyleVariantProduct;;;;MALE
+;95361;;pieces;68,81 GBP , 84,95 EUR;330100,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;102284;;pieces;97,16 GBP , 119,95 EUR;330100,snow,kids,Volcom;ApparelStyleVariantProduct;;;;MALE
+;99063;;pieces;68,81 GBP , 84,95 EUR;330100,snow,kids,686;ApparelStyleVariantProduct;;;;MALE
+;95353;;pieces;52,61 GBP , 64,95 EUR;330100,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;95366;;pieces;80,96 GBP , 99,95 EUR;330100,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;95367;;pieces;52,61 GBP , 64,95 EUR;330100,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;94942;;pieces;137,66 GBP , 169,95 EUR;330100,snow,kids,Zimtstern;ApparelStyleVariantProduct;;;;MALE
+;107728;;pieces;97,16 GBP , 119,95 EUR;330100,snow,kids,Sessions;ApparelStyleVariantProduct;;;;MALE
+;95453;;pieces;44,51 GBP , 54,95 EUR;330700,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;81252;;pieces;32,36 GBP , 39,95 EUR;330700,snow,kids,Horsefeathers;ApparelStyleVariantProduct;;;;MALE
+;98913;;pieces;56,66 GBP , 69,95 EUR;330700,snow,kids,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;62001;;pieces;44,51 GBP , 54,95 EUR;330700,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;132042;;pieces;80,96 GBP , 99,95 EUR;330700,snow,kids,Orage;ApparelStyleVariantProduct;;;;MALE
+;98908;;pieces;56,66 GBP , 69,95 EUR;330700,snow,kids,Orage;ApparelStyleVariantProduct;;;;MALE
+;95446;;pieces;56,66 GBP , 69,95 EUR;330700,snow,kids,Burton;ApparelStyleVariantProduct;;;;MALE
+;99145;;pieces;64,76 GBP , 79,95 EUR;200100,snow,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;95437;;pieces;105,26 GBP , 129,95 EUR;200100,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;95438;;pieces;89,06 GBP , 109,95 EUR;200100,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;99146;;pieces;105,26 GBP , 129,95 EUR;200100,snow,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;103335;;pieces;80,96 GBP , 99,95 EUR;200100,snow,WLD;ApparelStyleVariantProduct;;;;FEMALE
+;95424;;pieces;113,36 GBP , 139,95 EUR;200100,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;95430;;pieces;97,16 GBP , 119,95 EUR;200100,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;95441;;pieces;145,76 GBP , 179,95 EUR;200100,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;95490;;pieces;105,26 GBP , 129,95 EUR;200300,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;95482;;pieces;89,06 GBP , 109,95 EUR;200300,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;99154;;pieces;97,16 GBP , 119,95 EUR;200300,snow,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;94382;;pieces;80,96 GBP , 99,95 EUR;200300,snow,Foursquare;ApparelStyleVariantProduct;;;;FEMALE
+;95484;;pieces;113,36 GBP , 139,95 EUR;200300,snow,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;100744;;pieces;89,06 GBP , 109,95 EUR;200300,snow,DC;ApparelStyleVariantProduct;;;;FEMALE
+;100124;;pieces;153,86 GBP , 189,95 EUR;260900,streetwear,Nikita;ApparelStyleVariantProduct;;;;FEMALE
+;98929;;pieces;68,81 GBP , 84,95 EUR;200300,snow,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;100746;;pieces;113,36 GBP , 139,95 EUR;200300,snow,DC;ApparelStyleVariantProduct;;;;FEMALE
+;64389;;pieces;64,76 GBP , 79,95 EUR;370700,Nixon;ApparelStyleVariantProduct;;;;FEMALE
+;115195;;pieces;56,66 GBP , 69,95 EUR;370700,Nixon;ApparelStyleVariantProduct;;;;FEMALE
+;111114;;pieces;80,96 GBP , 99,95 EUR;370700,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;56802;;pieces;202,46 GBP , 249,95 EUR;370700,Nixon;ApparelStyleVariantProduct;;;;FEMALE
+;74844;;pieces;137,66 GBP , 169,95 EUR;370700,Nixon;ApparelStyleVariantProduct;;;;FEMALE
+;51411;;pieces;80,96 GBP , 99,95 EUR;370700,Nixon;ApparelStyleVariantProduct;;;;FEMALE
+;94063;;pieces;404,96 GBP , 499,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;74818;;pieces;80,96 GBP , 99,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;115202;;pieces;210,56 GBP , 259,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;74825;;pieces;129,56 GBP , 159,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;36265;;pieces;226,76 GBP , 279,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;43339;;pieces;137,66 GBP , 169,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;129704;;pieces;105,26 GBP , 129,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;29160;;pieces;242,96 GBP , 299,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;104176;;pieces;64,76 GBP , 79,95 EUR;260100,streetwear,Horsefeathers;ApparelStyleVariantProduct;;;;FEMALE
+;108803;;pieces;17,78 GBP , 21,95 EUR;260100,streetwear,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;143906;;pieces;28,31 GBP , 34,95 EUR;261800,streetwear,Element;ApparelStyleVariantProduct;;;;FEMALE
+;121048;;pieces;28,31 GBP , 34,95 EUR;260100,streetwear,Vans;ApparelStyleVariantProduct;;;;FEMALE
+;122320;;pieces;24,26 GBP , 29,95 EUR;250100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122312;;pieces;21,83 GBP , 26,95 EUR;250100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122333;;pieces;28,31 GBP , 34,95 EUR;250100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122340;;pieces;30,74 GBP , 37,95 EUR;250100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122800;;pieces;22,64 GBP , 27,95 EUR;250100,streetwear,Alien Workshop;ApparelStyleVariantProduct;;;;MALE
+;122405;;pieces;18,59 GBP , 22,95 EUR;270100,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122412;;pieces;20,21 GBP , 24,95 EUR;270100,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122409;;pieces;20,21 GBP , 24,95 EUR;270100,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;122410;;pieces;20,21 GBP , 24,95 EUR;270100,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;117080;;pieces;12,92 GBP , 15,95 EUR;270100,kids,streetwear,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;138966;;pieces;18,59 GBP , 22,95 EUR;270100,kids,streetwear,Burton;ApparelStyleVariantProduct;;;;MALE
+;140501;;pieces;30,74 GBP , 37,95 EUR;270100,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;144862;;pieces;20,21 GBP , 24,95 EUR;270100,kids,streetwear,DC;ApparelStyleVariantProduct;;;;MALE
+;102278;;pieces;32,36 GBP , 39,95 EUR;450200,kids,Red;ApparelStyleVariantProduct;;;;MALE
+;129707;;pieces;137,66 GBP , 169,95 EUR;340000,Nixon;ApparelStyleVariantProduct;;;;MALE
+;96502;;pieces;72,86 GBP , 89,95 EUR;210200,Anon;ApparelStyleVariantProduct;;;;MALE
+;96001;;pieces;24,26 GBP , 29,95 EUR;220500,Burton;ApparelStyleVariantProduct;;;;MALE
+;104905;;pieces;242,96 GBP , 299,95 EUR;110600,Dalbello;ApparelStyleVariantProduct;;;;MALE
+;29867;;pieces;558,86 GBP , 689,95 EUR;350100,surf,Surftech;ApparelStyleVariantProduct;;;;MALE
+;115754;;pieces;607,46 GBP , 749,95 EUR;350100,surf,Al Merrick;ApparelStyleVariantProduct;;;;MALE
+;115755;;pieces;720,86 GBP , 889,95 EUR;350100,surf,Al Merrick;ApparelStyleVariantProduct;;;;MALE
+;92961;;pieces;153,86 GBP , 189,95 EUR;351200,surf,Skim One;ApparelStyleVariantProduct;;;;MALE
+;115753;;pieces;518,36 GBP , 639,95 EUR;350100,surf,Al Merrick;ApparelStyleVariantProduct;;;;MALE
+;5191;;pieces;9,68 GBP , 11,95 EUR;100100,Toko;ApparelStyleVariantProduct;;;;MALE
+;5191;;pieces;9,68 GBP , 11,95 EUR;100100,Toko;ApparelStyleVariantProduct;;;;MALE
+;5203;;pieces;4,01 GBP , 4,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;5203;;pieces;4,01 GBP , 4,95 EUR;100200,Toko;ApparelStyleVariantProduct;;;;MALE
+;121868;;pieces;44,51 GBP , 54,95 EUR;260700,streetwear,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;122447;;pieces;60,71 GBP , 74,95 EUR;260700,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;FEMALE
+;83174;;pieces;40,46 GBP , 49,95 EUR;260700,streetwear,667;ApparelStyleVariantProduct;;;;FEMALE
+;84574;;pieces;24,26 GBP , 29,95 EUR;260700,streetwear,Hurley;ApparelStyleVariantProduct;;;;FEMALE
+;83223;;pieces;28,31 GBP , 34,95 EUR;260700,streetwear,Femipleasure;ApparelStyleVariantProduct;;;;FEMALE
+;118591;;pieces;40,46 GBP , 49,95 EUR;250600,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;118603;;pieces;52,61 GBP , 64,95 EUR;250600,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;122041;;pieces;48,56 GBP , 59,95 EUR;250600,streetwear,Element;ApparelStyleVariantProduct;;;;MALE
+;118174;;pieces;44,51 GBP , 54,95 EUR;250600,streetwear,Nike 6.0;ApparelStyleVariantProduct;;;;MALE
+;80147;;pieces;44,51 GBP , 54,95 EUR;250600,streetwear,Analog;ApparelStyleVariantProduct;;;;MALE
+;122394;;pieces;44,51 GBP , 54,95 EUR;270600,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;118899;;pieces;40,46 GBP , 49,95 EUR;270600,kids,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;79536;;pieces;24,26 GBP , 29,95 EUR;270600,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;83025;;pieces;36,41 GBP , 44,95 EUR;270600,kids,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;92637;;pieces;36,41 GBP , 44,95 EUR;270600,kids,streetwear,69 Slam;ApparelStyleVariantProduct;;;;MALE
+;140467;;pieces;40,46 GBP , 49,95 EUR;270600,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;140458;;pieces;52,61 GBP , 64,95 EUR;270600,kids,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;121939;;pieces;24,26 GBP , 29,95 EUR;400300,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;122784;;pieces;28,31 GBP , 34,95 EUR;400300,Reef;ApparelStyleVariantProduct;;;;FEMALE
+;121941;;pieces;14,54 GBP , 17,95 EUR;400300,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;121942;;pieces;14,54 GBP , 17,95 EUR;400300,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;118720;;pieces;20,21 GBP , 24,95 EUR;400300,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;122459;;pieces;32,36 GBP , 39,95 EUR;160400,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;FEMALE
+;122461;;pieces;36,41 GBP , 44,95 EUR;160400,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;FEMALE
+;121924;;pieces;44,51 GBP , 54,95 EUR;160400,streetwear,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;123970;;pieces;28,31 GBP , 34,95 EUR;160400,streetwear,Element;ApparelStyleVariantProduct;;;;FEMALE
+;124693;;pieces;36,41 GBP , 44,95 EUR;160400,streetwear,Dakine;ApparelStyleVariantProduct;;;;FEMALE
+;102153;;pieces;1,98 GBP , 2,45 EUR;160400,streetwear,adidas Originals;ApparelStyleVariantProduct;;;;FEMALE
+;122233;;pieces;16,16 GBP , 19,95 EUR;160400,streetwear,Vans;ApparelStyleVariantProduct;;;;FEMALE
+;122379;;pieces;34,79 GBP , 42,95 EUR;160700,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;104396;;pieces;1,58 GBP , 1,95 EUR;160700,streetwear,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;118833;;pieces;56,66 GBP , 69,95 EUR;160300,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;104485;;pieces;60,71 GBP , 74,95 EUR;160300,streetwear,Skullcandy;ApparelStyleVariantProduct;;;;MALE
+;124267;;pieces;40,46 GBP , 49,95 EUR;160300,streetwear,adidas Originals;ApparelStyleVariantProduct;;;;MALE
+;124269;;pieces;40,46 GBP , 49,95 EUR;160300,streetwear,adidas Originals;ApparelStyleVariantProduct;;;;MALE
+;124268;;pieces;40,46 GBP , 49,95 EUR;160300,streetwear,adidas Originals;ApparelStyleVariantProduct;;;;MALE
+;100402;;pieces;24,26 GBP , 29,95 EUR;160700,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;118514;;pieces;14,54 GBP , 17,95 EUR;210100,Vans;ApparelStyleVariantProduct;;;;MALE
+;115118;;pieces;72,86 GBP , 89,95 EUR;210100,Nike;ApparelStyleVariantProduct;;;;MALE
+;115117;;pieces;72,86 GBP , 89,95 EUR;210100,Nike;ApparelStyleVariantProduct;;;;MALE
+;115061;;pieces;72,86 GBP , 89,95 EUR;210100,Nike;ApparelStyleVariantProduct;;;;MALE
+;122723;;pieces;28,31 GBP , 34,95 EUR;370900,Fox;ApparelStyleVariantProduct;;;;FEMALE
+;118693;;pieces;20,21 GBP , 24,95 EUR;370900,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;79889;;pieces;24,26 GBP , 29,95 EUR;370900,Bench;ApparelStyleVariantProduct;;;;FEMALE
+;63500;;pieces;17,78 GBP , 21,95 EUR;370900,Fox;ApparelStyleVariantProduct;;;;FEMALE
+;117909;;pieces;28,31 GBP , 34,95 EUR;251100,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;118859;;pieces;20,21 GBP , 24,95 EUR;251100,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;118879;;pieces;40,46 GBP , 49,95 EUR;251100,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;98851;;pieces;20,21 GBP , 24,95 EUR;251100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;118871;;pieces;24,26 GBP , 29,95 EUR;251100,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;117911;;pieces;40,46 GBP , 49,95 EUR;251100,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;74010;;pieces;17,78 GBP , 21,95 EUR;251100,streetwear,Von Zipper;ApparelStyleVariantProduct;;;;MALE
+;123922;;pieces;17,78 GBP , 21,95 EUR;270100,kids,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;98951;;pieces;12,92 GBP , 15,95 EUR;270100,kids,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;118313;;pieces;28,31 GBP , 34,95 EUR;250100,streetwear,DC;ApparelStyleVariantProduct;;;;MALE
+;96162;;pieces;24,26 GBP , 29,95 EUR;250100,streetwear,Burton;ApparelStyleVariantProduct;;;;MALE
+;122321;;pieces;24,26 GBP , 29,95 EUR;250100,streetwear,Billabong;ApparelStyleVariantProduct;;;;MALE
+;103088;;pieces;20,21 GBP , 24,95 EUR;250100,streetwear,Volcom;ApparelStyleVariantProduct;;;;MALE
+;123759;;pieces;28,31 GBP , 34,95 EUR;250100,streetwear,Carhartt;ApparelStyleVariantProduct;;;;MALE
+;122059;;pieces;28,31 GBP , 34,95 EUR;250100,streetwear,Element;ApparelStyleVariantProduct;;;;MALE
+;117896;;pieces;28,31 GBP , 34,95 EUR;250100,streetwear,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;121832;;pieces;28,31 GBP , 34,95 EUR;260100,streetwear,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;118893;;pieces;24,26 GBP , 29,95 EUR;260100,streetwear,Billabong;ApparelStyleVariantProduct;;;;FEMALE
+;108803;;pieces;17,78 GBP , 21,95 EUR;260100,streetwear,Roxy;ApparelStyleVariantProduct;;;;FEMALE
+;94791;;pieces;20,21 GBP , 24,95 EUR;260100,streetwear,Zimtstern;ApparelStyleVariantProduct;;;;FEMALE
+;99277;;pieces;24,26 GBP , 29,95 EUR;260100,streetwear,Volcom;ApparelStyleVariantProduct;;;;FEMALE
+;118894;;pieces;24,26 GBP , 29,95 EUR;260100,streetwear,Billabong;ApparelStyleVariantProduct;;;;FEMALE
+;122811;;pieces;21,83 GBP , 26,95 EUR;260100,streetwear,Burton;ApparelStyleVariantProduct;;;;FEMALE
+;122670;;pieces;28,31 GBP , 34,95 EUR;220600,Fox;ApparelStyleVariantProduct;;;;MALE
+;117900;;pieces;28,31 GBP , 34,95 EUR;220600,Quiksilver;ApparelStyleVariantProduct;;;;MALE
+;122072;;pieces;24,26 GBP , 29,95 EUR;220600,Element;ApparelStyleVariantProduct;;;;MALE
+;117204;;pieces;11,30 GBP , 13,95 EUR;220600,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;117210;;pieces;11,30 GBP , 13,95 EUR;220600,droid;ApparelStyleVariantProduct;;;;MALE
+;103151;;pieces;24,26 GBP , 29,95 EUR;220600,Volcom;ApparelStyleVariantProduct;;;;MALE
+;117205;;pieces;11,30 GBP , 13,95 EUR;220600,Blue Tomato;ApparelStyleVariantProduct;;;;MALE
+;122074;;pieces;36,41 GBP , 44,95 EUR;220600,Element;ApparelStyleVariantProduct;;;;MALE
+;92905;;pieces;77,72 GBP , 95,95 EUR;210100,Nike;ApparelStyleVariantProduct;;;;MALE
+;96097;;pieces;28,31 GBP , 34,95 EUR;251100,streetwear,Burton;ApparelStyleVariantProduct;;;;MALE
+;116623;;pieces;485,96 GBP , 599,95 EUR;350200,surf,Southpoint;ApparelStyleVariantProduct;;;;MALE
+;96172;;pieces;17,78 GBP , 21,95 EUR;250100,streetwear,Burton;ApparelStyleVariantProduct;;;;MALE
+;94415;;pieces;32,36 GBP , 39,95 EUR;220600,Foursquare;ApparelStyleVariantProduct;;;;MALE
+
+
+# Create ApparelStyleVariantProduct variants
+INSERT_UPDATE ApparelStyleVariantProduct;code[unique=true];$catalogVersion;$baseProduct;supercategories(code,$catalogVersion);swatchColors(code);unit(code)[default='pieces'];varianttype(code);$approved
+;103410_snapper;;103410;190100,snow,Quiksilver;BLUE,GREY;pieces;ApparelSizeVariantProduct;
+;100191_glacier;;100191;190100,snow,Armada;BLUE;pieces;ApparelSizeVariantProduct;
+;100191_lime;;100191;190100,snow,Armada;GREEN;pieces;ApparelSizeVariantProduct;
+;94474_red_rum;;94474;190100,snow,Special Blend;RED;pieces;ApparelSizeVariantProduct;
+;94474_blackout;;94474;190100,snow,Special Blend;BLACK;pieces;ApparelSizeVariantProduct;
+;94474_burnt_greens;;94474;190100,snow,Special Blend;GREEN;pieces;ApparelSizeVariantProduct;
+;95385_cardinal;;95385;190100,snow,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95385_stout_white_vibe_stripe;;95385;190100,snow,Burton;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;95385_stout_white+true_black;;95385;190100,snow,Burton;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;95385_astro_turf_colorblock;;95385;190100,snow,Burton;;pieces;ApparelSizeVariantProduct;
+;97602_black+black+dark_copper;;97602;190100,snow,Nike 6.0;BLACK;pieces;ApparelSizeVariantProduct;
+;94462_blackout;;94462;190100,snow,Special Blend;BLACK;pieces;ApparelSizeVariantProduct;
+;94462_iron_lung;;94462;190100,snow,Special Blend;GREY;pieces;ApparelSizeVariantProduct;
+;132871_summer_green;;132871;190100,snow,PYUA;GREEN;pieces;ApparelSizeVariantProduct;
+;132871_deepest_black;;132871;190100,snow,PYUA;BLACK;pieces;ApparelSizeVariantProduct;
+;96977_black;;96977;50100,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;96977_white;;96977;50100,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;96977_red;;96977;50100,snow,Burton;RED;pieces;ApparelSizeVariantProduct;
+;96977_teal;;96977;50100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96990_teal;;96990;50100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96990_white;;96990;50100,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;96990_red;;96990;50100,snow,Burton;RED;pieces;ApparelSizeVariantProduct;
+;7907_yellow;;7907;100200,Toko;YELLOW;pieces;ApparelSizeVariantProduct;
+;5203_graphite;;5203;100200,Toko;GREY;pieces;ApparelSizeVariantProduct;
+;5203_transparent;;5203;100200,Toko;;pieces;ApparelSizeVariantProduct;
+;102277_black_matte;;102277;450100,snow,Red;BLACK;pieces;ApparelSizeVariantProduct;
+;102277_trench_green;;102277;450100,snow,Red;GREEN;pieces;ApparelSizeVariantProduct;
+;102277_white_pearl;;102277;450100,snow,Red;WHITE;pieces;ApparelSizeVariantProduct;
+;102277_white;;102277;450100,snow,Red;WHITE;pieces;ApparelSizeVariantProduct;
+;102277_green;;102277;450100,snow,Red;GREEN;pieces;ApparelSizeVariantProduct;
+;102277_lime;;102277;450100,snow,Red;GREEN;pieces;ApparelSizeVariantProduct;
+;102277_plaid_print;;102277;450100,snow,Red;BLACK,RED,GREY;pieces;ApparelSizeVariantProduct;
+;102277_radical;;102277;450100,snow,Red;BLUE;pieces;ApparelSizeVariantProduct;
+;102277_black;;102277;450100,snow,Red;BLACK;pieces;ApparelSizeVariantProduct;
+;111160_tiedie;;111160;221600,Blue Tomato;;pieces;ApparelSizeVariantProduct;
+;130663_uni;;130663;222000,GoPro Cam;;pieces;ApparelSizeVariantProduct;
+;117211_royal_blue;;117211;220500,droid;BLUE;pieces;ApparelSizeVariantProduct;
+;117211_black;;117211;220500,droid;BLACK;pieces;ApparelSizeVariantProduct;
+;117211_heather_grey;;117211;220500,droid;GREY;pieces;ApparelSizeVariantProduct;
+;117211_white;;117211;220500,droid;WHITE;pieces;ApparelSizeVariantProduct;
+;117211_cyan;;117211;220500,droid;BLUE;pieces;ApparelSizeVariantProduct;
+;104668_white;;104668;220500,Elm;WHITE;pieces;ApparelSizeVariantProduct;
+;104668_purple;;104668;220500,Elm;PURPLE;pieces;ApparelSizeVariantProduct;
+;104668_red;;104668;220500,Elm;RED;pieces;ApparelSizeVariantProduct;
+;104668_caribbean_blue;;104668;220500,Elm;BLUE;pieces;ApparelSizeVariantProduct;
+;104668_charcoal;;104668;220500,Elm;BLACK;pieces;ApparelSizeVariantProduct;
+;104668_kelly_green;;104668;220500,Elm;GREEN;pieces;ApparelSizeVariantProduct;
+;104668_yellow;;104668;220500,Elm;YELLOW;pieces;ApparelSizeVariantProduct;
+;104668_magenta;;104668;220500,Elm;PINK;pieces;ApparelSizeVariantProduct;
+;104668_royal_blue;;104668;220500,Elm;BLUE;pieces;ApparelSizeVariantProduct;
+;105979_yellow_blue;;105979;220500,Landing;BLUE,YELLOW;pieces;ApparelSizeVariantProduct;
+;105979_rasta_black;;105979;220500,Landing;BLACK;pieces;ApparelSizeVariantProduct;
+;105979_white_blue;;105979;220500,Landing;WHITE,BLUE;pieces;ApparelSizeVariantProduct;
+;105979_raspberry_blue;;105979;220500,Landing;BLUE;pieces;ApparelSizeVariantProduct;
+;105979_white_green;;105979;220500,Landing;WHITE,GREEN;pieces;ApparelSizeVariantProduct;
+;105979_rasta_white;;105979;220500,Landing;WHITE;pieces;ApparelSizeVariantProduct;
+;96022_purple_label;;96022;220500,Burton;PURPLE;pieces;ApparelSizeVariantProduct;
+;96022_mocha;;96022;220500,Burton;BLUE,BROWN;pieces;ApparelSizeVariantProduct;
+;96022_true_black;;96022;220500,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;96022_cardinal;;96022;220500,Burton;RED;pieces;ApparelSizeVariantProduct;
+;96022_astro_turf;;96022;220500,Burton;;pieces;ApparelSizeVariantProduct;
+;96022_hunter;;96022;220500,Burton;ORANGE;pieces;ApparelSizeVariantProduct;
+;96022_smurf;;96022;220500,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96022_stout_white;;96022;220500,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;96022_team_blue;;96022;220500,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;93762_ski_high;;93762;220500,VIVO;BLUE;pieces;ApparelSizeVariantProduct;
+;93762_lemon;;93762;220500,VIVO;YELLOW;pieces;ApparelSizeVariantProduct;
+;93762_haze;;93762;220500,VIVO;PURPLE;pieces;ApparelSizeVariantProduct;
+;93762_husky;;93762;220500,VIVO;;pieces;ApparelSizeVariantProduct;
+;105977_blue;;105977;220500,Landing;BLUE;pieces;ApparelSizeVariantProduct;
+;105977_black;;105977;220500,Landing;BLACK;pieces;ApparelSizeVariantProduct;
+;105977_yellow;;105977;220500,Landing;YELLOW;pieces;ApparelSizeVariantProduct;
+;105977_heather_grey;;105977;220500,Landing;GREY;pieces;ApparelSizeVariantProduct;
+;100988_black+red;;100988;220500,DC;BLACK,RED;pieces;ApparelSizeVariantProduct;
+;100988_olympian_blue;;100988;220500,DC;BLUE;pieces;ApparelSizeVariantProduct;
+;94172_black;;94172;220500,Nixon;BLACK;pieces;ApparelSizeVariantProduct;
+;96026_team_blue;;96026;220500,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96026_astro_turf;;96026;220500,Burton;;pieces;ApparelSizeVariantProduct;
+;96026_true_black;;96026;220500,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;111159_white;;111159;221600,Blue Tomato;WHITE;pieces;ApparelSizeVariantProduct;
+;111159_black;;111159;221600,Blue Tomato;BLACK;pieces;ApparelSizeVariantProduct;
+;97693_enamel_purple;;97693;190700,Oakley;PURPLE;pieces;ApparelSizeVariantProduct;
+;97693_black+orange;;97693;190700,Oakley;BLACK,ORANGE;pieces;ApparelSizeVariantProduct;
+;97693_marine_blue;;97693;190700,Oakley;BLUE;pieces;ApparelSizeVariantProduct;
+;97693_digi_plaid;;97693;190700,Oakley;GREY;pieces;ApparelSizeVariantProduct;
+;95521_prep;;95521;190700,Burton;WHITE,GREEN,BLACK;pieces;ApparelSizeVariantProduct;
+;95521_haculla_black;;95521;190700,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95521_day_of_the_dead;;95521;190700,Burton;WHITE,RED;pieces;ApparelSizeVariantProduct;
+;95521_nat_geo;;95521;190700,Burton;BLUE,YELLOW;pieces;ApparelSizeVariantProduct;
+;95521_mike_giant;;95521;190700,Burton;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;95521_wild_things;;95521;190700,Burton;BLUE,PURPLE;pieces;ApparelSizeVariantProduct;
+;95288_true_black;;95288;221100,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95288_cardinal;;95288;221100,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95290_ski-zee;;95290;221100,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95290_sub;;95290;221100,Burton;ORANGE;pieces;ApparelSizeVariantProduct;
+;95290_drunk_hunter;;95290;221100,Burton;BLACK,RED;pieces;ApparelSizeVariantProduct;
+;97692_white;;97692;190700,Oakley;WHITE;pieces;ApparelSizeVariantProduct;
+;95464_purple_label;;95464;190300,snow,Burton;PURPLE;pieces;ApparelSizeVariantProduct;
+;95464_gold_medal_panhandle;;95464;190300,snow,Burton;YELLOW,BLACK;pieces;ApparelSizeVariantProduct;
+;95464_team_blue;;95464;190300,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95464_smog;;95464;190300,snow,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;95464_bitters;;95464;190300,snow,Burton;ORANGE;pieces;ApparelSizeVariantProduct;
+;95464_nori_population;;95464;190300,snow,Burton;GREEN,GREY;pieces;ApparelSizeVariantProduct;
+;95464_astro_turf_dot_matrix;;95464;190300,snow,Burton;BLACK,GREEN;pieces;ApparelSizeVariantProduct;
+;95464_chino;;95464;190300,snow,Burton;YELLOW;pieces;ApparelSizeVariantProduct;
+;95464_stout_white;;95464;190300,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;94491_blackout;;94491;190300,snow,Special Blend;BLACK;pieces;ApparelSizeVariantProduct;
+;94491_hello_yellow;;94491;190300,snow,Special Blend;YELLOW;pieces;ApparelSizeVariantProduct;
+;94491_mojito;;94491;190300,snow,Special Blend;GREEN;pieces;ApparelSizeVariantProduct;
+;94491_blue_me;;94491;190300,snow,Special Blend;BLUE;pieces;ApparelSizeVariantProduct;
+;97788_steeple_grey;;97788;190300,snow,Vans;GREY;pieces;ApparelSizeVariantProduct;
+;97788_pirate_black;;97788;190300,snow,Vans;BLACK;pieces;ApparelSizeVariantProduct;
+;97788_medieval_blue;;97788;190300,snow,Vans;BLUE;pieces;ApparelSizeVariantProduct;
+;94489_denim;;94489;190300,snow,Special Blend;GREY;pieces;ApparelSizeVariantProduct;
+;94489_burnt_greens;;94489;190300,snow,Special Blend;GREEN;pieces;ApparelSizeVariantProduct;
+;94714_blue;;94714;190300,snow,Zimtstern;BLUE;pieces;ApparelSizeVariantProduct;
+;94714_royal;;94714;190300,snow,Zimtstern;BLUE;pieces;ApparelSizeVariantProduct;
+;94714_yellow;;94714;190300,snow,Zimtstern;YELLOW;pieces;ApparelSizeVariantProduct;
+;94714_black;;94714;190300,snow,Zimtstern;BLACK;pieces;ApparelSizeVariantProduct;
+;97607_dark_copper;;97607;190300,snow,Nike 6.0;ORANGE;pieces;ApparelSizeVariantProduct;
+;97607_treasure_blue;;97607;190300,snow,Nike 6.0;BLUE;pieces;ApparelSizeVariantProduct;
+;97607_black;;97607;190300,snow,Nike 6.0;BLACK;pieces;ApparelSizeVariantProduct;
+;97607_golden_hops;;97607;190300,snow,Nike 6.0;BROWN,YELLOW;pieces;ApparelSizeVariantProduct;
+;94374_ink;;94374;190300,snow,Foursquare;BLUE;pieces;ApparelSizeVariantProduct;
+;94374_blacktop;;94374;190300,snow,Foursquare;GREY;pieces;ApparelSizeVariantProduct;
+;94374_safety_orange;;94374;190300,snow,Foursquare;ORANGE;pieces;ApparelSizeVariantProduct;
+;94374_air;;94374;190300,snow,Foursquare;BLUE;pieces;ApparelSizeVariantProduct;
+;100378_uni;;100378;10100,snow,Ride;;pieces;ApparelSizeVariantProduct;
+;110839_uni;;110839;10100,snow,Aesthetiker;;pieces;ApparelSizeVariantProduct;
+;101580_multi;;101580;10100,snow,DC;;pieces;ApparelSizeVariantProduct;
+;117452_uni;;117452;10100,snow,Burton;;pieces;ApparelSizeVariantProduct;
+;97199_uni;;97199;10100,snow,Burton;;pieces;ApparelSizeVariantProduct;
+;108295_uni;;108295;10100,snow,F2-FTWO;;pieces;ApparelSizeVariantProduct;
+;97252_uni;;97252;10100,snow,Burton;;pieces;ApparelSizeVariantProduct;
+;95361_col_mustard_colorblock;;95361;330100,snow,kids,Burton;YELLOW,GREEN;pieces;ApparelSizeVariantProduct;
+;95361_rasta_clouds;;95361;330100,snow,kids,Burton;YELLOW,BLACK,GREEN,RED,GREY;pieces;ApparelSizeVariantProduct;
+;95361_true_black;;95361;330100,snow,kids,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95361_argon_cloud_camo;;95361;330100,snow,kids,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95361_trench+mocha;;95361;330100,snow,kids,Burton;BROWN;pieces;ApparelSizeVariantProduct;
+;102284_asteroid_plaid;;102284;330100,snow,kids,Volcom;BLACK,ORANGE;pieces;ApparelSizeVariantProduct;
+;99063_red;;99063;330100,snow,kids,686;RED;pieces;ApparelSizeVariantProduct;
+;99063_kelly;;99063;330100,snow,kids,686;GREEN;pieces;ApparelSizeVariantProduct;
+;95353_mascot_trippleo;;95353;330100,snow,kids,Burton;BLUE,ORANGE;pieces;ApparelSizeVariantProduct;
+;95353_sugar_cane;;95353;330100,snow,kids,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95366_mini_heart_camo;;95366;330100,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95366_honeydew;;95366;330100,snow,kids,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95366_watermelon;;95366;330100,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95367_watermelon;;95367;330100,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95367_honeydew;;95367;330100,snow,kids,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95367_mini_heart_camo;;95367;330100,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;94942_brown;;94942;330100,snow,kids,Zimtstern;BROWN;pieces;ApparelSizeVariantProduct;
+;107728_black_mini_stripe;;107728;330100,snow,kids,Sessions;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;95453_watermelon;;95453;330700,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95453_green_bean;;95453;330700,snow,kids,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95453_glamberry;;95453;330700,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95453_true_black;;95453;330700,snow,kids,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95453_honeydew;;95453;330700,snow,kids,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95453_amethyst;;95453;330700,snow,kids,Burton;PINK;pieces;ApparelSizeVariantProduct;
+;95453_true_black_sequins;;95453;330700,snow,kids,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95453_bright_white_sequins;;95453;330700,snow,kids,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;81252_turquoise;;81252;330700,snow,kids,Horsefeathers;BLUE;pieces;ApparelSizeVariantProduct;
+;81252_black;;81252;330700,snow,kids,Horsefeathers;BLACK;pieces;ApparelSizeVariantProduct;
+;98913_peach;;98913;330700,snow,kids,Quiksilver;PINK,ORANGE;pieces;ApparelSizeVariantProduct;
+;62001_lemonhead_jumanji;;62001;330700,snow,kids,Burton;;pieces;ApparelSizeVariantProduct;
+;132042_berry;;132042;330700,snow,kids,Orage;PINK,PURPLE;pieces;ApparelSizeVariantProduct;
+;98908_blue;;98908;330700,snow,kids,Orage;BLUE;pieces;ApparelSizeVariantProduct;
+;98908_lime;;98908;330700,snow,kids,Orage;GREEN;pieces;ApparelSizeVariantProduct;
+;98908_green;;98908;330700,snow,kids,Orage;GREEN;pieces;ApparelSizeVariantProduct;
+;98908_red;;98908;330700,snow,kids,Orage;RED;pieces;ApparelSizeVariantProduct;
+;95446_flint_á_stripe;;95446;330700,snow,kids,Burton;;pieces;ApparelSizeVariantProduct;
+;95446_biking_red_textur_plaid;;95446;330700,snow,kids,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95446_stout_white;;95446;330700,snow,kids,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;95446_mascot;;95446;330700,snow,kids,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;99145_slash_stripe_black;;99145;200100,snow,Volcom;PURPLE;pieces;ApparelSizeVariantProduct;
+;99145_tipsey_tonic;;99145;200100,snow,Volcom;WHITE;pieces;ApparelSizeVariantProduct;
+;99145_shadow_purple;;99145;200100,snow,Volcom;PURPLE;pieces;ApparelSizeVariantProduct;
+;95437_blue_pearl_prince_of_wale;;95437;200100,snow,Burton;BLUE,GREY;pieces;ApparelSizeVariantProduct;
+;95437_bright_white;;95437;200100,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;95437_fox_hunt;;95437;200100,snow,Burton;RED;pieces;ApparelSizeVariantProduct;
+;95437_bright_white_prince_of_wa;;95437;200100,snow,Burton;BROWN,GREY;pieces;ApparelSizeVariantProduct;
+;95437_true_black;;95437;200100,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95437_academy;;95437;200100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95437_rum_raisin;;95437;200100,snow,Burton;PURPLE;pieces;ApparelSizeVariantProduct;
+;95437_academy_royal_flush;;95437;200100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95438_true_black_dotcom;;95438;200100,snow,Burton;BLACK,RED;pieces;ApparelSizeVariantProduct;
+;95438_flint_dotcom;;95438;200100,snow,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;95438_zest_dotcom;;95438;200100,snow,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95438_true_black;;95438;200100,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95438_twilight;;95438;200100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95438_vain;;95438;200100,snow,Burton;RED;pieces;ApparelSizeVariantProduct;
+;99146_rouge;;99146;200100,snow,Volcom;PINK;pieces;ApparelSizeVariantProduct;
+;99146_purple_heart;;99146;200100,snow,Volcom;PURPLE;pieces;ApparelSizeVariantProduct;
+;99146_passion_fruit;;99146;200100,snow,Volcom;ORANGE;pieces;ApparelSizeVariantProduct;
+;99146_black;;99146;200100,snow,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;103335_light_green;;103335;200100,snow,WLD;GREEN;pieces;ApparelSizeVariantProduct;
+;103335_black;;103335;200100,snow,WLD;BLACK;pieces;ApparelSizeVariantProduct;
+;103335_sky_blue;;103335;200100,snow,WLD;BLUE;pieces;ApparelSizeVariantProduct;
+;95424_lady_luck_groupie_plaid;;95424;200100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95424_true_black;;95424;200100,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95424_risque;;95424;200100,snow,Burton;ORANGE,RED;pieces;ApparelSizeVariantProduct;
+;95430_aloe;;95430;200100,snow,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95430_aloe_gypsy_plaid;;95430;200100,snow,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95430_risque_á_flowers_on_crack;;95430;200100,snow,Burton;;pieces;ApparelSizeVariantProduct;
+;95430_lady_luck;;95430;200100,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95430_risque;;95430;200100,snow,Burton;ORANGE,RED;pieces;ApparelSizeVariantProduct;
+;95441_hex;;95441;200100,snow,Burton;BLUE,PURPLE;pieces;ApparelSizeVariantProduct;
+;95441_decoy;;95441;200100,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;95490_true_black;;95490;200300,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95490_aloe_fade_out;;95490;200300,snow,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95490_lady_luck_fade_out;;95490;200300,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95490_bright_white;;95490;200300,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;95490_blue_pearl;;95490;200300,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95490_aloe;;95490;200300,snow,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;95490_risque;;95490;200300,snow,Burton;ORANGE,RED;pieces;ApparelSizeVariantProduct;
+;95490_moss;;95490;200300,snow,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;95490_resin;;95490;200300,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95490_rum_raisin;;95490;200300,snow,Burton;PURPLE;pieces;ApparelSizeVariantProduct;
+;95482_siren;;95482;200300,snow,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;95482_iron_violet;;95482;200300,snow,Burton;PURPLE;pieces;ApparelSizeVariantProduct;
+;95482_yasgur;;95482;200300,snow,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;95482_recluse;;95482;200300,snow,Burton;BROWN;pieces;ApparelSizeVariantProduct;
+;95482_true_black;;95482;200300,snow,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;95482_bright_white_floral_melt;;95482;200300,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;99154_black;;99154;200300,snow,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;99154_purple_heart;;99154;200300,snow,Volcom;PURPLE;pieces;ApparelSizeVariantProduct;
+;99154_peacock;;99154;200300,snow,Volcom;BLUE;pieces;ApparelSizeVariantProduct;
+;94382_blacktop;;94382;200300,snow,Foursquare;GREY;pieces;ApparelSizeVariantProduct;
+;94382_blue_book;;94382;200300,snow,Foursquare;BLUE;pieces;ApparelSizeVariantProduct;
+;94382_nail;;94382;200300,snow,Foursquare;GREY;pieces;ApparelSizeVariantProduct;
+;94382_fern;;94382;200300,snow,Foursquare;GREEN;pieces;ApparelSizeVariantProduct;
+;94382_ink;;94382;200300,snow,Foursquare;BLUE;pieces;ApparelSizeVariantProduct;
+;95484_flint_dotcom;;95484;200300,snow,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;95484_defender;;95484;200300,snow,Burton;BROWN;pieces;ApparelSizeVariantProduct;
+;95484_bright_white;;95484;200300,snow,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;95484_visionary_print;;95484;200300,snow,Burton;ORANGE;pieces;ApparelSizeVariantProduct;
+;100744_pool_green;;100744;200300,snow,DC;GREEN;pieces;ApparelSizeVariantProduct;
+;100124_beet_red;;100124;260900,streetwear,Nikita;RED;pieces;ApparelSizeVariantProduct;
+;98929_purple;;98929;200300,snow,Roxy;PURPLE;pieces;ApparelSizeVariantProduct;
+;100746_floging_pink;;100746;200300,snow,DC;PINK;pieces;ApparelSizeVariantProduct;
+;51411_purple;;51411;370700,Nixon;PURPLE;pieces;ApparelSizeVariantProduct;
+;115202_matte_black+matte_gunmeta;;115202;340000,Nixon;GREY;pieces;ApparelSizeVariantProduct;
+;36265_all_black+white;;36265;340000,Nixon;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;43339_all_black;;43339;340000,Nixon;BLACK;pieces;ApparelSizeVariantProduct;
+;129704_rasta;;129704;340000,Nixon;YELLOW,GREEN,RED;pieces;ApparelSizeVariantProduct;
+;29160_teak;;29160;340000,Nixon;;pieces;ApparelSizeVariantProduct;
+;104176_violet;;104176;260100,streetwear,Horsefeathers;PURPLE;pieces;ApparelSizeVariantProduct;
+;108803_heather_grey;;108803;260100,streetwear,Roxy;GREY;pieces;ApparelSizeVariantProduct;
+;108803_medieval_blue;;108803;260100,streetwear,Roxy;BLUE;pieces;ApparelSizeVariantProduct;
+;143906_coco;;143906;261800,streetwear,Element;;pieces;ApparelSizeVariantProduct;
+;121048_onyx;;121048;260100,streetwear,Vans;BLUE,BLACK;pieces;ApparelSizeVariantProduct;
+;122320_royal_blue;;122320;250100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122320_grey_heather;;122320;250100,streetwear,Billabong;GREY;pieces;ApparelSizeVariantProduct;
+;122320_black;;122320;250100,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122320_kelly;;122320;250100,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;122320_white;;122320;250100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122312_royal_blue;;122312;250100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122312_dirty_plum;;122312;250100,streetwear,Billabong;PURPLE;pieces;ApparelSizeVariantProduct;
+;122312_black;;122312;250100,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122312_fire_red;;122312;250100,streetwear,Billabong;RED;pieces;ApparelSizeVariantProduct;
+;122312_lime;;122312;250100,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;122312_aquatic_blue;;122312;250100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122312_white;;122312;250100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122333_sunset;;122333;250100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122333_black;;122333;250100,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122333_white;;122333;250100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122333_palm;;122333;250100,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122340_grey_heather;;122340;250100,streetwear,Billabong;GREY;pieces;ApparelSizeVariantProduct;
+;122340_marine_heather;;122340;250100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122340_mint_leather;;122340;250100,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;122800_royal;;122800;250100,streetwear,Alien Workshop;BLUE;pieces;ApparelSizeVariantProduct;
+;122800_black;;122800;250100,streetwear,Alien Workshop;BLACK;pieces;ApparelSizeVariantProduct;
+;122800_white;;122800;250100,streetwear,Alien Workshop;WHITE;pieces;ApparelSizeVariantProduct;
+;122405_tourquoise;;122405;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122405_aquatic_blue;;122405;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122405_black;;122405;270100,kids,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122405_light_yellow;;122405;270100,kids,streetwear,Billabong;YELLOW;pieces;ApparelSizeVariantProduct;
+;122405_royal_blue;;122405;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122405_white;;122405;270100,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122405_red_fire;;122405;270100,kids,streetwear,Billabong;RED;pieces;ApparelSizeVariantProduct;
+;122405_turquoise;;122405;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122412_navy;;122412;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122412_white;;122412;270100,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122409_dirty_plum;;122409;270100,kids,streetwear,Billabong;PURPLE;pieces;ApparelSizeVariantProduct;
+;122409_black;;122409;270100,kids,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122409_turquoise;;122409;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122409_washed_orange;;122409;270100,kids,streetwear,Billabong;ORANGE;pieces;ApparelSizeVariantProduct;
+;122409_white;;122409;270100,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122410_black;;122410;270100,kids,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122410_lime;;122410;270100,kids,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;122410_royal_blue;;122410;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122410_white;;122410;270100,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;117080_fuchsia+pink;;117080;270100,kids,streetwear,Blue Tomato;PINK;pieces;ApparelSizeVariantProduct;
+;138966_royal;;138966;270100,kids,streetwear,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;138966_bright_white;;138966;270100,kids,streetwear,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;138966_true_black;;138966;270100,kids,streetwear,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;140501_white;;140501;270100,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;140501_lime;;140501;270100,kids,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;140501_naval_blue;;140501;270100,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;144862_white;;144862;270100,kids,streetwear,DC;WHITE;pieces;ApparelSizeVariantProduct;
+;102278_trench_grey;;102278;450200,kids,Red;GREY;pieces;ApparelSizeVariantProduct;
+;102278_vortex;;102278;450200,kids,Red;GREEN;pieces;ApparelSizeVariantProduct;
+;102278_purple;;102278;450200,kids,Red;PURPLE;pieces;ApparelSizeVariantProduct;
+;102278_black;;102278;450200,kids,Red;BLACK;pieces;ApparelSizeVariantProduct;
+;102278_white;;102278;450200,kids,Red;WHITE;pieces;ApparelSizeVariantProduct;
+;129707_silver+brown;;129707;340000,Nixon;BROWN;pieces;ApparelSizeVariantProduct;
+;96001_true_black;;96001;220500,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;96001_blue_23;;96001;220500,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96001_team_blue;;96001;220500,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;104905_citron+blue;;104905;110600,Dalbello;BLUE;pieces;ApparelSizeVariantProduct;
+;29867_uni;;29867;350100,surf,Surftech;;pieces;ApparelSizeVariantProduct;
+;115754_uni;;115754;350100,surf,Al Merrick;;pieces;ApparelSizeVariantProduct;
+;115755_uni;;115755;350100,surf,Al Merrick;;pieces;ApparelSizeVariantProduct;
+;92961_uni;;92961;351200,surf,Skim One;;pieces;ApparelSizeVariantProduct;
+;115753_uni;;115753;350100,surf,Al Merrick;;pieces;ApparelSizeVariantProduct;
+;5191_clear;;5191;100100,Toko;;pieces;ApparelSizeVariantProduct;
+;5191_clear;;5191;100100,Toko;;pieces;ApparelSizeVariantProduct;
+;5203_graphite;;5203;100200,Toko;GREY;pieces;ApparelSizeVariantProduct;
+;5203_transparent;;5203;100200,Toko;;pieces;ApparelSizeVariantProduct;
+;5203_graphite;;5203;100200,Toko;GREY;pieces;ApparelSizeVariantProduct;
+;5203_transparent;;5203;100200,Toko;;pieces;ApparelSizeVariantProduct;
+;121868_heron_blue;;121868;260700,streetwear,Volcom;BLUE,PURPLE;pieces;ApparelSizeVariantProduct;
+;121868_coral_haze;;121868;260700,streetwear,Volcom;PINK,ORANGE;pieces;ApparelSizeVariantProduct;
+;121868_black;;121868;260700,streetwear,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;122447_country_foral;;122447;260700,streetwear,Quiksilver;WHITE;pieces;ApparelSizeVariantProduct;
+;83174_blue_checked;;83174;260700,streetwear,667;BLUE;pieces;ApparelSizeVariantProduct;
+;84574_seaweed;;84574;260700,streetwear,Hurley;BLUE;pieces;ApparelSizeVariantProduct;
+;84574_white7;;84574;260700,streetwear,Hurley;WHITE;pieces;ApparelSizeVariantProduct;
+;83223_island_green+pink_lemonad;;83223;260700,streetwear,Femipleasure;GREEN,PINK;pieces;ApparelSizeVariantProduct;
+;118591_new_stone_europe;;118591;250600,streetwear,Volcom;GREY;pieces;ApparelSizeVariantProduct;
+;118591_black;;118591;250600,streetwear,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;118591_burnt_orange;;118591;250600,streetwear,Volcom;ORANGE;pieces;ApparelSizeVariantProduct;
+;118591_khaki;;118591;250600,streetwear,Volcom;BROWN;pieces;ApparelSizeVariantProduct;
+;118591_pewter_europe;;118591;250600,streetwear,Volcom;GREY;pieces;ApparelSizeVariantProduct;
+;118603_gold;;118603;250600,streetwear,Volcom;YELLOW;pieces;ApparelSizeVariantProduct;
+;118603_dark_grey;;118603;250600,streetwear,Volcom;GREY;pieces;ApparelSizeVariantProduct;
+;122041_black;;122041;250600,streetwear,Element;BLACK;pieces;ApparelSizeVariantProduct;
+;122041_total_eclipse;;122041;250600,streetwear,Element;BLUE;pieces;ApparelSizeVariantProduct;
+;118174_cool_grey;;118174;250600,streetwear,Nike 6.0;GREY;pieces;ApparelSizeVariantProduct;
+;80147_red;;80147;250600,streetwear,Analog;RED;pieces;ApparelSizeVariantProduct;
+;80147_gold;;80147;250600,streetwear,Analog;YELLOW;pieces;ApparelSizeVariantProduct;
+;80147_grey;;80147;250600,streetwear,Analog;GREY;pieces;ApparelSizeVariantProduct;
+;122394_multi;;122394;270600,kids,streetwear,Billabong;;pieces;ApparelSizeVariantProduct;
+;118899_shadow_grey;;118899;270600,kids,streetwear,Volcom;GREY;pieces;ApparelSizeVariantProduct;
+;118899_yellow;;118899;270600,kids,streetwear,Volcom;YELLOW;pieces;ApparelSizeVariantProduct;
+;79536_white;;79536;270600,kids,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;83025_quik_red;;83025;270600,kids,streetwear,Quiksilver;RED;pieces;ApparelSizeVariantProduct;
+;92637_summer;;92637;270600,kids,streetwear,69 Slam;;pieces;ApparelSizeVariantProduct;
+;92637_other_square;;92637;270600,kids,streetwear,69 Slam;;pieces;ApparelSizeVariantProduct;
+;140467_multico;;140467;270600,kids,streetwear,Billabong;;pieces;ApparelSizeVariantProduct;
+;140467_neo_orange;;140467;270600,kids,streetwear,Billabong;ORANGE;pieces;ApparelSizeVariantProduct;
+;140467_blue;;140467;270600,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;140458_charcoal;;140458;270600,kids,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;140458_blue;;140458;270600,kids,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;121939_black;;121939;400300,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;122784_zebra;;122784;400300,Reef;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;121941_print;;121941;400300,Volcom;;pieces;ApparelSizeVariantProduct;
+;121941_leopard;;121941;400300,Volcom;;pieces;ApparelSizeVariantProduct;
+;121941_logo;;121941;400300,Volcom;;pieces;ApparelSizeVariantProduct;
+;121941_purple_combo;;121941;400300,Volcom;PURPLE;pieces;ApparelSizeVariantProduct;
+;121942_mix;;121942;400300,Volcom;;pieces;ApparelSizeVariantProduct;
+;118720_white;;118720;400300,Roxy;WHITE;pieces;ApparelSizeVariantProduct;
+;118720_true_black;;118720;400300,Roxy;BLACK;pieces;ApparelSizeVariantProduct;
+;118720_coffee;;118720;400300,Roxy;BROWN;pieces;ApparelSizeVariantProduct;
+;118720_castlerock;;118720;400300,Roxy;GREY;pieces;ApparelSizeVariantProduct;
+;122459_desert_point;;122459;160400,streetwear,Quiksilver;BROWN,YELLOW;pieces;ApparelSizeVariantProduct;
+;122461_sand;;122461;160400,streetwear,Quiksilver;BROWN,YELLOW;pieces;ApparelSizeVariantProduct;
+;121924_fire_red;;121924;160400,streetwear,Volcom;RED;pieces;ApparelSizeVariantProduct;
+;123970_cloud;;123970;160400,streetwear,Element;;pieces;ApparelSizeVariantProduct;
+;124693_black;;124693;160400,streetwear,Dakine;BLACK;pieces;ApparelSizeVariantProduct;
+;102153_white+bluebird;;102153;160400,streetwear,adidas Originals;BLUE,WHITE;pieces;ApparelSizeVariantProduct;
+;122233_fog;;122233;160400,streetwear,Vans;GREY;pieces;ApparelSizeVariantProduct;
+;122379_black;;122379;160700,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122379_brown;;122379;160700,streetwear,Billabong;BROWN;pieces;ApparelSizeVariantProduct;
+;104396_blue;;104396;160700,streetwear,Blue Tomato;BLUE;pieces;ApparelSizeVariantProduct;
+;118833_red_combo;;118833;160300,streetwear,Volcom;RED;pieces;ApparelSizeVariantProduct;
+;104485_black;;104485;160300,streetwear,Skullcandy;BLACK;pieces;ApparelSizeVariantProduct;
+;104485_red;;104485;160300,streetwear,Skullcandy;RED;pieces;ApparelSizeVariantProduct;
+;124267_fairway+white;;124267;160300,streetwear,adidas Originals;GREEN;pieces;ApparelSizeVariantProduct;
+;124269_white;;124269;160300,streetwear,adidas Originals;WHITE;pieces;ApparelSizeVariantProduct;
+;124268_bluebird;;124268;160300,streetwear,adidas Originals;BLUE;pieces;ApparelSizeVariantProduct;
+;100402_clay_court;;100402;160700,streetwear,Billabong;BLACK,RED;pieces;ApparelSizeVariantProduct;
+;122723_white;;122723;370900,Fox;WHITE;pieces;ApparelSizeVariantProduct;
+;122723_black;;122723;370900,Fox;BLACK;pieces;ApparelSizeVariantProduct;
+;118693_true_black;;118693;370900,Roxy;BLACK;pieces;ApparelSizeVariantProduct;
+;79889_chipmunk;;79889;370900,Bench;BROWN;pieces;ApparelSizeVariantProduct;
+;63500_trashed_black;;63500;370900,Fox;BLACK;pieces;ApparelSizeVariantProduct;
+;117909_white;;117909;251100,streetwear,Quiksilver;WHITE;pieces;ApparelSizeVariantProduct;
+;117909_field_green;;117909;251100,streetwear,Quiksilver;GREEN;pieces;ApparelSizeVariantProduct;
+;118859_mix;;118859;251100,streetwear,Volcom;;pieces;ApparelSizeVariantProduct;
+;118859_drip_red;;118859;251100,streetwear,Volcom;RED;pieces;ApparelSizeVariantProduct;
+;118859_blue_black;;118859;251100,streetwear,Volcom;BLUE,BLACK;pieces;ApparelSizeVariantProduct;
+;118859_blue_combo;;118859;251100,streetwear,Volcom;BLUE;pieces;ApparelSizeVariantProduct;
+;118879_tacoma_brown;;118879;251100,streetwear,Volcom;BROWN;pieces;ApparelSizeVariantProduct;
+;118879_shadow_grey;;118879;251100,streetwear,Volcom;GREY;pieces;ApparelSizeVariantProduct;
+;98851_kelly;;98851;251100,streetwear,Billabong;GREEN;pieces;ApparelSizeVariantProduct;
+;118871_print;;118871;251100,streetwear,Volcom;;pieces;ApparelSizeVariantProduct;
+;118871_plaid;;118871;251100,streetwear,Volcom;;pieces;ApparelSizeVariantProduct;
+;117911_white;;117911;251100,streetwear,Quiksilver;WHITE;pieces;ApparelSizeVariantProduct;
+;74010_white;;74010;251100,streetwear,Von Zipper;WHITE;pieces;ApparelSizeVariantProduct;
+;123922_black;;123922;270100,kids,streetwear,Quiksilver;BLACK;pieces;ApparelSizeVariantProduct;
+;123922_field_green;;123922;270100,kids,streetwear,Quiksilver;GREEN;pieces;ApparelSizeVariantProduct;
+;123922_passion;;123922;270100,kids,streetwear,Quiksilver;PINK;pieces;ApparelSizeVariantProduct;
+;98951_trigo;;98951;270100,kids,streetwear,Quiksilver;YELLOW;pieces;ApparelSizeVariantProduct;
+;118313_black+white;;118313;250100,streetwear,DC;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;118313_pacific_blue+clearwater;;118313;250100,streetwear,DC;BLUE;pieces;ApparelSizeVariantProduct;
+;118313_natural+athletic_red;;118313;250100,streetwear,DC;WHITE,BROWN;pieces;ApparelSizeVariantProduct;
+;118313_athletic_red+dark_denim;;118313;250100,streetwear,DC;RED;pieces;ApparelSizeVariantProduct;
+;118313_blazing_yellow+olympian_b;;118313;250100,streetwear,DC;YELLOW;pieces;ApparelSizeVariantProduct;
+;118313_celtic_green+blazing_yell;;118313;250100,streetwear,DC;GREEN;pieces;ApparelSizeVariantProduct;
+;118313_olympic_blue+white;;118313;250100,streetwear,DC;WHITE,BLUE;pieces;ApparelSizeVariantProduct;
+;118313_blazing_red+white;;118313;250100,streetwear,DC;ORANGE;pieces;ApparelSizeVariantProduct;
+;118313_white+black;;118313;250100,streetwear,DC;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;96162_kelly;;96162;250100,streetwear,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;96162_bright_white;;96162;250100,streetwear,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;96162_mocha;;96162;250100,streetwear,Burton;BLUE,BROWN;pieces;ApparelSizeVariantProduct;
+;122321_black;;122321;250100,streetwear,Billabong;BLACK;pieces;ApparelSizeVariantProduct;
+;122321_naval_blue;;122321;250100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;122321_light_yellow;;122321;250100,streetwear,Billabong;YELLOW;pieces;ApparelSizeVariantProduct;
+;103088_white;;103088;250100,streetwear,Volcom;WHITE;pieces;ApparelSizeVariantProduct;
+;103088_black;;103088;250100,streetwear,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;123759_white+multicolor;;123759;250100,streetwear,Carhartt;WHITE;pieces;ApparelSizeVariantProduct;
+;123759_holiday+multicolor;;123759;250100,streetwear,Carhartt;BLUE;pieces;ApparelSizeVariantProduct;
+;122059_white;;122059;250100,streetwear,Element;WHITE;pieces;ApparelSizeVariantProduct;
+;122059_mandarine;;122059;250100,streetwear,Element;YELLOW,ORANGE;pieces;ApparelSizeVariantProduct;
+;122059_black;;122059;250100,streetwear,Element;BLACK;pieces;ApparelSizeVariantProduct;
+;117896_white;;117896;250100,streetwear,Quiksilver;WHITE;pieces;ApparelSizeVariantProduct;
+;121832_white;;121832;260100,streetwear,Volcom;WHITE;pieces;ApparelSizeVariantProduct;
+;121832_blue;;121832;260100,streetwear,Volcom;BLUE;pieces;ApparelSizeVariantProduct;
+;121832_snap_yellow;;121832;260100,streetwear,Volcom;YELLOW;pieces;ApparelSizeVariantProduct;
+;118893_turquoise;;118893;260100,streetwear,Billabong;BLUE;pieces;ApparelSizeVariantProduct;
+;118893_grey_heather;;118893;260100,streetwear,Billabong;GREY;pieces;ApparelSizeVariantProduct;
+;118893_white;;118893;260100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;108803_heather_grey;;108803;260100,streetwear,Roxy;GREY;pieces;ApparelSizeVariantProduct;
+;108803_medieval_blue;;108803;260100,streetwear,Roxy;BLUE;pieces;ApparelSizeVariantProduct;
+;94791_light_green;;94791;260100,streetwear,Zimtstern;GREEN;pieces;ApparelSizeVariantProduct;
+;99277_ice;;99277;260100,streetwear,Volcom;BLUE;pieces;ApparelSizeVariantProduct;
+;99277_black;;99277;260100,streetwear,Volcom;BLACK;pieces;ApparelSizeVariantProduct;
+;118894_paradise_pink;;118894;260100,streetwear,Billabong;PINK;pieces;ApparelSizeVariantProduct;
+;118894_grey_heather;;118894;260100,streetwear,Billabong;GREY;pieces;ApparelSizeVariantProduct;
+;118894_white;;118894;260100,streetwear,Billabong;WHITE;pieces;ApparelSizeVariantProduct;
+;122811_heather_sweet_leaf;;122811;260100,streetwear,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;122811_true_black;;122811;260100,streetwear,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;122811_sunflower;;122811;260100,streetwear,Burton;YELLOW;pieces;ApparelSizeVariantProduct;
+;122811_heather_peacock;;122811;260100,streetwear,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;122811_heather_berry;;122811;260100,streetwear,Burton;PINK;pieces;ApparelSizeVariantProduct;
+;122811_bright_white;;122811;260100,streetwear,Burton;WHITE;pieces;ApparelSizeVariantProduct;
+;122670_black+white;;122670;220600,Fox;WHITE,BLACK;pieces;ApparelSizeVariantProduct;
+;122670_black+red;;122670;220600,Fox;BLACK,RED;pieces;ApparelSizeVariantProduct;
+;117900_field_green;;117900;220600,Quiksilver;GREEN;pieces;ApparelSizeVariantProduct;
+;117900_black;;117900;220600,Quiksilver;BLACK;pieces;ApparelSizeVariantProduct;
+;117900_white;;117900;220600,Quiksilver;WHITE;pieces;ApparelSizeVariantProduct;
+;122072_black;;122072;220600,Element;BLACK;pieces;ApparelSizeVariantProduct;
+;122072_celtic;;122072;220600,Element;GREEN;pieces;ApparelSizeVariantProduct;
+;117204_black;;117204;220600,Blue Tomato;BLACK;pieces;ApparelSizeVariantProduct;
+;117210_white;;117210;220600,droid;WHITE;pieces;ApparelSizeVariantProduct;
+;103151_white_combo;;103151;220600,Volcom;WHITE;pieces;ApparelSizeVariantProduct;
+;117205_white;;117205;220600,Blue Tomato;WHITE;pieces;ApparelSizeVariantProduct;
+;122074_natural;;122074;220600,Element;BROWN,YELLOW;pieces;ApparelSizeVariantProduct;
+;122074_all_black;;122074;220600,Element;BLACK;pieces;ApparelSizeVariantProduct;
+;96097_true_black;;96097;251100,streetwear,Burton;BLACK;pieces;ApparelSizeVariantProduct;
+;96097_cardinal;;96097;251100,streetwear,Burton;RED;pieces;ApparelSizeVariantProduct;
+;116623_uni;;116623;350200,surf,Southpoint;;pieces;ApparelSizeVariantProduct;
+;96172_athletic_heather;;96172;250100,streetwear,Burton;GREY;pieces;ApparelSizeVariantProduct;
+;96172_royal;;96172;250100,streetwear,Burton;BLUE;pieces;ApparelSizeVariantProduct;
+;96172_kelly;;96172;250100,streetwear,Burton;GREEN;pieces;ApparelSizeVariantProduct;
+;94415_blacktop;;94415;220600,Foursquare;GREY;pieces;ApparelSizeVariantProduct;
+;94415_blue_print;;94415;220600,Foursquare;BLUE;pieces;ApparelSizeVariantProduct;
+
+
+# Create ApparelStyleVariantProduct variants without sizes
+INSERT_UPDATE ApparelStyleVariantProduct;code[unique=true];$catalogVersion;$baseProduct;supercategories(code,$catalogVersion);swatchColors(code);unit(code)[default='pieces'];$prices;$approved;$taxGroup
+;74036_red;;74036;100200,Toko;RED;pieces;25,88 GBP , 31,95 EUR;;
+;21618_-;;21618;100200,Toko;;pieces;12,92 GBP , 15,95 EUR;;
+;135304_neutral;;135304;100200,Toko;;pieces;4,82 GBP , 5,95 EUR;;
+;64389_black+white_marble;;64389;370700,Nixon;WHITE,BLACK;pieces;64,76 GBP , 79,95 EUR;;
+;115195_shocking_pink;;115195;370700,Nixon;PINK;pieces;56,66 GBP , 69,95 EUR;;
+;111114_black;;111114;370700,Roxy;BLACK;pieces;80,96 GBP , 99,95 EUR;;
+;56802_dark_wood;;56802;370700,Nixon;BROWN;pieces;202,46 GBP , 249,95 EUR;;
+;74844_purple+pink+goldenrad;;74844;370700,Nixon;YELLOW,PINK,PURPLE;pieces;137,66 GBP , 169,95 EUR;;
+;94063_matte_black+gold;;94063;340000,Nixon;BLACK;pieces;404,96 GBP , 499,95 EUR;;
+;74818_sky_blue;;74818;340000,Nixon;BLUE;pieces;80,96 GBP , 99,95 EUR;;
+;74825_gunship;;74825;340000,Nixon;BLUE;pieces;129,56 GBP , 159,95 EUR;;
+;96502_dark_smoke;;96502;210200,Anon;WHITE,GREY;pieces;72,86 GBP , 89,95 EUR;;
+;118514_grey;;118514;210100,Vans;GREY;pieces;14,54 GBP , 17,95 EUR;;
+;115118_brown;;115118;210100,Nike;BROWN;pieces;72,86 GBP , 89,95 EUR;;
+;115117_green_bronze_mirror;;115117;210100,Nike;BROWN;pieces;72,86 GBP , 89,95 EUR;;
+;115061_silver_mirror;;115061;210100,Nike;WHITE,RED;pieces;72,86 GBP , 89,95 EUR;;
+;92905_brown_w+bronze_flash;;92905;210100,Nike;BROWN;pieces;77,72 GBP , 95,95 EUR;;
+
+
+# Create ApparelSizeVariantProduct variants
+INSERT_UPDATE ApparelSizeVariantProduct;code[unique=true];$catalogVersion;$baseProduct;supercategories(code,$catalogVersion);unit(code)[default='pieces'];$prices;;$approved;$taxGroup
+;300460184;;103410_snapper;190100,snow,Quiksilver;pieces;64,76 GBP , 79,95 EUR;;;
+;300460185;;103410_snapper;190100,snow,Quiksilver;pieces;64,76 GBP , 79,95 EUR;;;
+;300460187;;103410_snapper;190100,snow,Quiksilver;pieces;64,76 GBP , 79,95 EUR;;;
+;300441358;;100191_glacier;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441354;;100191_glacier;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441355;;100191_glacier;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441357;;100191_glacier;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441362;;100191_lime;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441359;;100191_lime;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441361;;100191_lime;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441363;;100191_lime;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300441360;;100191_lime;190100,snow,Armada;pieces;101,21 GBP , 124,95 EUR;;;
+;300399602;;94474_red_rum;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399603;;94474_red_rum;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399600;;94474_red_rum;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399601;;94474_red_rum;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399590;;94474_blackout;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399588;;94474_blackout;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399589;;94474_blackout;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300399596;;94474_burnt_greens;190100,snow,Special Blend;pieces;113,36 GBP , 139,95 EUR;;;
+;300410966;;95385_cardinal;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300410980;;95385_stout_white_vibe_stripe;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300410977;;95385_stout_white_vibe_stripe;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300410976;;95385_stout_white_vibe_stripe;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300410974;;95385_stout_white+true_black;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300410962;;95385_astro_turf_colorblock;190100,snow,Burton;pieces;129,56 GBP , 159,95 EUR;;;
+;300427202;;97602_black+black+dark_copper;190100,snow,Nike 6.0;pieces;72,86 GBP , 89,95 EUR;;;
+;300427203;;97602_black+black+dark_copper;190100,snow,Nike 6.0;pieces;72,86 GBP , 89,95 EUR;;;
+;300427205;;97602_black+black+dark_copper;190100,snow,Nike 6.0;pieces;72,86 GBP , 89,95 EUR;;;
+;300427204;;97602_black+black+dark_copper;190100,snow,Nike 6.0;pieces;72,86 GBP , 89,95 EUR;;;
+;300405673;;94462_blackout;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399419;;94462_blackout;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399418;;94462_blackout;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399421;;94462_blackout;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399420;;94462_blackout;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399429;;94462_iron_lung;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399428;;94462_iron_lung;190100,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300678854;;132871_summer_green;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678853;;132871_summer_green;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678852;;132871_summer_green;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678856;;132871_summer_green;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678855;;132871_summer_green;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678851;;132871_deepest_black;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678848;;132871_deepest_black;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678849;;132871_deepest_black;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678847;;132871_deepest_black;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300678850;;132871_deepest_black;190100,snow,PYUA;pieces;485,96 GBP , 599,95 EUR;;;
+;300423279;;96977_black;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423278;;96977_black;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423287;;96977_white;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423288;;96977_white;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423285;;96977_red;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423284;;96977_red;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423286;;96977_red;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423281;;96977_teal;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423282;;96977_teal;50100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300423381;;96990_teal;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;300423382;;96990_teal;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;300423388;;96990_white;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;300423387;;96990_white;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;300423386;;96990_white;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;300423385;;96990_red;50100,snow,Burton;pieces;101,21 GBP , 124,95 EUR;;;
+;10176;;7907_yellow;100200,Toko;pieces;80,96 GBP , 99,95 EUR;;;
+;13105;;5203_graphite;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;13106;;5203_transparent;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;300453357;;102277_black_matte;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453356;;102277_black_matte;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453365;;102277_trench_green;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453379;;102277_white_pearl;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453378;;102277_white_pearl;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453377;;102277_white_pearl;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453372;;102277_white;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453375;;102277_white;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453374;;102277_white;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453373;;102277_white;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300552791;;102277_green;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453380;;102277_lime;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453361;;102277_plaid_print;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453363;;102277_plaid_print;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453371;;102277_radical;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453370;;102277_radical;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453369;;102277_radical;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300453368;;102277_radical;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300568072;;102277_black;450100,snow,Red;pieces;40,46 GBP , 49,95 EUR;;;
+;300515780;;111160_tiedie;221600,Blue Tomato;pieces;20,21 GBP , 24,95 EUR;;;
+;300515779;;111160_tiedie;221600,Blue Tomato;pieces;20,21 GBP , 24,95 EUR;;;
+;300659388;;130663_uni;222000,GoPro Cam;pieces;283,46 GBP , 349,95 EUR;;;
+;300564393;;117211_royal_blue;220500,droid;pieces;16,16 GBP , 19,95 EUR;;;
+;300564391;;117211_black;220500,droid;pieces;16,16 GBP , 19,95 EUR;;;
+;300564394;;117211_heather_grey;220500,droid;pieces;16,16 GBP , 19,95 EUR;;;
+;300564395;;117211_white;220500,droid;pieces;16,16 GBP , 19,95 EUR;;;
+;300564392;;117211_cyan;220500,droid;pieces;16,16 GBP , 19,95 EUR;;;
+;300466684;;104668_white;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466683;;104668_purple;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466682;;104668_red;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466677;;104668_caribbean_blue;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466679;;104668_charcoal;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466680;;104668_kelly_green;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466685;;104668_yellow;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466681;;104668_magenta;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300466678;;104668_royal_blue;220500,Elm;pieces;14,54 GBP , 17,95 EUR;;;
+;300476956;;105979_yellow_blue;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300476952;;105979_rasta_black;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300476954;;105979_white_blue;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300476951;;105979_raspberry_blue;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300476955;;105979_white_green;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300476953;;105979_rasta_white;220500,Landing;pieces;26,69 GBP , 32,95 EUR;;;
+;300415715;;96022_purple_label;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415711;;96022_mocha;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415708;;96022_true_black;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415714;;96022_cardinal;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415712;;96022_astro_turf;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415713;;96022_hunter;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415709;;96022_smurf;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415716;;96022_stout_white;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300415710;;96022_team_blue;220500,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300395982;;93762_ski_high;220500,VIVO;pieces;14,54 GBP , 17,95 EUR;;;
+;300395985;;93762_lemon;220500,VIVO;pieces;14,54 GBP , 17,95 EUR;;;
+;300395984;;93762_haze;220500,VIVO;pieces;14,54 GBP , 17,95 EUR;;;
+;300395983;;93762_husky;220500,VIVO;pieces;14,54 GBP , 17,95 EUR;;;
+;300476945;;105977_blue;220500,Landing;pieces;15,35 GBP , 18,95 EUR;;;
+;300476944;;105977_black;220500,Landing;pieces;15,35 GBP , 18,95 EUR;;;
+;300476947;;105977_yellow;220500,Landing;pieces;15,35 GBP , 18,95 EUR;;;
+;300476946;;105977_heather_grey;220500,Landing;pieces;15,35 GBP , 18,95 EUR;;;
+;300649655;;100988_black+red;220500,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300444080;;100988_olympian_blue;220500,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300396667;;94172_black;220500,Nixon;pieces;16,16 GBP , 19,95 EUR;;;
+;300415739;;96026_team_blue;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300415740;;96026_astro_turf;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300415737;;96026_true_black;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300689176;;111159_white;221600,Blue Tomato;pieces;24,26 GBP , 29,95 EUR;;;
+;300689175;;111159_white;221600,Blue Tomato;pieces;24,26 GBP , 29,95 EUR;;;
+;300689173;;111159_black;221600,Blue Tomato;pieces;24,26 GBP , 29,95 EUR;;;
+;300427744;;97693_enamel_purple;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427743;;97693_enamel_purple;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427741;;97693_enamel_purple;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427735;;97693_black+orange;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427734;;97693_black+orange;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427747;;97693_marine_blue;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300427739;;97693_digi_plaid;190700,Oakley;pieces;24,26 GBP , 29,95 EUR;;;
+;300414556;;95521_prep;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414555;;95521_prep;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414553;;95521_prep;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414539;;95521_haculla_black;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414538;;95521_haculla_black;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414541;;95521_haculla_black;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414540;;95521_haculla_black;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414562;;95521_day_of_the_dead;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414561;;95521_day_of_the_dead;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414566;;95521_nat_geo;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414564;;95521_nat_geo;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414563;;95521_nat_geo;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414545;;95521_mike_giant;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300414551;;95521_wild_things;190700,Burton;pieces;32,36 GBP , 39,95 EUR;;;
+;300409038;;95288_true_black;221100,Burton;pieces;20,21 GBP , 24,95 EUR;;;
+;300409040;;95288_true_black;221100,Burton;pieces;20,21 GBP , 24,95 EUR;;;
+;300409039;;95288_true_black;221100,Burton;pieces;20,21 GBP , 24,95 EUR;;;
+;300409041;;95288_cardinal;221100,Burton;pieces;20,21 GBP , 24,95 EUR;;;
+;300409068;;95290_ski-zee;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300409069;;95290_ski-zee;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300409062;;95290_sub;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300409066;;95290_drunk_hunter;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300409067;;95290_drunk_hunter;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300409065;;95290_drunk_hunter;221100,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300427732;;97692_white;190700,Oakley;pieces;36,41 GBP , 44,95 EUR;;;
+;300427730;;97692_white;190700,Oakley;pieces;36,41 GBP , 44,95 EUR;;;
+;300427731;;97692_white;190700,Oakley;pieces;36,41 GBP , 44,95 EUR;;;
+;300660287;;97692_white;190700,Oakley;pieces;36,41 GBP , 44,95 EUR;;;
+;300427729;;97692_white;190700,Oakley;pieces;36,41 GBP , 44,95 EUR;;;
+;300413166;;95464_purple_label;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413170;;95464_purple_label;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413181;;95464_gold_medal_panhandle;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413180;;95464_gold_medal_panhandle;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413127;;95464_team_blue;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413124;;95464_team_blue;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413138;;95464_smog;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413139;;95464_smog;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413162;;95464_bitters;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413163;;95464_bitters;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413151;;95464_nori_population;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413144;;95464_astro_turf_dot_matrix;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413142;;95464_astro_turf_dot_matrix;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413132;;95464_chino;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300413175;;95464_stout_white;190300,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300399859;;94491_blackout;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399886;;94491_hello_yellow;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399883;;94491_hello_yellow;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399877;;94491_mojito;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399865;;94491_blue_me;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300460375;;97788_steeple_grey;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300460373;;97788_steeple_grey;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300460374;;97788_steeple_grey;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428253;;97788_pirate_black;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428252;;97788_pirate_black;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428251;;97788_pirate_black;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428250;;97788_pirate_black;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428256;;97788_medieval_blue;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428255;;97788_medieval_blue;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300428254;;97788_medieval_blue;190300,snow,Vans;pieces;89,06 GBP , 109,95 EUR;;;
+;300399822;;94489_denim;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399823;;94489_denim;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399824;;94489_denim;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399821;;94489_denim;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300399834;;94489_burnt_greens;190300,snow,Special Blend;pieces;97,16 GBP , 119,95 EUR;;;
+;300402732;;94714_blue;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402743;;94714_royal;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402746;;94714_royal;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402745;;94714_royal;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402768;;94714_yellow;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402767;;94714_yellow;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300402727;;94714_black;190300,snow,Zimtstern;pieces;97,16 GBP , 119,95 EUR;;;
+;300427243;;97607_dark_copper;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427245;;97607_dark_copper;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427238;;97607_treasure_blue;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427239;;97607_treasure_blue;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427241;;97607_treasure_blue;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427240;;97607_treasure_blue;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427237;;97607_black;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427236;;97607_black;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300427249;;97607_golden_hops;190300,snow,Nike 6.0;pieces;80,96 GBP , 99,95 EUR;;;
+;300398347;;94374_ink;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398350;;94374_ink;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398348;;94374_ink;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398337;;94374_blacktop;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398365;;94374_safety_orange;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398366;;94374_safety_orange;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398368;;94374_safety_orange;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398341;;94374_air;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300398342;;94374_air;190300,snow,Foursquare;pieces;89,06 GBP , 109,95 EUR;;;
+;300441900;;100378_uni;10100,snow,Ride;pieces;275,36 GBP , 339,95 EUR;;;
+;300515235;;110839_uni;10100,snow,Aesthetiker;pieces;178,16 GBP , 219,95 EUR;;;
+;300447989;;101580_multi;10100,snow,DC;pieces;226,76 GBP , 279,95 EUR;;;
+;300564864;;117452_uni;10100,snow,Burton;pieces;307,76 GBP , 379,95 EUR;;;
+;300568569;;117452_uni;10100,snow,Burton;pieces;307,76 GBP , 379,95 EUR;;;
+;300423665;;97199_uni;10100,snow,Burton;pieces;259,16 GBP , 319,95 EUR;;;
+;300423664;;97199_uni;10100,snow,Burton;pieces;259,16 GBP , 319,95 EUR;;;
+;300494175;;108295_uni;10100,snow,F2-FTWO;pieces;291,56 GBP , 359,95 EUR;;;
+;300494174;;108295_uni;10100,snow,F2-FTWO;pieces;291,56 GBP , 359,95 EUR;;;
+;300423718;;97252_uni;10100,snow,Burton;pieces;161,96 GBP , 199,95 EUR;;;
+;300423720;;97252_uni;10100,snow,Burton;pieces;161,96 GBP , 199,95 EUR;;;
+;300410422;;95361_col_mustard_colorblock;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410410;;95361_rasta_clouds;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410412;;95361_rasta_clouds;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410409;;95361_rasta_clouds;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410400;;95361_true_black;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410407;;95361_argon_cloud_camo;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300410415;;95361_trench+mocha;330100,snow,kids,Burton;pieces;68,81 GBP , 84,95 EUR;;;
+;300453455;;102284_asteroid_plaid;330100,snow,kids,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300453457;;102284_asteroid_plaid;330100,snow,kids,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438590;;99063_red;330100,snow,kids,686;pieces;68,81 GBP , 84,95 EUR;;;
+;300438592;;99063_red;330100,snow,kids,686;pieces;68,81 GBP , 84,95 EUR;;;
+;300438589;;99063_kelly;330100,snow,kids,686;pieces;68,81 GBP , 84,95 EUR;;;
+;300410253;;95353_mascot_trippleo;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300410252;;95353_mascot_trippleo;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300410258;;95353_sugar_cane;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300410523;;95366_mini_heart_camo;330100,snow,kids,Burton;pieces;80,96 GBP , 99,95 EUR;;;
+;300410520;;95366_honeydew;330100,snow,kids,Burton;pieces;80,96 GBP , 99,95 EUR;;;
+;300410529;;95366_watermelon;330100,snow,kids,Burton;pieces;80,96 GBP , 99,95 EUR;;;
+;300410542;;95367_watermelon;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300410535;;95367_honeydew;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300410538;;95367_mini_heart_camo;330100,snow,kids,Burton;pieces;52,61 GBP , 64,95 EUR;;;
+;300405281;;94942_brown;330100,snow,kids,Zimtstern;pieces;137,66 GBP , 169,95 EUR;;;
+;300491716;;107728_black_mini_stripe;330100,snow,kids,Sessions;pieces;97,16 GBP , 119,95 EUR;;;
+;300491715;;107728_black_mini_stripe;330100,snow,kids,Sessions;pieces;97,16 GBP , 119,95 EUR;;;
+;300412839;;95453_watermelon;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412823;;95453_green_bean;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412824;;95453_green_bean;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412827;;95453_green_bean;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412826;;95453_green_bean;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412834;;95453_glamberry;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412836;;95453_glamberry;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412816;;95453_true_black;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412813;;95453_true_black;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412830;;95453_honeydew;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412831;;95453_honeydew;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412829;;95453_honeydew;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412828;;95453_honeydew;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412843;;95453_amethyst;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412818;;95453_true_black_sequins;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300412848;;95453_bright_white_sequins;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300321401;;81252_turquoise;330700,snow,kids,Horsefeathers;pieces;32,36 GBP , 39,95 EUR;;;
+;300321391;;81252_black;330700,snow,kids,Horsefeathers;pieces;32,36 GBP , 39,95 EUR;;;
+;300438086;;98913_peach;330700,snow,kids,Quiksilver;pieces;56,66 GBP , 69,95 EUR;;;
+;300438085;;98913_peach;330700,snow,kids,Quiksilver;pieces;56,66 GBP , 69,95 EUR;;;
+;300192012;;62001_lemonhead_jumanji;330700,snow,kids,Burton;pieces;44,51 GBP , 54,95 EUR;;;
+;300673824;;132042_berry;330700,snow,kids,Orage;pieces;80,96 GBP , 99,95 EUR;;;
+;300438056;;98908_blue;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438055;;98908_blue;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438057;;98908_blue;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438062;;98908_lime;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438061;;98908_lime;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300752454;;98908_green;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438060;;98908_green;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300438059;;98908_green;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300671343;;98908_red;330700,snow,kids,Orage;pieces;56,66 GBP , 69,95 EUR;;;
+;300412628;;95446_flint_á_stripe;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300412632;;95446_biking_red_textur_plaid;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300412635;;95446_biking_red_textur_plaid;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300412637;;95446_stout_white;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300412615;;95446_mascot;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300412612;;95446_mascot;330700,snow,kids,Burton;pieces;56,66 GBP , 69,95 EUR;;;
+;300660327;;99145_slash_stripe_black;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300660325;;99145_slash_stripe_black;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300660329;;99145_slash_stripe_black;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300660313;;99145_tipsey_tonic;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300660315;;99145_tipsey_tonic;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300438775;;99145_shadow_purple;200100,snow,Volcom;pieces;64,76 GBP , 79,95 EUR;;;
+;300412398;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412399;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412397;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412396;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412395;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412400;;95437_blue_pearl_prince_of_wale;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412415;;95437_bright_white;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412416;;95437_bright_white;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412417;;95437_bright_white;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412418;;95437_bright_white;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412407;;95437_fox_hunt;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412409;;95437_fox_hunt;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412408;;95437_fox_hunt;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412411;;95437_fox_hunt;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412412;;95437_fox_hunt;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412424;;95437_bright_white_prince_of_wa;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412420;;95437_bright_white_prince_of_wa;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412421;;95437_bright_white_prince_of_wa;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412419;;95437_bright_white_prince_of_wa;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412378;;95437_true_black;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412379;;95437_true_black;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412377;;95437_true_black;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412380;;95437_true_black;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412387;;95437_academy;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412384;;95437_academy;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412383;;95437_academy;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412386;;95437_academy;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412401;;95437_rum_raisin;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412403;;95437_rum_raisin;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412402;;95437_rum_raisin;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412405;;95437_rum_raisin;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412404;;95437_rum_raisin;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412392;;95437_academy_royal_flush;200100,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300412431;;95438_true_black_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412432;;95438_true_black_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412433;;95438_true_black_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412434;;95438_true_black_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412435;;95438_true_black_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412444;;95438_flint_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412450;;95438_zest_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412451;;95438_zest_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412449;;95438_zest_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412453;;95438_zest_dotcom;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412426;;95438_true_black;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412427;;95438_true_black;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412425;;95438_true_black;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412429;;95438_true_black;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412437;;95438_twilight;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412438;;95438_twilight;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412439;;95438_twilight;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412457;;95438_vain;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300412455;;95438_vain;200100,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300438786;;99146_rouge;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438785;;99146_rouge;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438788;;99146_purple_heart;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438789;;99146_purple_heart;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438790;;99146_purple_heart;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438791;;99146_purple_heart;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438779;;99146_passion_fruit;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438780;;99146_black;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300438781;;99146_black;200100,snow,Volcom;pieces;105,26 GBP , 129,95 EUR;;;
+;300459773;;103335_light_green;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459774;;103335_light_green;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459772;;103335_light_green;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459760;;103335_black;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459761;;103335_black;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459762;;103335_black;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459763;;103335_black;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459769;;103335_sky_blue;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459767;;103335_sky_blue;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300459766;;103335_sky_blue;200100,snow,WLD;pieces;80,96 GBP , 99,95 EUR;;;
+;300412020;;95424_lady_luck_groupie_plaid;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412021;;95424_lady_luck_groupie_plaid;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412018;;95424_lady_luck_groupie_plaid;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412017;;95424_lady_luck_groupie_plaid;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412019;;95424_lady_luck_groupie_plaid;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412012;;95424_true_black;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412016;;95424_true_black;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412033;;95424_risque;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412034;;95424_risque;200100,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300412203;;95430_aloe;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412202;;95430_aloe;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412210;;95430_aloe_gypsy_plaid;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412209;;95430_aloe_gypsy_plaid;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412211;;95430_aloe_gypsy_plaid;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412215;;95430_risque_á_flowers_on_crack;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412216;;95430_risque_á_flowers_on_crack;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412214;;95430_risque_á_flowers_on_crack;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412192;;95430_lady_luck;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412190;;95430_lady_luck;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412221;;95430_risque;200100,snow,Burton;pieces;97,16 GBP , 119,95 EUR;;;
+;300412518;;95441_hex;200100,snow,Burton;pieces;145,76 GBP , 179,95 EUR;;;
+;300412508;;95441_decoy;200100,snow,Burton;pieces;145,76 GBP , 179,95 EUR;;;
+;300413975;;95490_true_black;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414015;;95490_aloe_fade_out;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414011;;95490_aloe_fade_out;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413992;;95490_lady_luck_fade_out;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413988;;95490_lady_luck_fade_out;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413987;;95490_lady_luck_fade_out;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414030;;95490_bright_white;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414032;;95490_bright_white;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413982;;95490_blue_pearl;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414005;;95490_aloe;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414006;;95490_aloe;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414025;;95490_risque;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414022;;95490_moss;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413994;;95490_resin;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413997;;95490_resin;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300414001;;95490_rum_raisin;200300,snow,Burton;pieces;105,26 GBP , 129,95 EUR;;;
+;300413748;;95482_siren;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413745;;95482_siren;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413752;;95482_iron_violet;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413751;;95482_iron_violet;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413754;;95482_iron_violet;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413753;;95482_iron_violet;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413756;;95482_iron_violet;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413740;;95482_yasgur;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413735;;95482_recluse;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413733;;95482_recluse;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413737;;95482_recluse;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413738;;95482_recluse;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413732;;95482_true_black;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413728;;95482_true_black;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300413759;;95482_bright_white_floral_melt;200300,snow,Burton;pieces;89,06 GBP , 109,95 EUR;;;
+;300438822;;99154_black;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438830;;99154_purple_heart;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438826;;99154_peacock;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438824;;99154_peacock;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438825;;99154_peacock;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300438823;;99154_peacock;200300,snow,Volcom;pieces;97,16 GBP , 119,95 EUR;;;
+;300398573;;94382_blacktop;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398572;;94382_blacktop;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398581;;94382_blue_book;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398577;;94382_nail;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398578;;94382_nail;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398595;;94382_fern;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398593;;94382_fern;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398592;;94382_fern;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398591;;94382_fern;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398587;;94382_ink;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300398588;;94382_ink;200300,snow,Foursquare;pieces;80,96 GBP , 99,95 EUR;;;
+;300413797;;95484_flint_dotcom;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300413785;;95484_defender;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300413812;;95484_bright_white;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300413811;;95484_bright_white;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300413810;;95484_bright_white;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300413807;;95484_visionary_print;200300,snow,Burton;pieces;113,36 GBP , 139,95 EUR;;;
+;300442966;;100744_pool_green;200300,snow,DC;pieces;89,06 GBP , 109,95 EUR;;;
+;300442964;;100744_pool_green;200300,snow,DC;pieces;89,06 GBP , 109,95 EUR;;;
+;300441239;;100124_beet_red;260900,streetwear,Nikita;pieces;153,86 GBP , 189,95 EUR;;;
+;300438151;;98929_purple;200300,snow,Roxy;pieces;68,81 GBP , 84,95 EUR;;;
+;300442975;;100746_floging_pink;200300,snow,DC;pieces;113,36 GBP , 139,95 EUR;;;
+;300122650;;51411_purple;370700,Nixon;pieces;80,96 GBP , 99,95 EUR;;;
+;300555911;;115202_matte_black+matte_gunmeta;340000,Nixon;pieces;210,56 GBP , 259,95 EUR;;;
+;300047289;;36265_all_black+white;340000,Nixon;pieces;226,76 GBP , 279,95 EUR;;;
+;300079332;;43339_all_black;340000,Nixon;pieces;137,66 GBP , 169,95 EUR;;;
+;300649633;;129704_rasta;340000,Nixon;pieces;105,26 GBP , 129,95 EUR;;;
+;300028090;;29160_teak;340000,Nixon;pieces;242,96 GBP , 299,95 EUR;;;
+;300464996;;104176_violet;260100,streetwear,Horsefeathers;pieces;64,76 GBP , 79,95 EUR;;;
+;300464995;;104176_violet;260100,streetwear,Horsefeathers;pieces;64,76 GBP , 79,95 EUR;;;
+;300495181;;108803_heather_grey;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300495178;;108803_medieval_blue;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300495175;;108803_medieval_blue;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300760753;;143906_coco;261800,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300760752;;143906_coco;261800,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300760755;;143906_coco;261800,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300760754;;143906_coco;261800,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300589206;;121048_onyx;260100,streetwear,Vans;pieces;28,31 GBP , 34,95 EUR;;;
+;300737417;;122320_royal_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737415;;122320_royal_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737414;;122320_royal_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613255;;122320_grey_heather;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613254;;122320_grey_heather;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737419;;122320_grey_heather;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613253;;122320_grey_heather;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613251;;122320_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613250;;122320_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613252;;122320_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737411;;122320_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613249;;122320_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737425;;122320_kelly;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613257;;122320_white;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737427;;122320_white;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613260;;122320_white;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613258;;122320_white;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613259;;122320_white;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613165;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613166;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613167;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613168;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737272;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737273;;122312_royal_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737288;;122312_dirty_plum;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737289;;122312_dirty_plum;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737290;;122312_dirty_plum;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737291;;122312_dirty_plum;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737292;;122312_dirty_plum;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613162;;122312_black;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613163;;122312_black;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613164;;122312_black;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737264;;122312_black;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613161;;122312_black;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613169;;122312_fire_red;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613171;;122312_fire_red;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613172;;122312_fire_red;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613170;;122312_fire_red;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737283;;122312_lime;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737280;;122312_lime;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737281;;122312_lime;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737269;;122312_aquatic_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737268;;122312_aquatic_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737270;;122312_aquatic_blue;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613175;;122312_white;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613176;;122312_white;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613173;;122312_white;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613174;;122312_white;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300737295;;122312_white;250100,streetwear,Billabong;pieces;21,83 GBP , 26,95 EUR;;;
+;300613333;;122333_sunset;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613334;;122333_sunset;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613336;;122333_sunset;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613335;;122333_sunset;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613331;;122333_black;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613332;;122333_black;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737504;;122333_black;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613330;;122333_black;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300613329;;122333_black;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737512;;122333_white;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737513;;122333_white;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737511;;122333_white;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737515;;122333_white;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737514;;122333_white;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737506;;122333_palm;250100,streetwear,Billabong;pieces;28,31 GBP , 34,95 EUR;;;
+;300737581;;122340_grey_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300737580;;122340_grey_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300737579;;122340_grey_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300737578;;122340_grey_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300613370;;122340_marine_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300613369;;122340_marine_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300613372;;122340_marine_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300613371;;122340_marine_heather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300737584;;122340_mint_leather;250100,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300717314;;122800_royal;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300717315;;122800_royal;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300717313;;122800_royal;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615227;;122800_black;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615228;;122800_black;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615226;;122800_black;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615225;;122800_black;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615229;;122800_white;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615232;;122800_white;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615231;;122800_white;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300615230;;122800_white;250100,streetwear,Alien Workshop;pieces;22,64 GBP , 27,95 EUR;;;
+;300843064;;122405_tourquoise;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737942;;122405_aquatic_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737941;;122405_aquatic_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737945;;122405_aquatic_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737943;;122405_aquatic_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737944;;122405_aquatic_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300613616;;122405_black;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300613617;;122405_black;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300613615;;122405_black;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300613618;;122405_black;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737979;;122405_light_yellow;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737978;;122405_light_yellow;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737977;;122405_light_yellow;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737980;;122405_light_yellow;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737981;;122405_light_yellow;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737950;;122405_royal_blue;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737976;;122405_white;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737975;;122405_white;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737967;;122405_red_fire;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300737971;;122405_red_fire;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300613620;;122405_turquoise;270100,kids,streetwear,Billabong;pieces;18,59 GBP , 22,95 EUR;;;
+;300738207;;122412_navy;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738205;;122412_navy;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738206;;122412_navy;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738203;;122412_navy;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738204;;122412_navy;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613670;;122412_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738208;;122412_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613668;;122412_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613667;;122412_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613669;;122412_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738137;;122409_dirty_plum;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738138;;122409_dirty_plum;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738136;;122409_dirty_plum;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738114;;122409_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738116;;122409_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738118;;122409_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738117;;122409_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738120;;122409_turquoise;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738121;;122409_turquoise;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738122;;122409_turquoise;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738132;;122409_washed_orange;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738133;;122409_washed_orange;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613658;;122409_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613657;;122409_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613656;;122409_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613655;;122409_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738142;;122410_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738144;;122410_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738145;;122410_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738146;;122410_black;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738159;;122410_lime;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300738148;;122410_royal_blue;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613661;;122410_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613662;;122410_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300613659;;122410_white;270100,kids,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300564006;;117080_fuchsia+pink;270100,kids,streetwear,Blue Tomato;pieces;12,92 GBP , 15,95 EUR;;;
+;300564007;;117080_fuchsia+pink;270100,kids,streetwear,Blue Tomato;pieces;12,92 GBP , 15,95 EUR;;;
+;300720124;;138966_royal;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720123;;138966_royal;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720126;;138966_royal;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720130;;138966_bright_white;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720128;;138966_bright_white;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720127;;138966_bright_white;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720129;;138966_bright_white;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720119;;138966_true_black;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720120;;138966_true_black;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720121;;138966_true_black;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300720122;;138966_true_black;270100,kids,streetwear,Burton;pieces;18,59 GBP , 22,95 EUR;;;
+;300742888;;140501_white;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742889;;140501_white;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742890;;140501_white;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742892;;140501_white;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742891;;140501_white;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742886;;140501_lime;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742887;;140501_lime;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742884;;140501_lime;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742885;;140501_lime;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742883;;140501_lime;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742882;;140501_naval_blue;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742878;;140501_naval_blue;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742881;;140501_naval_blue;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742879;;140501_naval_blue;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300742880;;140501_naval_blue;270100,kids,streetwear,Billabong;pieces;30,74 GBP , 37,95 EUR;;;
+;300772561;;144862_white;270100,kids,streetwear,DC;pieces;20,21 GBP , 24,95 EUR;;;
+;300772560;;144862_white;270100,kids,streetwear,DC;pieces;20,21 GBP , 24,95 EUR;;;
+;300772562;;144862_white;270100,kids,streetwear,DC;pieces;20,21 GBP , 24,95 EUR;;;
+;300772559;;144862_white;270100,kids,streetwear,DC;pieces;20,21 GBP , 24,95 EUR;;;
+;300453387;;102278_trench_grey;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453388;;102278_trench_grey;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453389;;102278_trench_grey;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453390;;102278_vortex;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453392;;102278_vortex;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453391;;102278_vortex;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453395;;102278_purple;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453394;;102278_purple;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453393;;102278_purple;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453384;;102278_black;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453385;;102278_black;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453386;;102278_black;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453397;;102278_white;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453398;;102278_white;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300453396;;102278_white;450200,kids,Red;pieces;32,36 GBP , 39,95 EUR;;;
+;300649636;;129707_silver+brown;340000,Nixon;pieces;137,66 GBP , 169,95 EUR;;;
+;300415611;;96001_true_black;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300415612;;96001_blue_23;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300415613;;96001_team_blue;220500,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300467248;;104905_citron+blue;110600,Dalbello;pieces;242,96 GBP , 299,95 EUR;;;
+;300467249;;104905_citron+blue;110600,Dalbello;pieces;242,96 GBP , 299,95 EUR;;;
+;300029866;;29867_uni;350100,surf,Surftech;pieces;558,86 GBP , 689,95 EUR;;;
+;300558998;;115754_uni;350100,surf,Al Merrick;pieces;607,46 GBP , 749,95 EUR;;;
+;300558999;;115755_uni;350100,surf,Al Merrick;pieces;720,86 GBP , 889,95 EUR;;;
+;300393425;;92961_uni;351200,surf,Skim One;pieces;153,86 GBP , 189,95 EUR;;;
+;300558997;;115753_uni;350100,surf,Al Merrick;pieces;518,36 GBP , 639,95 EUR;;;
+;9810;;5191_clear;100100,Toko;pieces;9,68 GBP , 11,95 EUR;;;
+;9810;;5191_clear;100100,Toko;pieces;9,68 GBP , 11,95 EUR;;;
+;13105;;5203_graphite;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;13106;;5203_transparent;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;13105;;5203_graphite;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;13106;;5203_transparent;100200,Toko;pieces;4,01 GBP , 4,95 EUR;;;
+;300786274;;121868_heron_blue;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300786276;;121868_heron_blue;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300786275;;121868_heron_blue;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300786277;;121868_heron_blue;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610919;;121868_coral_haze;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610921;;121868_coral_haze;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610922;;121868_coral_haze;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610920;;121868_coral_haze;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610925;;121868_black;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610926;;121868_black;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610923;;121868_black;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300610924;;121868_black;260700,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300613800;;122447_country_foral;260700,streetwear,Quiksilver;pieces;60,71 GBP , 74,95 EUR;;;
+;300613799;;122447_country_foral;260700,streetwear,Quiksilver;pieces;60,71 GBP , 74,95 EUR;;;
+;300613802;;122447_country_foral;260700,streetwear,Quiksilver;pieces;60,71 GBP , 74,95 EUR;;;
+;300613801;;122447_country_foral;260700,streetwear,Quiksilver;pieces;60,71 GBP , 74,95 EUR;;;
+;300389096;;83174_blue_checked;260700,streetwear,667;pieces;40,46 GBP , 49,95 EUR;;;
+;300389094;;83174_blue_checked;260700,streetwear,667;pieces;40,46 GBP , 49,95 EUR;;;
+;300389095;;83174_blue_checked;260700,streetwear,667;pieces;40,46 GBP , 49,95 EUR;;;
+;300389093;;83174_blue_checked;260700,streetwear,667;pieces;40,46 GBP , 49,95 EUR;;;
+;300389772;;84574_seaweed;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389773;;84574_seaweed;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389774;;84574_seaweed;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389777;;84574_white7;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389778;;84574_white7;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389779;;84574_white7;260700,streetwear,Hurley;pieces;24,26 GBP , 29,95 EUR;;;
+;300389276;;83223_island_green+pink_lemonad;260700,streetwear,Femipleasure;pieces;28,31 GBP , 34,95 EUR;;;
+;300389279;;83223_island_green+pink_lemonad;260700,streetwear,Femipleasure;pieces;28,31 GBP , 34,95 EUR;;;
+;300784672;;118591_new_stone_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784667;;118591_new_stone_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784666;;118591_new_stone_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784668;;118591_new_stone_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784670;;118591_new_stone_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606759;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784663;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606761;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606760;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606763;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606765;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606766;;118591_black;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606787;;118591_burnt_orange;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606789;;118591_burnt_orange;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606783;;118591_burnt_orange;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606785;;118591_burnt_orange;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606784;;118591_burnt_orange;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784690;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784691;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784688;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784686;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784684;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784685;;118591_khaki;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784681;;118591_pewter_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784676;;118591_pewter_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784677;;118591_pewter_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784679;;118591_pewter_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300784682;;118591_pewter_europe;250600,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300606908;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784801;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300606910;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300606907;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300606904;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300606905;;118603_gold;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784793;;118603_dark_grey;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784795;;118603_dark_grey;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784794;;118603_dark_grey;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784797;;118603_dark_grey;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300784799;;118603_dark_grey;250600,streetwear,Volcom;pieces;52,61 GBP , 64,95 EUR;;;
+;300611667;;122041_black;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300611665;;122041_black;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300611666;;122041_black;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300611663;;122041_black;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300611664;;122041_black;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300755976;;122041_total_eclipse;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300755977;;122041_total_eclipse;250600,streetwear,Element;pieces;48,56 GBP , 59,95 EUR;;;
+;300604900;;118174_cool_grey;250600,streetwear,Nike 6.0;pieces;44,51 GBP , 54,95 EUR;;;
+;300604898;;118174_cool_grey;250600,streetwear,Nike 6.0;pieces;44,51 GBP , 54,95 EUR;;;
+;300604899;;118174_cool_grey;250600,streetwear,Nike 6.0;pieces;44,51 GBP , 54,95 EUR;;;
+;300604897;;118174_cool_grey;250600,streetwear,Nike 6.0;pieces;44,51 GBP , 54,95 EUR;;;
+;300604896;;118174_cool_grey;250600,streetwear,Nike 6.0;pieces;44,51 GBP , 54,95 EUR;;;
+;300313718;;80147_red;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300313722;;80147_red;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300313727;;80147_gold;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300313726;;80147_gold;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300313729;;80147_gold;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300313710;;80147_grey;250600,streetwear,Analog;pieces;44,51 GBP , 54,95 EUR;;;
+;300613583;;122394_multi;270600,kids,streetwear,Billabong;pieces;44,51 GBP , 54,95 EUR;;;
+;300613586;;122394_multi;270600,kids,streetwear,Billabong;pieces;44,51 GBP , 54,95 EUR;;;
+;300613585;;122394_multi;270600,kids,streetwear,Billabong;pieces;44,51 GBP , 54,95 EUR;;;
+;300613584;;122394_multi;270600,kids,streetwear,Billabong;pieces;44,51 GBP , 54,95 EUR;;;
+;300608426;;118899_shadow_grey;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608425;;118899_shadow_grey;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608428;;118899_shadow_grey;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608427;;118899_shadow_grey;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300785915;;118899_yellow;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300785916;;118899_yellow;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300785913;;118899_yellow;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300785914;;118899_yellow;270600,kids,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300383695;;79536_white;270600,kids,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300383696;;79536_white;270600,kids,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300388629;;83025_quik_red;270600,kids,streetwear,Quiksilver;pieces;36,41 GBP , 44,95 EUR;;;
+;300392200;;92637_summer;270600,kids,streetwear,69 Slam;pieces;36,41 GBP , 44,95 EUR;;;
+;300392196;;92637_other_square;270600,kids,streetwear,69 Slam;pieces;36,41 GBP , 44,95 EUR;;;
+;300742616;;140467_multico;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742619;;140467_multico;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742610;;140467_neo_orange;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742611;;140467_neo_orange;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742612;;140467_neo_orange;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742613;;140467_neo_orange;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742614;;140467_neo_orange;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742606;;140467_blue;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742607;;140467_blue;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742605;;140467_blue;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742608;;140467_blue;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742609;;140467_blue;270600,kids,streetwear,Billabong;pieces;40,46 GBP , 49,95 EUR;;;
+;300742515;;140458_charcoal;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742519;;140458_charcoal;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742518;;140458_charcoal;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742517;;140458_charcoal;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742516;;140458_charcoal;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742514;;140458_blue;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742513;;140458_blue;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742512;;140458_blue;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742511;;140458_blue;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300742510;;140458_blue;270600,kids,streetwear,Billabong;pieces;52,61 GBP , 64,95 EUR;;;
+;300611189;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300611188;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300611187;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300611186;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300611185;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300611184;;121939_black;400300,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300615121;;122784_zebra;400300,Reef;pieces;28,31 GBP , 34,95 EUR;;;
+;300615120;;122784_zebra;400300,Reef;pieces;28,31 GBP , 34,95 EUR;;;
+;300615122;;122784_zebra;400300,Reef;pieces;28,31 GBP , 34,95 EUR;;;
+;300615119;;122784_zebra;400300,Reef;pieces;28,31 GBP , 34,95 EUR;;;
+;300615118;;122784_zebra;400300,Reef;pieces;28,31 GBP , 34,95 EUR;;;
+;300786361;;121941_print;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786362;;121941_print;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786363;;121941_print;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786360;;121941_print;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611201;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611198;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611197;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611199;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611196;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611200;;121941_leopard;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786357;;121941_logo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786356;;121941_logo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786355;;121941_logo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786369;;121941_purple_combo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786366;;121941_purple_combo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786368;;121941_purple_combo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300786367;;121941_purple_combo;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611202;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611204;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611203;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611206;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611205;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300611207;;121942_mix;400300,Volcom;pieces;14,54 GBP , 17,95 EUR;;;
+;300791722;;118720_white;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791723;;118720_white;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300607492;;118720_true_black;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300607491;;118720_true_black;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300607490;;118720_true_black;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300607489;;118720_true_black;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300607488;;118720_true_black;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791706;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791705;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791708;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791707;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791709;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791704;;118720_coffee;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300791711;;118720_castlerock;400300,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300613859;;122459_desert_point;160400,streetwear,Quiksilver;pieces;32,36 GBP , 39,95 EUR;;;
+;300613861;;122461_sand;160400,streetwear,Quiksilver;pieces;36,41 GBP , 44,95 EUR;;;
+;300611156;;121924_fire_red;160400,streetwear,Volcom;pieces;44,51 GBP , 54,95 EUR;;;
+;300617559;;123970_cloud;160400,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300619188;;124693_black;160400,streetwear,Dakine;pieces;36,41 GBP , 44,95 EUR;;;
+;300452191;;102153_white+bluebird;160400,streetwear,adidas Originals;pieces;1,98 GBP , 2,45 EUR;;;
+;300612775;;122233_fog;160400,streetwear,Vans;pieces;16,16 GBP , 19,95 EUR;;;
+;300613490;;122379_black;160700,streetwear,Billabong;pieces;34,79 GBP , 42,95 EUR;;;
+;300613491;;122379_brown;160700,streetwear,Billabong;pieces;34,79 GBP , 42,95 EUR;;;
+;300465914;;104396_blue;160700,streetwear,Blue Tomato;pieces;1,58 GBP , 1,95 EUR;;;
+;300608126;;118833_red_combo;160300,streetwear,Volcom;pieces;56,66 GBP , 69,95 EUR;;;
+;300466076;;104485_black;160300,streetwear,Skullcandy;pieces;60,71 GBP , 74,95 EUR;;;
+;300466077;;104485_red;160300,streetwear,Skullcandy;pieces;60,71 GBP , 74,95 EUR;;;
+;300618505;;124267_fairway+white;160300,streetwear,adidas Originals;pieces;40,46 GBP , 49,95 EUR;;;
+;300618507;;124269_white;160300,streetwear,adidas Originals;pieces;40,46 GBP , 49,95 EUR;;;
+;300618506;;124268_bluebird;160300,streetwear,adidas Originals;pieces;40,46 GBP , 49,95 EUR;;;
+;300441924;;100402_clay_court;160700,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300614881;;122723_white;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614880;;122723_white;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614882;;122723_white;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614877;;122723_black;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614878;;122723_black;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614879;;122723_black;370900,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300691216;;118693_true_black;370900,Roxy;pieces;20,21 GBP , 24,95 EUR;;;
+;300385273;;79889_chipmunk;370900,Bench;pieces;24,26 GBP , 29,95 EUR;;;
+;300385272;;79889_chipmunk;370900,Bench;pieces;24,26 GBP , 29,95 EUR;;;
+;300202725;;63500_trashed_black;370900,Fox;pieces;17,78 GBP , 21,95 EUR;;;
+;300604643;;117909_white;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604644;;117909_white;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604645;;117909_white;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604640;;117909_field_green;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604641;;117909_field_green;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604642;;117909_field_green;251100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300608208;;118859_mix;251100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300608209;;118859_drip_red;251100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300608207;;118859_blue_black;251100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300785802;;118859_blue_combo;251100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300608307;;118879_tacoma_brown;251100,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608306;;118879_tacoma_brown;251100,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608308;;118879_shadow_grey;251100,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300608309;;118879_shadow_grey;251100,streetwear,Volcom;pieces;40,46 GBP , 49,95 EUR;;;
+;300515172;;98851_kelly;251100,streetwear,Billabong;pieces;20,21 GBP , 24,95 EUR;;;
+;300608278;;118871_print;251100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300608277;;118871_print;251100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300785815;;118871_plaid;251100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300785814;;118871_plaid;251100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300604648;;117911_white;251100,streetwear,Quiksilver;pieces;40,46 GBP , 49,95 EUR;;;
+;300604650;;117911_white;251100,streetwear,Quiksilver;pieces;40,46 GBP , 49,95 EUR;;;
+;300604649;;117911_white;251100,streetwear,Quiksilver;pieces;40,46 GBP , 49,95 EUR;;;
+;300321070;;74010_white;251100,streetwear,Von Zipper;pieces;17,78 GBP , 21,95 EUR;;;
+;300617317;;123922_black;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617318;;123922_black;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617319;;123922_black;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617320;;123922_black;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617321;;123922_black;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617326;;123922_field_green;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617324;;123922_field_green;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617325;;123922_field_green;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617330;;123922_passion;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617329;;123922_passion;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617328;;123922_passion;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300617331;;123922_passion;270100,kids,streetwear,Quiksilver;pieces;17,78 GBP , 21,95 EUR;;;
+;300438214;;98951_trigo;270100,kids,streetwear,Quiksilver;pieces;12,92 GBP , 15,95 EUR;;;
+;300605286;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605287;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605282;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605283;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605284;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605285;;118313_black+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605299;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605297;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605298;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605295;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605296;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605294;;118313_pacific_blue+clearwater;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300753484;;118313_natural+athletic_red;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605300;;118313_natural+athletic_red;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605303;;118313_natural+athletic_red;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605301;;118313_natural+athletic_red;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605302;;118313_natural+athletic_red;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605311;;118313_athletic_red+dark_denim;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605312;;118313_athletic_red+dark_denim;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605313;;118313_athletic_red+dark_denim;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605314;;118313_athletic_red+dark_denim;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605329;;118313_blazing_yellow+olympian_b;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605334;;118313_blazing_yellow+olympian_b;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605330;;118313_blazing_yellow+olympian_b;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605332;;118313_blazing_yellow+olympian_b;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605308;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605307;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605306;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605305;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605309;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605310;;118313_celtic_green+blazing_yell;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605288;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605289;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605293;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605291;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605292;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605290;;118313_olympic_blue+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605317;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605319;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605318;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605321;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605322;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605320;;118313_blazing_red+white;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605328;;118313_white+black;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605325;;118313_white+black;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605326;;118313_white+black;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605323;;118313_white+black;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300605324;;118313_white+black;250100,streetwear,DC;pieces;28,31 GBP , 34,95 EUR;;;
+;300417110;;96162_kelly;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417113;;96162_bright_white;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417114;;96162_bright_white;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417115;;96162_bright_white;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417116;;96162_bright_white;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417104;;96162_mocha;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300417105;;96162_mocha;250100,streetwear,Burton;pieces;24,26 GBP , 29,95 EUR;;;
+;300613264;;122321_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613263;;122321_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613262;;122321_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613261;;122321_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737429;;122321_black;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300737430;;122321_naval_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613268;;122321_naval_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613267;;122321_naval_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613266;;122321_naval_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613265;;122321_naval_blue;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613272;;122321_light_yellow;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613269;;122321_light_yellow;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613271;;122321_light_yellow;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300613270;;122321_light_yellow;250100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300458977;;103088_white;250100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300458967;;103088_black;250100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300458968;;103088_black;250100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300458969;;103088_black;250100,streetwear,Volcom;pieces;20,21 GBP , 24,95 EUR;;;
+;300617129;;123759_white+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617132;;123759_white+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617131;;123759_white+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617130;;123759_white+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617127;;123759_holiday+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617126;;123759_holiday+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617128;;123759_holiday+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300617125;;123759_holiday+multicolor;250100,streetwear,Carhartt;pieces;28,31 GBP , 34,95 EUR;;;
+;300756155;;122059_white;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756156;;122059_white;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300611801;;122059_mandarine;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300611802;;122059_mandarine;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300611800;;122059_mandarine;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300611803;;122059_mandarine;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756150;;122059_black;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756151;;122059_black;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756152;;122059_black;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756153;;122059_black;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300756154;;122059_black;250100,streetwear,Element;pieces;28,31 GBP , 34,95 EUR;;;
+;300604611;;117896_white;250100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604615;;117896_white;250100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604614;;117896_white;250100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604613;;117896_white;250100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604612;;117896_white;250100,streetwear,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300610765;;121832_white;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610764;;121832_white;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610763;;121832_white;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610762;;121832_white;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610761;;121832_blue;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610760;;121832_blue;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610759;;121832_blue;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610758;;121832_blue;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610768;;121832_snap_yellow;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610767;;121832_snap_yellow;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610766;;121832_snap_yellow;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300610769;;121832_snap_yellow;260100,streetwear,Volcom;pieces;28,31 GBP , 34,95 EUR;;;
+;300608387;;118893_turquoise;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608386;;118893_turquoise;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608389;;118893_turquoise;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608388;;118893_turquoise;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608390;;118893_turquoise;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608395;;118893_grey_heather;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608392;;118893_grey_heather;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608391;;118893_grey_heather;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608393;;118893_grey_heather;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608396;;118893_white;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608398;;118893_white;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608397;;118893_white;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608400;;118893_white;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300495181;;108803_heather_grey;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300495178;;108803_medieval_blue;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300495175;;108803_medieval_blue;260100,streetwear,Roxy;pieces;17,78 GBP , 21,95 EUR;;;
+;300404090;;94791_light_green;260100,streetwear,Zimtstern;pieces;20,21 GBP , 24,95 EUR;;;
+;300404092;;94791_light_green;260100,streetwear,Zimtstern;pieces;20,21 GBP , 24,95 EUR;;;
+;300439075;;99277_ice;260100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300439074;;99277_ice;260100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300439071;;99277_black;260100,streetwear,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300608401;;118894_paradise_pink;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608402;;118894_paradise_pink;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608405;;118894_paradise_pink;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300608403;;118894_paradise_pink;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300736128;;118894_grey_heather;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300736133;;118894_white;260100,streetwear,Billabong;pieces;24,26 GBP , 29,95 EUR;;;
+;300717428;;122811_heather_sweet_leaf;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717429;;122811_heather_sweet_leaf;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717432;;122811_heather_sweet_leaf;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717430;;122811_heather_sweet_leaf;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717423;;122811_true_black;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717425;;122811_true_black;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717424;;122811_true_black;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717427;;122811_true_black;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717426;;122811_true_black;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717444;;122811_sunflower;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717445;;122811_sunflower;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717443;;122811_sunflower;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300615286;;122811_heather_peacock;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300615287;;122811_heather_peacock;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300615288;;122811_heather_peacock;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300615289;;122811_heather_peacock;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300615290;;122811_heather_peacock;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717435;;122811_heather_berry;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717437;;122811_heather_berry;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717433;;122811_heather_berry;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717434;;122811_heather_berry;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717440;;122811_bright_white;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300717439;;122811_bright_white;260100,streetwear,Burton;pieces;21,83 GBP , 26,95 EUR;;;
+;300614712;;122670_black+white;220600,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614713;;122670_black+white;220600,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614710;;122670_black+red;220600,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300614711;;122670_black+red;220600,Fox;pieces;28,31 GBP , 34,95 EUR;;;
+;300604624;;117900_field_green;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604625;;117900_field_green;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604622;;117900_black;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604623;;117900_black;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604627;;117900_white;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300604626;;117900_white;220600,Quiksilver;pieces;28,31 GBP , 34,95 EUR;;;
+;300611880;;122072_black;220600,Element;pieces;24,26 GBP , 29,95 EUR;;;
+;300611881;;122072_black;220600,Element;pieces;24,26 GBP , 29,95 EUR;;;
+;300611884;;122072_celtic;220600,Element;pieces;24,26 GBP , 29,95 EUR;;;
+;300611885;;122072_celtic;220600,Element;pieces;24,26 GBP , 29,95 EUR;;;
+;300650114;;117204_black;220600,Blue Tomato;pieces;11,30 GBP , 13,95 EUR;;;
+;300564390;;117210_white;220600,droid;pieces;11,30 GBP , 13,95 EUR;;;
+;300459466;;103151_white_combo;220600,Volcom;pieces;24,26 GBP , 29,95 EUR;;;
+;300564385;;117205_white;220600,Blue Tomato;pieces;11,30 GBP , 13,95 EUR;;;
+;300756252;;122074_natural;220600,Element;pieces;36,41 GBP , 44,95 EUR;;;
+;300639541;;122074_all_black;220600,Element;pieces;36,41 GBP , 44,95 EUR;;;
+;300639540;;122074_all_black;220600,Element;pieces;36,41 GBP , 44,95 EUR;;;
+;300416127;;96097_true_black;251100,streetwear,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300416129;;96097_true_black;251100,streetwear,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300416139;;96097_cardinal;251100,streetwear,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300416140;;96097_cardinal;251100,streetwear,Burton;pieces;28,31 GBP , 34,95 EUR;;;
+;300562200;;116623_uni;350200,surf,Southpoint;pieces;485,96 GBP , 599,95 EUR;;;
+;300417321;;96172_athletic_heather;250100,streetwear,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300417310;;96172_royal;250100,streetwear,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300417324;;96172_kelly;250100,streetwear,Burton;pieces;17,78 GBP , 21,95 EUR;;;
+;300398794;;94415_blacktop;220600,Foursquare;pieces;32,36 GBP , 39,95 EUR;;;
+;300398801;;94415_blue_print;220600,Foursquare;pieces;32,36 GBP , 39,95 EUR;;;
