@@ -14,6 +14,11 @@ adyen.ws.password=
 adyen.merchantaccount=
 ```
 
+```
+csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop-response)$,/[^/]+(/[^?]*)+(adyen-response)$
+
+```
+
 3. Build
 ```
 cd bin/platform
