@@ -45,8 +45,31 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return client;
     }
 
+    public Map<String, Object> authorise3D(final CartData cartData,
+                                           final HttpServletRequest request,
+                                           final String paRes,
+                                           final String md) throws Exception {
+        Client client = createClient();
+        Payment paymentRequest = new Payment(client);
+
+        Map<String, Object> params = getAuthorisationParams(cartData, request);
+        params.put("paResponse", paRes);
+        params.put("md", md);
+
+        return paymentRequest.authorise3D(params);
+    }
+
     public Map<String, Object> authorise(final CartData cartData, final HttpServletRequest request) throws Exception {
         Client client = createClient();
+        Payment paymentRequest = new Payment(client);
+
+        Map<String, Object> params = getAuthorisationParams(cartData, request);
+
+        return paymentRequest.authorise(params);
+    }
+
+    private Map<String, Object> getAuthorisationParams(final CartData cartData, final HttpServletRequest request)
+    {
         String amountValue = new Integer(
                 new BigDecimal(100)
                         .multiply(cartData.getTotalPrice().getValue())
@@ -55,6 +78,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         String amountCurrency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
         String cseToken = cartData.getAdyenCseToken();
+        String shopperIP = request.getRemoteAddr();
 
         //TODO: refactor client library
         Map<String, Object> params = new HashMap<String, Object>();
@@ -72,20 +96,19 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         params.put("merchantAccount", merchantAccount);
         params.put("reference", reference);
+        params.put("shopperIP", shopperIP);
 
         //3DS parameters
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
 
         Map<String, String> browserInfoMap = new HashMap<String, String>();
-        amountMap.put("userAgent", userAgent);
-        amountMap.put("acceptHeader", acceptHeader);
+        browserInfoMap.put("userAgent", userAgent);
+        browserInfoMap.put("acceptHeader", acceptHeader);
 
         params.put("browserInfo", browserInfoMap);
 
-        Payment paymentRequest = new Payment(client);
-
-        return paymentRequest.authorise(params);
+        return params;
     }
 
     public ConfigurationService getConfigurationService() {

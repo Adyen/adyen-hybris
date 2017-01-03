@@ -6,6 +6,7 @@ package com.adyen.v6.constants;
 public interface AdyenControllerConstants
 {
 	String ADDON_PREFIX = "addon:/adyenv6b2ccheckoutaddon/";
+	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
 	/**
 	 * Class with view name constants
 	 */

@@ -39,11 +39,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -52,12 +54,12 @@ import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
 @Controller
-@RequestMapping(value = "checkout/multi/adyen/summary")
+@RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
 public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(AdyenSummaryCheckoutStepController.class);
 
     private final static String SUMMARY = "summary";
-    private static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/checkout/multi/adyen/summary/authorise-3d-response";
+    private static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
 
     @Resource(name = "cartService")
     private CartService cartService;
@@ -170,12 +172,13 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         }
 
         if(resultCode.equals("RedirectShopper")) {
-
+            final String authorise3DSecureUrl = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
             final BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
             final String fullResponseUrl = siteBaseUrlResolutionService.getWebsiteUrlForSite(
                     currentBaseSite,
                     true,
-                    AUTHORISE_3D_SECURE_PAYMENT_URL);
+                    authorise3DSecureUrl
+                    );
 
             model.addAttribute("paReq", paReq);
             model.addAttribute("md", md);
@@ -192,6 +195,56 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return enterStep(model, redirectModel);
         }
 
+        return placeOrder(model, redirectModel, pspReference);
+    }
+
+    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
+    @RequireHardLogIn
+    public String authorise3DSecurePayment(@RequestParam("PaRes") final String paRes,
+                                           @RequestParam("MD") final String md,
+                                           final Model model,
+                                           final RedirectAttributes redirectModel,
+                                           final HttpServletRequest request)
+            throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException
+    {
+        final CartData cartData = getCartFacade().getSessionCart();
+
+        //TODO: remove when java api lib is refactored
+        String resultCode = "";
+        String pspReference = "";
+        String errorCode = "";
+        String issuerUrl = "";
+        try {
+            Map<String, Object> result = adyenPaymentService.authorise3D(cartData, request, paRes, md);
+
+            if(result.get("resultCode") != null) resultCode = result.get("resultCode").toString();
+            if(result.get("pspReference") != null) pspReference = result.get("pspReference").toString();
+            if(result.get("errorCode") != null) errorCode = result.get("errorCode").toString();
+            if(result.get("issuerUrl") != null) issuerUrl = result.get("issuerUrl").toString();
+
+            //TODO: logging
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Exception: " + e.getClass() + " " + e.getMessage());
+        }
+
+        //TODO: const resultcodes
+        if(!resultCode.equals("Authorised")) {
+            //TODO: utilize error code
+            GlobalMessages.addErrorMessage(model, "checkout.error.authorization.failed");
+            return enterStep(model, redirectModel);
+        }
+
+        return placeOrder(model, redirectModel, pspReference);
+    }
+
+    /**
+     * Returns the redirect page
+     * @return
+     */
+    private String placeOrder(final Model model, final RedirectAttributes redirectModel, final String pspReference)
+            throws CommerceCartModificationException, CMSItemNotFoundException {
         final OrderData orderData;
         try {
             orderData = getCheckoutFacade().placeOrder();
@@ -200,7 +253,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             GlobalMessages.addErrorMessage(model, "checkout.placeOrder.failed");
             return enterStep(model, redirectModel);
         }
-
 
         OrderModel orderModel = null;
         if (getCheckoutCustomerStrategy().isAnonymousCheckout()) {
@@ -227,108 +279,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         return redirectToOrderConfirmationPage(orderData);
     }
-/*
-    @RequestMapping(value = "/authorise-3d-response", method = RequestMethod.POST)
-    @RequireHardLogIn
-    public String authorise3DSecurePayment(@RequestParam("PaRes") final String paRes,
-                                           @RequestParam("MD") final String md,
-                                           final Model model,
-                                           final RedirectAttributes redirectModel,
-                                           final HttpServletRequest request)
-            throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException
-    {
-        String userAgent = request.getHeader("User-Agent");
-        String acceptHeader = request.getHeader("Accept");
-        String userIP = request.getRemoteAddr();
-
-        try
-        {
-//            adyenPaymentService.maybeClearAuthorizeHistory(checkoutFacade.getCartModel());
-
-
-            final OrderData orderData;
-            try {
-                orderData = getCheckoutFacade().placeOrder();
-            } catch (final Exception e) {
-                LOGGER.error("Failed to place Order", e);
-                GlobalMessages.addErrorMessage(model, "checkout.placeOrder.failed");
-                return enterStep(model, redirectModel);
-            }
-
-
-            OrderModel orderModel = null;
-            if (getCheckoutCustomerStrategy().isAnonymousCheckout()) {
-                final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
-                orderModel = customerAccountService.getOrderDetailsForGUID(orderData.getGuid(), baseStoreModel);
-            } else {
-                return EMPTY;
-            }
-
-            final String merchantTransactionCode = orderModel.getCode();
-            final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
-                    merchantTransactionCode,
-                    pspReference,
-                    orderModel);
-
-            modelService.save(paymentTransactionModel);
-
-            final PaymentTransactionEntryModel transactionEntryModel = createAuthorizationPaymentTransactionEntryModel(
-                    paymentTransactionModel,
-                    merchantTransactionCode,
-                    orderModel);
-
-            modelService.save(transactionEntryModel);
-
-            return redirectToOrderConfirmationPage(orderData);
-
-
-
-
-            final PaymentTransactionEntryModel paymentTransactionEntry = (AdyenPaymentTransactionEntryModel) adyenPaymentService
-                    .authorize3DSecure(checkoutFacade.getCartModel(), paRes, md, request.getRemoteAddr(),
-                            request.getHeader("User-Agent"), request.getHeader("Accept"));
-            if (isPaymentFail(paymentTransactionEntry))
-            {
-                if (paymentTransactionEntry != null && StringUtils.isNotBlank(paymentTransactionEntry.getAdyenMessage()))
-                {
-                    GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER,
-                            "checkout.multi.3d.authorise.refusedWithreason", new Object[]
-                                    { paymentTransactionEntry.getAdyenMessage() });
-                }
-                else
-                {
-                    GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER,
-                            "checkout.multi.3d.authorise.refused");
-                }
-                return REDIRECT_URL_ADD_PAYMENT_METHOD;
-            }
-        }
-        catch (final Exception e)
-        {
-            LOG.error("Failed to place Order", e);
-            GlobalMessages.addErrorMessage(model, "checkout.placeOrder.failed");
-        }
-        return getCheckoutStep().nextStep();
-    }
-
-    public PaymentTransactionEntryModel authorize3DSecure(final CartModel cartModel, final String paResponse,
-                                                          final String md, final String shopperIp, final String userAgent, final String accept)
-    {
-        final PaymentTransactionModel transaction = (PaymentTransactionModel) this.modelService
-                .create(PaymentTransactionModel.class);
-        transaction.setCode(cartModel.getCode());
-        transaction.setOrder(cartModel);
-        modelService.save(transaction);
-//        getModelService().saveAll(new Object[]
-//                { cartModel, transaction });
-        final AdyenPaymentRequestBuilder builder = new AdyenPaymentRequestBuilder();
-        builder.create3DRequest(cartModel.getCode(), shopperIp, getCmsSiteService().getCurrentSite().getAdyenMerchantAccount(),
-                paResponse, md);
-        builder.browserInfo(userAgent, accept);
-        final AdyenPaymentRequest paymentRequest = builder.getPaymentRequest();
-        return adyenService.authorise(transaction, paymentRequest, true);
-    }*/
-
 
     public PaymentTransactionModel createPaymentTransaction(
             final String merchantCode,
