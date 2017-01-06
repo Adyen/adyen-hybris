@@ -2,6 +2,10 @@ package com.adyen.v6.service;
 
 import com.adyen.Client;
 import com.adyen.enums.Environment;
+import com.adyen.model.AbstractPaymentRequest;
+import com.adyen.model.PaymentRequest;
+import com.adyen.model.PaymentRequest3d;
+import com.adyen.model.PaymentResult;
 import com.adyen.service.Payment;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
@@ -9,10 +13,8 @@ import de.hybris.platform.servicelayer.config.ConfigurationService;
 import org.apache.commons.configuration.Configuration;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
+//TODO: implement an interface
 public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     private String merchantAccount;
     private ConfigurationService configurationService;
@@ -28,87 +30,70 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      *
      * @return
      */
-    public Client createClient() {
+    private Client createClient() {
         final Configuration configuration = getConfigurationService().getConfiguration();
 
         String username = configuration.getString(WS_USERNAME);
         String password = configuration.getString(WS_PASSWORD);
         merchantAccount = configuration.getString(MERCHANT_ACCOUNT);
 
-        Client client = new Client(
+        return new Client(
                 username,
                 password,
                 Environment.TEST,
                 "Hybris v6.0"
         );
-
-        return client;
     }
 
-    public Map<String, Object> authorise3D(final CartData cartData,
-                                           final HttpServletRequest request,
-                                           final String paRes,
-                                           final String md) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request) throws Exception {
         Client client = createClient();
-        Payment paymentRequest = new Payment(client);
+        Payment payment = new Payment(client);
 
-        Map<String, Object> params = getAuthorisationParams(cartData, request);
-        params.put("paResponse", paRes);
-        params.put("md", md);
-
-        return paymentRequest.authorise3D(params);
-    }
-
-    public Map<String, Object> authorise(final CartData cartData, final HttpServletRequest request) throws Exception {
-        Client client = createClient();
-        Payment paymentRequest = new Payment(client);
-
-        Map<String, Object> params = getAuthorisationParams(cartData, request);
-
-        return paymentRequest.authorise(params);
-    }
-
-    private Map<String, Object> getAuthorisationParams(final CartData cartData, final HttpServletRequest request)
-    {
-        String amountValue = new Integer(
-                new BigDecimal(100)
-                        .multiply(cartData.getTotalPrice().getValue())
-                        .intValue())
-                .toString();
-        String amountCurrency = cartData.getTotalPrice().getCurrencyIso();
+        String amount = cartData.getTotalPrice().getValue().toString();
+        String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
         String cseToken = cartData.getAdyenCseToken();
-        String shopperIP = request.getRemoteAddr();
 
-        //TODO: refactor client library
-        Map<String, Object> params = new HashMap<String, Object>();
+        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request)
+                .reference(reference)
+                .setAmountData(
+                        amount,
+                        currency
+                )
+                .setCSEToken(cseToken);
 
-        Map<String, String> amountMap = new HashMap<String, String>();
-        amountMap.put("currency", amountCurrency);
-        amountMap.put("value", amountValue); // minor units!
+        return payment.authorise(paymentRequest);
+    }
 
-        params.put("amount", amountMap);
+    public PaymentResult authorise3D(final HttpServletRequest request,
+                                     final String paRes,
+                                     final String md) throws Exception {
+        Client client = createClient();
+        Payment payment = new Payment(client);
 
-        Map<String, String> additionalData = new HashMap<String, String>();
-        additionalData.put("card.encrypted.json", cseToken);
+        PaymentRequest3d paymentRequest3d = createBasePaymentRequest(new PaymentRequest3d(), request)
+                .set3DRequestData(md, paRes);
 
-        params.put("additionalData", additionalData);
+        System.out.println(paymentRequest3d);
+        return payment.authorise3D(paymentRequest3d);
+    }
 
-        params.put("merchantAccount", merchantAccount);
-        params.put("reference", reference);
-        params.put("shopperIP", shopperIP);
-
-        //3DS parameters
+    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(
+            T abstractPaymentRequest,
+            final HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
+        String shopperIP = request.getRemoteAddr();
 
-        Map<String, String> browserInfoMap = new HashMap<String, String>();
-        browserInfoMap.put("userAgent", userAgent);
-        browserInfoMap.put("acceptHeader", acceptHeader);
+        abstractPaymentRequest
+                .merchantAccount(merchantAccount)
+                .setBrowserInfoData(
+                        userAgent,
+                        acceptHeader
+                )
+                .shopperIP(shopperIP);
 
-        params.put("browserInfo", browserInfoMap);
-
-        return params;
+        return abstractPaymentRequest;
     }
 
     public ConfigurationService getConfigurationService() {
