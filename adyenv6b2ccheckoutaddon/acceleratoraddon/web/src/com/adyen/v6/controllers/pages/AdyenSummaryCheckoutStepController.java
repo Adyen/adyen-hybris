@@ -3,6 +3,7 @@
  */
 package com.adyen.v6.controllers.pages;
 
+import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
@@ -49,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Map;
 
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL;
@@ -149,6 +149,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         final CartData cartData = getCartFacade().getSessionCart();
 
+        String errorMessage = "checkout.error.authorization.failed";
         try {
             PaymentResult paymentResult = adyenPaymentService.authorise(cartData, request);
 
@@ -164,7 +165,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
                 return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
             } else if (paymentResult.isRefused()) {
-                //TODO: handle refusal messages
+                errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
         } catch (ApiException e) {
             System.out.println("API Exception " + e.getError());
@@ -173,7 +174,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             System.out.println("Exception " + e.getClass() + " " + e.getMessage());
         }
 
-        GlobalMessages.addErrorMessage(model, "checkout.error.authorization.failed");
+        GlobalMessages.addErrorMessage(model, errorMessage);
         return enterStep(model, redirectModel);
     }
 
@@ -185,13 +186,14 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                                            final RedirectAttributes redirectModel,
                                            final HttpServletRequest request)
             throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
+        String errorMessage = "checkout.error.authorization.failed";
         try {
             PaymentResult paymentResult = adyenPaymentService.authorise3D(request, paRes, md);
 
             if (paymentResult.isAuthorised()) {
                 return placeOrder(model, redirectModel, paymentResult.getPspReference());
             } else if (paymentResult.isRefused()) {
-                //TODO: handle refusal messages
+                errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
         } catch (ApiException e) {
             System.out.println("API Exception " + e.getError());
@@ -200,8 +202,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             System.out.println("Exception " + e.getClass() + " " + e.getMessage());
         }
 
-        //TODO: utilize error code
-        GlobalMessages.addErrorMessage(model, "checkout.error.authorization.failed");
+        GlobalMessages.addErrorMessage(model, errorMessage);
         return enterStep(model, redirectModel);
     }
 
@@ -301,5 +302,26 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         transactionEntryModel.setCurrency(orderModel.getCurrency());
 
         return transactionEntryModel;
+    }
+
+    private String getErrorMessageByRefusalReason(String refusalReason) {
+        String errorMessage = "checkout.error.authorization.payment.refused";
+
+        switch (refusalReason) {
+            case RefusalReason.TRANSACTION_NOT_PERMITTED:
+                errorMessage = "checkout.error.authorization.transaction.not.permitted";
+                break;
+            case RefusalReason.CVC_DECLINED:
+                errorMessage = "checkout.error.authorization.cvc.declined";
+                break;
+            case RefusalReason.RESTRICTED_CARD:
+                errorMessage = "checkout.error.authorization.restricted.card";
+                break;
+            case RefusalReason.PAYMENT_DETAIL_NOT_FOUND:
+                errorMessage = "checkout.error.authorization.payment.detail.not.found";
+                break;
+        }
+
+        return errorMessage;
     }
 }
