@@ -17,6 +17,7 @@ package com.adyen.v6.constants;
 public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2ccheckoutaddonConstants
 {
 	public static final String EXTENSIONNAME = "adyenv6b2ccheckoutaddon";
+	public static final String PAYMENT_PROVIDER = "Adyen";
 
 	private Adyenv6b2ccheckoutaddonConstants()
 	{

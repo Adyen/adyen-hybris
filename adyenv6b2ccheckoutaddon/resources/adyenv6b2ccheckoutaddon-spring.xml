@@ -22,8 +22,11 @@
            http://www.springframework.org/schema/aop/spring-aop.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd">
-           
-    <context:annotation-config/>
+
+	<!--Override order-process-->
+	<import resource="adyenv6b2ccheckoutaddon-process-definitions-spring.xml" />
+
+	<context:annotation-config/>
 
 	<bean id="adyenv6b2ccheckoutaddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
 		<property name="supportedChannels">
@@ -81,5 +84,22 @@
 
 	<bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService">
 		<property name="configurationService" ref="configurationService" />
+	</bean>
+
+	<!-- Used for commands triggered by order-process -->
+	<bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
+		<property name="paymentProvider" value="Adyen"/>
+		<property name="commands">
+			<map>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.CaptureCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenCaptureCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
 	</bean>
 </beans>

@@ -21,6 +21,7 @@ import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,6 +43,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 @RequestMapping(value = "/checkout/multi/adyen/select-payment-method")
 public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutStepController {
+    private static final Logger LOGGER = Logger.getLogger(SelectPaymentMethodCheckoutStepController.class);
+
     protected static final String PAYMENT_METHOD_STEP_NAME = "payment-method";
 
     protected static final String CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB = "checkout.multi.paymentMethod.breadcrumb";
@@ -66,8 +69,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @RequireHardLogIn
 //    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
     public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
-        System.out.println(this.getClass() + " called");
-
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         model.addAttribute("metaRobots", "noindex,nofollow");
@@ -122,10 +123,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         String cseToken = csePaymentForm.getCseToken();
-        System.out.println(cseToken);
-
-//        final CartData sessionCart = getCartFacade().getSessionCart();
-//        sessionCart.setAdyenCseToken(cseToken);
+        LOGGER.info("Setting CSE Token: " + cseToken);
 
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(cseToken);
@@ -155,13 +153,10 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         addressModel.setPostalcode(addressData.getPostalCode());
         addressModel.setOwner(paymentInfoModel);
 
-
-        System.out.println(" >> set billing address");
-
         paymentInfoModel.setBillingAddress(addressModel);
         //TODO: add payment details (amounts, etc)
 
-		modelService.save(paymentInfoModel);
+        modelService.save(paymentInfoModel);
 
         return paymentInfoModel;
     }

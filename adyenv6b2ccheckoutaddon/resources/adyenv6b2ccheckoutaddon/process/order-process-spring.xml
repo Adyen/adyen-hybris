@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:annotation-config/>
+
+	<!--Step of order-process that checks authorization completion-->
+	<alias name="defaultAdyenCheckAuthorizationAction" alias="adyenCheckAuthorizationAction"/>
+	<bean id="defaultAdyenCheckAuthorizationAction" class="com.adyen.v6.actions.order.AdyenCheckAuthorizationAction" parent="abstractAction" />
+
+	<!--Step of order-process that checks capture completion-->
+	<alias name="defaultAdyenCheckCaptureAction" alias="adyenCheckCaptureAction"/>
+	<bean id="defaultAdyenCheckCaptureAction" class="com.adyen.v6.actions.order.AdyenCheckCaptureAction" parent="abstractAction" />
+</beans>
