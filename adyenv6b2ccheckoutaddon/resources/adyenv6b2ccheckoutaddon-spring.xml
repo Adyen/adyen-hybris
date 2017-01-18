@@ -102,4 +102,8 @@
 			</map>
 		</property>
 	</bean>
+
+	<!-- To obtain the oder number before the order is created -->
+	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
+	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
 </beans>
