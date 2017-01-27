@@ -86,6 +86,10 @@
 		<property name="configurationService" ref="configurationService" />
 	</bean>
 
+	<bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
 	<!-- Used for commands triggered by order-process -->
 	<bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
 		<property name="paymentProvider" value="Adyen"/>
@@ -106,4 +110,11 @@
 	<!-- To obtain the oder number before the order is created -->
 	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
 	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
+
+	<!-- Process notification cronjob -->
+	<bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
+		<property name="modelService" ref="modelService"/>
+		<property name="businessProcessService" ref="businessProcessService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
+	</bean>
 </beans>

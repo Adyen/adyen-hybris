@@ -19,6 +19,13 @@ public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2cc
 	public static final String EXTENSIONNAME = "adyenv6b2ccheckoutaddon";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 
+	public static final String WS_USERNAME = "adyen.ws.username";
+	public static final String WS_PASSWORD = "adyen.ws.password";
+
+	public static final String NOTIFICATION_USERNAME = "adyen.notification.username";
+	public static final String NOTIFICATION_PASSWORD = "adyen.notification.password";
+	public static final String MERCHANT_ACCOUNT = "adyen.merchantaccount";
+
 	private Adyenv6b2ccheckoutaddonConstants()
 	{
 		//empty to avoid instantiating this constant class

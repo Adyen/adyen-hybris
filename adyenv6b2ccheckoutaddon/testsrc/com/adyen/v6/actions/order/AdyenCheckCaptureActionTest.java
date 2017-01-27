@@ -1,6 +1,7 @@
 package com.adyen.v6.actions.order;
 
 import de.hybris.bootstrap.annotations.UnitTest;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -38,7 +40,7 @@ public class AdyenCheckCaptureActionTest {
     @Mock
     private ModelService modelServiceMock;
 
-    AdyenCheckCaptureAction adyenCheckCaptureAction;
+    private AdyenCheckCaptureAction adyenCheckCaptureAction;
 
     @Before
     public void setUp() {
@@ -85,7 +87,7 @@ public class AdyenCheckCaptureActionTest {
         PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
         entry.setType(PaymentTransactionType.CAPTURE);
         entry.setTransactionStatus(TransactionStatus.REJECTED.name());
-        entry.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
+        entry.setTransactionStatusDetails(TransactionStatusDetails.GENERAL_SYSTEM_ERROR.name());
 
         return entry;
     }
@@ -152,6 +154,8 @@ public class AdyenCheckCaptureActionTest {
         String result = adyenCheckCaptureAction.execute(orderProcessModelMock);
 
         assertEquals(AdyenCheckCaptureAction.Transition.NOK.toString(), result);
+        verify(orderModelMock).setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
+        verify(modelServiceMock).save(orderProcessModelMock.getOrder());
     }
 
     /**
@@ -217,5 +221,7 @@ public class AdyenCheckCaptureActionTest {
                 AdyenCheckCaptureAction.Transition.OK.toString(),
                 adyenCheckCaptureAction.execute(orderProcessModelMock)
         );
+
+        verify(orderModelMock).setStatus(OrderStatus.PAYMENT_CAPTURED);
     }
 }

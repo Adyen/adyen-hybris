@@ -3,6 +3,7 @@ package com.adyen.v6.service;
 import com.adyen.Client;
 import com.adyen.enums.Environment;
 import com.adyen.model.*;
+import com.adyen.model.modification.*;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -15,16 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Currency;
 
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
+
 //TODO: implement an interface
 public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     private String merchantAccount;
     private ConfigurationService configurationService;
     private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
-
-    //TODO: move to constants class?
-    private static final String WS_USERNAME = "adyen.ws.username";
-    private static final String WS_PASSWORD = "adyen.ws.password";
-    private static final String MERCHANT_ACCOUNT = "adyen.merchantaccount";
 
     /**
      * Returns a Client

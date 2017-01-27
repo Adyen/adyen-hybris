@@ -44,6 +44,13 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
 
         final OrderModel order = process.getOrder();
 
+        /*
+        TakePaymentAction will move the order to PAYMENT_CAPTURED state
+        Revert it back to PAYMENT_NOT_CAPTURED
+         */
+        order.setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
+        modelService.save(order);
+
         boolean allCaptured = true;
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
             //Skip if not Adyen transaction
@@ -62,7 +69,6 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
                 if (hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.REJECTED)
                         || hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.ERROR)) {
                     LOG.info("Process: " + process.getCode() + " Order Not Captured");
-                    order.setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
                     return Transition.NOK.toString();
                 }
 

@@ -1,6 +1,6 @@
 package com.adyen.v6.commands;
 
-import com.adyen.model.ModificationResult;
+import com.adyen.model.modification.ModificationResult;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.payment.commands.CaptureCommand;
 import de.hybris.platform.payment.commands.request.CaptureRequest;

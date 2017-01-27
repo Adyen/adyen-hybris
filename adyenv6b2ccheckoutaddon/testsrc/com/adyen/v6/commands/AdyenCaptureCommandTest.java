@@ -1,6 +1,6 @@
 package com.adyen.v6.commands;
 
-import com.adyen.model.ModificationResult;
+import com.adyen.model.modification.ModificationResult;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.payment.commands.request.CaptureRequest;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
 public class AdyenCaptureCommandTest {
-    CaptureRequest captureRequest;
+    private CaptureRequest captureRequest;
 
     @Mock
     private AdyenPaymentService adyenPaymentServiceMock;
@@ -45,6 +45,7 @@ public class AdyenCaptureCommandTest {
 
     /**
      * Test successful capture
+     *
      * @throws Exception
      */
     @Test

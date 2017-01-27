@@ -29,4 +29,7 @@ adyen.ws.username=
 adyen.ws.password=
 adyen.merchantaccount=
 
-#csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop-response)$,/[^/]+(/[^?]*)+(adyen-response)$
+csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop-response)$,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$
+
+adyen.notification.username=
+adyen.notification.password=
