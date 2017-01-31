@@ -7,6 +7,7 @@ import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
@@ -24,7 +25,7 @@ import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.customer.CustomerAccountService;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
-import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
@@ -32,7 +33,6 @@ import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.site.BaseSiteService;
-import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.pages.checkout.steps.SummaryCheckoutStepController;
 import org.apache.log4j.Logger;
@@ -53,7 +53,6 @@ import java.util.Arrays;
 
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -122,7 +121,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         model.addAttribute("metaRobots", "noindex,nofollow");
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
-        System.out.println(" >> CSE:" + cartData.getAdyenCseToken());
+        LOGGER.info(" >> CSE:" + cartData.getAdyenCseToken());
 
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
@@ -134,12 +133,10 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm, final Model model,
                              final HttpServletRequest request, final RedirectAttributes redirectModel) throws CMSItemNotFoundException, // NOSONAR
             InvalidCartException, CommerceCartModificationException {
-
-        System.out.println(" >> Validating..");
         if (validateOrderForm(placeOrderForm, model)) {
             return enterStep(model, redirectModel);
         }
-        System.out.println(" >> Order Validated");
+        LOGGER.info(" >> Order Validated");
 
         //Validate the cart
         if (validateCart(redirectModel)) {
@@ -168,10 +165,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
         } catch (ApiException e) {
-            System.out.println("API Exception " + e.getError());
+            LOGGER.error("API Exception " + e.getError());
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Exception " + e.getClass() + " " + e.getMessage());
+            LOGGER.error("Exception ", e);
         }
 
         GlobalMessages.addErrorMessage(model, errorMessage);
@@ -196,10 +192,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
         } catch (ApiException e) {
-            System.out.println("API Exception " + e.getError());
+            LOGGER.error("API Exception " + e.getError());
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Exception " + e.getClass() + " " + e.getMessage());
+            LOGGER.error("Exception ", e);
         }
 
         GlobalMessages.addErrorMessage(model, errorMessage);
@@ -229,6 +224,26 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
      */
     private String placeOrder(final Model model, final RedirectAttributes redirectModel, final String pspReference)
             throws CommerceCartModificationException, CMSItemNotFoundException {
+        final CartModel cartModel = cartService.getSessionCart();
+        final String merchantTransactionCode = cartModel.getCode();
+
+        //First save the transactions to the CartModel < AbstractOrderModel
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
+                merchantTransactionCode,
+                pspReference,
+                cartModel);
+
+        modelService.save(paymentTransactionModel);
+
+        final PaymentTransactionEntryModel transactionEntryModel = createAuthorizationPaymentTransactionEntryModel(
+                paymentTransactionModel,
+                merchantTransactionCode,
+                cartModel);
+
+        modelService.save(transactionEntryModel);
+        modelService.refresh(paymentTransactionModel); //refresh is needed by order-process
+
+        //Place the order
         final OrderData orderData;
         try {
             orderData = getCheckoutFacade().placeOrder();
@@ -238,28 +253,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return enterStep(model, redirectModel);
         }
 
-        OrderModel orderModel;
-        if (getCheckoutCustomerStrategy().isAnonymousCheckout()) {
-            final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
-            orderModel = customerAccountService.getOrderDetailsForGUID(orderData.getGuid(), baseStoreModel);
-        } else {
-            return EMPTY;
-        }
-
-        final String merchantTransactionCode = orderModel.getCode();
-        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
-                merchantTransactionCode,
-                pspReference,
-                orderModel);
-
-        modelService.save(paymentTransactionModel);
-
-        final PaymentTransactionEntryModel transactionEntryModel = createAuthorizationPaymentTransactionEntryModel(
-                paymentTransactionModel,
-                merchantTransactionCode,
-                orderModel);
-
-        modelService.save(transactionEntryModel);
 
         return redirectToOrderConfirmationPage(orderData);
     }
@@ -267,17 +260,16 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     private PaymentTransactionModel createPaymentTransaction(
             final String merchantCode,
             final String pspReference,
-            final OrderModel orderModel) {
+            final CartModel cartModel) {
         final PaymentTransactionModel paymentTransactionModel = modelService.create(PaymentTransactionModel.class);
-//        final CartModel cartModel = commerceCheckoutParameter.getCart();
         paymentTransactionModel.setCode(pspReference);
         paymentTransactionModel.setRequestId(pspReference);
         paymentTransactionModel.setRequestToken(merchantCode);
-        paymentTransactionModel.setPaymentProvider("Adyen");
-        paymentTransactionModel.setOrder(orderModel);
-        paymentTransactionModel.setCurrency(orderModel.getCurrency());
-        paymentTransactionModel.setInfo(orderModel.getPaymentInfo());
-        paymentTransactionModel.setPlannedAmount(new BigDecimal(orderModel.getTotalPrice()));
+        paymentTransactionModel.setPaymentProvider(Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER);
+        paymentTransactionModel.setOrder(cartModel);
+        paymentTransactionModel.setCurrency(cartModel.getCurrency());
+        paymentTransactionModel.setInfo(cartModel.getPaymentInfo());
+        paymentTransactionModel.setPlannedAmount(new BigDecimal(cartModel.getTotalPrice()));
 
         return paymentTransactionModel;
     }
@@ -285,7 +277,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(
             final PaymentTransactionModel paymentTransaction,
             final String merchantCode,
-            final OrderModel orderModel) {
+            final CartModel cartModel) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -298,8 +290,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(ACCEPTED.name());
         transactionEntryModel.setTransactionStatusDetails(SUCCESFULL.name());
-        transactionEntryModel.setAmount(new BigDecimal(orderModel.getTotalPrice()));
-        transactionEntryModel.setCurrency(orderModel.getCurrency());
+        transactionEntryModel.setAmount(new BigDecimal(cartModel.getTotalPrice()));
+        transactionEntryModel.setCurrency(cartModel.getCurrency());
 
         return transactionEntryModel;
     }

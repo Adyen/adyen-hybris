@@ -47,8 +47,8 @@
 -->
 
 		<itemtype code="Cart" autocreate="false" generate="false">
-			<description>Extending Cart to store CSE token</description>
 			<attributes>
+				<!-- Store CSE token -->
 				<attribute qualifier="adyenCseToken" type="java.lang.String">
 					<persistence type="property">
 						<columntype database="mysql">
@@ -56,7 +56,85 @@
 						</columntype>
 					</persistence>
 				</attribute>
+				<!-- Store custom merchant reference, to be used as order code -->
+				<attribute qualifier="adyenMerchantReference" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<!-- Store custom merchant reference, to be used as order code -->
+				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
 			</attributes>
+		</itemtype>
+
+		<itemtype code="NotificationItem" generate="true" autocreate="true">
+			<deployment table="AdyenNotificationItem" typecode="19030"/>
+			<attributes>
+				<attribute qualifier="amountValue" type="java.math.BigDecimal">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="amountCurrency" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="eventCode" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="eventDate" type="java.util.Date">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="merchantAccountCode" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="merchantReference" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="originalReference" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="pspReference" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="reason" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="success" type="java.lang.Boolean">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="paymentMethod" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="additionalData" type="java.lang.String">
+					<persistence type="property">
+						<columntype database="oracle">
+							<value>CLOB</value>
+						</columntype>
+						<columntype database="sap">
+							<value>NCLOB</value>
+						</columntype>
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
+						</columntype>
+						<columntype database="mysql">
+							<value>TEXT</value>
+						</columntype>
+					</persistence>
+				</attribute>
+
+				<attribute qualifier="createdAt" type="java.util.Date">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="processed" type="java.lang.Boolean">
+					<persistence type="property"/>
+				</attribute>
+			</attributes>
+			<!--<indexes>-->
+				<!--<index name="worldpayOrderCodeIdx">-->
+					<!--<key attribute="worldpayOrderCode"/>-->
+				<!--</index>-->
+				<!--<index name="worldpayOrderModification_UniqueIdx" unique="true">-->
+					<!--<key attribute="code"/>-->
+				<!--</index>-->
+			<!--</indexes>-->
 		</itemtype>
 	</itemtypes>
 </items>

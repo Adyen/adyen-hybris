@@ -22,8 +22,11 @@
            http://www.springframework.org/schema/aop/spring-aop.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd">
-           
-    <context:annotation-config/>
+
+	<!--Override order-process-->
+	<import resource="adyenv6b2ccheckoutaddon-process-definitions-spring.xml" />
+
+	<context:annotation-config/>
 
 	<bean id="adyenv6b2ccheckoutaddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
 		<property name="supportedChannels">
@@ -81,5 +84,37 @@
 
 	<bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService">
 		<property name="configurationService" ref="configurationService" />
+	</bean>
+
+	<bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<!-- Used for commands triggered by order-process -->
+	<bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
+		<property name="paymentProvider" value="Adyen"/>
+		<property name="commands">
+			<map>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.CaptureCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenCaptureCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- To obtain the oder number before the order is created -->
+	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
+	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
+
+	<!-- Process notification cronjob -->
+	<bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
+		<property name="modelService" ref="modelService"/>
+		<property name="businessProcessService" ref="businessProcessService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
 	</bean>
 </beans>

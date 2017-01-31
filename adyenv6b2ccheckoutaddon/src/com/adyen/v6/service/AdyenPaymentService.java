@@ -2,27 +2,27 @@ package com.adyen.v6.service;
 
 import com.adyen.Client;
 import com.adyen.enums.Environment;
-import com.adyen.model.AbstractPaymentRequest;
-import com.adyen.model.PaymentRequest;
-import com.adyen.model.PaymentRequest3d;
-import com.adyen.model.PaymentResult;
+import com.adyen.model.*;
+import com.adyen.model.modification.*;
+import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Currency;
+
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
 
 //TODO: implement an interface
 public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     private String merchantAccount;
     private ConfigurationService configurationService;
-
-    //TODO: move to constants class?
-    private static final String WS_USERNAME = "adyen.ws.username";
-    private static final String WS_PASSWORD = "adyen.ws.password";
-    private static final String MERCHANT_ACCOUNT = "adyen.merchantaccount";
+    private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
 
     /**
      * Returns a Client
@@ -74,8 +74,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         PaymentRequest3d paymentRequest3d = createBasePaymentRequest(new PaymentRequest3d(), request)
                 .set3DRequestData(md, paRes);
 
-        System.out.println(paymentRequest3d);
-        return payment.authorise3D(paymentRequest3d);
+        LOG.info(paymentRequest3d); //TODO: anonymize
+        PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
+        LOG.info(paymentResult);
+
+        return paymentResult;
     }
 
     private <T extends AbstractPaymentRequest> T createBasePaymentRequest(
@@ -96,7 +99,36 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return abstractPaymentRequest;
     }
 
-    public ConfigurationService getConfigurationService() {
+    /**
+     * Performs Capture request
+     *
+     * @param amount
+     * @param currency
+     * @param authReference
+     * @param merchantReference
+     * @return
+     * @throws Exception
+     */
+    public ModificationResult capture(final BigDecimal amount,
+                                      final Currency currency,
+                                      final String authReference,
+                                      final String merchantReference) throws Exception {
+        Client client = createClient();
+        Modification modification = new Modification(client);
+
+        final CaptureRequest captureRequest = new CaptureRequest()
+                .setModificationAmountData(amount.toString(), currency.getCurrencyCode())
+                .merchantAccount(merchantAccount)
+                .originalReference(authReference)
+                .reference(merchantReference);
+
+        LOG.info(captureRequest);
+        ModificationResult modificationResult = modification.capture(captureRequest);
+        LOG.info(modificationResult);
+        return modificationResult;
+    }
+
+    private ConfigurationService getConfigurationService() {
         return configurationService;
     }
 
