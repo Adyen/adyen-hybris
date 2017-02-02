@@ -23,6 +23,7 @@ public interface AdyenControllerConstants
 				String CheckoutSummaryPage = ADDON_PREFIX + "pages/checkout/multi/checkoutSummaryPage";
 				String SelectPaymentMethod = ADDON_PREFIX + "pages/checkout/multi/selectPaymentMethodPage";
 				String Validate3DSecurePaymentPage = ADDON_PREFIX + "pages/checkout/multi/3d-secure-payment-validation";
+				String HppPaymentPage = ADDON_PREFIX + "pages/checkout/multi/hpp-payment";
 			}
 		}
 
