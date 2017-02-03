@@ -31,4 +31,10 @@
 	<bean class="de.hybris.platform.commercefacades.order.data.CartData">
 		<property name="adyenCseToken" type="java.lang.String"/>
 	</bean>
+
+	<bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
+		<property name="adyenPaymentMethod" type="java.lang.String"/>
+		<property name="adyenBrandCode" type="java.lang.String"/>
+		<property name="adyenIssuerId" type="java.lang.String"/>
+	</bean>
 </beans>

@@ -24,7 +24,10 @@ public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2cc
 
 	public static final String NOTIFICATION_USERNAME = "adyen.notification.username";
 	public static final String NOTIFICATION_PASSWORD = "adyen.notification.password";
-	public static final String MERCHANT_ACCOUNT = "adyen.merchantaccount";
+	public static final String CONFIG_MERCHANT_ACCOUNT = "adyen.merchantaccount";
+	public static final String CONFIG_CSE_ID = "adyen.cse.id";
+	public static final String CONFIG_SKIN_CODE = "adyen.skin.code";
+	public static final String CONFIG_SKIN_HMAC = "adyen.skin.hmac";
 
 	private Adyenv6b2ccheckoutaddonConstants()
 	{

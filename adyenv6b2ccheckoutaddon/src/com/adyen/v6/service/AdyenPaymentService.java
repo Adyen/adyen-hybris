@@ -1,9 +1,15 @@
 package com.adyen.v6.service;
 
 import com.adyen.Client;
+import com.adyen.Config;
+import com.adyen.Util.Util;
 import com.adyen.enums.Environment;
+import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.*;
+import com.adyen.model.hpp.DirectoryLookupRequest;
+import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.*;
+import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -13,8 +19,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.SignatureException;
 import java.util.Currency;
+import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
 
@@ -35,14 +44,22 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         String username = configuration.getString(WS_USERNAME);
         String password = configuration.getString(WS_PASSWORD);
-        merchantAccount = configuration.getString(MERCHANT_ACCOUNT);
+        merchantAccount = configuration.getString(CONFIG_MERCHANT_ACCOUNT);
+        String skinCode = configuration.getString(CONFIG_SKIN_CODE);
+        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
 
-        return new Client(
-                username,
-                password,
-                Environment.TEST,
-                "Hybris v6.0"
-        );
+        Config config = new Config();
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setMerchantAccount(merchantAccount);
+        config.setSkinCode(skinCode);
+        config.setHmacKey(hmacKey);
+        config.setApplicationName("Hybris v6.0");
+
+        Client client = new Client(config);
+        client.setEnvironment(Environment.TEST);
+
+        return client;
     }
 
     public PaymentResult authorise(final CartData cartData, final HttpServletRequest request) throws Exception {
@@ -134,5 +151,26 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
     public void setConfigurationService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+    }
+
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
+                                                 final String currency,
+                                                 final String countryCode) throws HTTPClientException, SignatureException, IOException {
+        Amount amountData = Util.createAmount(amount.toString(), currency);
+        DirectoryLookupRequest directoryLookupRequest = new DirectoryLookupRequest()
+                .setCountryCode(countryCode)
+                .setMerchantReference("GetPaymentMethods")
+                .setPaymentAmount(amountData.getValue().toString())
+                .setCurrencyCode(amountData.getCurrency());
+
+        LOG.info(directoryLookupRequest);
+
+        Client client = createClient();
+        HostedPaymentPages hostedPaymentPages = new HostedPaymentPages(client);
+
+        List<PaymentMethod> paymentMethods = hostedPaymentPages.getPaymentMethods(directoryLookupRequest);
+        LOG.info(paymentMethods);
+
+        return paymentMethods;
     }
 }

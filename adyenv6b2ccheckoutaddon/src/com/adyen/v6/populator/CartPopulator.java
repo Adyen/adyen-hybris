@@ -12,7 +12,6 @@ public class CartPopulator implements Populator<CartModel, CartData>{
      */
     @Override
     public void populate(final CartModel source, final CartData target) throws ConversionException {
-        String token = source.getAdyenCseToken();
-        target.setAdyenCseToken(token);
+        target.setAdyenCseToken(source.getAdyenCseToken());
     }
 }

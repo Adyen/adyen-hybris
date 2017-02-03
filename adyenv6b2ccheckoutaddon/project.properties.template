@@ -33,3 +33,7 @@ csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchan
 
 adyen.notification.username=
 adyen.notification.password=
+
+adyen.cse.id=
+adyen.skin.code=
+adyen.skin.hmac=

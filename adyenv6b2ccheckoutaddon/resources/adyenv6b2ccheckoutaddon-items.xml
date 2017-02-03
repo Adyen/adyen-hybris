@@ -56,12 +56,22 @@
 						</columntype>
 					</persistence>
 				</attribute>
-				<!-- Store custom merchant reference, to be used as order code -->
+				<!-- Store custom merchant reference, to be used as order code. TODO: use it -->
 				<attribute qualifier="adyenMerchantReference" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
-				<!-- Store custom merchant reference, to be used as order code -->
+			</attributes>
+		</itemtype>
+
+		<itemtype code="AbstractOrder" autocreate="false" generate="false">
+			<attributes>
 				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenBrandCode" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenIssuerId" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
 			</attributes>
