@@ -11,7 +11,16 @@ This plugin supports Hybris versions 6.0 to 6.2
 ```
 adyen.ws.username=
 adyen.ws.password=
+
 adyen.merchantaccount=
+
+adyen.notification.username=
+adyen.notification.password=
+
+adyen.cse.id=
+
+adyen.skin.code=
+adyen.skin.hmac=
 ```
 
 ```
