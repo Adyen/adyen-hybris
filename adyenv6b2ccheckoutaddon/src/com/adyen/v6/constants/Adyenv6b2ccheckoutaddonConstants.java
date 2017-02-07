@@ -29,6 +29,10 @@ public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2cc
 	public static final String CONFIG_SKIN_CODE = "adyen.skin.code";
 	public static final String CONFIG_SKIN_HMAC = "adyen.skin.hmac";
 
+	public static final String CONFIG_IMMEDIATE_CAPTURE = "adyen.capture.immediate";
+
+	final public static String PAYMENT_METHOD_CC = "adyen_cc";
+
 	private Adyenv6b2ccheckoutaddonConstants()
 	{
 		//empty to avoid instantiating this constant class

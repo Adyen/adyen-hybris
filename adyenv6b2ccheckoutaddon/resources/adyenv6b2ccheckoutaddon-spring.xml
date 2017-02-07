@@ -115,6 +115,13 @@
 	<bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
 		<property name="modelService" ref="modelService"/>
 		<property name="businessProcessService" ref="businessProcessService"/>
-		<property name="commonI18NService" ref="commonI18NService"/>
+		<property name="adyenTransactionService" ref="adyenTransactionService"/>
+	</bean>
+
+
+	<bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService">
+		<property name="configurationService" ref="configurationService" />
+		<property name="modelService" ref="modelService" />
+		<property name="commonI18NService" ref="commonI18NService" />
 	</bean>
 </beans>
