@@ -2,12 +2,12 @@ package com.adyen.v6.forms;
 
 import com.adyen.Util.Util;
 
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
+
 /**
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
-    final public static String PAYMENT_METHOD_CC = "adyen_cc";
-
     private String paymentMethod;
 
     //CSE

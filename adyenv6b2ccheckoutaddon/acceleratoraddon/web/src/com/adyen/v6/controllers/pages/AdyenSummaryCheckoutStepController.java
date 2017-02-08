@@ -12,8 +12,8 @@ import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
-import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import com.adyen.v6.service.AdyenPaymentService;
+import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -32,8 +32,6 @@ import de.hybris.platform.commerceservices.order.CommerceCartModificationExcepti
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
-import de.hybris.platform.payment.enums.PaymentTransactionType;
-import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.model.ModelService;
@@ -41,7 +39,6 @@ import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.yacceleratorstorefront.controllers.pages.checkout.steps.SummaryCheckoutStepController;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +46,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.security.SignatureException;
 import java.util.Arrays;
@@ -59,9 +55,6 @@ import java.util.TreeMap;
 
 import static com.adyen.constants.HPPConstants.Fields.*;
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
-import static com.adyen.v6.forms.AdyenPaymentForm.PAYMENT_METHOD_CC;
-import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
-import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -91,6 +84,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
     @Resource(name = "configurationService")
     private ConfigurationService configurationService;
+
+    @Resource(name = "adyenTransactionService")
+    private AdyenTransactionService adyenTransactionService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
@@ -228,8 +224,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     public String handleHPPResponse(@PathVariable("orderCode") final String orderCode,
                                     @RequestParam(HPPConstants.Response.AUTH_RESULT) final String authResult,
                                     @RequestParam(HPPConstants.Response.MERCHANT_REFERENCE) final String merchantReference,
-                                    @RequestParam(HPPConstants.Response.PAYMENT_METHOD) final String paymentMethod,
-                                    @RequestParam(HPPConstants.Response.PSP_REFERENCE) final String pspReference,
+                                    @RequestParam(value = HPPConstants.Response.PAYMENT_METHOD, required = false) final String paymentMethod,
+                                    @RequestParam(value = HPPConstants.Response.PSP_REFERENCE, required = false) final String pspReference,
                                     @RequestParam(HPPConstants.Response.SHOPPER_LOCALE) final String shopperLocale,
                                     @RequestParam(HPPConstants.Response.SKIN_CODE) final String skinCode,
                                     @RequestParam(HPPConstants.Response.MERCHANT_SIG) final String merchantSig,
@@ -242,8 +238,15 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         hppResponseData.put(HPPConstants.Response.AUTH_RESULT, authResult);
         hppResponseData.put(HPPConstants.Response.MERCHANT_REFERENCE, merchantReference);
-        hppResponseData.put(HPPConstants.Response.PAYMENT_METHOD, paymentMethod);
-        hppResponseData.put(HPPConstants.Response.PSP_REFERENCE, pspReference);
+
+        if (paymentMethod != null) {
+            hppResponseData.put(HPPConstants.Response.PAYMENT_METHOD, paymentMethod);
+        }
+
+        if (pspReference != null) {
+            hppResponseData.put(HPPConstants.Response.PSP_REFERENCE, pspReference);
+        }
+
         hppResponseData.put(HPPConstants.Response.SHOPPER_LOCALE, shopperLocale);
         hppResponseData.put(HPPConstants.Response.SKIN_CODE, skinCode);
 
@@ -339,61 +342,12 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         final String merchantTransactionCode = cartModel.getCode();
 
         //First save the transactions to the CartModel < AbstractOrderModel
-        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
+        final PaymentTransactionModel paymentTransactionModel = adyenTransactionService.authorizeOrderModel(
+                cartModel,
                 merchantTransactionCode,
-                pspReference,
-                cartModel);
-
-        modelService.save(paymentTransactionModel);
-
-        final PaymentTransactionEntryModel transactionEntryModel = createAuthorizationPaymentTransactionEntryModel(
-                paymentTransactionModel,
-                merchantTransactionCode,
-                cartModel);
-
-        modelService.save(transactionEntryModel);
-        modelService.refresh(paymentTransactionModel); //refresh is needed by order-process
+                pspReference);
 
         return createOrder(model);
-    }
-
-    private PaymentTransactionModel createPaymentTransaction(
-            final String merchantCode,
-            final String pspReference,
-            final CartModel cartModel) {
-        final PaymentTransactionModel paymentTransactionModel = modelService.create(PaymentTransactionModel.class);
-        paymentTransactionModel.setCode(pspReference);
-        paymentTransactionModel.setRequestId(pspReference);
-        paymentTransactionModel.setRequestToken(merchantCode);
-        paymentTransactionModel.setPaymentProvider(Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER);
-        paymentTransactionModel.setOrder(cartModel);
-        paymentTransactionModel.setCurrency(cartModel.getCurrency());
-        paymentTransactionModel.setInfo(cartModel.getPaymentInfo());
-        paymentTransactionModel.setPlannedAmount(new BigDecimal(cartModel.getTotalPrice()));
-
-        return paymentTransactionModel;
-    }
-
-    private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(
-            final PaymentTransactionModel paymentTransaction,
-            final String merchantCode,
-            final CartModel cartModel) {
-        final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
-
-        String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
-
-        transactionEntryModel.setType(PaymentTransactionType.AUTHORIZATION);
-        transactionEntryModel.setPaymentTransaction(paymentTransaction);
-        transactionEntryModel.setRequestId(paymentTransaction.getRequestId());
-        transactionEntryModel.setRequestToken(merchantCode);
-        transactionEntryModel.setCode(code);
-        transactionEntryModel.setTime(DateTime.now().toDate());
-        transactionEntryModel.setTransactionStatus(ACCEPTED.name());
-        transactionEntryModel.setTransactionStatusDetails(SUCCESFULL.name());
-        transactionEntryModel.setAmount(new BigDecimal(cartModel.getTotalPrice()));
-        transactionEntryModel.setCurrency(cartModel.getCurrency());
-
-        return transactionEntryModel;
     }
 
     private String getErrorMessageByRefusalReason(String refusalReason) {

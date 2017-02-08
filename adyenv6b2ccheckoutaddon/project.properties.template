@@ -37,3 +37,4 @@ adyen.notification.password=
 adyen.cse.id=
 adyen.skin.code=
 adyen.skin.hmac=
+adyen.capture.immediate=

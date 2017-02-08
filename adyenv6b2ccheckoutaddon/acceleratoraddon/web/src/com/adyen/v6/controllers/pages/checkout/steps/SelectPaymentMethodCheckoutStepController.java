@@ -133,7 +133,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     @RequestMapping(value = "", method = POST)
     @RequireHardLogIn
-    public String setCse(final Model model, @Valid final AdyenPaymentForm adyenPaymentForm, final BindingResult bindingResult)
+    public String setPaymentMethod(final Model model, @Valid final AdyenPaymentForm adyenPaymentForm, final BindingResult bindingResult)
             throws CMSItemNotFoundException {
         //TODO: Validator
         setupAddPaymentPage(model);

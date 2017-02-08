@@ -1,15 +1,13 @@
 package com.adyen.v6.cronjob;
 
 import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.bootstrap.annotations.UnitTest;
-import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
-import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.processengine.BusinessProcessService;
-import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
 import de.hybris.platform.servicelayer.search.FlexibleSearchService;
@@ -25,10 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
-import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
-import static de.hybris.platform.payment.dto.TransactionStatus.REJECTED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +33,7 @@ public class AdyenProcessNotificationCronJobTest {
     private ModelService modelServiceMock;
 
     @Mock
-    private CommonI18NService commonI18NServiceMock;
+    private AdyenTransactionService adyenTransactionServiceMock;
 
     @Mock
     private FlexibleSearchService flexibleSearchServiceMock;
@@ -47,20 +41,21 @@ public class AdyenProcessNotificationCronJobTest {
     @Mock
     private BusinessProcessService businessProcessServiceMock;
 
+    @Mock
+    private PaymentTransactionEntryModel paymentTransactionEntryModelMock;
+
     private AdyenProcessNotificationCronJob adyenProcessNotificationCronJob;
 
     @Before
     public void setUp() {
-        when(commonI18NServiceMock.getCurrency("EUR"))
-                .thenReturn(new CurrencyModel("EUR", "E"));
         when(modelServiceMock.create(PaymentTransactionEntryModel.class))
                 .thenReturn(new PaymentTransactionEntryModel());
 
         adyenProcessNotificationCronJob = new AdyenProcessNotificationCronJob();
         adyenProcessNotificationCronJob.setModelService(modelServiceMock);
-        adyenProcessNotificationCronJob.setCommonI18NService(commonI18NServiceMock);
         adyenProcessNotificationCronJob.setFlexibleSearchService(flexibleSearchServiceMock);
         adyenProcessNotificationCronJob.setBusinessProcessService(businessProcessServiceMock);
+        adyenProcessNotificationCronJob.setAdyenTransactionService(adyenTransactionServiceMock);
     }
 
     @After
@@ -69,38 +64,35 @@ public class AdyenProcessNotificationCronJobTest {
     }
 
     /**
-     * Test successful capture
-     * It should save the capture notification and mark it as successful
-     * It should emmit the AdyenCaptured event
+     * Test capture notification handling
+     * It should save the capture notification and emmit the AdyenCaptured event
      *
      * @throws Exception
      */
     @Test
-    public void testCaptureSuccess() throws Exception {
+    public void testCaptureNotification() throws Exception {
         String pspReference = "123";
+
+        PaymentTransactionModel paymentTransactionModel = new PaymentTransactionModel();
+        paymentTransactionModel.setEntries(new ArrayList<PaymentTransactionEntryModel>());
+
+        OrderModel orderModel = createDummyOrderModel();
+
+        paymentTransactionModel.setOrder(orderModel);
+
+        when(flexibleSearchServiceMock
+                .searchUnique(Mockito.any(FlexibleSearchQuery.class)))
+                .thenReturn(paymentTransactionModel);
 
         NotificationItemModel notificationItemModel = new NotificationItemModel();
         notificationItemModel.setPspReference(pspReference);
         notificationItemModel.setEventCode(EVENT_CODE_CAPTURE);
         notificationItemModel.setSuccess(true);
 
-        PaymentTransactionModel paymentTransactionModel = new PaymentTransactionModel();
-        paymentTransactionModel.setEntries(new ArrayList<PaymentTransactionEntryModel>());
-
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenProcessNotificationCronJob
-                .createCapturedPaymentTransactionEntryModel(paymentTransactionModel, notificationItemModel);
-
-        assertEquals(pspReference, paymentTransactionEntryModel.getRequestId());
-        assertTrue(PaymentTransactionType.CAPTURE.equals(paymentTransactionEntryModel.getType()));
-        assertTrue(ACCEPTED.name().equals(paymentTransactionEntryModel.getTransactionStatus()));
-
-        OrderModel orderModel = createDummyOrderModel();
-
-        paymentTransactionModel.setOrder(orderModel);
-
-        when(flexibleSearchServiceMock
-                .searchUnique(Mockito.any(FlexibleSearchQuery.class)))
-                .thenReturn(paymentTransactionModel);
+        when(adyenTransactionServiceMock.createCapturedTransactionFromNotification(
+                paymentTransactionModel,
+                notificationItemModel
+        )).thenReturn(paymentTransactionEntryModelMock);
 
         adyenProcessNotificationCronJob.processNotification(notificationItemModel);
 
@@ -108,49 +100,7 @@ public class AdyenProcessNotificationCronJobTest {
         verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenCaptured");
 
         //Verify that the capture transaction is saved
-        verify(modelServiceMock).save(paymentTransactionEntryModel);
-    }
-
-    /**
-     * Test failed capture
-     * It should save the captured notification and mark it as rejected
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testCaptureFail() throws Exception {
-        String pspReference = "123";
-
-        NotificationItemModel notificationItemModel = new NotificationItemModel();
-        notificationItemModel.setPspReference(pspReference);
-        notificationItemModel.setEventCode(EVENT_CODE_CAPTURE);
-        notificationItemModel.setSuccess(false);
-
-        PaymentTransactionModel paymentTransactionModel = new PaymentTransactionModel();
-        paymentTransactionModel.setEntries(new ArrayList<PaymentTransactionEntryModel>());
-
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenProcessNotificationCronJob
-                .createCapturedPaymentTransactionEntryModel(paymentTransactionModel, notificationItemModel);
-
-        assertEquals(pspReference, paymentTransactionEntryModel.getRequestId());
-        assertTrue(PaymentTransactionType.CAPTURE.equals(paymentTransactionEntryModel.getType()));
-        assertTrue(REJECTED.name().equals(paymentTransactionEntryModel.getTransactionStatus()));
-
-        OrderModel orderModel = createDummyOrderModel();
-
-        paymentTransactionModel.setOrder(orderModel);
-
-        when(flexibleSearchServiceMock
-                .searchUnique(Mockito.any(FlexibleSearchQuery.class)))
-                .thenReturn(paymentTransactionModel);
-
-        adyenProcessNotificationCronJob.processNotification(notificationItemModel);
-
-        //Verify that we emmit the event of Capture to the order processes
-        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenCaptured");
-
-        //Verify that the capture transaction is saved
-        verify(modelServiceMock).save(paymentTransactionEntryModel);
+        verify(modelServiceMock).save(paymentTransactionEntryModelMock);
     }
 
     private OrderModel createDummyOrderModel() {
