@@ -1,6 +1,5 @@
 package com.adyen.v6.actions.order;
 
-import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.InvoicePaymentInfoModel;
@@ -44,25 +43,38 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
 
         final OrderModel order = process.getOrder();
 
+        //Fail when no order
         if (order == null) {
+            LOG.error("Order is null!");
             return Transition.NOK.toString();
-        } else if (order.getPaymentInfo() instanceof InvoicePaymentInfoModel) {
+        }
+
+        if (order.getPaymentInfo() instanceof InvoicePaymentInfoModel) {
             LOG.info("Process: " + process.getCode() + " InvoicePaymentModel");
             return Transition.OK.toString();
         }
 
+        //Continue if it's not Adyen payment
+        if (order.getAdyenPaymentMethod() == null || order.getAdyenPaymentMethod().isEmpty()) {
+            LOG.info("Not Adyen Payment");
+            return Transition.OK.toString();
+        }
+
+        //No transactions means that is not authorized yet
+        if (order.getPaymentTransactions().size() == 0) {
+            LOG.info("Process: " + process.getCode() + " Order Waiting");
+            return Transition.WAIT.toString();
+        }
+
         boolean orderAuthorized = isOrderAuthorized(order);
 
+        //Continue if all transactions are authorised
         if (orderAuthorized) {
             LOG.info("Process: " + process.getCode() + " Order Authorized");
             order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
             modelService.save(order);
-            return Transition.OK.toString();
-        }
 
-        if (hasAdyenPendingTransactions(order)) {
-            LOG.info("Process: " + process.getCode() + " Order Waiting");
-            return Transition.WAIT.toString();
+            return Transition.OK.toString();
         }
 
         LOG.error("Process: " + process.getCode() + " Order Not Authorized");
@@ -70,17 +82,6 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
         modelService.save(order);
 
         return Transition.NOK.toString();
-    }
-
-    private boolean hasAdyenPendingTransactions(final OrderModel order) {
-        for (final PaymentTransactionModel transaction : order.getPaymentTransactions()) {
-            if (transaction.getPaymentProvider().equals(Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER)
-                    && !isTransactionAuthorized(transaction)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
@@ -95,6 +96,7 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
     }
 
     private boolean isOrderAuthorized(final OrderModel order) {
+        //A single not authorized transaction means not authorized
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
             if (!isTransactionAuthorized(paymentTransactionModel)) {
                 return false;

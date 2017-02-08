@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
-public class AdyenCheckCaptureActionTest {
+public class AdyenCheckCaptureActionTest extends AbstractActionTest {
     @Mock
     private OrderProcessModel orderProcessModelMock;
 
@@ -56,42 +56,6 @@ public class AdyenCheckCaptureActionTest {
         // implement here code executed after each test
     }
 
-    private PaymentTransactionEntryModel createAuthorizedEntry() {
-        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
-        entry.setType(PaymentTransactionType.AUTHORIZATION);
-        entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
-        entry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-
-        return entry;
-    }
-
-    private PaymentTransactionEntryModel createCaptureReceivedEntry() {
-        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
-        entry.setType(PaymentTransactionType.CAPTURE);
-        entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
-        entry.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED.name());
-
-        return entry;
-    }
-
-    private PaymentTransactionEntryModel createCaptureSuccessEntry() {
-        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
-        entry.setType(PaymentTransactionType.CAPTURE);
-        entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
-        entry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-
-        return entry;
-    }
-
-    private PaymentTransactionEntryModel createCaptureRejectedEntry() {
-        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
-        entry.setType(PaymentTransactionType.CAPTURE);
-        entry.setTransactionStatus(TransactionStatus.REJECTED.name());
-        entry.setTransactionStatusDetails(TransactionStatusDetails.GENERAL_SYSTEM_ERROR.name());
-
-        return entry;
-    }
-
     /**
      * No authorizations found - consider payment captured
      *
@@ -107,10 +71,7 @@ public class AdyenCheckCaptureActionTest {
                 adyenCheckCaptureAction.execute(orderProcessModelMock)
         );
 
-        PaymentTransactionModel adyenTransaction = new PaymentTransactionModel();
-        adyenTransaction.setPaymentProvider(PAYMENT_PROVIDER);
-
-        adyenTransaction.setEntries(new ArrayList<>());
+        PaymentTransactionModel adyenTransaction = createAdyenTransaction();
 
         adyenTransaction.getEntries().add(createAuthorizedEntry());
         adyenTransaction.getEntries().add(createCaptureReceivedEntry());
@@ -137,8 +98,7 @@ public class AdyenCheckCaptureActionTest {
      */
     @Test
     public void testCaptureRejected() throws Exception {
-        PaymentTransactionModel adyenTransaction = new PaymentTransactionModel();
-        adyenTransaction.setPaymentProvider(PAYMENT_PROVIDER);
+        PaymentTransactionModel adyenTransaction = createAdyenTransaction();
         List<PaymentTransactionEntryModel> transactionEntries = new ArrayList<>();
 
         transactionEntries.add(createAuthorizedEntry());

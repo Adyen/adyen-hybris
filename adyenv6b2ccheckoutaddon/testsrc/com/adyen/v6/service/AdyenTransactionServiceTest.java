@@ -8,27 +8,24 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_AUTHORISATION;
 import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.CONFIG_IMMEDIATE_CAPTURE;
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatus.REJECTED;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
@@ -37,22 +34,14 @@ public class AdyenTransactionServiceTest {
     private ModelService modelServiceMock;
 
     @Mock
-    private ConfigurationService configurationServiceMock;
-
-    @Mock
     private CommonI18NService commonI18NServiceMock;
 
     private AdyenTransactionService adyenTransactionService;
 
     @Before
     public void setUp() {
-        //Return new PaymentTransactionEntryModel every time
         when(modelServiceMock.create(PaymentTransactionEntryModel.class))
-                .thenAnswer(new Answer<PaymentTransactionEntryModel>() {
-                    public PaymentTransactionEntryModel answer(InvocationOnMock invocation) {
-                        return new PaymentTransactionEntryModel();
-                    }
-                });
+                .thenReturn(new PaymentTransactionEntryModel());
 
         PaymentTransactionModel paymentTransactionModel = new PaymentTransactionModel();
         paymentTransactionModel.setEntries(new ArrayList<>());
@@ -62,7 +51,6 @@ public class AdyenTransactionServiceTest {
         adyenTransactionService = new AdyenTransactionService();
 
         adyenTransactionService.setModelService(modelServiceMock);
-        adyenTransactionService.setConfigurationService(configurationServiceMock);
         adyenTransactionService.setCommonI18NService(commonI18NServiceMock);
     }
 
@@ -98,18 +86,33 @@ public class AdyenTransactionServiceTest {
      * @throws Exception
      */
     @Test
-    public void testAuthorizeOrderModel() throws Exception {
+    public void testAuthorizeOrderModel() {
         String pspReference = "123";
         String merchantReference = "001";
 
         OrderModel orderModel = createDummyOrderModel();
 
-        Configuration configurationMock = mock(Configuration.class);
-        when(configurationMock.getString(CONFIG_IMMEDIATE_CAPTURE)).thenReturn("false");
-        when(configurationServiceMock.getConfiguration()).thenReturn(configurationMock);
-
         PaymentTransactionModel paymentTransactionModel = adyenTransactionService
                 .authorizeOrderModel(orderModel, merchantReference, pspReference);
+
+        //Verify that the payment transaction is saved
+        verify(modelServiceMock).save(paymentTransactionModel);
+    }
+
+    @Test
+    public void testStoreFailedAuthorizationFromNotification() {
+        String pspReference = "123";
+
+        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        notificationItemModel.setPspReference(pspReference);
+        notificationItemModel.setMerchantReference("001");
+        notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);
+        notificationItemModel.setSuccess(false);
+
+        OrderModel orderModel = createDummyOrderModel();
+
+        PaymentTransactionModel paymentTransactionModel = adyenTransactionService
+                .storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
 
         //Verify that the payment transaction is saved
         verify(modelServiceMock).save(paymentTransactionModel);

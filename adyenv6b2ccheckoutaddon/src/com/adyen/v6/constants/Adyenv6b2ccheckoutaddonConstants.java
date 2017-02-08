@@ -33,6 +33,9 @@ public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2cc
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
 
+	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
+	public static final String PROCESS_EVENT_ADYEN_AUTHORIZED = "AdyenAuthorized";
+
 	private Adyenv6b2ccheckoutaddonConstants()
 	{
 		//empty to avoid instantiating this constant class

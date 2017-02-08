@@ -4,20 +4,17 @@ import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.CONFIG_IMMEDIATE_CAPTURE;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatus.REJECTED;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.GENERAL_SYSTEM_ERROR;
@@ -25,7 +22,6 @@ import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL
 
 //TODO: implement an interface
 public class AdyenTransactionService {
-    private ConfigurationService configurationService;
     private ModelService modelService;
     private CommonI18NService commonI18NService;
 
@@ -81,13 +77,6 @@ public class AdyenTransactionService {
             final AbstractOrderModel abstractOrderModel,
             final String merchantTransactionCode,
             final String pspReference) {
-        final Configuration configuration = configurationService.getConfiguration();
-        boolean isImmediateCapture = configuration.getString(CONFIG_IMMEDIATE_CAPTURE).equals("true");
-        boolean autoCapture = isImmediateCapture || !supportsManualCapture(abstractOrderModel.getAdyenPaymentMethod());
-
-        LOG.info(CONFIG_IMMEDIATE_CAPTURE + ": " + isImmediateCapture + ", Payment method: "
-                + abstractOrderModel.getAdyenPaymentMethod());
-
         //First save the transactions to the CartModel < AbstractOrderModel
         final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
                 merchantTransactionCode,
@@ -105,17 +94,64 @@ public class AdyenTransactionService {
         LOG.info("Saving AUTH transaction entry");
         modelService.save(authorisedTransaction);
 
-        if (autoCapture) {
-            PaymentTransactionEntryModel capturedTransaction = createCapturedTransactionFromAuthorization(
-                    authorisedTransaction);
-
-            LOG.info("Saving CAP transaction entry");
-            modelService.save(capturedTransaction);
-        }
-
         modelService.refresh(paymentTransactionModel); //refresh is needed by order-process
 
         return paymentTransactionModel;
+    }
+
+    /**
+     * Store failed authorization transaction entry
+     *
+     * @param notificationItemModel
+     * @param abstractOrderModel
+     * @return
+     */
+    public PaymentTransactionModel storeFailedAuthorizationFromNotification(
+            NotificationItemModel notificationItemModel,
+            AbstractOrderModel abstractOrderModel) {
+        //First save the transactions to the CartModel < AbstractOrderModel
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
+                notificationItemModel.getMerchantReference(),
+                notificationItemModel.getPspReference(),
+                abstractOrderModel);
+
+        modelService.save(paymentTransactionModel);
+
+        PaymentTransactionEntryModel authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(
+                paymentTransactionModel,
+                notificationItemModel.getMerchantReference(),
+                abstractOrderModel
+        );
+
+        authorisedTransaction.setTransactionStatus(REJECTED.name());
+
+        TransactionStatusDetails transactionStatusDetails = getTransactionStatusDetailsFromReason(notificationItemModel.getReason());
+        authorisedTransaction.setTransactionStatusDetails(transactionStatusDetails.name());
+
+        modelService.save(authorisedTransaction);
+
+        return paymentTransactionModel;
+    }
+
+    /**
+     * Map notification item reason to transactionStatusDetails item
+     *
+     * @param reason
+     * @return
+     */
+    private TransactionStatusDetails getTransactionStatusDetailsFromReason(String reason) {
+        TransactionStatusDetails transactionStatusDetails = TransactionStatusDetails.UNKNOWN_CODE;
+
+        if (reason != null) {
+            switch (reason) {
+                //TODO: fill more cases
+                default:
+                    transactionStatusDetails = TransactionStatusDetails.UNKNOWN_CODE;
+                    break;
+            }
+        }
+
+        return transactionStatusDetails;
     }
 
     private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(
@@ -157,62 +193,6 @@ public class AdyenTransactionService {
         return paymentTransactionModel;
     }
 
-    /**
-     * Create a capture transaction entry from authorization transaction
-     */
-    private PaymentTransactionEntryModel createCapturedTransactionFromAuthorization(
-            final PaymentTransactionEntryModel authorizationTransaction) {
-        final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
-        final PaymentTransactionModel paymentTransaction = authorizationTransaction.getPaymentTransaction();
-
-        String code = authorizationTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
-
-        transactionEntryModel.setCode(code);
-        transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
-        transactionEntryModel.setPaymentTransaction(paymentTransaction);
-        transactionEntryModel.setRequestId(authorizationTransaction.getRequestId());
-        transactionEntryModel.setRequestToken(authorizationTransaction.getRequestToken());
-        transactionEntryModel.setTime(authorizationTransaction.getTime());
-        transactionEntryModel.setAmount(authorizationTransaction.getAmount());
-        transactionEntryModel.setCurrency(authorizationTransaction.getCurrency());
-        transactionEntryModel.setTransactionStatus(ACCEPTED.name());
-        transactionEntryModel.setTransactionStatusDetails(SUCCESFULL.name());
-
-        return transactionEntryModel;
-    }
-
-    public boolean supportsManualCapture(String paymentMethod) {
-        //todo: implement
-        switch(paymentMethod) {
-            case "cup":
-            case "cartebancaire":
-            case "visa":
-            case "mc":
-            case "uatp":
-            case "amex":
-            case "bcmc":
-            case "maestro":
-            case "maestrouk":
-            case "diners":
-            case "discover":
-            case "jcb":
-            case "laser":
-            case "paypal":
-            case "klarna":
-            case "afterpay_default":
-            case "sepadirectdebit":
-            case PAYMENT_METHOD_CC:
-                return true;
-        }
-
-//        // To be sure check if it payment method starts with afterpay_ then manualCapture is allowed
-//        if (strlen($this->_paymentMethod) >= 9 && substr($this->_paymentMethod, 0, 9) == "afterpay_") {
-//            $manualCaptureAllowed = true;
-//        }
-
-        return false;
-    }
-
     public ModelService getModelService() {
         return modelService;
     }
@@ -227,13 +207,5 @@ public class AdyenTransactionService {
 
     public void setCommonI18NService(CommonI18NService commonI18NService) {
         this.commonI18NService = commonI18NService;
-    }
-
-    public ConfigurationService getConfigurationService() {
-        return configurationService;
-    }
-
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
     }
 }

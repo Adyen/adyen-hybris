@@ -1,6 +1,9 @@
 package com.adyen.v6.cronjob;
 
 import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.repository.NotificationItemRepository;
+import com.adyen.v6.repository.OrderRepository;
+import com.adyen.v6.repository.PaymentTransactionRepository;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -9,8 +12,6 @@ import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.processengine.BusinessProcessService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
-import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_AUTHORISATION;
 import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +38,13 @@ public class AdyenProcessNotificationCronJobTest {
     private AdyenTransactionService adyenTransactionServiceMock;
 
     @Mock
-    private FlexibleSearchService flexibleSearchServiceMock;
+    private OrderRepository orderRepositoryMock;
+
+    @Mock
+    private PaymentTransactionRepository paymentTransactionRepositoryMock;
+
+    @Mock
+    private NotificationItemRepository notificationItemRepositoryMock;
 
     @Mock
     private BusinessProcessService businessProcessServiceMock;
@@ -53,9 +61,11 @@ public class AdyenProcessNotificationCronJobTest {
 
         adyenProcessNotificationCronJob = new AdyenProcessNotificationCronJob();
         adyenProcessNotificationCronJob.setModelService(modelServiceMock);
-        adyenProcessNotificationCronJob.setFlexibleSearchService(flexibleSearchServiceMock);
         adyenProcessNotificationCronJob.setBusinessProcessService(businessProcessServiceMock);
         adyenProcessNotificationCronJob.setAdyenTransactionService(adyenTransactionServiceMock);
+        adyenProcessNotificationCronJob.setOrderRepository(orderRepositoryMock);
+        adyenProcessNotificationCronJob.setNotificationItemRepository(notificationItemRepositoryMock);
+        adyenProcessNotificationCronJob.setPaymentTransactionRepository(paymentTransactionRepositoryMock);
     }
 
     @After
@@ -64,15 +74,13 @@ public class AdyenProcessNotificationCronJobTest {
     }
 
     /**
-     * Test capture notification handling
+     * Test CAPTURE notification handling
      * It should save the capture notification and emmit the AdyenCaptured event
      *
      * @throws Exception
      */
     @Test
     public void testCaptureNotification() throws Exception {
-        String pspReference = "123";
-
         PaymentTransactionModel paymentTransactionModel = new PaymentTransactionModel();
         paymentTransactionModel.setEntries(new ArrayList<PaymentTransactionEntryModel>());
 
@@ -80,12 +88,12 @@ public class AdyenProcessNotificationCronJobTest {
 
         paymentTransactionModel.setOrder(orderModel);
 
-        when(flexibleSearchServiceMock
-                .searchUnique(Mockito.any(FlexibleSearchQuery.class)))
+        when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class)))
                 .thenReturn(paymentTransactionModel);
 
         NotificationItemModel notificationItemModel = new NotificationItemModel();
-        notificationItemModel.setPspReference(pspReference);
+        notificationItemModel.setOriginalReference("123");
+        notificationItemModel.setPspReference("456");
         notificationItemModel.setEventCode(EVENT_CODE_CAPTURE);
         notificationItemModel.setSuccess(true);
 
@@ -101,6 +109,90 @@ public class AdyenProcessNotificationCronJobTest {
 
         //Verify that the capture transaction is saved
         verify(modelServiceMock).save(paymentTransactionEntryModelMock);
+    }
+
+    /**
+     * Test AUTHORISATION notification handling
+     * It should save the capture notification and emmit the AdyenCaptured event
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAuthorisationNotification() throws Exception {
+        String pspReference = "123";
+        String merchantReference = "001";
+
+        OrderModel orderModel = createDummyOrderModel();
+
+        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        notificationItemModel.setPspReference(pspReference);
+        notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);
+        notificationItemModel.setMerchantReference(merchantReference);
+        notificationItemModel.setSuccess(true);
+
+        when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class)))
+                .thenReturn(null);
+
+        when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
+                .thenReturn(orderModel);
+
+        adyenProcessNotificationCronJob.processNotification(notificationItemModel);
+
+        //Verify that we emmit the event of Capture to the order processes
+        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenAuthorized");
+
+        //Verify that the authorizeOrderModel is called
+        verify(adyenTransactionServiceMock).authorizeOrderModel(orderModel, merchantReference, pspReference);
+    }
+
+    /**
+     * Test failed authorisation
+     */
+    @Test
+    public void testFailedAuthorisationNotification() {
+        String pspReference = "123";
+        String merchantReference = "001";
+
+        OrderModel orderModel = createDummyOrderModel();
+
+        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        notificationItemModel.setPspReference(pspReference);
+        notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);
+        notificationItemModel.setMerchantReference(merchantReference);
+        notificationItemModel.setSuccess(false);
+
+        when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class)))
+                .thenReturn(null);
+
+        when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
+                .thenReturn(orderModel);
+
+        adyenProcessNotificationCronJob.processNotification(notificationItemModel);
+
+        //Verify that we emmit the event of Capture to the order processes
+        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenAuthorized");
+
+        //Verify that the authorizeOrderModel is called
+        verify(adyenTransactionServiceMock).storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
+    }
+
+    /**
+     * Test Duplicate AUTHORISATION event handling
+     */
+    @Test
+    public void testDuplicateAuthorisationNotification() {
+        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        notificationItemModel.setPspReference("123");
+        notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);
+        notificationItemModel.setSuccess(true);
+
+        when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class)))
+                .thenReturn(new PaymentTransactionModel());
+
+        adyenProcessNotificationCronJob.processNotification(notificationItemModel);
+
+        //Verify that we emmit the event of Capture to the order processes
+        verify(orderRepositoryMock, Mockito.never()).getOrderModel(Mockito.any(String.class));
     }
 
     private OrderModel createDummyOrderModel() {

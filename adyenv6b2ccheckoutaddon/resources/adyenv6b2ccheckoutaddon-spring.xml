@@ -101,6 +101,8 @@
 					</key>
 					<bean class="com.adyen.v6.commands.AdyenCaptureCommand">
 						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+						<property name="configurationService" ref="configurationService"/>
+						<property name="orderRepository" ref="adyenOrderRepository"/>
 					</bean>
 				</entry>
 			</map>
@@ -116,12 +118,14 @@
 		<property name="modelService" ref="modelService"/>
 		<property name="businessProcessService" ref="businessProcessService"/>
 		<property name="adyenTransactionService" ref="adyenTransactionService"/>
+		<property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
+		<property name="orderRepository" ref="adyenOrderRepository" />
+		<property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
 	</bean>
 
+	<bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService" autowire="byName"/>
 
-	<bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService">
-		<property name="configurationService" ref="configurationService" />
-		<property name="modelService" ref="modelService" />
-		<property name="commonI18NService" ref="commonI18NService" />
-	</bean>
+	<bean id="adyenNotificationItemRepository" class="com.adyen.v6.repository.NotificationItemRepository" autowire="byName"/>
+	<bean id="adyenOrderRepository" class="com.adyen.v6.repository.OrderRepository" autowire="byName"/>
+	<bean id="adyenPaymentTransactionRepository" class="com.adyen.v6.repository.PaymentTransactionRepository" autowire="byName"/>
 </beans>
