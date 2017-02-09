@@ -12,6 +12,7 @@ import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
@@ -29,12 +30,18 @@ import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.CartModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.ordercancel.OrderCancelException;
+import de.hybris.platform.ordercancel.OrderCancelRequest;
+import de.hybris.platform.ordercancel.OrderCancelService;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.yacceleratorstorefront.controllers.pages.checkout.steps.SummaryCheckoutStepController;
 import org.apache.commons.configuration.Configuration;
@@ -87,6 +94,15 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
     @Resource(name = "adyenTransactionService")
     private AdyenTransactionService adyenTransactionService;
+
+    @Resource(name = "orderCancelService")
+    private OrderCancelService orderCancelService;
+
+    @Resource(name = "userService")
+    private UserService userService;
+
+    @Resource(name = "adyenOrderRepository")
+    private OrderRepository orderRepository;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
@@ -231,9 +247,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                                     @RequestParam(HPPConstants.Response.MERCHANT_SIG) final String merchantSig,
                                     final RedirectAttributes redirectModel,
                                     final Model model) {
-        final Configuration configuration = configurationService.getConfiguration();
-        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
-
         final SortedMap<String, String> hppResponseData = new TreeMap<>();
 
         hppResponseData.put(HPPConstants.Response.AUTH_RESULT, authResult);
@@ -252,25 +265,76 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         LOGGER.info("Received HPP response: " + hppResponseData);
 
-        String errorMessage = "checkout.error.authorization.payment.refused";
+        if(isValidHPPResponse(hppResponseData, merchantSig)) {
+            switch (authResult) {
+                case HPPConstants.Response.AUTH_RESULT_AUTHORISED:
+                case HPPConstants.Response.AUTH_RESULT_PENDING:
+                    LOGGER.info("Redirecting to confirmation page");
+                    return getConfirmationPageRedirectUrl(orderCode);
+                case HPPConstants.Response.AUTH_RESULT_REFUSED:
+                    GlobalMessages.addFlashMessage(
+                            redirectModel,
+                            GlobalMessages.ERROR_MESSAGES_HOLDER,
+                            "checkout.error.authorization.payment.refused");
+                    cancelOrder(merchantReference);
+                    break;
+                case HPPConstants.Response.AUTH_RESULT_CANCELLED:
+                    GlobalMessages.addFlashMessage(
+                            redirectModel,
+                            GlobalMessages.ERROR_MESSAGES_HOLDER,
+                            "checkout.error.authorization.payment.cancelled");
+                    cancelOrder(merchantReference);
+                    break;
+                case HPPConstants.Response.AUTH_RESULT_ERROR:
+                    GlobalMessages.addFlashMessage(
+                            redirectModel,
+                            GlobalMessages.ERROR_MESSAGES_HOLDER,
+                            "checkout.error.authorization.payment.error");
+                    cancelOrder(merchantReference);
+                    break;
+                default:
+                    LOGGER.error("Unknown AuthResult received: " + authResult);
+                    break;
+            }
+        }
 
+        LOGGER.info("Redirecting to cart..");
+        return REDIRECT_PREFIX + "/cart";
+    }
+
+    private boolean isValidHPPResponse(SortedMap<String,String> hppResponseData, String merchantSig) {
+        final Configuration configuration = configurationService.getConfiguration();
+        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
         String dataToSign = Util.getDataToSign(hppResponseData);
         try {
             String calculatedMerchantSig = Util.calculateHMAC(dataToSign, hmacKey);
             LOGGER.info("Calculated signature: " + calculatedMerchantSig);
-            if (calculatedMerchantSig.equals(merchantSig)
-                    && HPPConstants.Response.AUTH_RESULT_AUTHORISED.equals(authResult)) {
-                LOGGER.info("Redirecting to order success page");
-                return getConfirmationPageRedirectUrl(orderCode);
+            if (calculatedMerchantSig.equals(merchantSig)) {
+                return true;
+            } else {
+                LOGGER.error("Signature does not match!");
             }
         } catch (SignatureException e) {
             LOGGER.error(e);
         }
 
-        LOGGER.info("Redirecting to order failed page");
-        GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, errorMessage);
+        return false;
+    }
 
-        return REDIRECT_PREFIX + "/cart";
+    private boolean cancelOrder(String orderCode) {
+        OrderModel orderModel = orderRepository.getOrderModel(orderCode);
+        final OrderCancelRequest orderCancelRequest = new OrderCancelRequest(orderModel);
+        try {
+            orderCancelService.requestOrderCancel(orderCancelRequest, userService.getCurrentUser());
+        } catch (OrderCancelException e) {
+            LOGGER.error(e);
+            return false;
+        }
+        orderModel.setStatus(OrderStatus.CANCELLED);
+        modelService.save(orderModel);
+        LOGGER.info("Order cancelled");
+
+        return true;
     }
 
     protected String getConfirmationPageRedirectUrl(String orderCode) {
