@@ -44,7 +44,8 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
 
     @Before
     public void setUp() {
-        // implement here code executed before each test
+        when(orderModelMock.getTotalPrice()).thenReturn(12.34);
+        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
         when(orderProcessModelMock.getCode()).thenReturn("1234");
         when(orderProcessModelMock.getOrder()).thenReturn(orderModelMock);
         adyenCheckCaptureAction = new AdyenCheckCaptureAction();
@@ -57,7 +58,7 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
     }
 
     /**
-     * No authorizations found - consider payment captured
+     * No authorizations found -> wait
      *
      * @throws Exception
      */
@@ -67,7 +68,7 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
         when(orderModelMock.getPaymentTransactions()).thenReturn(transactions);
 
         assertEquals(
-                AdyenCheckCaptureAction.Transition.OK.toString(),
+                AdyenCheckCaptureAction.Transition.WAIT.toString(),
                 adyenCheckCaptureAction.execute(orderProcessModelMock)
         );
 
@@ -116,72 +117,5 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
         assertEquals(AdyenCheckCaptureAction.Transition.NOK.toString(), result);
         verify(orderModelMock).setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
         verify(modelServiceMock).save(orderProcessModelMock.getOrder());
-    }
-
-    /**
-     * Test multiple transactions (Adyen and non-Adyen)
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testMultiTransactions() throws Exception {
-        List<PaymentTransactionModel> transactions = new ArrayList<>();
-
-        //Add Adyen Capture Pending transaction
-        PaymentTransactionModel adyenTransaction = new PaymentTransactionModel();
-        adyenTransaction.setPaymentProvider(PAYMENT_PROVIDER);
-        adyenTransaction.setEntries(new ArrayList<>());
-
-        adyenTransaction.getEntries().add(createAuthorizedEntry());
-        adyenTransaction.getEntries().add(createCaptureReceivedEntry());
-
-        transactions.add(adyenTransaction);
-
-        when(orderModelMock.getPaymentTransactions()).thenReturn(transactions);
-
-        assertEquals(
-                AdyenCheckCaptureAction.Transition.WAIT.toString(),
-                adyenCheckCaptureAction.execute(orderProcessModelMock)
-        );
-
-        //Add non-Adyen transaction
-        PaymentTransactionModel otherTransaction = new PaymentTransactionModel();
-        otherTransaction.setEntries(new ArrayList<>());
-
-        otherTransaction.getEntries().add(createAuthorizedEntry());
-        otherTransaction.getEntries().add(createCaptureSuccessEntry());
-
-        transactions.add(otherTransaction);
-
-        assertEquals(
-                AdyenCheckCaptureAction.Transition.WAIT.toString(),
-                adyenCheckCaptureAction.execute(orderProcessModelMock)
-        );
-
-        //Add Adyen captured transaction
-        PaymentTransactionModel adyenTransaction2 = new PaymentTransactionModel();
-        adyenTransaction2.setPaymentProvider(PAYMENT_PROVIDER);
-        adyenTransaction2.setEntries(new ArrayList<>());
-
-        adyenTransaction2.getEntries().add(createAuthorizedEntry());
-        adyenTransaction2.getEntries().add(createCaptureReceivedEntry());
-        adyenTransaction2.getEntries().add(createCaptureSuccessEntry());
-
-        transactions.add(adyenTransaction2);
-
-        assertEquals(
-                AdyenCheckCaptureAction.Transition.WAIT.toString(),
-                adyenCheckCaptureAction.execute(orderProcessModelMock)
-        );
-
-        //Make all Adyen entries captured
-        adyenTransaction.getEntries().add(createCaptureSuccessEntry());
-
-        assertEquals(
-                AdyenCheckCaptureAction.Transition.OK.toString(),
-                adyenCheckCaptureAction.execute(orderProcessModelMock)
-        );
-
-        verify(orderModelMock).setStatus(OrderStatus.PAYMENT_CAPTURED);
     }
 }

@@ -10,6 +10,7 @@ import de.hybris.platform.cronjob.enums.CronJobResult;
 import de.hybris.platform.cronjob.enums.CronJobStatus;
 import de.hybris.platform.cronjob.model.CronJobModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.processengine.BusinessProcessService;
@@ -23,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_AUTHORISATION;
+import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND;
 import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PROCESS_EVENT_ADYEN_AUTHORIZED;
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PROCESS_EVENT_ADYEN_CAPTURED;
@@ -117,6 +119,31 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
         return paymentTransactionModel;
     }
 
+    public void processCancelEvent(
+            NotificationItemModel notificationItemModel,
+            PaymentTransactionModel paymentTransactionModel) {
+        if(paymentTransactionModel == null) {
+            return;
+        }
+
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
+                .createCancellationTransaction(
+                        paymentTransactionModel,
+                        notificationItemModel.getMerchantReference(),
+                        notificationItemModel.getPspReference()
+                );
+
+        if(notificationItemModel.getSuccess()) {
+            paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+        } else {
+            //TODO: propagate fail reasons
+            paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
+        }
+
+        LOG.info("Saving Cancel transaction entry");
+        modelService.save(paymentTransactionEntryModel);
+    }
+
     /**
      * Process a notification item
      *
@@ -137,6 +164,10 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
                 } else {
                     LOG.info("Authorisation already processed " + paymentTransaction.getRequestId());
                 }
+                break;
+            case EVENT_CODE_CANCEL_OR_REFUND:
+                paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
+                processCancelEvent(notificationItemModel, paymentTransaction);
                 break;
         }
     }

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatus.REJECTED;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.GENERAL_SYSTEM_ERROR;
+import static de.hybris.platform.payment.dto.TransactionStatusDetails.REVIEW_NEEDED;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL;
 
 //TODO: implement an interface
@@ -191,6 +192,28 @@ public class AdyenTransactionService {
         paymentTransactionModel.setPlannedAmount(new BigDecimal(abstractOrderModel.getTotalPrice()));
 
         return paymentTransactionModel;
+    }
+
+    public PaymentTransactionEntryModel createCancellationTransaction(
+            final PaymentTransactionModel paymentTransaction,
+            final String merchantCode,
+            final String pspReference) {
+        final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
+
+        String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
+
+        transactionEntryModel.setType(PaymentTransactionType.CANCEL);
+        transactionEntryModel.setPaymentTransaction(paymentTransaction);
+        transactionEntryModel.setRequestId(pspReference);
+        transactionEntryModel.setRequestToken(merchantCode);
+        transactionEntryModel.setCode(code);
+        transactionEntryModel.setTime(DateTime.now().toDate());
+        transactionEntryModel.setTransactionStatus(ACCEPTED.name());
+        transactionEntryModel.setTransactionStatusDetails(REVIEW_NEEDED.name());
+        transactionEntryModel.setAmount(paymentTransaction.getPlannedAmount());
+        transactionEntryModel.setCurrency(paymentTransaction.getCurrency());
+
+        return transactionEntryModel;
     }
 
     public ModelService getModelService() {

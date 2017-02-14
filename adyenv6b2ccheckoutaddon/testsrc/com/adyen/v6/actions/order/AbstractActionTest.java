@@ -6,6 +6,7 @@ import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER;
@@ -19,6 +20,7 @@ public class AbstractActionTest {
         entry.setType(PaymentTransactionType.AUTHORIZATION);
         entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
         entry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+        entry.setAmount(new BigDecimal("12.34"));
 
         return entry;
     }
@@ -46,6 +48,7 @@ public class AbstractActionTest {
         entry.setType(PaymentTransactionType.CAPTURE);
         entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
         entry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+        entry.setAmount(new BigDecimal("12.34"));
 
         return entry;
     }

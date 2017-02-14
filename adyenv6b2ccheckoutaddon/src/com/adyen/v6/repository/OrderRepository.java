@@ -16,9 +16,12 @@ public class OrderRepository extends AbstractRepository {
     public OrderModel getOrderModel(String code) {
         final Map queryParams = new HashMap();
         queryParams.put("code", code);
+
+        //Adding "{versionID} IS NULL" to get the original order regardless of modification history
         final FlexibleSearchQuery selectOrderQuery = new FlexibleSearchQuery(
                 "SELECT {pk} FROM {" + OrderModel._TYPECODE + "}"
-                        + " WHERE {" + OrderModel.CODE + "} = ?code",
+                        + " WHERE {" + OrderModel.CODE + "} = ?code"
+                        + " AND {versionID} IS NULL",
                 queryParams
         );
 

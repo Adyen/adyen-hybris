@@ -1,6 +1,5 @@
 package com.adyen.v6.actions.order;
 
-import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
@@ -12,6 +11,7 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.processengine.action.AbstractAction;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +44,10 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
 
         final OrderModel order = process.getOrder();
 
+        if (order.getAdyenPaymentMethod() == null) {
+            return Transition.OK.toString();
+        }
+
         /*
         TakePaymentAction will move the order to PAYMENT_CAPTURED state
         Revert it back to PAYMENT_NOT_CAPTURED
@@ -51,40 +55,29 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
         order.setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
         modelService.save(order);
 
-        boolean allCaptured = true;
+        BigDecimal remainingAmount = new BigDecimal(order.getTotalPrice());
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
-            //Skip if not Adyen transaction
-            if (!Adyenv6b2ccheckoutaddonConstants.PAYMENT_PROVIDER.equals(paymentTransactionModel.getPaymentProvider())) {
-                continue;
+            //Fail if capture is rejected
+            if (hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.REJECTED)
+                    || hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.ERROR)) {
+                LOG.info("Process: " + process.getCode() + " Order Not Captured");
+                return Transition.NOK.toString();
             }
 
-            //Process only transactions that have capture request (capture-received)
-            if (hasTransactionEntry(
-                    paymentTransactionModel,
+            PaymentTransactionEntryModel transactionEntry = getTransactionEntry(paymentTransactionModel,
                     PaymentTransactionType.CAPTURE,
                     TransactionStatus.ACCEPTED,
-                    TransactionStatusDetails.REVIEW_NEEDED)) {
+                    TransactionStatusDetails.SUCCESFULL);
 
-                //Fail if capture is rejected
-                if (hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.REJECTED)
-                        || hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.ERROR)) {
-                    LOG.info("Process: " + process.getCode() + " Order Not Captured");
-                    return Transition.NOK.toString();
-                }
-
-                //Check if transaction is not captured yet
-                if (!hasTransactionEntry(
-                        paymentTransactionModel,
-                        PaymentTransactionType.CAPTURE,
-                        TransactionStatus.ACCEPTED,
-                        TransactionStatusDetails.SUCCESFULL)) {
-                    allCaptured = false;
-                }
+            if (transactionEntry != null) {
+                remainingAmount = remainingAmount.subtract(transactionEntry.getAmount());
+                LOG.info("Remaining amount: " + remainingAmount);
             }
         }
 
+        BigDecimal zero = new BigDecimal(0);
         //Return success if all transactions are captured
-        if (allCaptured) {
+        if (remainingAmount.compareTo(zero) <= 0) {
             LOG.info("Process: " + process.getCode() + " Order Captured");
             order.setStatus(OrderStatus.PAYMENT_CAPTURED);
             modelService.save(order);
@@ -109,18 +102,18 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
         return false;
     }
 
-    private boolean hasTransactionEntry(final PaymentTransactionModel paymentTransactionModel,
-                                        final PaymentTransactionType paymentTransactionType,
-                                        final TransactionStatus transactionStatus,
-                                        final TransactionStatusDetails transactionStatusDetails) {
+    private PaymentTransactionEntryModel getTransactionEntry(final PaymentTransactionModel paymentTransactionModel,
+                                                             final PaymentTransactionType paymentTransactionType,
+                                                             final TransactionStatus transactionStatus,
+                                                             final TransactionStatusDetails transactionStatusDetails) {
         for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
             if (paymentTransactionType.equals(entry.getType())
                     && transactionStatus.name().equals(entry.getTransactionStatus())
                     && transactionStatusDetails.name().equals(entry.getTransactionStatusDetails())) {
-                return true;
+                return entry;
             }
         }
 
-        return false;
+        return null;
     }
 }

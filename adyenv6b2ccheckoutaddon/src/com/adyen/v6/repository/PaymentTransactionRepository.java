@@ -23,7 +23,9 @@ public class PaymentTransactionRepository extends AbstractRepository {
         final FlexibleSearchQuery selectOrderQuery = new FlexibleSearchQuery(
                 "SELECT {pk} FROM {" + PaymentTransactionModel._TYPECODE + "}"
                         + " WHERE {" + PaymentTransactionModel.PAYMENTPROVIDER + "} = ?paymentProvider"
-                        + " AND {" + PaymentTransactionEntryModel.REQUESTID + "} = ?requestId",
+                        + " AND {" + PaymentTransactionEntryModel.REQUESTID + "} = ?requestId"
+                        //Adding "{versionID} IS NULL" to get the original order regardless of modification history
+                        + " AND {versionID} IS NULL",
                 queryParams
         );
 

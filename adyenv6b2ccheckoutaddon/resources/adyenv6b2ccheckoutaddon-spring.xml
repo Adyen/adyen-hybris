@@ -105,6 +105,14 @@
 						<property name="orderRepository" ref="adyenOrderRepository"/>
 					</bean>
 				</entry>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.VoidCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenVoidCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
 			</map>
 		</property>
 	</bean>

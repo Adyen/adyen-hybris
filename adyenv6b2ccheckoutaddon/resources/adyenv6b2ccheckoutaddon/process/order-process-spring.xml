@@ -14,4 +14,10 @@
 	<!--Step of order-process that checks capture completion-->
 	<alias name="defaultAdyenCheckCaptureAction" alias="adyenCheckCaptureAction"/>
 	<bean id="defaultAdyenCheckCaptureAction" class="com.adyen.v6.actions.order.AdyenCheckCaptureAction" parent="abstractAction" />
+
+	<!--Step of order-process that does the cancellation for AdyenTransactions-->
+	<alias name="defaultAdyenCancelOrRefundAction" alias="adyenCancelOrRefundAction"/>
+	<bean id="defaultAdyenCancelOrRefundAction" class="com.adyen.v6.actions.order.AdyenCancelOrRefundAction" parent="abstractAction">
+		<property name="paymentService" ref="paymentService"/>
+	</bean>
 </beans>

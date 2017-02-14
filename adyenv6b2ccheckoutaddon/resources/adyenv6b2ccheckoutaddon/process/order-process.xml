@@ -75,9 +75,13 @@
 
     <!-- Wait for order cancellation to be completed -->
     <action id="processOrderCancellation" bean="processOrderCancellationAction">
-        <transition name="OK" to="verifyOrderCompletion"/>
+        <transition name="OK" to="adyenCancelOrRefund"/>
         <transition name="WAIT" to="waitForOrderAction"/>
         <transition name="SOURCING" to="sourceOrder"/>
+    </action>
+
+    <action id="adyenCancelOrRefund" bean="adyenCancelOrRefundAction">
+        <transition name="OK" to="verifyOrderCompletion"/>
     </action>
 
     <action id="verifyOrderCompletion" bean="verifyOrderCompletionAction">

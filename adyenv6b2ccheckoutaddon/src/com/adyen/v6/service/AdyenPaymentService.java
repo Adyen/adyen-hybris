@@ -8,7 +8,9 @@ import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.*;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.hpp.PaymentMethod;
-import com.adyen.model.modification.*;
+import com.adyen.model.modification.CancelRequest;
+import com.adyen.model.modification.CaptureRequest;
+import com.adyen.model.modification.ModificationResult;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
@@ -142,15 +144,32 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         LOG.info(captureRequest);
         ModificationResult modificationResult = modification.capture(captureRequest);
         LOG.info(modificationResult);
+
         return modificationResult;
     }
 
-    private ConfigurationService getConfigurationService() {
-        return configurationService;
-    }
+    /**
+     * Performs cancelOrRefund request
+     *
+     * @param authReference
+     * @param merchantReference
+     * @return
+     * @throws Exception
+     */
+    public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
+        Client client = createClient();
+        Modification modification = new Modification(client);
 
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
+        final CancelRequest cancelRequest = new CancelRequest()
+                .merchantAccount(merchantAccount)
+                .originalReference(authReference)
+                .reference(merchantReference);
+
+        LOG.info(cancelRequest);
+        ModificationResult modificationResult = modification.cancelOrRefund(cancelRequest);
+        LOG.info(modificationResult);
+
+        return modificationResult;
     }
 
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
@@ -172,5 +191,13 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         LOG.info(paymentMethods);
 
         return paymentMethods;
+    }
+
+    private ConfigurationService getConfigurationService() {
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 }
