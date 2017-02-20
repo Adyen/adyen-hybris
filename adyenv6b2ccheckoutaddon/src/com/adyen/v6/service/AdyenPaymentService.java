@@ -11,6 +11,7 @@ import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.CancelRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
+import com.adyen.model.modification.RefundRequest;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
@@ -136,7 +137,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Modification modification = new Modification(client);
 
         final CaptureRequest captureRequest = new CaptureRequest()
-                .setModificationAmountData(amount.toString(), currency.getCurrencyCode())
+                .fillAmount(amount.toString(), currency.getCurrencyCode())
                 .merchantAccount(merchantAccount)
                 .originalReference(authReference)
                 .reference(merchantReference);
@@ -172,6 +173,47 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return modificationResult;
     }
 
+    /**
+     * Performs refund request
+     *
+     * @param amount
+     * @param currency
+     * @param authReference
+     * @param merchantReference
+     * @return
+     * @throws Exception
+     */
+    public ModificationResult refund(final BigDecimal amount,
+                                     final Currency currency,
+                                     final String authReference,
+                                     final String merchantReference) throws Exception {
+        Client client = createClient();
+        Modification modification = new Modification(client);
+
+        final RefundRequest refundRequest = new RefundRequest()
+                .fillAmount(amount.toString(), currency.getCurrencyCode())
+                .merchantAccount(merchantAccount)
+                .originalReference(authReference)
+                .reference(merchantReference);
+
+        LOG.info(refundRequest);
+        ModificationResult modificationResult = modification.refund(refundRequest);
+        LOG.info(modificationResult);
+
+        return modificationResult;
+    }
+
+    /**
+     * Get Payment methods using HPP Directory Lookup
+     *
+     * @param amount
+     * @param currency
+     * @param countryCode
+     * @return
+     * @throws HTTPClientException
+     * @throws SignatureException
+     * @throws IOException
+     */
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
                                                  final String currency,
                                                  final String countryCode) throws HTTPClientException, SignatureException, IOException {

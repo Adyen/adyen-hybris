@@ -4,6 +4,7 @@ import com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
@@ -17,9 +18,7 @@ import java.math.BigDecimal;
 
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatus.REJECTED;
-import static de.hybris.platform.payment.dto.TransactionStatusDetails.GENERAL_SYSTEM_ERROR;
-import static de.hybris.platform.payment.dto.TransactionStatusDetails.REVIEW_NEEDED;
-import static de.hybris.platform.payment.dto.TransactionStatusDetails.SUCCESFULL;
+import static de.hybris.platform.payment.dto.TransactionStatusDetails.*;
 
 //TODO: implement an interface
 public class AdyenTransactionService {
@@ -38,11 +37,42 @@ public class AdyenTransactionService {
     public PaymentTransactionEntryModel createCapturedTransactionFromNotification(
             final PaymentTransactionModel paymentTransaction,
             final NotificationItemModel notificationItemModel) {
+        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(
+                paymentTransaction,
+                notificationItemModel
+        );
+
+        transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
+
+        return transactionEntryModel;
+    }
+
+    /**
+     * Create a refund transaction entry from NotificationItem
+     * @param paymentTransaction
+     * @param notificationItemModel
+     * @return
+     */
+    public PaymentTransactionEntryModel createRefundedTransactionFromNotification(
+            final PaymentTransactionModel paymentTransaction,
+            final NotificationItemModel notificationItemModel) {
+        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(
+                paymentTransaction,
+                notificationItemModel
+        );
+
+        transactionEntryModel.setType(PaymentTransactionType.REFUND_FOLLOW_ON);
+
+        return transactionEntryModel;
+    }
+
+    private PaymentTransactionEntryModel createFromModificationNotification(
+            final PaymentTransactionModel paymentTransaction,
+            final NotificationItemModel notificationItemModel) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
 
-        transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
         transactionEntryModel.setPaymentTransaction(paymentTransaction);
         transactionEntryModel.setRequestId(notificationItemModel.getPspReference());
         transactionEntryModel.setRequestToken(notificationItemModel.getMerchantReference());
@@ -214,6 +244,53 @@ public class AdyenTransactionService {
         transactionEntryModel.setCurrency(paymentTransaction.getCurrency());
 
         return transactionEntryModel;
+    }
+
+    /**
+     * Get TX entry by type and status
+     *
+     * @param paymentTransactionModel
+     * @param paymentTransactionType
+     * @param transactionStatus
+     * @return
+     */
+    public static PaymentTransactionEntryModel getTransactionEntry(final PaymentTransactionModel paymentTransactionModel,
+                                                                   final PaymentTransactionType paymentTransactionType,
+                                                                   final TransactionStatus transactionStatus) {
+        PaymentTransactionEntryModel result = paymentTransactionModel.getEntries().stream()
+                .filter(
+                        entry -> paymentTransactionType.equals(entry.getType())
+                                && transactionStatus.name().equals(entry.getTransactionStatus())
+                )
+                .findFirst()
+                .orElse(null);
+
+        return result;
+    }
+
+    /**
+     * Get TX entry by type, status and details
+     *
+     * @param paymentTransactionModel
+     * @param paymentTransactionType
+     * @param transactionStatus
+     * @param transactionStatusDetails
+     * @return
+     */
+    public static PaymentTransactionEntryModel getTransactionEntry(final PaymentTransactionModel paymentTransactionModel,
+                                                                   final PaymentTransactionType paymentTransactionType,
+                                                                   final TransactionStatus transactionStatus,
+                                                                   final TransactionStatusDetails transactionStatusDetails) {
+        PaymentTransactionEntryModel result = paymentTransactionModel.getEntries().stream()
+                .filter(
+                        entry -> paymentTransactionType.equals(entry.getType())
+                                && transactionStatus.name().equals(entry.getTransactionStatus())
+                                && transactionStatusDetails.name().equals(entry.getTransactionStatusDetails())
+                )
+                .findFirst()
+                .orElse(null);
+
+        return result;
     }
 
     public ModelService getModelService() {

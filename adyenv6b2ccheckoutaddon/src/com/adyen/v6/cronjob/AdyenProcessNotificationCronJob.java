@@ -14,6 +14,8 @@ import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.processengine.BusinessProcessService;
+import de.hybris.platform.returns.model.ReturnProcessModel;
+import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.servicelayer.cronjob.AbstractJobPerformable;
 import de.hybris.platform.servicelayer.cronjob.PerformResult;
 import de.hybris.platform.servicelayer.model.ModelService;
@@ -23,11 +25,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_AUTHORISATION;
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND;
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PROCESS_EVENT_ADYEN_AUTHORIZED;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PROCESS_EVENT_ADYEN_CAPTURED;
+import static com.adyen.model.notification.NotificationRequestItem.*;
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
 
 /**
  * Notification handling cronjob
@@ -75,6 +74,11 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     public void processCapturedEvent(
             NotificationItemModel notificationItemModel,
             PaymentTransactionModel paymentTransactionModel) {
+        if (paymentTransactionModel == null) {
+            LOG.info("Parent transaction is null");
+            return;
+        }
+
         //Register Captured transaction
         PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
                 .createCapturedTransactionFromNotification(
@@ -87,7 +91,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
         //Trigger Captured event
         OrderModel orderModel = (OrderModel) paymentTransactionModel.getOrder();
-        triggerEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
     }
 
     /**
@@ -112,17 +116,17 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             );
         }
 
-        triggerEvent(orderModel, PROCESS_EVENT_ADYEN_AUTHORIZED);
+        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_AUTHORIZED);
 
         //todo: trigger only for manual capture
-        triggerEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
         return paymentTransactionModel;
     }
 
     public void processCancelEvent(
             NotificationItemModel notificationItemModel,
             PaymentTransactionModel paymentTransactionModel) {
-        if(paymentTransactionModel == null) {
+        if (paymentTransactionModel == null) {
             return;
         }
 
@@ -133,7 +137,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
                         notificationItemModel.getPspReference()
                 );
 
-        if(notificationItemModel.getSuccess()) {
+        if (notificationItemModel.getSuccess()) {
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
         } else {
             //TODO: propagate fail reasons
@@ -142,6 +146,34 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
         LOG.info("Saving Cancel transaction entry");
         modelService.save(paymentTransactionEntryModel);
+    }
+
+    /**
+     * Process refund event
+     *
+     * @param notificationItem
+     */
+    private void processRefundEvent(NotificationItemModel notificationItem) {
+        PaymentTransactionModel paymentTransaction = paymentTransactionRepository
+                .getTransactionModel(notificationItem.getOriginalReference());
+        if (paymentTransaction == null) {
+            LOG.info("Parent transaction is null");
+            return;
+        }
+
+        //Register Refund transaction
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
+                .createRefundedTransactionFromNotification(
+                        paymentTransaction,
+                        notificationItem
+                );
+
+        LOG.info("Saving Refunded transaction entry");
+        modelService.save(paymentTransactionEntryModel);
+
+        //Trigger Refunded event
+        OrderModel orderModel = (OrderModel) paymentTransaction.getOrder();
+        triggerReturnProcessEvent(orderModel, PROCESS_EVENT_ADYEN_REFUNDED);
     }
 
     /**
@@ -169,15 +201,18 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
                 processCancelEvent(notificationItemModel, paymentTransaction);
                 break;
+            case EVENT_CODE_REFUND:
+                processRefundEvent(notificationItemModel);
+                break;
         }
     }
 
     /**
-     * Trigger AdyenCaptured event
+     * Trigger order-process event
      *
      * @param orderModel
      */
-    private void triggerEvent(OrderModel orderModel, String event) {
+    private void triggerOrderProcessEvent(OrderModel orderModel, String event) {
         final Collection<OrderProcessModel> orderProcesses = orderModel.getOrderProcess();
         for (final OrderProcessModel orderProcess : orderProcesses) {
             LOG.info("Order process code: " + orderProcess.getCode());
@@ -185,6 +220,26 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             final String eventName = orderProcess.getCode() + "_" + event;
             LOG.info("Sending event:" + eventName);
             businessProcessService.triggerEvent(eventName);
+        }
+    }
+
+    /**
+     * Trigger return-process event
+     *
+     * @param orderModel
+     * @param event
+     */
+    private void triggerReturnProcessEvent(OrderModel orderModel, String event) {
+        List<ReturnRequestModel> returnRequests = orderModel.getReturnRequests();
+        for (ReturnRequestModel returnRequest : returnRequests) {
+            Collection<ReturnProcessModel> returnProcesses = returnRequest.getReturnProcess();
+            for (ReturnProcessModel returnProcess : returnProcesses) {
+                LOG.info("Return process code: " + returnProcess.getCode());
+                //TODO: send only on "return-process-*" ?
+                final String eventName = returnProcess.getCode() + "_" + event;
+                LOG.info("Sending event:" + eventName);
+                businessProcessService.triggerEvent(eventName);
+            }
         }
     }
 

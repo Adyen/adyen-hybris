@@ -1,5 +1,7 @@
 package com.adyen.v6.actions.order;
 
+import com.adyen.v6.actions.AbstractWaitableAction;
+import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
@@ -8,30 +10,16 @@ import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.processengine.action.AbstractAction;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Check if order is captured
  */
-public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
+public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcessModel> {
     private static final Logger LOG = Logger.getLogger(AdyenCheckCaptureAction.class);
-
-    public enum Transition {
-        OK, NOK, WAIT;
-
-        public static Set<String> getStringValues() {
-            final Set<String> res = new HashSet<>();
-            for (final Transition transitions : Transition.values()) {
-                res.add(transitions.toString());
-            }
-            return res;
-        }
-    }
 
     @Override
     public Set<String> getTransitions() {
@@ -57,14 +45,26 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
 
         BigDecimal remainingAmount = new BigDecimal(order.getTotalPrice());
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
+            boolean isRejected = AdyenTransactionService.getTransactionEntry(
+                    paymentTransactionModel,
+                    PaymentTransactionType.CAPTURE,
+                    TransactionStatus.REJECTED
+            ) != null;
+
+            boolean isErroneous = AdyenTransactionService.getTransactionEntry(
+                    paymentTransactionModel,
+                    PaymentTransactionType.CAPTURE,
+                    TransactionStatus.ERROR
+            ) != null;
+
             //Fail if capture is rejected
-            if (hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.REJECTED)
-                    || hasTypeAndStatus(paymentTransactionModel, PaymentTransactionType.CAPTURE, TransactionStatus.ERROR)) {
+            if (isErroneous || isRejected) {
                 LOG.info("Process: " + process.getCode() + " Order Not Captured");
                 return Transition.NOK.toString();
             }
 
-            PaymentTransactionEntryModel transactionEntry = getTransactionEntry(paymentTransactionModel,
+            PaymentTransactionEntryModel transactionEntry = AdyenTransactionService.getTransactionEntry(
+                    paymentTransactionModel,
                     PaymentTransactionType.CAPTURE,
                     TransactionStatus.ACCEPTED,
                     TransactionStatusDetails.SUCCESFULL);
@@ -75,7 +75,7 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
             }
         }
 
-        BigDecimal zero = new BigDecimal(0);
+        BigDecimal zero = new BigDecimal(0.001); //to avoid rounding problems
         //Return success if all transactions are captured
         if (remainingAmount.compareTo(zero) <= 0) {
             LOG.info("Process: " + process.getCode() + " Order Captured");
@@ -87,33 +87,5 @@ public class AdyenCheckCaptureAction extends AbstractAction<OrderProcessModel> {
         //By default Wait for capture result
         LOG.info("Process: " + process.getCode() + " Order Waiting");
         return Transition.WAIT.toString();
-    }
-
-    private boolean hasTypeAndStatus(final PaymentTransactionModel paymentTransactionModel,
-                                     final PaymentTransactionType paymentTransactionType,
-                                     final TransactionStatus transactionStatus) {
-        for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
-            if (paymentTransactionType.equals(entry.getType())
-                    && transactionStatus.name().equals(entry.getTransactionStatus())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private PaymentTransactionEntryModel getTransactionEntry(final PaymentTransactionModel paymentTransactionModel,
-                                                             final PaymentTransactionType paymentTransactionType,
-                                                             final TransactionStatus transactionStatus,
-                                                             final TransactionStatusDetails transactionStatusDetails) {
-        for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
-            if (paymentTransactionType.equals(entry.getType())
-                    && transactionStatus.name().equals(entry.getTransactionStatus())
-                    && transactionStatusDetails.name().equals(entry.getTransactionStatusDetails())) {
-                return entry;
-            }
-        }
-
-        return null;
     }
 }

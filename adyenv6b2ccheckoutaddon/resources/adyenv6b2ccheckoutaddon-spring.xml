@@ -113,6 +113,14 @@
 						<property name="adyenPaymentService" ref="adyenPaymentService"/>
 					</bean>
 				</entry>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.FollowOnRefundCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenFollowOnRefundCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
 			</map>
 		</property>
 	</bean>

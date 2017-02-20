@@ -111,7 +111,6 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "mc":
             case "uatp":
             case "amex":
-            case "bcmc":
             case "maestro":
             case "maestrouk":
             case "diners":
@@ -122,7 +121,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "klarna":
             case "afterpay_default":
             case "sepadirectdebit":
-            case PAYMENT_METHOD_CC:
+            case PAYMENT_METHOD_CC: //todo: remove
                 return true;
         }
 

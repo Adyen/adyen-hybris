@@ -62,6 +62,24 @@ public class AbstractActionTest {
         return entry;
     }
 
+    protected PaymentTransactionEntryModel createRefundRejectedEntry() {
+        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
+        entry.setType(PaymentTransactionType.REFUND_FOLLOW_ON);
+        entry.setTransactionStatus(TransactionStatus.REJECTED.name());
+        entry.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
+
+        return entry;
+    }
+
+    protected PaymentTransactionEntryModel createRefundSuccessEntry() {
+        PaymentTransactionEntryModel entry = new PaymentTransactionEntryModel();
+        entry.setType(PaymentTransactionType.REFUND_FOLLOW_ON);
+        entry.setTransactionStatus(TransactionStatus.ACCEPTED.name());
+        entry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+
+        return entry;
+    }
+
     protected PaymentTransactionModel createAdyenTransaction() {
         PaymentTransactionModel adyenTransaction = new PaymentTransactionModel();
         adyenTransaction.setPaymentProvider(PAYMENT_PROVIDER);

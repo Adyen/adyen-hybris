@@ -35,6 +35,7 @@ public final class Adyenv6b2ccheckoutaddonConstants extends GeneratedAdyenv6b2cc
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_AUTHORIZED = "AdyenAuthorized";
+	public static final String PROCESS_EVENT_ADYEN_REFUNDED = "AdyenRefunded";
 
 	private Adyenv6b2ccheckoutaddonConstants()
 	{
