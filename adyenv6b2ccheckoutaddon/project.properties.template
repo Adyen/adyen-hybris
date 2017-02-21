@@ -25,16 +25,4 @@ yacceleratorstorefront.additionalWebSpringConfigs.adyenv6b2ccheckoutaddon=classp
 #adyenv6b2ccheckoutaddon.javascript.paths.responsive=/responsive/common/js/adyenv6b2ccheckoutaddon.js
 #adyenv6b2ccheckoutaddon.css.paths.responsive=/responsive/common/css/adyenv6b2ccheckoutaddon.css
 
-adyen.ws.username=
-adyen.ws.password=
-adyen.merchantaccount=
-
 csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop-response)$,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$
-
-adyen.notification.username=
-adyen.notification.password=
-
-adyen.cse.id=
-adyen.skin.code=
-adyen.skin.hmac=
-adyen.capture.immediate=

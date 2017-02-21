@@ -1,21 +1,19 @@
 package com.adyen.v6.security;
 
-import de.hybris.platform.servicelayer.config.ConfigurationService;
-import org.apache.commons.configuration.Configuration;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.NOTIFICATION_PASSWORD;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.NOTIFICATION_USERNAME;
-
 /**
  * Authenticates a request that is using Basic Authentication
  */
 public class AdyenNotificationAuthenticationProvider {
-    private ConfigurationService configurationService;
+    private BaseStoreService baseStoreService;
 
     private static final Logger LOG = Logger.getLogger(AdyenNotificationAuthenticationProvider.class);
 
@@ -33,9 +31,13 @@ public class AdyenNotificationAuthenticationProvider {
     }
 
     private boolean tryToAuthenticate(String name, String password) {
-        final Configuration configuration = getConfigurationService().getConfiguration();
-        String notificationUsername = configuration.getString(NOTIFICATION_USERNAME);
-        String notificationPassword = configuration.getString(NOTIFICATION_PASSWORD);
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        String notificationUsername = baseStore.getAdyenNotificationUsername();
+        String notificationPassword = baseStore.getAdyenNotificationPassword();
+
+        Assert.notNull(notificationUsername);
+        Assert.notNull(notificationPassword);
 
         if (notificationUsername.isEmpty() || notificationPassword.isEmpty()) {
             return false;
@@ -48,11 +50,11 @@ public class AdyenNotificationAuthenticationProvider {
         return false;
     }
 
-    public ConfigurationService getConfigurationService() {
-        return configurationService;
+    public BaseStoreService getBaseStoreService() {
+        return baseStoreService;
     }
 
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
+    public void setBaseStoreService(BaseStoreService baseStoreService) {
+        this.baseStoreService = baseStoreService;
     }
 }

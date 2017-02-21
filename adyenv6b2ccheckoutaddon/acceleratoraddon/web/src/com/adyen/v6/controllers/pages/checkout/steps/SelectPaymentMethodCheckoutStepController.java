@@ -21,13 +21,14 @@ import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.order.CartService;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -37,7 +38,6 @@ import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.CONFIG_CSE_ID;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -63,8 +63,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "modelService")
     private ModelService modelService;
 
-    @Resource(name = "configurationService")
-    private ConfigurationService configurationService;
+    @Resource(name = "baseStoreService")
+    private BaseStoreService baseStoreService;
 
     @Resource(name = "adyenPaymentService")
     private AdyenPaymentService adyenPaymentService;
@@ -101,9 +101,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         model.addAttribute("paymentMethods", paymentMethods);
 
-        //Add CSE configuration
-        final Configuration configuration = configurationService.getConfiguration();
-        String cseId = configuration.getString(CONFIG_CSE_ID);
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        String cseId = baseStore.getAdyenCSEID();
+        Assert.notNull(cseId);
         model.addAttribute("cseId", cseId);
 
         super.prepareDataForPage(model);

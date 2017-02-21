@@ -162,6 +162,6 @@
 	</bean>
 
 	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
-		<property name="configurationService" ref="configurationService" />
+		<property name="baseStoreService" ref="baseStoreService" />
 	</bean>
 </beans>

@@ -39,15 +39,16 @@ import de.hybris.platform.ordercancel.OrderCancelException;
 import de.hybris.platform.ordercancel.OrderCancelRequest;
 import de.hybris.platform.ordercancel.OrderCancelService;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.site.BaseSiteService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.pages.checkout.steps.SummaryCheckoutStepController;
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -61,7 +62,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.adyen.constants.HPPConstants.Fields.*;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -89,8 +90,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     @Resource(name = "adyenPaymentService")
     private AdyenPaymentService adyenPaymentService;
 
-    @Resource(name = "configurationService")
-    private ConfigurationService configurationService;
+    @Resource(name = "baseStoreService")
+    private BaseStoreService baseStoreService;
 
     @Resource(name = "adyenTransactionService")
     private AdyenTransactionService adyenTransactionService;
@@ -265,7 +266,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         LOGGER.info("Received HPP response: " + hppResponseData);
 
-        if(isValidHPPResponse(hppResponseData, merchantSig)) {
+        if (isValidHPPResponse(hppResponseData, merchantSig)) {
             switch (authResult) {
                 case HPPConstants.Response.AUTH_RESULT_AUTHORISED:
                 case HPPConstants.Response.AUTH_RESULT_PENDING:
@@ -302,9 +303,12 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         return REDIRECT_PREFIX + "/cart";
     }
 
-    private boolean isValidHPPResponse(SortedMap<String,String> hppResponseData, String merchantSig) {
-        final Configuration configuration = configurationService.getConfiguration();
-        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
+    private boolean isValidHPPResponse(SortedMap<String, String> hppResponseData, String merchantSig) {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        String hmacKey = baseStore.getAdyenSkinHMAC();
+        Assert.notNull(hmacKey);
+
         String dataToSign = Util.getDataToSign(hppResponseData);
         try {
             String calculatedMerchantSig = Util.calculateHMAC(dataToSign, hmacKey);
@@ -445,11 +449,15 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         final String sessionValidity = Util.calculateSessionValidity();
         final SortedMap<String, String> hppFormData = new TreeMap<>();
 
-        final Configuration configuration = configurationService.getConfiguration();
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
-        String merchantAccount = configuration.getString(CONFIG_MERCHANT_ACCOUNT);
-        String skinCode = configuration.getString(CONFIG_SKIN_CODE);
-        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
+        String merchantAccount = baseStore.getAdyenMerchantAccount();
+        String skinCode = baseStore.getAdyenSkinCode();
+        String hmacKey = baseStore.getAdyenSkinHMAC();
+
+        Assert.notNull(merchantAccount);
+        Assert.notNull(skinCode);
+        Assert.notNull(hmacKey);
 
         //todo: with vat?
         Amount amount = Util.createAmount(

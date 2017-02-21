@@ -7,16 +7,16 @@ import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.payment.commands.CaptureCommand;
 import de.hybris.platform.payment.commands.request.CaptureRequest;
 import de.hybris.platform.payment.commands.result.CaptureResult;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
-import org.apache.commons.configuration.Configuration;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Date;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.CONFIG_IMMEDIATE_CAPTURE;
 import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
 import static de.hybris.platform.payment.dto.TransactionStatus.*;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.*;
@@ -28,7 +28,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
     private static final Logger LOG = Logger.getLogger(AdyenCaptureCommand.class);
 
     private AdyenPaymentService adyenPaymentService;
-    private ConfigurationService configurationService;
+    private BaseStoreService baseStoreService;
     private OrderRepository orderRepository;
 
     /**
@@ -55,8 +55,10 @@ public class AdyenCaptureCommand implements CaptureCommand {
             return result;
         }
 
-        final Configuration configuration = configurationService.getConfiguration();
-        boolean isImmediateCapture = configuration.getString(CONFIG_IMMEDIATE_CAPTURE).equals("true");
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
+
+        Assert.notNull(isImmediateCapture);
         boolean autoCapture = isImmediateCapture || !supportsManualCapture(orderModel.getAdyenPaymentMethod());
 
         if (autoCapture) {
@@ -143,19 +145,19 @@ public class AdyenCaptureCommand implements CaptureCommand {
         this.adyenPaymentService = adyenPaymentService;
     }
 
-    public ConfigurationService getConfigurationService() {
-        return configurationService;
-    }
-
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
-    }
-
     public OrderRepository getOrderRepository() {
         return orderRepository;
     }
 
     public void setOrderRepository(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
+    }
+
+    public BaseStoreService getBaseStoreService() {
+        return baseStoreService;
+    }
+
+    public void setBaseStoreService(BaseStoreService baseStoreService) {
+        this.baseStoreService = baseStoreService;
     }
 }

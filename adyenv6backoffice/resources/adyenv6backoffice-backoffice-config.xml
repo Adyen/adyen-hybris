@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ [y] hybris Platform
+  ~
+  ~ Copyright (c) 2000-2015 hybris AG
+  ~ All rights reserved.
+  ~
+  ~ This software is the confidential and proprietary information of hybris
+  ~ ("Confidential Information"). You shall not disclose such Confidential
+  ~ Information and shall use it only in accordance with the terms of the
+  ~ license agreement you entered into with hybris.
+  -->
+
+<config xmlns="http://www.hybris.com/cockpit/config">
+
+	<!-- adyenv6backoffice UI configuration should be provided here -->
+
+	<!--<context component="component-code" module="adyenv6backoffice">-->
+		<!--Please check documentation for code snippets for specific components-->
+	<!--</context>-->
+	<context merge-by="type" parent="GenericItem" type="BaseStore" component="editor-area">
+		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
+			<editorArea:tab name="hmc.adyen">
+				<editorArea:section name="hmc.adyen.default">
+					<editorArea:attribute qualifier="adyenUsername"/>
+					<editorArea:attribute qualifier="adyenPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenNotificationUsername"/>
+					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenMerchantAccount"/>
+					<editorArea:attribute qualifier="adyenCSEID"/>
+					<editorArea:attribute qualifier="adyenSkinCode"/>
+					<editorArea:attribute qualifier="adyenSkinHMAC"/>
+					<editorArea:attribute qualifier="adyenImmediateCapture"/>
+				</editorArea:section>
+			</editorArea:tab>
+		</editorArea:editorArea>
+	</context>
+</config>

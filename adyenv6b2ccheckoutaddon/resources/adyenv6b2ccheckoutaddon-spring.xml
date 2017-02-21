@@ -83,7 +83,7 @@
 	<bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" />
 
 	<bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService">
-		<property name="configurationService" ref="configurationService" />
+		<property name="baseStoreService" ref="baseStoreService" />
 	</bean>
 
 	<bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
@@ -101,7 +101,7 @@
 					</key>
 					<bean class="com.adyen.v6.commands.AdyenCaptureCommand">
 						<property name="adyenPaymentService" ref="adyenPaymentService"/>
-						<property name="configurationService" ref="configurationService"/>
+						<property name="baseStoreService" ref="baseStoreService"/>
 						<property name="orderRepository" ref="adyenOrderRepository"/>
 					</bean>
 				</entry>

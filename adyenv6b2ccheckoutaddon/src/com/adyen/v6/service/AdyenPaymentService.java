@@ -17,9 +17,10 @@ import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
-import org.apache.commons.configuration.Configuration;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -28,12 +29,9 @@ import java.security.SignatureException;
 import java.util.Currency;
 import java.util.List;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.*;
-
 //TODO: implement an interface
 public class AdyenPaymentService extends DefaultPaymentServiceImpl {
-    private String merchantAccount;
-    private ConfigurationService configurationService;
+    private BaseStoreService baseStoreService;
     private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
 
     /**
@@ -43,13 +41,15 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @return
      */
     private Client createClient() {
-        final Configuration configuration = getConfigurationService().getConfiguration();
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
-        String username = configuration.getString(WS_USERNAME);
-        String password = configuration.getString(WS_PASSWORD);
-        merchantAccount = configuration.getString(CONFIG_MERCHANT_ACCOUNT);
-        String skinCode = configuration.getString(CONFIG_SKIN_CODE);
-        String hmacKey = configuration.getString(CONFIG_SKIN_HMAC);
+        String username = baseStore.getAdyenUsername();
+        String password = baseStore.getAdyenPassword();
+        String merchantAccount = baseStore.getAdyenMerchantAccount();
+        String skinCode = baseStore.getAdyenSkinCode();
+        String hmacKey = baseStore.getAdyenSkinHMAC();
+
+        Assert.notNull(merchantAccount);
 
         Config config = new Config();
         config.setUsername(username);
@@ -74,7 +74,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         String reference = cartData.getCode();
         String cseToken = cartData.getAdyenCseToken();
 
-        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request)
+        String merchantAccount = client.getConfig().getMerchantAccount();
+
+        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount)
                 .reference(reference)
                 .setAmountData(
                         amount,
@@ -91,8 +93,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Client client = createClient();
         Payment payment = new Payment(client);
 
-        PaymentRequest3d paymentRequest3d = createBasePaymentRequest(new PaymentRequest3d(), request)
-                .set3DRequestData(md, paRes);
+        PaymentRequest3d paymentRequest3d = createBasePaymentRequest(
+                new PaymentRequest3d(),
+                request,
+                client.getConfig().getMerchantAccount()
+        ).set3DRequestData(md, paRes);
 
         LOG.info(paymentRequest3d); //TODO: anonymize
         PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
@@ -103,7 +108,8 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
     private <T extends AbstractPaymentRequest> T createBasePaymentRequest(
             T abstractPaymentRequest,
-            final HttpServletRequest request) {
+            final HttpServletRequest request,
+            final String merchantAccount) {
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
         String shopperIP = request.getRemoteAddr();
@@ -138,7 +144,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         final CaptureRequest captureRequest = new CaptureRequest()
                 .fillAmount(amount.toString(), currency.getCurrencyCode())
-                .merchantAccount(merchantAccount)
+                .merchantAccount(client.getConfig().getMerchantAccount())
                 .originalReference(authReference)
                 .reference(merchantReference);
 
@@ -162,7 +168,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Modification modification = new Modification(client);
 
         final CancelRequest cancelRequest = new CancelRequest()
-                .merchantAccount(merchantAccount)
+                .merchantAccount(client.getConfig().getMerchantAccount())
                 .originalReference(authReference)
                 .reference(merchantReference);
 
@@ -192,7 +198,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         final RefundRequest refundRequest = new RefundRequest()
                 .fillAmount(amount.toString(), currency.getCurrencyCode())
-                .merchantAccount(merchantAccount)
+                .merchantAccount(client.getConfig().getMerchantAccount())
                 .originalReference(authReference)
                 .reference(merchantReference);
 
@@ -235,11 +241,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return paymentMethods;
     }
 
-    private ConfigurationService getConfigurationService() {
-        return configurationService;
+    public BaseStoreService getBaseStoreService() {
+        return baseStoreService;
     }
 
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
+    public void setBaseStoreService(BaseStoreService baseStoreService) {
+        this.baseStoreService = baseStoreService;
     }
 }

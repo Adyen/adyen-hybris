@@ -9,9 +9,8 @@ import de.hybris.platform.payment.commands.request.CaptureRequest;
 import de.hybris.platform.payment.commands.result.CaptureResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.configuration.Configuration;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +22,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.CONFIG_IMMEDIATE_CAPTURE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +37,9 @@ public class AdyenCaptureCommandTest {
     private OrderRepository orderRepositoryMock;
 
     @Mock
-    private ConfigurationService configurationServiceMock;
+    private BaseStoreService baseStoreServiceMock;
+
+    private BaseStoreModel baseStore;
 
     AdyenCaptureCommand adyenCaptureCommand;
 
@@ -59,8 +59,12 @@ public class AdyenCaptureCommandTest {
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
                 .thenReturn(orderModel);
 
+        baseStore = new BaseStoreModel();
+        baseStore.setAdyenImmediateCapture(false);
+        when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStore);
+
         adyenCaptureCommand.setOrderRepository(orderRepositoryMock);
-        adyenCaptureCommand.setConfigurationService(configurationServiceMock);
+        adyenCaptureCommand.setBaseStoreService(baseStoreServiceMock);
         adyenCaptureCommand.setAdyenPaymentService(adyenPaymentServiceMock);
     }
 
@@ -76,10 +80,6 @@ public class AdyenCaptureCommandTest {
      */
     @Test
     public void testManualCaptureSuccess() throws Exception {
-        Configuration config = new BaseConfiguration();
-        config.setProperty(CONFIG_IMMEDIATE_CAPTURE, "false");
-        when(configurationServiceMock.getConfiguration()).thenReturn(config);
-
         ModificationResult modificationResult = new ModificationResult();
         modificationResult.setPspReference("1235");
         modificationResult.setResponse(ModificationResult.ResponseEnum.CAPTURE_RECEIVED_);
@@ -101,9 +101,7 @@ public class AdyenCaptureCommandTest {
      */
     @Test
     public void testImmediateCaptureSuccess() {
-        Configuration config = new BaseConfiguration();
-        config.setProperty(CONFIG_IMMEDIATE_CAPTURE, "true");
-        when(configurationServiceMock.getConfiguration()).thenReturn(config);
+        baseStore.setAdyenImmediateCapture(true);
 
         CaptureResult result = adyenCaptureCommand.perform(captureRequest);
         assertEquals(TransactionStatus.ACCEPTED, result.getTransactionStatus());
@@ -119,10 +117,6 @@ public class AdyenCaptureCommandTest {
         orderModel.setAdyenPaymentMethod("paysafe");
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
                 .thenReturn(orderModel);
-
-        Configuration config = new BaseConfiguration();
-        config.setProperty(CONFIG_IMMEDIATE_CAPTURE, "false");
-        when(configurationServiceMock.getConfiguration()).thenReturn(config);
 
         CaptureResult result = adyenCaptureCommand.perform(captureRequest);
         assertEquals(TransactionStatus.ACCEPTED, result.getTransactionStatus());
