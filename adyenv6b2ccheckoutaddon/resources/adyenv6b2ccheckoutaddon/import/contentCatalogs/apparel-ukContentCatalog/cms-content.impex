@@ -1,0 +1,3 @@
+$contentCatalog=apparel-ukContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$jarResourceCms=jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/cockpit/cmscockpit

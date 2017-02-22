@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2016 SAP SE or an SAP affiliate company.
+ All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!--Override order-process-->
+	<import resource="adyenv6b2ccheckoutaddon-process-definitions-spring.xml" />
+
+	<context:annotation-config/>
+
+	<bean id="adyenv6b2ccheckoutaddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
+		<property name="supportedChannels">
+			<list value-type="de.hybris.platform.commerceservices.enums.SiteChannel">
+				<value>B2C</value>
+				<!--
+								<value>B2B</value>
+				-->
+			</list>
+		</property>
+		<property name="addonExtensionMetadata">
+			<bean class="de.hybris.platform.addonsupport.data.AddonExtensionMetadata">
+				<property name="suffixChannel" value="false"/>
+				<property name="baseExtensionName" value="adyenv6b2ccheckoutaddon"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="adyenv6b2ccheckoutaddonSampleDataEventListener" parent="abstractGenericAddOnSampleDataEventListener"  >
+		<property name="extensionName" value="adyenv6b2ccheckoutaddon" />
+	</bean>
+
+
+	<bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
+		<property name="addressConverter" ref="addressConverter"/>
+	</bean>
+
+	<bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="cartConverter"/>
+		<property name="add" ref="adyenCartPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="cartConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+	<!--For CommerceCartFacade-->
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="extendedCartConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="orderConverter"/>
+		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+
+	<!--To support hasNoPaymentInfo for non credit cards-->
+	<alias name="adyenCheckoutFlowFacade" alias="checkoutFlowFacade"/>
+	<bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" />
+
+	<bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService">
+		<property name="baseStoreService" ref="baseStoreService" />
+	</bean>
+
+	<bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<!-- Used for commands triggered by order-process -->
+	<bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
+		<property name="paymentProvider" value="Adyen"/>
+		<property name="commands">
+			<map>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.CaptureCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenCaptureCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+						<property name="baseStoreService" ref="baseStoreService"/>
+						<property name="orderRepository" ref="adyenOrderRepository"/>
+					</bean>
+				</entry>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.VoidCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenVoidCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
+				<entry>
+					<key>
+						<value type="java.lang.Class">de.hybris.platform.payment.commands.FollowOnRefundCommand</value>
+					</key>
+					<bean class="com.adyen.v6.commands.AdyenFollowOnRefundCommand">
+						<property name="adyenPaymentService" ref="adyenPaymentService"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- To obtain the oder number before the order is created -->
+	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
+	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
+
+	<!-- Process notification cronjob -->
+	<bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
+		<property name="modelService" ref="modelService"/>
+		<property name="businessProcessService" ref="businessProcessService"/>
+		<property name="adyenTransactionService" ref="adyenTransactionService"/>
+		<property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
+		<property name="orderRepository" ref="adyenOrderRepository" />
+		<property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
+	</bean>
+
+	<bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService" autowire="byName"/>
+
+	<bean id="adyenNotificationItemRepository" class="com.adyen.v6.repository.NotificationItemRepository" autowire="byName"/>
+	<bean id="adyenOrderRepository" class="com.adyen.v6.repository.OrderRepository" autowire="byName"/>
+	<bean id="adyenPaymentTransactionRepository" class="com.adyen.v6.repository.PaymentTransactionRepository" autowire="byName"/>
+</beans>

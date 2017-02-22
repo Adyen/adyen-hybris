@@ -1,0 +1,12 @@
+$productCatalog=electronicsProductCatalog
+$catalogVersions=catalogVersions(catalog(id),version);
+$serverConfigName=electronicsSolrServerConfig
+$indexConfigName=electronicsSolrIndexConfig
+$searchConfigName=electronicsPageSize
+$facetSearchConfigName=electronicsIndex
+$facetSearchConfigDescription=Electronics Solr Index
+$searchIndexNamePrefix=electronics
+$solrIndexedType=electronicsProductType
+$indexBaseSite=electronics
+$indexLanguages=ja,en,de,zh
+$indexCurrencies=JPY,USD

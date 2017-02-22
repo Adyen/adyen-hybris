@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/testsrc" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="lib35" level="project" />
+    <orderEntry type="library" name="coreserver" level="project" />
+    <orderEntry type="library" name="commercesearchserver" level="project" />
+    <orderEntry type="library" name="selenium" level="project" />
+    <orderEntry type="library" name="lib30" level="project" />
+    <orderEntry type="library" name="solrj-lib" level="project" />
+    <orderEntry type="library" name="lib22" level="project" />
+    <orderEntry type="library" name="cms2hmcserver" level="project" />
+    <orderEntry type="library" name="lib47" level="project" />
+    <orderEntry type="library" name="bin1" level="project" />
+    <orderEntry type="library" name="ext" level="project" />
+    <orderEntry type="library" name="lib67" level="project" />
+    <orderEntry type="module" module-name="financialacceleratorstorefront" />
+    <orderEntry type="module" module-name="cms2hmc" />
+    <orderEntry type="module" module-name="commercesearch" />
+    <orderEntry type="module" module-name="web77" />
+    <orderEntry type="module" module-name="promotionenginesamplesaddon" />
+    <orderEntry type="module" module-name="commercesearchsamplesaddon" />
+    <orderEntry type="module" module-name="core" />
+  </component>
+</module>
