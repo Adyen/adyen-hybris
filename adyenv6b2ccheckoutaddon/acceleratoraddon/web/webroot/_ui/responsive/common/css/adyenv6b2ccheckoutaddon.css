@@ -1,0 +1,8 @@
+/*Hide payment method specific selectors*/
+.payment_method_details, .issuers-container {
+    display: none;
+}
+
+.checkout-paymentmethod li {
+    list-style: none;
+}
