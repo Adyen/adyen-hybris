@@ -85,6 +85,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
         model.addAttribute(CSE_GENERATION_TIME, fromCalendar(GregorianCalendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
+        model.addAttribute("expiryYears", getExpiryYears());
 
         List<PaymentMethod> paymentMethods = null;
         try {
@@ -200,6 +201,23 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         final Date date = calendar.getTime();
         final String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
         return formatted.substring(0, 22) + ":" + formatted.substring(22);
+    }
+
+    /**
+     * Returns a list with CC expiry years
+     * @return
+     */
+    public List<String> getExpiryYears()
+    {
+        final List<String> expiryYears = new ArrayList<>();
+        final Calendar calender = new GregorianCalendar();
+
+        for (int i = calender.get(Calendar.YEAR); i < calender.get(Calendar.YEAR) + 11; i++)
+        {
+            expiryYears.add(String.valueOf(i));
+        }
+
+        return expiryYears;
     }
 
     /**
