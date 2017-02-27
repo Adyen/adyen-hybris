@@ -12,10 +12,9 @@ import de.hybris.platform.servicelayer.dto.converter.ConversionException;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import org.springframework.beans.factory.annotation.Required;
 
-public class AbstractOrderPopulator implements Populator<AbstractOrderModel, AbstractOrderData>{
-
-
+public class AbstractOrderPopulator implements Populator<AbstractOrderModel, AbstractOrderData> {
     private Converter<AddressModel, AddressData> addressConverter;
+
     /**
      * {@inheritDoc}
      */
@@ -27,11 +26,11 @@ public class AbstractOrderPopulator implements Populator<AbstractOrderModel, Abs
             final CCPaymentInfoData ccPaymentInfoData = new CCPaymentInfoData();
             ccPaymentInfoData.setBillingAddress(addressConverter.convert(paymentInfo.getBillingAddress()));
             target.setPaymentInfo(ccPaymentInfoData);
-        }
 
-        target.setAdyenPaymentMethod(source.getAdyenPaymentMethod());
-        target.setAdyenBrandCode(source.getAdyenBrandCode());
-        target.setAdyenIssuerId(source.getAdyenIssuerId());
+            target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
+            target.setAdyenBrandCode(paymentInfo.getAdyenBrandCode());
+            target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
+        }
     }
 
     protected boolean isNotCreditCard(final PaymentInfoModel paymentInfo) {

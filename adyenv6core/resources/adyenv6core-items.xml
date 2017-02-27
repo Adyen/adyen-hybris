@@ -18,8 +18,6 @@
 			xsi:noNamespaceSchemaLocation="items.xsd">
 
 	<itemtypes>
-
-
 		<itemtype code="Cart" autocreate="false" generate="false">
 			<attributes>
 				<!-- Store CSE token -->
@@ -29,24 +27,6 @@
 							<value>text</value>
 						</columntype>
 					</persistence>
-				</attribute>
-				<!-- Store custom merchant reference, to be used as order code. TODO: use it -->
-				<attribute qualifier="adyenMerchantReference" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-			</attributes>
-		</itemtype>
-
-		<itemtype code="AbstractOrder" autocreate="false" generate="false">
-			<attributes>
-				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenBrandCode" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenIssuerId" type="java.lang.String">
-					<persistence type="property" />
 				</attribute>
 			</attributes>
 		</itemtype>
@@ -165,6 +145,45 @@
 					<description>API endpoint</description>
 					<persistence type="property" />
 					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+				</attribute>
+			</attributes>
+		</itemtype>
+
+		<itemtype code="PaymentInfo" autocreate="false" generate="false">
+			<description>Extending PaymentInfo type with Adyen properties.</description>
+			<attributes>
+				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenBrandCode" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenIssuerId" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenAvsResult" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenCardBin" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenCardSummary" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenAuthCode" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenCardHolder" type="java.lang.String">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenCardExpiry" type="java.util.Date">
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenThreeDOffered" type="java.lang.boolean">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenThreeDAuthenticated" type="java.lang.boolean">
+					<persistence type="property"/>
 				</attribute>
 			</attributes>
 		</itemtype>

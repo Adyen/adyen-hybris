@@ -5,6 +5,7 @@ import com.adyen.v6.actions.order.AbstractActionTest;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.basecommerce.enums.ReturnStatus;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.payment.PaymentService;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
@@ -53,14 +54,19 @@ public class AdyenCaptureRefundActionTest extends AbstractActionTest {
     @Mock
     private ModelService modelServiceMock;
 
+    @Mock
+    private PaymentInfoModel paymentInfoModelMock;
+
     private AdyenCaptureRefundAction adyenCaptureRefundAction;
 
     private BigDecimal originalRefundAmount;
 
     @Before
     public void setUp() {
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn("visa");
+        when(orderModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+
         when(orderModelMock.getTotalPrice()).thenReturn(12.34);
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
 
         when(returnRequestModelMock.getOrder()).thenReturn(orderModelMock);
         when(returnRequestModelMock.getReturnEntries()).thenReturn(new ArrayList<ReturnEntryModel>());

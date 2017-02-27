@@ -3,6 +3,7 @@ package com.adyen.v6.actions.order;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
@@ -34,16 +35,23 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
     private OrderModel orderModelMock;
 
     @Mock
+    private PaymentInfoModel paymentInfoModelMock;
+
+    @Mock
     private ModelService modelServiceMock;
 
     private AdyenCheckCaptureAction adyenCheckCaptureAction;
 
     @Before
     public void setUp() {
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn("visa");
+
         when(orderModelMock.getTotalPrice()).thenReturn(12.34);
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
+        when(orderModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+
         when(orderProcessModelMock.getCode()).thenReturn("1234");
         when(orderProcessModelMock.getOrder()).thenReturn(orderModelMock);
+
         adyenCheckCaptureAction = new AdyenCheckCaptureAction();
         adyenCheckCaptureAction.setModelService(modelServiceMock);
     }

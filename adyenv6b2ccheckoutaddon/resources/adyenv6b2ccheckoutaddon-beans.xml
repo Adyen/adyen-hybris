@@ -20,7 +20,7 @@
 
 	<!--
 		Example Data POJO
-	
+
 	<bean class="yemptypackage.data.MyPojo">
 		<property name="id" type="String"/>
 		<property name="flag" type="boolean"/>

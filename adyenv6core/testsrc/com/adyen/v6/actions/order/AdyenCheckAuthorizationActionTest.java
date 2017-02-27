@@ -2,6 +2,7 @@ package com.adyen.v6.actions.order;
 
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.model.ModelService;
@@ -31,12 +32,18 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
     private OrderModel orderModelMock;
 
     @Mock
+    private PaymentInfoModel paymentInfoModelMock;
+
+    @Mock
     private ModelService modelServiceMock;
 
     private AdyenCheckAuthorizationAction adyenCheckAuthorizationAction;
 
     @Before
     public void setUp() {
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn("visa");
+        when(orderModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+
         // implement here code executed before each test
         when(orderProcessModelMock.getCode()).thenReturn("1234");
         when(orderProcessModelMock.getOrder()).thenReturn(orderModelMock);
@@ -56,7 +63,7 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
      */
     @Test
     public void testNonAdyenPayment() {
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("");
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn("");
 
         String result = adyenCheckAuthorizationAction.execute(orderProcessModelMock);
 
@@ -69,8 +76,6 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
      */
     @Test
     public void testAlreadyAuthorized() {
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
-
         List<PaymentTransactionModel> transactions = new ArrayList<>();
 
         PaymentTransactionModel authorizedTransaction = createAdyenTransaction();
@@ -91,8 +96,6 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
      */
     @Test
     public void testNoTransactionsAuthorization() {
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
-
         when(orderModelMock.getPaymentTransactions()).thenReturn(new ArrayList<PaymentTransactionModel>());
 
         String result = adyenCheckAuthorizationAction.execute(orderProcessModelMock);
@@ -106,8 +109,6 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
      */
     @Test
     public void testFailedAuthorization() {
-        when(orderModelMock.getAdyenPaymentMethod()).thenReturn("visa");
-
         List<PaymentTransactionModel> transactions = new ArrayList<>();
 
         PaymentTransactionModel authorizedTransaction = createAdyenTransaction();

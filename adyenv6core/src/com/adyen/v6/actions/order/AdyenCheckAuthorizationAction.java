@@ -2,7 +2,7 @@ package com.adyen.v6.actions.order;
 
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
-import de.hybris.platform.core.model.order.payment.InvoicePaymentInfoModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
@@ -48,14 +48,10 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
             LOG.error("Order is null!");
             return Transition.NOK.toString();
         }
-
-        if (order.getPaymentInfo() instanceof InvoicePaymentInfoModel) {
-            LOG.info("Process: " + process.getCode() + " InvoicePaymentModel");
-            return Transition.OK.toString();
-        }
+        final PaymentInfoModel paymentInfo = order.getPaymentInfo();
 
         //Continue if it's not Adyen payment
-        if (order.getAdyenPaymentMethod() == null || order.getAdyenPaymentMethod().isEmpty()) {
+        if (paymentInfo.getAdyenPaymentMethod() == null || paymentInfo.getAdyenPaymentMethod().isEmpty()) {
             LOG.info("Not Adyen Payment");
             return Transition.OK.toString();
         }

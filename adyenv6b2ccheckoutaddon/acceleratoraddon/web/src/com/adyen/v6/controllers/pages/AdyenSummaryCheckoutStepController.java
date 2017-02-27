@@ -4,7 +4,6 @@
 package com.adyen.v6.controllers.pages;
 
 import com.adyen.Util.Util;
-import com.adyen.constants.ApiConstants;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.Amount;
@@ -12,6 +11,7 @@ import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.repository.OrderRepository;
+import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
@@ -104,6 +104,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
     @Resource(name = "adyenOrderRepository")
     private OrderRepository orderRepository;
 
+    @Resource(name = "adyenOrderService")
+    private AdyenOrderService adyenOrderService;
+
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
     @Override
@@ -163,6 +166,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
                 PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request);
+                LOGGER.info("authorization result: " + paymentResult);
 
                 if (paymentResult.isAuthorised()) {
                     orderData = createAuthorizedOrder(model, redirectModel, paymentResult);
@@ -416,13 +420,16 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 merchantTransactionCode,
                 paymentResult.getPspReference());
 
-        //Retrieve payment method from API if provided
-        String authorizationPaymentMethod = paymentResult.getAdditionalData().get(ApiConstants.AdditionalData.PAYMENT_METHOD);
-        if (authorizationPaymentMethod != null) {
-            cartModel.setAdyenPaymentMethod(authorizationPaymentMethod);
+        OrderData orderData = createOrder(model);
+        OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
+
+        try {
+            adyenOrderService.updateOrderFromPaymentResult(orderModel, paymentResult);
+        } catch (Exception e) {
+            LOGGER.error(e);
         }
 
-        return createOrder(model);
+        return orderData;
     }
 
     private String getErrorMessageByRefusalReason(String refusalReason) {

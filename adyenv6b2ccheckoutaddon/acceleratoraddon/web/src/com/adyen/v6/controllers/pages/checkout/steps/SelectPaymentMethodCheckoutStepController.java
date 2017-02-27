@@ -156,24 +156,20 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
-        cartModel.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod()); //todo: retrieve from auth/notifications?
-        cartModel.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
-        cartModel.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
 
-        final PaymentInfoModel paymentInfoModel = createPaymentInfo(cartModel);
+        final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
 
-
-        cartModel.setPaymentInfo(paymentInfoModel);
+        cartModel.setPaymentInfo(paymentInfo);
         modelService.save(cartModel);
 
         return getCheckoutStep().nextStep();
     }
 
-    public PaymentInfoModel createPaymentInfo(final CartModel cartModel) {
-        final PaymentInfoModel paymentInfoModel = modelService.create(PaymentInfoModel.class);
-        paymentInfoModel.setUser(cartModel.getUser());
-        paymentInfoModel.setSaved(false);
-        paymentInfoModel.setCode(generateCcPaymentInfoCode(cartModel));
+    public PaymentInfoModel createPaymentInfo(final CartModel cartModel, AdyenPaymentForm adyenPaymentForm) {
+        final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
+        paymentInfo.setUser(cartModel.getUser());
+        paymentInfo.setSaved(false);
+        paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
         final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
         addressData.setEmail(getCheckoutCustomerStrategy().getCurrentUserForCheckout().getContactEmail());
@@ -183,14 +179,17 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         addressModel.setStreetname(addressData.getLine1());
         addressModel.setBillingAddress(true);
         addressModel.setPostalcode(addressData.getPostalCode());
-        addressModel.setOwner(paymentInfoModel);
+        addressModel.setOwner(paymentInfo);
 
-        paymentInfoModel.setBillingAddress(addressModel);
-        //TODO: add payment details (amounts, etc)
+        paymentInfo.setBillingAddress(addressModel);
 
-        modelService.save(paymentInfoModel);
+        paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
+        paymentInfo.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
+        paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
 
-        return paymentInfoModel;
+        modelService.save(paymentInfo);
+
+        return paymentInfo;
     }
 
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {
@@ -205,15 +204,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     /**
      * Returns a list with CC expiry years
+     *
      * @return
      */
-    public List<String> getExpiryYears()
-    {
+    public List<String> getExpiryYears() {
         final List<String> expiryYears = new ArrayList<>();
         final Calendar calender = new GregorianCalendar();
 
-        for (int i = calender.get(Calendar.YEAR); i < calender.get(Calendar.YEAR) + 11; i++)
-        {
+        for (int i = calender.get(Calendar.YEAR); i < calender.get(Calendar.YEAR) + 11; i++) {
             expiryYears.add(String.valueOf(i));
         }
 
