@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2016 SAP SE or an SAP affiliate company.
+ All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+        
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+      
+    <import resource="adyenv6ordermanagement-process-definitions-spring.xml" />
+    
+    <context:annotation-config/>
+
+    <!-- Order Check Service -->
+    <!-- Performs some basic validation for the order as part of the first stage of the process. -->
+    <alias name="defaultCheckOrderService" alias="checkOrderService"/>
+    <bean id="defaultCheckOrderService" class="com.adyen.v6.impl.DefaultCheckOrderService" />
+
+    <!-- Cancellation -->
+    <bean id="warehouseProcessingCancelRequestExecutor"
+          class="de.hybris.platform.ordercancel.impl.executors.WarehouseProcessingCancelRequestExecutor"
+          scope="prototype">
+        <property name="modelService" ref="modelService"/>
+        <property name="orderStatusChangeStrategy" ref="enterCancellingStrategy"/>
+        <property name="warehouseAdapter" ref="omsWarehouseAdapter"/>
+        <!--
+            THESE DEPENDENCIES MUST BE PROVIDED BY USERS OF THE ORDER CANCEL
+            SERVICE <property name="notificationServiceAdapter"
+            ref="orderCancelNotificationServiceAdapter"/>
+        -->
+    </bean>
+
+    <bean id="omsWarehouseAdapter"
+          class="com.adyen.v6.impl.OmsWarehouseAdapter"
+          scope="tenant">
+        <property name="businessProcessService" ref="businessProcessService"/>
+    </bean>
+
+    <!-- Returns -->
+    <alias alias="returnActionAdapter" name="omsReturnActionAdapter"/>
+    <bean id="omsReturnActionAdapter" class="com.adyen.v6.impl.OmsReturnActionAdapter">
+        <property name="businessProcessService" ref="businessProcessService"/>
+    </bean>
+
+</beans>

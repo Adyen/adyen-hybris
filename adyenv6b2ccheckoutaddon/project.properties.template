@@ -26,3 +26,6 @@ yacceleratorstorefront.additionalWebSpringConfigs.adyenv6b2ccheckoutaddon=classp
 adyenv6b2ccheckoutaddon.css.paths.responsive=/responsive/common/css/adyenv6b2ccheckoutaddon.css;/responsive/common/css/adyen.cardtype.css
 
 csrf.allowed.url.patterns=/[^/]+(/[^?]*)+(sop-response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop-response)$,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$
+
+adyen.hpp.live.url=https://live.adyen.com
+adyen.hpp.test.url=https://test.adyen.com

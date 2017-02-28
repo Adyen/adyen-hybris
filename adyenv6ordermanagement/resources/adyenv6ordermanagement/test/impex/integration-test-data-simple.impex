@@ -1,0 +1,60 @@
+ # Language
+$lang=en
+
+$usCurrency=USD
+$productCatalog=productCatalog
+$catalog-id=testCatalog
+$catalog-version=Online
+$onlineProduct=catalogVersion(catalog(id[$catalog-id]),version[$catalog-version])[unique=true,default='$catalog-id:$catalog-version']
+$storeUid=testStore
+$siteUid=testSite
+$vendor=electro
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+
+INSERT_UPDATE PointOfService;name[unique=true];displayName;type(code);latitude;longitude;geocodeTimestamp[dateformat=dd-MM-yyyy];basestore(uid)[default=$storeUid];warehouses(code);nearbyStoreRadius[default=2000]
+;Nakano;Nakano;STORE;35.7091;139.6732;29-04-2011;;warehouse_1,warehouse_3
+;Shinbashi;Shinbashi;STORE;35.6673;139.75429;29-04-2011;;warehouse_2,warehouse_7
+;Koto;Koto;STORE;35.6923;139.8201;29-04-2011;;warehouse_4
+;Misato;Misato;STORE;35.8269;139.8701;29-04-2011;;warehouse_4,warehouse_7
+
+INSERT_UPDATE StockLevel;available;warehouse(code)[unique=true];inStockStatus(code);maxPreOrder;maxStockLevelHistoryCount;overSelling;preOrder;productCode[unique=true];reserved
+;6;warehouse_1;notSpecified;0;-1;0;0;product1;0
+;6;warehouse_2;notSpecified;1;-1;0;0;product1;0
+;6;warehouse_1;notSpecified;0;-1;0;0;product2;0
+;6;warehouse_2;notSpecified;1;-1;0;0;product2;0
+;7;warehouse_3;notSpecified;1;-1;0;0;product1;0
+
+UPDATE Product;code[unique=true];$onlineProduct;stockLevels(productCode,warehouse(code));vendors(code)
+;product1;;product1:warehouse_1,product1:warehouse_2
+;product2;;product2:warehouse_1,product2:warehouse_2
+
+
+## POS Addresses
+INSERT_UPDATE Address;owner(PointOfService.name)[unique=true];streetname[unique=true];streetnumber[unique=true];postalcode[unique=true];duplicate[unique=true];town;country(isocode);billingAddress;contactAddress;shippingAddress;unloadingAddress
+;Nakano;First Street;111;12345;false;New York;US;false;false;true;false
+;Shinbashi;Second Street;222;12345;false;New York;US;false;false;true;false
+;Koto;Third Street;333;12345;false;New York;US;false;false;true;false
+;Misato;Fourth Street;444;12345;false;Montreal;CA;false;false;true;false
+
+UPDATE PointOfService;name[unique=true];address(owner(PointOfService.name),streetname,streetnumber,postalcode,duplicate)
+;Nakano;Nakano:First Street:111:12345:false
+;Shinbashi;Shinbashi:Second Street:222:12345:false
+;Koto;Koto:Third Street:333:12345:false
+;Misato;Misato:Fourth Street:444:12345:false
+
+INSERT_UPDATE DeliveryMode;code[unique=true];name[lang=en]
+;free-shipping;free-shipping;
+
+INSERT_UPDATE PickUpDeliveryMode;code[unique=true];name[lang=en]
+;pickup;pickup;
+
+INSERT_UPDATE Warehouse2DeliveryModeRelation;source(code)[unique=true];target(code)[unique=true]
+;warehouse_1;free-shipping;
+;warehouse_1;pickup;
+;warehouse_2;free-shipping;
+;warehouse_2;pickup;
+;warehouse_3;free-shipping;
+;warehouse_3;pickup;
+;warehouse_7;free-shipping;
+;warehouse_7;pickup;
+

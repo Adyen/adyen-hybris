@@ -89,7 +89,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         List<PaymentMethod> paymentMethods = null;
         try {
-            paymentMethods = adyenPaymentService.getPaymentMethods(
+            paymentMethods = getAdyenPaymentService().getPaymentMethods(
                     cartData.getTotalPriceWithTax().getValue(),
                     cartData.getTotalPriceWithTax().getCurrencyIso(),
                     cartData.getDeliveryAddress().getCountry().getIsocode()
@@ -247,5 +247,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return getCheckoutStep(PAYMENT_METHOD_STEP_NAME);
     }
 
-
+    private AdyenPaymentService getAdyenPaymentService() {
+        adyenPaymentService.setBaseStore(baseStoreService.getCurrentBaseStore());
+        return adyenPaymentService;
+    }
 }

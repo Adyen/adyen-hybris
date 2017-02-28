@@ -62,7 +62,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.adyen.constants.HPPConstants.Fields.*;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -163,7 +163,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
-                PaymentResult paymentResult = adyenPaymentService.authorise(cartData, request);
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request);
 
                 if (paymentResult.isAuthorised()) {
                     orderData = createAuthorizedOrder(model, redirectModel, paymentResult.getPspReference());
@@ -215,7 +215,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         OrderData orderData = null;
         String errorMessage = "checkout.error.authorization.failed";
         try {
-            PaymentResult paymentResult = adyenPaymentService.authorise3D(request, paRes, md);
+            PaymentResult paymentResult = getAdyenPaymentService().authorise3D(request, paRes, md);
 
             if (paymentResult.isAuthorised()) {
                 orderData = createAuthorizedOrder(model, redirectModel, paymentResult.getPspReference());
@@ -489,5 +489,10 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         hppFormData.put(MERCHANT_SIG, merchantSig);
 
         return hppFormData;
+    }
+
+    private AdyenPaymentService getAdyenPaymentService() {
+        adyenPaymentService.setBaseStore(baseStoreService.getCurrentBaseStore());
+        return adyenPaymentService;
     }
 }

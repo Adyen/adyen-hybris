@@ -1,0 +1,11 @@
+#Ant properties
+#Thu Jun 30 19:14:39 CEST 2016
+builddate=20160630 1914
+description=adyenv6ordermanagement
+group.id=de.hybris.platform
+module.name=platform-module
+name=adyenv6ordermanagement
+releasedate=20160621 1754
+vendor=hybris
+version=6.0.0.0-SNAPSHOT
+version.api=6.0.0

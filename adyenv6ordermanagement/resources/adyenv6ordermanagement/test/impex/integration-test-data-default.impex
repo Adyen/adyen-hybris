@@ -1,0 +1,82 @@
+# Language
+$lang=en
+
+$usCurrency=USD
+$productCatalog=productCatalog
+$catalog-id=testCatalog
+$catalog-version=Online
+$onlineProduct=catalogVersion(catalog(id[$catalog-id]),version[$catalog-version])[unique=true,default='$catalog-id:$catalog-version']
+$storeUid=testStore
+$siteUid=testSite
+$vendor=electro
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+
+# Currencies
+INSERT_UPDATE Currency;isocode[unique=true];name[lang=$lang];active;conversion;digits;symbol
+;USD;"US Dollar";true;1.5;2;"$"
+
+INSERT_UPDATE Country;isocode[unique=true];name[lang=en];active;;;;;;
+;US;United States;true;;;;;;
+;CA;Canada;true;;;;;;
+
+INSERT_UPDATE Zone;code[unique=true];countries(isocode)
+;usa;US
+
+INSERT_UPDATE Unit;unitType[unique=true];code[unique=true];name[lang=en];conversion;;;
+;quantity;pieces;Pieces;1
+
+INSERT_UPDATE Catalog;id[unique=true];name[lang=en];defaultCatalog;;;;;;
+;$catalog-id;$catalog-id;true;;;;;;
+
+INSERT_UPDATE CatalogVersion; catalog(id)[unique=true]; version[unique=true];active;defaultCurrency(isocode);;;;;;
+;$catalog-id;$catalog-version;true;USD;;;;;;
+INSERT_UPDATE BaseStore;uid[unique=true];catalogs(id);currencies(isocode);net;taxGroup(code);defaultCurrency(isocode);languages(isocode);defaultLanguage(isocode);deliveryCountries(isocode);solrFacetSearchConfiguration(name);submitOrderProcessCode;paymentProvider
+;testStore;$catalog-id;USD;false;;USD;en;en;US;;order-process;Mockup
+
+INSERT_UPDATE BaseSite;uid[unique=true];stores(uid);channel(code)
+;testSite;testStore;B2C
+
+INSERT_UPDATE Product;code[unique=true];$onlineProduct;name[lang=en];unit(code);$prices;approvalStatus(code);owner(Principal.uid);startLineNumber
+;product1;;product 1;pieces;6 USD;approved;admin;0
+;product2;;product 2;pieces;6 USD;approved;admin;0
+;product3;;product 3;pieces;6 USD;approved;admin;0
+
+INSERT_UPDATE Vendor;code[unique=true]
+;$vendor
+
+INSERT_UPDATE Warehouse;code[unique=true];name[lang=en];;vendor(code);default
+;warehouse_1;Warehouse 1;;$vendor;true
+;warehouse_2;Warehouse 2;;$vendor;true
+;warehouse_3;Warehouse 3;;$vendor;true
+;warehouse_4;Warehouse 4;;$vendor;true
+;warehouse_5;Warehouse 5;;$vendor;true
+;warehouse_6;Warehouse 6;;$vendor;true
+;warehouse_7;Warehouse 7;;$vendor;true
+;warehouse_8;Warehouse 8;;$vendor;true
+
+INSERT_UPDATE BaseStore2WarehouseRel;source(uid)[unique=true];target(code)[unique=true]
+;$storeUid;warehouse_1
+;$storeUid;warehouse_2
+;$storeUid;warehouse_3
+;$storeUid;warehouse_4
+;$storeUid;warehouse_5
+;$storeUid;warehouse_6
+;$storeUid;warehouse_7
+;$storeUid;warehouse_8
+
+INSERT_UPDATE PointOfService;name[unique=true];type(code);basestore(uid)[default=$storeUid];
+;Nakano;STORE;
+;Shinbashi;STORE;
+;Koto;STORE;
+;Misato;STORE
+
+INSERT_UPDATE Warehouse;code[unique=true];name[lang=en];vendor(code);default;baseStores(uid);;;;;;;;;;;;;;;;
+;warehouse_s;Warehouse South;$vendor;true;testStore;;;;;;;;;;;;;;;;
+
+
+
+
+
+
+
+
