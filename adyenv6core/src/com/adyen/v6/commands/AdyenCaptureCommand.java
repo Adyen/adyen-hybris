@@ -84,6 +84,8 @@ public class AdyenCaptureCommand implements CaptureCommand {
             }
         }
 
+        LOG.info("Capture status: " + result.getTransactionStatus().name() + ":" + result.getTransactionStatusDetails().name());
+
         return result;
     }
 
@@ -104,7 +106,6 @@ public class AdyenCaptureCommand implements CaptureCommand {
     }
 
     private boolean supportsManualCapture(String paymentMethod) {
-        //todo: implement
         switch (paymentMethod) {
             case "cup":
             case "cartebancaire":

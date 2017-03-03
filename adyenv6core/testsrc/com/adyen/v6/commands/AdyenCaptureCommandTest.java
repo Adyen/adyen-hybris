@@ -110,6 +110,7 @@ public class AdyenCaptureCommandTest {
     public void testManualNotSupportedCaptureSuccess() {
         OrderModel orderModel = new OrderModel();
         orderModel.setAdyenPaymentMethod("paysafe");
+        orderModel.setStore(baseStore);
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
                 .thenReturn(orderModel);
 

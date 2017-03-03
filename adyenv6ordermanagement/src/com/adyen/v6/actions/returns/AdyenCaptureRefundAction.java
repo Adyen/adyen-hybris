@@ -101,8 +101,8 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
                 .reduce(new BigDecimal(0), (x, y) -> x.add(y));
 
         //Lower the scale to avoid comparison issues
-        refundedAmount.setScale(3);
-        amountToRefund.setScale(3);
+        refundedAmount.setScale(3, BigDecimal.ROUND_FLOOR);
+        amountToRefund.setScale(3, BigDecimal.ROUND_FLOOR);
 
         LOG.info("Refunded amount " + refundedAmount);
 

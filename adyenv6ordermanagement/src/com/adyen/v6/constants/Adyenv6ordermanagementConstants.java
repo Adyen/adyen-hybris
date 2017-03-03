@@ -16,12 +16,6 @@ package com.adyen.v6.constants;
 public class Adyenv6ordermanagementConstants extends GeneratedAdyenv6ordermanagementConstants
 {
 	public static final String EXTENSIONNAME = "adyenv6ordermanagement";
-	public static final String ACTION_COMPLETION_EVENT_NAME = "ActionCompletionEvent";
-	public static final String ORDER_ACTION_EVENT_NAME = "OrderActionEvent";
-	public static final String ORDER_PROCESS_NAME = "order-process";
-	public static final String CONSIGNMENT_SUBPROCESS_NAME = "consignment-process";
-	public static final String CONSIGNMENT_ACTION_EVENT_NAME = "ConsignmentActionEvent";
-	public static final String CONSIGNMENT_PICKUP = "ConsignmentPickup";
 	
 	private Adyenv6ordermanagementConstants()
 	{

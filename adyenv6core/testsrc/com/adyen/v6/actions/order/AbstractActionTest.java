@@ -1,4 +1,4 @@
-package com.adyen.actions.order;
+package com.adyen.v6.actions.order;
 
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;

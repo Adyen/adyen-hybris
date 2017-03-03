@@ -1,6 +1,5 @@
-package com.adyen.actions.order;
+package com.adyen.v6.actions.order;
 
-import com.adyen.v6.actions.order.AdyenCheckCaptureAction;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;

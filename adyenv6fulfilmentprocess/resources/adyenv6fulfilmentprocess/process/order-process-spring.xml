@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2016 SAP SE or an SAP affiliate company.
+ All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+           
+    <context:annotation-config/>
+
+	<!-- Order Process Actions -->
+
+	<!--Step of order-process that checks capture completion-->
+	<alias name="defaultAdyenCheckCaptureAction" alias="adyenCheckCaptureAction"/>
+	<bean id="defaultAdyenCheckCaptureAction" class="com.adyen.v6.actions.order.AdyenCheckCaptureAction" parent="abstractAction" />
+
+	<!--Step of order-process that does the cancellation for AdyenTransactions-->
+	<alias name="defaultAdyenCancelOrRefundAction" alias="adyenCancelOrRefundAction"/>
+	<bean id="defaultAdyenCancelOrRefundAction" class="com.adyen.v6.actions.order.AdyenCancelOrRefundAction" parent="abstractAction">
+		<property name="paymentService" ref="paymentService"/>
+	</bean>
+</beans>

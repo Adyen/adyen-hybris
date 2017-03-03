@@ -144,4 +144,9 @@
         <property name="modelService" ref="modelService" />
     </bean>
 
+    <bean id="adyenOrderCancelPaymentServiceAdapter" class="com.adyen.v6.service.AdyenOrderCancelPaymentServiceAdapter">
+        <property name="paymentService" ref="paymentService" />
+        <property name="modelService" ref="modelService" />
+        <property name="calculationService" ref="calculationService" />
+    </bean>
 </beans>
