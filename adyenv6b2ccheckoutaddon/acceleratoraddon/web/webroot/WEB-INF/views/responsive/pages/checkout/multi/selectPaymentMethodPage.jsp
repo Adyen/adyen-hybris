@@ -25,6 +25,7 @@
             // Form and encryption options. See adyen.encrypt.simple.html for details.
             var options = {};
 
+            options.cvcIgnoreBins = '6703'; // Ignore CVC for BCMC
             options.cardTypeElement = document.getElementById('cardType');
 
             // Create the form.
