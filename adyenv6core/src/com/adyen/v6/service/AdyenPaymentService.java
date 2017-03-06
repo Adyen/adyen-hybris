@@ -28,19 +28,16 @@ import java.security.SignatureException;
 import java.util.Currency;
 import java.util.List;
 
+import static com.adyen.Client.HPP_LIVE;
+import static com.adyen.Client.HPP_TEST;
+
 //TODO: implement an interface
 public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     private BaseStoreModel baseStore;
 
     private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
 
-    /**
-     * Returns a Client
-     * It is not a singleton, so that it can support dynamic credential changes
-     *
-     * @return
-     */
-    private Client createClient() {
+    public Config getConfig() {
         Assert.notNull(baseStore);
 
         String username = baseStore.getAdyenUsername();
@@ -48,6 +45,8 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         String merchantAccount = baseStore.getAdyenMerchantAccount();
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
+        String apiEndpoint = baseStore.getAdyenAPIEndpoint();
+        boolean isHppTest = baseStore.getAdyenHppTest();
 
         Assert.notNull(merchantAccount);
 
@@ -58,9 +57,25 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
         config.setApplicationName("Hybris v6.0");
+        config.setEndpoint(apiEndpoint);
+        config.setHppEndpoint(HPP_LIVE);
 
+        if(isHppTest) {
+            config.setHppEndpoint(HPP_TEST);
+        }
+
+        return config;
+    }
+
+    /**
+     * Returns a Client
+     * It is not a singleton, so that it can support dynamic credential changes
+     *
+     * @return
+     */
+    private Client createClient() {
+        Config config = getConfig();
         Client client = new Client(config);
-        client.setEnvironment(Environment.TEST);
 
         return client;
     }
@@ -239,6 +254,17 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         LOG.info(paymentMethods);
 
         return paymentMethods;
+    }
+
+    /**
+     * Retrive the HPP base URL for the current basestore
+     *
+     * @return
+     */
+    public String getHppUrl() {
+        Config config = getConfig();
+
+        return config.getHppEndpoint() + "/details.shtml";
     }
 
     public BaseStoreModel getBaseStore() {

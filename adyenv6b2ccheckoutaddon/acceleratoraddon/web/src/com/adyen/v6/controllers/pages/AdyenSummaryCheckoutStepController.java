@@ -3,12 +3,10 @@
  */
 package com.adyen.v6.controllers.pages;
 
-import com.adyen.Client;
 import com.adyen.Util.Util;
 import com.adyen.constants.ApiConstants;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
-import com.adyen.enums.Environment;
 import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
@@ -65,8 +63,6 @@ import java.util.TreeMap;
 import static com.adyen.constants.HPPConstants.Fields.*;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 
-import de.hybris.platform.returns.impl.DefaultReturnService;
-import de.hybris.platform.order.impl.DefaultCalculationService;
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
 public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepController {
@@ -186,7 +182,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 orderData = createOrder(model);
 
                 //HPP data
-                model.addAttribute("hppUrl", getHppUrl());
+                model.addAttribute("hppUrl", getAdyenPaymentService().getHppUrl());
                 model.addAttribute("hppFormData", getHPPFormData(orderData));
 
                 return AdyenControllerConstants.Views.Pages.MultiStepCheckout.HppPaymentPage;
@@ -422,7 +418,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         //Retrieve payment method from API if provided
         String authorizationPaymentMethod = paymentResult.getAdditionalData().get(ApiConstants.AdditionalData.PAYMENT_METHOD);
-        if(authorizationPaymentMethod != null) {
+        if (authorizationPaymentMethod != null) {
             cartModel.setAdyenPaymentMethod(authorizationPaymentMethod);
         }
 
@@ -448,12 +444,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         }
 
         return errorMessage;
-    }
-
-    private String getHppUrl() {
-        Client client = new Client();
-        client.setEnvironment(Environment.TEST);
-        return client.getConfig().getHppEndpoint() + "/details.shtml";
     }
 
     public Map<String, String> getHPPFormData(OrderData orderData) throws SignatureException {

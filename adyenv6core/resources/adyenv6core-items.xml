@@ -155,6 +155,17 @@
 					<modifiers optional="false" />
 					<defaultvalue>Boolean.FALSE</defaultvalue>
 				</attribute>
+				<attribute qualifier="adyenHppTest" type="java.lang.boolean">
+					<description>HPP Test mode</description>
+					<persistence type="property" />
+					<modifiers optional="false" />
+					<defaultvalue>Boolean.TRUE</defaultvalue>
+				</attribute>
+				<attribute qualifier="adyenAPIEndpoint" type="java.lang.String">
+					<description>API endpoint</description>
+					<persistence type="property" />
+					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+				</attribute>
 			</attributes>
 		</itemtype>
 	</itemtypes>
