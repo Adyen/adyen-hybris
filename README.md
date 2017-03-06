@@ -25,7 +25,7 @@ Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyenv6fulfilmentprocess"/>
 ```
 
-### 3. Add your Adyen credentials to the BaseStore via Hybirs backoffice ###
+### 3. Add your Adyen credentials to the BaseStore via Hybris backoffice ###
 
 adyenUsername -> System User Username
 
