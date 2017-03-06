@@ -15,9 +15,14 @@ Required for the checkout:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyenv6backoffice"/>
 ```
 
-Additionally, required when using yacceleratorordermanagement:
+Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe):
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyenv6ordermanagement"/>
+```
+
+Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyenv6fulfilmentprocess"/>
 ```
 
 ### 3. Add your Adyen credentials to the BaseStore via Hybirs backoffice ###
@@ -40,6 +45,9 @@ adyenSkinHMAC -> HPP skin HMAC key
 
 adyenImmediateCapture -> Immediate capture flow (true) - manual capture flow (false)
 
+adyenHppTest -> HPP test mode (set to false for live mode)
+
+adyenAPIEndpoint -> Adyen API endpoint. Set to https://pal-test.adyen.com for Test or https://pal-live.adyen.com for Live.
 
 ### 4. Build ###
 ```

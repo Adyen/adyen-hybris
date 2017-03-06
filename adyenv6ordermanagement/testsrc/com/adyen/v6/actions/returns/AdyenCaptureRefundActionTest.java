@@ -1,8 +1,7 @@
-package com.adyen.actions.returns;
+package com.adyen.v6.actions.returns;
 
 import com.adyen.v6.actions.AbstractWaitableAction;
 import com.adyen.v6.actions.order.AbstractActionTest;
-import com.adyen.v6.actions.returns.AdyenCaptureRefundAction;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.basecommerce.enums.ReturnStatus;
 import de.hybris.platform.core.model.order.OrderModel;

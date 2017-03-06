@@ -1,4 +1,6 @@
 eclipsebin/
 classes/
 gensrc/
-.settings
+.settings/
+.externalToolBuilders/
+.springBeans
