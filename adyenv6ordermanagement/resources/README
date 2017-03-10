@@ -1,0 +1,12 @@
+To update the workflow in the storefront
+-----------------------------------------
+
+1- open the file:
+	/electronicsstore/resources/electronicsstore/import/coredata/stores/electronics/store.impex
+	
+2- update line 17 in the impex file with the desired process name:
+	example: $orderProcessCode=name-of-desired-process
+	
+3- start the server
+
+4- go to hmc and update "electronicstore" 

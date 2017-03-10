@@ -25,6 +25,7 @@
             // Form and encryption options. See adyen.encrypt.simple.html for details.
             var options = {};
 
+            options.cvcIgnoreBins = '6703'; // Ignore CVC for BCMC
             options.cardTypeElement = document.getElementById('cardType');
 
             // Create the form.
@@ -180,7 +181,6 @@
                                                 </div>
                                             </dt>
 
-
                                             <c:forEach items="${paymentMethods}" var="paymentMethod">
                                                 <dt id="dt_method_adyen_hpp_${paymentMethod.brandCode}">
                                                     <input id="p_method_adyen_hpp_${paymentMethod.brandCode}"
@@ -188,6 +188,7 @@
                                                            name="paymentMethod" title="${paymentMethod.name}"
                                                            onclick="Adyen.setBrandCode('${paymentMethod.brandCode}')"
                                                            autocomplete="off">
+                                                    <img src="https://live.adyen.com/hpp/img/pm/${paymentMethod.brandCode}.png"/>
                                                     <label for="p_method_adyen_hpp_${paymentMethod.brandCode}">
                                                         <span>${paymentMethod.name}</span>
                                                     </label>
@@ -261,7 +262,5 @@
                 </cms:pageSlot>
             </div>
         </div>
-
     </jsp:body>
-
 </template:page>

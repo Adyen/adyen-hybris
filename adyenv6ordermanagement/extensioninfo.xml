@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2000-2016 SAP SE or an SAP affiliate company.
+ All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+--><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+	<extension abstractclassprefix="Generated" classprefix="Adyenv6ordermanagement" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenv6ordermanagement">
+
+		<requires-extension name="acceleratorservices"/>
+		<requires-extension name="warehousing"/>
+		<requires-extension name="adyenv6core"/>
+
+		<coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6ordermanagementManager" packageroot="com.adyen.v6"/>
+
+		<meta key="modulegen-name" value="acceleratorordermanagement"/>
+	</extension>
+
+</extensioninfo>

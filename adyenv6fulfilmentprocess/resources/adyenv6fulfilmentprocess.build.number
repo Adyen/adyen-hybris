@@ -1,0 +1,10 @@
+#Ant properties
+#Thu Jul 21 18:02:44 CEST 2016
+builddate=20160721 1802
+description=adyenv6fulfilmentprocess
+group.id=de.hybris.platform
+module.name=platform-module
+name=adyenv6fulfilmentprocess
+vendor=hybris
+version=6.0.0.0-SNAPSHOT
+version.api=6.0.0

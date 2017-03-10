@@ -3,11 +3,10 @@
  */
 package com.adyen.v6.controllers.pages;
 
-import com.adyen.Client;
 import com.adyen.Util.Util;
+import com.adyen.constants.ApiConstants;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
-import com.adyen.enums.Environment;
 import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
@@ -62,7 +61,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.adyen.constants.HPPConstants.Fields.*;
-import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -163,10 +162,10 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
-                PaymentResult paymentResult = adyenPaymentService.authorise(cartData, request);
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request);
 
                 if (paymentResult.isAuthorised()) {
-                    orderData = createAuthorizedOrder(model, redirectModel, paymentResult.getPspReference());
+                    orderData = createAuthorizedOrder(model, redirectModel, paymentResult);
                 } else if (paymentResult.isRedirectShopper()) {
                     final String termUrl = getTermUrl();
 
@@ -183,7 +182,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 orderData = createOrder(model);
 
                 //HPP data
-                model.addAttribute("hppUrl", getHppUrl());
+                model.addAttribute("hppUrl", getAdyenPaymentService().getHppUrl());
                 model.addAttribute("hppFormData", getHPPFormData(orderData));
 
                 return AdyenControllerConstants.Views.Pages.MultiStepCheckout.HppPaymentPage;
@@ -215,10 +214,10 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         OrderData orderData = null;
         String errorMessage = "checkout.error.authorization.failed";
         try {
-            PaymentResult paymentResult = adyenPaymentService.authorise3D(request, paRes, md);
+            PaymentResult paymentResult = getAdyenPaymentService().authorise3D(request, paRes, md);
 
             if (paymentResult.isAuthorised()) {
-                orderData = createAuthorizedOrder(model, redirectModel, paymentResult.getPspReference());
+                orderData = createAuthorizedOrder(model, redirectModel, paymentResult);
             } else if (paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
@@ -399,12 +398,14 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
      *
      * @param model
      * @param redirectModel
-     * @param pspReference
+     * @param paymentResult
      * @return
      * @throws CommerceCartModificationException
      * @throws CMSItemNotFoundException
      */
-    private OrderData createAuthorizedOrder(final Model model, final RedirectAttributes redirectModel, final String pspReference)
+    private OrderData createAuthorizedOrder(final Model model,
+                                            final RedirectAttributes redirectModel,
+                                            final PaymentResult paymentResult)
             throws CommerceCartModificationException, CMSItemNotFoundException {
         final CartModel cartModel = cartService.getSessionCart();
         final String merchantTransactionCode = cartModel.getCode();
@@ -413,7 +414,13 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         final PaymentTransactionModel paymentTransactionModel = adyenTransactionService.authorizeOrderModel(
                 cartModel,
                 merchantTransactionCode,
-                pspReference);
+                paymentResult.getPspReference());
+
+        //Retrieve payment method from API if provided
+        String authorizationPaymentMethod = paymentResult.getAdditionalData().get(ApiConstants.AdditionalData.PAYMENT_METHOD);
+        if (authorizationPaymentMethod != null) {
+            cartModel.setAdyenPaymentMethod(authorizationPaymentMethod);
+        }
 
         return createOrder(model);
     }
@@ -437,12 +444,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         }
 
         return errorMessage;
-    }
-
-    private String getHppUrl() {
-        Client client = new Client();
-        client.setEnvironment(Environment.TEST);
-        return client.getConfig().getHppEndpoint() + "/details.shtml";
     }
 
     public Map<String, String> getHPPFormData(OrderData orderData) throws SignatureException {
@@ -489,5 +490,10 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         hppFormData.put(MERCHANT_SIG, merchantSig);
 
         return hppFormData;
+    }
+
+    private AdyenPaymentService getAdyenPaymentService() {
+        adyenPaymentService.setBaseStore(baseStoreService.getCurrentBaseStore());
+        return adyenPaymentService;
     }
 }

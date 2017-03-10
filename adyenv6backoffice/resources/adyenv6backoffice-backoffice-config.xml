@@ -22,15 +22,17 @@
 		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
 			<editorArea:tab name="hmc.adyen">
 				<editorArea:section name="hmc.adyen.default">
+					<editorArea:attribute qualifier="adyenMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenUsername"/>
 					<editorArea:attribute qualifier="adyenPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-					<editorArea:attribute qualifier="adyenMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenCSEID"/>
 					<editorArea:attribute qualifier="adyenSkinCode"/>
 					<editorArea:attribute qualifier="adyenSkinHMAC"/>
+					<editorArea:attribute qualifier="adyenHppTest"/>
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
+					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
 				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>
