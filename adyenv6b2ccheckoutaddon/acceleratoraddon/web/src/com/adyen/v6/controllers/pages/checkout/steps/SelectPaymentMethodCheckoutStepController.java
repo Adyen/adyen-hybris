@@ -22,13 +22,11 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -102,10 +100,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         model.addAttribute("paymentMethods", paymentMethods);
 
-        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-        String cseId = baseStore.getAdyenCSEID();
-        Assert.notNull(cseId);
-        model.addAttribute("cseId", cseId);
+        String cseUrl = getAdyenPaymentService().getCSEUrl();
+        model.addAttribute("cseUrl", cseUrl);
 
         super.prepareDataForPage(model);
 
