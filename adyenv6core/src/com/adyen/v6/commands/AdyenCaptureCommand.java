@@ -5,6 +5,7 @@ import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.payment.commands.CaptureCommand;
 import de.hybris.platform.payment.commands.request.CaptureRequest;
 import de.hybris.platform.payment.commands.result.CaptureResult;
@@ -55,10 +56,14 @@ public class AdyenCaptureCommand implements CaptureCommand {
         BaseStoreModel baseStore = order.getStore();
         Assert.notNull(baseStore);
         adyenPaymentService.setBaseStore(baseStore);
-        boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
 
+        final PaymentInfoModel paymentInfo = order.getPaymentInfo();
+        Assert.notNull(paymentInfo);
+
+        boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
         Assert.notNull(isImmediateCapture);
-        boolean autoCapture = isImmediateCapture || !supportsManualCapture(order.getAdyenPaymentMethod());
+
+        boolean autoCapture = isImmediateCapture || !supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
 
         if (autoCapture) {
             result.setTransactionStatus(TransactionStatus.ACCEPTED);

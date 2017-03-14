@@ -149,4 +149,8 @@
         <property name="modelService" ref="modelService" />
         <property name="calculationService" ref="calculationService" />
     </bean>
+
+    <bean id="adyenOrderService" class="com.adyen.v6.service.AdyenOrderService">
+        <property name="modelService" ref="modelService" />
+    </bean>
 </beans>

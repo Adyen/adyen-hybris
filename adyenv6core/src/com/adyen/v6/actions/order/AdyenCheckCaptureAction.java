@@ -32,7 +32,8 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
 
         final OrderModel order = process.getOrder();
 
-        if (order.getAdyenPaymentMethod() == null) {
+        if (order.getPaymentInfo().getAdyenPaymentMethod() == null) {
+            LOG.info("Not Adyen Payment");
             return Transition.OK.toString();
         }
 

@@ -5,6 +5,7 @@ import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.payment.commands.request.CaptureRequest;
 import de.hybris.platform.payment.commands.result.CaptureResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @UnitTest
@@ -50,8 +52,12 @@ public class AdyenCaptureCommandTest {
                 "Adyen"
         );
 
+        PaymentInfoModel paymentInfoModel = new PaymentInfoModel();
+        paymentInfoModel.setAdyenPaymentMethod("visa");
+
         OrderModel orderModel = new OrderModel();
-        orderModel.setAdyenPaymentMethod("visa");
+        orderModel.setPaymentInfo(paymentInfoModel);
+
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
                 .thenReturn(orderModel);
 
@@ -109,7 +115,11 @@ public class AdyenCaptureCommandTest {
     @Test
     public void testManualNotSupportedCaptureSuccess() {
         OrderModel orderModel = new OrderModel();
-        orderModel.setAdyenPaymentMethod("paysafe");
+
+        PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn("paysafe");
+        orderModel.setPaymentInfo(paymentInfoModelMock);
+
         orderModel.setStore(baseStore);
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class)))
                 .thenReturn(orderModel);

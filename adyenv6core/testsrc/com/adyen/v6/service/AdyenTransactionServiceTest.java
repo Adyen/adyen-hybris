@@ -128,8 +128,11 @@ public class AdyenTransactionServiceTest {
         orderModel.setOrderProcess(orderProcessModels);
         orderModel.setTotalPrice(1.23);
         orderModel.setCurrency(new CurrencyModel());
-        orderModel.setPaymentInfo(new PaymentInfoModel());
-        orderModel.setAdyenPaymentMethod("visa");
+
+        PaymentInfoModel paymentInfoModel = new PaymentInfoModel();
+        paymentInfoModel.setAdyenPaymentMethod("visa");
+
+        orderModel.setPaymentInfo(paymentInfoModel);
 
         return orderModel;
     }
