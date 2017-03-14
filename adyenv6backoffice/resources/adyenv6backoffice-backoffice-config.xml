@@ -33,6 +33,7 @@
 					<editorArea:attribute qualifier="adyenHppTest"/>
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
 					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
+					<editorArea:attribute qualifier="adyenAllowedCards"/>
 				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>

@@ -16,6 +16,39 @@
 
 <items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			xsi:noNamespaceSchemaLocation="items.xsd">
+	<collectiontypes>
+		<collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
+	</collectiontypes>
+
+	<enumtypes>
+		<enumtype code="AdyenCardTypeEnum" autocreate="true" generate="true" dynamic="true">
+			<value code="mc" />
+			<value code="visa" />
+			<value code="amex" />
+			<value code="diners" />
+			<value code="discover" />
+			<value code="maestro" />
+			<value code="bcmc" />
+			<value code="cartebancaire" />
+			<value code="visadankort" />
+			<value code="vias" />
+			<value code="maestrouk" />
+			<value code="solo" />
+			<value code="laser" />
+			<value code="jcb" />
+			<value code="bijcard" />
+			<value code="dankort" />
+			<value code="hipercard" />
+			<value code="elo" />
+			<value code="uatp" />
+			<value code="cup" />
+			<value code="visaalphabankbonus" />
+			<value code="mcalphabankbonus" />
+			<value code="karenmillen" />
+			<value code="oasis" />
+			<value code="warehouse" />
+		</enumtype>
+	</enumtypes>
 
 	<itemtypes>
 		<itemtype code="Cart" autocreate="false" generate="false">
@@ -145,6 +178,9 @@
 					<description>API endpoint</description>
 					<persistence type="property" />
 					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+				</attribute>
+				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
+					<persistence type="property"/>
 				</attribute>
 			</attributes>
 		</itemtype>
