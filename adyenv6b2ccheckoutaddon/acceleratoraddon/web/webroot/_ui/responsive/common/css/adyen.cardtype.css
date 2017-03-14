@@ -1,114 +1,112 @@
-/*https://raw.githubusercontent.com/Adyen/adyen-cse-web/v0.1.19/js/addOns/adyen.cardtype.css*/
-/* In case you want to show the icon and the friendly name */
-#cardType {
-    min-height: 14px;
-    padding-left: 27px;
-    background-repeat: no-repeat;
-}
 /* In case you only want to show the icon */
-#cardType {
-    height: 14px;
-    width: 25px;
+.cse-cardtype {
+    height: 22px;
+    width: 40px;
     background-repeat: no-repeat;
+    display: inline-block;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
-#cardType .cse-cardtype-label {
-    display: none;
+
+.cse-cardtype-style-active {
+    -webkit-filter: grayscale(0%);
+    filter: grayscale(0%);
 }
 
 /* The icons of various card types */
-#cardType.cse-cardtype-mc {
-    background-image: url(https://live.adyen.com/hpp/img/pm/mc_tiny.png);
+.cse-cardtype-mc {
+    background-image: url(https://live.adyen.com/hpp/img/pm/mc_small.png);
 }
 
-#cardType.cse-cardtype-visadankort {
-    background-image: url(https://live.adyen.com/hpp/img/pm/visadankort_tiny.png);
+.cse-cardtype-visadankort {
+    background-image: url(https://live.adyen.com/hpp/img/pm/visadankort_small.png);
 }
 
-#cardType.cse-cardtype-visa {
-    background-image: url(https://live.adyen.com/hpp/img/pm/visa_tiny.png);
+.cse-cardtype-visa {
+    background-image: url(https://live.adyen.com/hpp/img/pm/visa_small.png);
 }
 
-#cardType.cse-cardtype-amex {
-    background-image: url(https://live.adyen.com/hpp/img/pm/amex_tiny.png);
+.cse-cardtype-amex {
+    background-image: url(https://live.adyen.com/hpp/img/pm/amex_small.png);
 }
 
-#cardType.cse-cardtype-vias {
-    background-image: url(https://live.adyen.com/hpp/img/pm/vias_tiny.png);
+.cse-cardtype-vias {
+    background-image: url(https://live.adyen.com/hpp/img/pm/vias_small.png);
 }
 
-#cardType.cse-cardtype-diners {
-    background-image: url(https://live.adyen.com/hpp/img/pm/diners_tiny.png);
+.cse-cardtype-diners {
+    background-image: url(https://live.adyen.com/hpp/img/pm/diners_small.png);
 }
 
-#cardType.cse-cardtype-maestrouk {
-    background-image: url(https://live.adyen.com/hpp/img/pm/maestrouk_tiny.png);
+.cse-cardtype-maestrouk {
+    background-image: url(https://live.adyen.com/hpp/img/pm/maestrouk_small.png);
 }
 
-#cardType.cse-cardtype-solo {
-    background-image: url(https://live.adyen.com/hpp/img/pm/solo_tiny.png);
+.cse-cardtype-solo {
+    background-image: url(https://live.adyen.com/hpp/img/pm/solo_small.png);
 }
 
-#cardType.cse-cardtype-laser {
-    background-image: url(https://live.adyen.com/hpp/img/pm/laser_tiny.png);
+.cse-cardtype-laser {
+    background-image: url(https://live.adyen.com/hpp/img/pm/laser_small.png);
 }
 
-#cardType.cse-cardtype-discover {
-    background-image: url(https://live.adyen.com/hpp/img/pm/discover_tiny.png);
+.cse-cardtype-discover {
+    background-image: url(https://live.adyen.com/hpp/img/pm/discover_small.png);
 }
 
-#cardType.cse-cardtype-jcb {
-    background-image: url(https://live.adyen.com/hpp/img/pm/jcb_tiny.png);
+.cse-cardtype-jcb {
+    background-image: url(https://live.adyen.com/hpp/img/pm/jcb_small.png);
 }
 
-#cardType.cse-cardtype-bcmc {
-    background-image: url(https://live.adyen.com/hpp/img/pm/bcmc_tiny.png);
+.cse-cardtype-bcmc {
+    background-image: url(https://live.adyen.com/hpp/img/pm/bcmc_small.png);
 }
 
-#cardType.cse-cardtype-bijcard {
-    background-image: url(https://live.adyen.com/hpp/img/pm/bijcard_tiny.png);
+.cse-cardtype-bijcard {
+    background-image: url(https://live.adyen.com/hpp/img/pm/bijcard_small.png);
 }
 
-#cardType.cse-cardtype-dankort {
-    background-image: url(https://live.adyen.com/hpp/img/pm/dankort_tiny.png);
+.cse-cardtype-dankort {
+    background-image: url(https://live.adyen.com/hpp/img/pm/dankort_small.png);
 }
 
-#cardType.cse-cardtype-hipercard {
-    background-image: url(https://live.adyen.com/hpp/img/pm/hipercard_tiny.png);
+.cse-cardtype-hipercard {
+    background-image: url(https://live.adyen.com/hpp/img/pm/hipercard_small.png);
 }
 
-#cardType.cse-cardtype-maestro {
-    background-image: url(https://live.adyen.com/hpp/img/pm/maestro_tiny.png);
+.cse-cardtype-maestro {
+    background-image: url(https://live.adyen.com/hpp/img/pm/maestro_small.png);
 }
 
-#cardType.cse-cardtype-elo {
-    background-image: url(https://live.adyen.com/hpp/img/pm/elo_tiny.png);
+.cse-cardtype-elo {
+    background-image: url(https://live.adyen.com/hpp/img/pm/elo_small.png);
 }
 
-#cardType.cse-cardtype-uatp {
-    background-image: url(https://live.adyen.com/hpp/img/pm/uatp_tiny.png);
+.cse-cardtype-uatp {
+    background-image: url(https://live.adyen.com/hpp/img/pm/uatp_small.png);
 }
 
-#cardType.cse-cardtype-cup {
-    background-image: url(https://live.adyen.com/hpp/img/pm/cup_tiny.png);
+.cse-cardtype-cup {
+    background-image: url(https://live.adyen.com/hpp/img/pm/cup_small.png);
 }
 
-#cardType.cse-cardtype-cartebancaire {
-    background-image: url(https://live.adyen.com/hpp/img/pm/cartebancaire_tiny.png);
+.cse-cardtype-cartebancaire {
+    background-image: url(https://live.adyen.com/hpp/img/pm/cartebancaire_small.png);
 }
 
-#cardType.cse-cardtype-visaalphabankbonus {
-    background-image: url(https://live.adyen.com/hpp/img/pm/visaalphabankbonus_tiny.png);
+.cse-cardtype-visaalphabankbonus {
+    background-image: url(https://live.adyen.com/hpp/img/pm/visaalphabankbonus_small.png);
 }
 
-#cardType.cse-cardtype-mcalphabankbonus {
-    background-image: url(https://live.adyen.com/hpp/img/pm/mcalphabankbonus_tiny.png);
+.cse-cardtype-mcalphabankbonus {
+    background-image: url(https://live.adyen.com/hpp/img/pm/mcalphabankbonus_small.png);
 }
-#cardType.cse-cardtype-karenmillen {
-    background-image: url(https://live.adyen.com/hpp/img/pm/karenmillen_tiny.png);
+.cse-cardtype-karenmillen {
+    background-image: url(https://live.adyen.com/hpp/img/pm/karenmillen_small.png);
 }
-#cardType.cse-cardtype-oasis {
-    background-image: url(https://live.adyen.com/hpp/img/pm/oasis_tiny.png);
+.cse-cardtype-oasis {
+    background-image: url(https://live.adyen.com/hpp/img/pm/oasis_small.png);
 }
-#cardType.cse-cardtype-warehouse {
-    background-image: url(https://live.adyen.com/hpp/img/pm/warehouse_tiny.png);
+.cse-cardtype-warehouse {
+    background-image: url(https://live.adyen.com/hpp/img/pm/warehouse_small.png);
 }
