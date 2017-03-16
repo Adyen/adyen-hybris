@@ -48,6 +48,13 @@
 			<value code="oasis" />
 			<value code="warehouse" />
 		</enumtype>
+		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
+			<description>How the payment will be stored on Adyen</description>
+			<value code="NONE" />
+			<value code="ONECLICK" />
+			<value code="ONECLICK_RECURRING" />
+			<value code="RECURRING" />
+		</enumtype>
 	</enumtypes>
 
 	<itemtypes>
@@ -60,6 +67,10 @@
 							<value>text</value>
 						</columntype>
 					</persistence>
+				</attribute>
+				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
+					<defaultvalue>Boolean.FALSE</defaultvalue>
+					<persistence type="property" />
 				</attribute>
 			</attributes>
 		</itemtype>
@@ -181,6 +192,13 @@
 				</attribute>
 				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
 					<persistence type="property"/>
+				</attribute>
+				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
+						   generate="true" autocreate="true">
+					<persistence type="property"/>
+					<modifiers optional="false" />
+					<defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
+					<description>How the payment will be stored on Adyen</description>
 				</attribute>
 			</attributes>
 		</itemtype>

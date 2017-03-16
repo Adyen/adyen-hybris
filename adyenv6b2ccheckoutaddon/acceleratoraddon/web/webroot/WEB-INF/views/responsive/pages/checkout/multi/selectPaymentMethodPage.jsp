@@ -177,8 +177,24 @@
                                                             </div>
                                                         </li>
 
-                                                        <input type="hidden"
-                                                               id="paymentDetailsForm-expiry-generationtime"
+                                                        <c:if test="${showRememberTheseDetails}">
+                                                            <li class="adyen_payment_input_fields adyen_payment_input_fields_remember_these_details">
+                                                                <label id="adyen_cc_remember_these_details_label" for="adyen_cc_remember_these_details">
+                                                                    Remember these details
+                                                                </label>
+                                                                <div class="input-box">
+                                                                    <div class="v-fix">
+                                                                        <input type="checkbox" title="Remember these details"
+                                                                               class="input-checkbox remember-these-details"
+                                                                               name="rememberTheseDetails"
+                                                                               id="adyen_cc_remember_these_details"
+                                                                               value="1" checked>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </c:if>
+
+                                                        <input type="hidden" id="paymentDetailsForm-expiry-generationtime"
                                                                value="${generationTime}"
                                                                data-encrypted-name="generationtime"/>
                                                     </ul>

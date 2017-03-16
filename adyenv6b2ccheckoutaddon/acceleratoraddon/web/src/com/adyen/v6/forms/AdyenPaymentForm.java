@@ -20,6 +20,9 @@ public class AdyenPaymentForm {
     //Billing Address
     private boolean useDeliveryAddress;
 
+    //Save card
+    private boolean rememberTheseDetails;
+
     public String getCseToken() {
         return cseToken;
     }
@@ -60,6 +63,14 @@ public class AdyenPaymentForm {
         this.brandCode = brandCode;
     }
 
+    public boolean getRememberTheseDetails() {
+        return this.rememberTheseDetails;
+    }
+
+    public void setRememberTheseDetails(boolean rememberTheseDetails) {
+        this.rememberTheseDetails = rememberTheseDetails;
+    }
+
     public boolean isCSE() {
         if(PAYMENT_METHOD_CC.equals(paymentMethod)) {
             return true;
@@ -77,6 +88,7 @@ public class AdyenPaymentForm {
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
         sb.append("    brandCode: ").append(Util.toIndentedString(brandCode)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
+        sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("}");
         return sb.toString();
     }

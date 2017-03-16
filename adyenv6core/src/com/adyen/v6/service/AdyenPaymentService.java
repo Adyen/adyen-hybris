@@ -4,6 +4,7 @@ import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.Util.Util;
 import com.adyen.enums.Environment;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.*;
 import com.adyen.model.hpp.DirectoryLookupRequest;
@@ -15,9 +16,11 @@ import com.adyen.model.modification.RefundRequest;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
+import de.hybris.platform.core.model.user.UserModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
 import de.hybris.platform.store.BaseStoreModel;
+import com.adyen.model.Recurring;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
@@ -80,7 +83,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return client;
     }
 
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, RecurringContractMode recurringContractMode) throws Exception {
         Client client = createClient();
         Payment payment = new Payment(client);
 
@@ -99,7 +102,49 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 )
                 .setCSEToken(cseToken);
 
+        // if user is logged in and saved his card
+        if(!user.getUid().equals("")) {
+            paymentRequest.setRecurring(this.getRecurringContractType(cartData, recurringContractMode));
+            paymentRequest.setShopperReference(user.getUid());
+        }
+
         return payment.authorise(paymentRequest);
+    }
+
+    /**
+     * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
+     *
+     * @param cartData
+     * @param recurringContractMode
+     * @return
+     */
+    public Recurring getRecurringContractType(final CartData cartData, RecurringContractMode recurringContractMode)
+    {
+        Recurring recurringContract = new com.adyen.model.Recurring();
+
+        String recurringMode = recurringContractMode.getCode();
+        Recurring.ContractEnum contractEnum = Recurring.ContractEnum.valueOf(recurringMode);
+
+        // if user want to save his card use the configured recurring contract type
+        if(cartData.getAdyenRememberTheseDetails()) {
+            recurringContract.contract(contractEnum);
+        } else {
+
+            /**
+             * If save card is not checked do the folllowing changes:
+             * ONECLICK => NONE
+             * ONECLICK,RECURRING => RECURRING
+             * NONE => NONE
+             * RECURRING => RECURRING
+             */
+            if(contractEnum.equals(Recurring.ContractEnum.ONECLICK_RECURRING)) {
+                recurringContract.contract(Recurring.ContractEnum.RECURRING);
+            } else if(!contractEnum.equals(Recurring.ContractEnum.ONECLICK)) {
+                recurringContract.contract(contractEnum);
+            }
+        }
+
+        return recurringContract;
     }
 
     public PaymentResult authorise3D(final HttpServletRequest request,
