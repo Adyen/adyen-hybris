@@ -169,9 +169,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
-        cartModel.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod()); //todo: retrieve from auth/notifications?
-        cartModel.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
-        cartModel.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
         cartModel.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
 
         final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
