@@ -11,6 +11,7 @@ import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
@@ -162,7 +163,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
-                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request);
+
+                BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), baseStore.getAdyenRecurringContractMode());
 
                 if (paymentResult.isAuthorised()) {
                     orderData = createAuthorizedOrder(model, redirectModel, paymentResult);

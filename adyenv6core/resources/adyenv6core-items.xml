@@ -17,9 +17,16 @@
 <items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			xsi:noNamespaceSchemaLocation="items.xsd">
 
+	<enumtypes>
+		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
+			<description>How the payment will be stored on Adyen</description>
+			<value code="NONE" />
+			<value code="ONECLICK" />
+			<value code="ONECLICK_RECURRING" />
+			<value code="RECURRING" />
+		</enumtype>
+	</enumtypes>
 	<itemtypes>
-
-
 		<itemtype code="Cart" autocreate="false" generate="false">
 			<attributes>
 				<!-- Store CSE token -->
@@ -29,6 +36,10 @@
 							<value>text</value>
 						</columntype>
 					</persistence>
+				</attribute>
+				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
+					<defaultvalue>Boolean.FALSE</defaultvalue>
+					<persistence type="property" />
 				</attribute>
 				<!-- Store custom merchant reference, to be used as order code. TODO: use it -->
 				<attribute qualifier="adyenMerchantReference" type="java.lang.String">
@@ -165,6 +176,13 @@
 					<description>API endpoint</description>
 					<persistence type="property" />
 					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+				</attribute>
+				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
+						   generate="true" autocreate="true">
+					<persistence type="property"/>
+					<modifiers optional="false" />
+					<defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
+					<description>How the payment will be stored on Adyen</description>
 				</attribute>
 			</attributes>
 		</itemtype>
