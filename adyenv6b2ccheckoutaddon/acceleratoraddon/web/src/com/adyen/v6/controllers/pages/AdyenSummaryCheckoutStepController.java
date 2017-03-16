@@ -160,6 +160,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         }
 
         final CartData cartData = getCartFacade().getSessionCart();
+        // checkoutCartData contains shipping details
+        final CartData checkoutCartData = getCheckoutFacade().getCheckoutCart();
 
         OrderData orderData = null;
         String errorMessage = "checkout.error.authorization.failed";
@@ -167,7 +169,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
                 BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), baseStore.getAdyenRecurringContractMode());
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), baseStore.getAdyenRecurringContractMode(), checkoutCartData);
 
 				LOGGER.info("authorization result: " + paymentResult);
 

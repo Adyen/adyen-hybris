@@ -16,6 +16,7 @@ import com.adyen.model.modification.RefundRequest;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
+import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.UserModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
@@ -83,7 +84,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return client;
     }
 
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, RecurringContractMode recurringContractMode) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, RecurringContractMode recurringContractMode, final CartData checkoutCartData) throws Exception {
         Client client = createClient();
         Payment payment = new Payment(client);
 
@@ -104,12 +105,75 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         // if user is logged in and saved his card
         if(!user.getUid().equals("")) {
-            paymentRequest.setRecurring(this.getRecurringContractType(cartData, recurringContractMode));
             paymentRequest.setShopperReference(user.getUid());
+            // If NONE is selected the merchants don't want to save card data
+            if(recurringContractMode != RecurringContractMode.NONE) {
+                paymentRequest.setRecurring(getRecurringContractType(cartData, recurringContractMode));
+            }
+        }
+
+        // if address details are provided added it into the request
+        if(checkoutCartData.getDeliveryAddress() != null)  {
+            Address deliveryAddress = fillInAddressData(checkoutCartData.getDeliveryAddress());
+            paymentRequest.setDeliveryAddress(deliveryAddress);
+        }
+
+        if(cartData.getPaymentInfo().getBillingAddress() != null)
+        {
+            Address billingAddress = fillInAddressData(cartData.getPaymentInfo().getBillingAddress());
+            paymentRequest.setBillingAddress(billingAddress);
         }
 
         return payment.authorise(paymentRequest);
     }
+
+    /**
+     * Set Address Data into API
+     *
+     * @param addressData
+     * @return
+     */
+    public Address fillInAddressData(AddressData addressData)
+    {
+
+        Address address = new Address();
+
+        // set defaults because all fields are required into the API
+        address.setCity("NA");
+        address.setCountry("NA");
+        address.setHouseNumberOrName("NA");
+        address.setPostalCode("NA");
+        address.setStateOrProvince("NA");
+        address.setStreet("NA");
+
+        // set the actual values if they are available
+        if(addressData.getTown() !=  null &&  addressData.getTown() !=  "") {
+            address.setCity(addressData.getTown());
+        }
+
+        if(addressData.getCountry() != null  && addressData.getCountry().getIsocode() != "") {
+            address.setCountry(addressData.getCountry().getIsocode());
+        }
+
+        if(addressData.getLine2() != null && addressData.getLine2() != "") {
+            address.setHouseNumberOrName(addressData.getLine2());
+        }
+
+        if(addressData.getPostalCode() != null && address.getPostalCode() != "") {
+            address.setPostalCode(addressData.getPostalCode());
+        }
+
+        if(addressData.getRegion() != null && addressData.getRegion().getIsocode() != "") {
+            address.setStateOrProvince(addressData.getRegion().getIsocode());
+        }
+
+        if(addressData.getLine1() != null && addressData.getLine1() != "") {
+           address.setStreet(addressData.getLine1());
+        }
+
+        return address;
+    }
+
 
     /**
      * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
@@ -126,7 +190,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Recurring.ContractEnum contractEnum = Recurring.ContractEnum.valueOf(recurringMode);
 
         // if user want to save his card use the configured recurring contract type
-        if(cartData.getAdyenRememberTheseDetails()) {
+        if(cartData.getAdyenRememberTheseDetails() != null && cartData.getAdyenRememberTheseDetails()) {
             recurringContract.contract(contractEnum);
         } else {
 
