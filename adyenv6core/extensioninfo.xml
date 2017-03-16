@@ -17,6 +17,7 @@
       <!-- you should add all required extensions to this list, except platform extensions which are automatically required -->         
       <!-- <requires-extension name="cms"/> -->
       <requires-extension name="addonsupport"/>
+      <requires-extension name="payment"/>
 
       <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6coreManager" packageroot="com.adyen.v6"/>
    </extension>

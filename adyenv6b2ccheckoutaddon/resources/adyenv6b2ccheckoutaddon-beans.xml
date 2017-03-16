@@ -30,6 +30,7 @@
 
 	<bean class="de.hybris.platform.commercefacades.order.data.CartData">
 		<property name="adyenCseToken" type="java.lang.String"/>
+		<property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
 	</bean>
 
 	<bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">

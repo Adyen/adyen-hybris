@@ -6,6 +6,7 @@ package com.adyen.v6.controllers.pages.checkout.steps;
 
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.adyen.model.Recurring;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -107,6 +109,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         Assert.notNull(cseId);
         model.addAttribute("cseId", cseId);
 
+        // If the RecurringContract mode is set to ONECLICK show the option to store the card
+        RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
+        if(!recurringContractMode.getCode().isEmpty() && recurringContractMode.getCode() != Recurring.ContractEnum.RECURRING.toString()) {
+            model.addAttribute("showRememberTheseDetails", true);
+        } else {
+            model.addAttribute("showRememberTheseDetails", false);
+        }
+
         super.prepareDataForPage(model);
 
         final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
@@ -156,6 +166,10 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
+        cartModel.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod()); //todo: retrieve from auth/notifications?
+        cartModel.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
+        cartModel.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
+        cartModel.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
 
         final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
 
