@@ -49,6 +49,8 @@ adyenHppTest -> HPP test mode (set to false for live mode)
 
 adyenAPIEndpoint -> Adyen API endpoint. Set to https://pal-test.adyen.com for Test or https://pal-live.adyen.com for Live.
 
+adyenAllowedCards -> Allowed Credit Card variants
+
 ### 4. Build ###
 ```
 cd bin/platform

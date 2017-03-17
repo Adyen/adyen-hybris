@@ -16,8 +16,38 @@
 
 <items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			xsi:noNamespaceSchemaLocation="items.xsd">
+	<collectiontypes>
+		<collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
+	</collectiontypes>
 
 	<enumtypes>
+		<enumtype code="AdyenCardTypeEnum" autocreate="true" generate="true" dynamic="true">
+			<value code="mc" />
+			<value code="visa" />
+			<value code="amex" />
+			<value code="diners" />
+			<value code="discover" />
+			<value code="maestro" />
+			<value code="bcmc" />
+			<value code="cartebancaire" />
+			<value code="visadankort" />
+			<value code="vias" />
+			<value code="maestrouk" />
+			<value code="solo" />
+			<value code="laser" />
+			<value code="jcb" />
+			<value code="bijcard" />
+			<value code="dankort" />
+			<value code="hipercard" />
+			<value code="elo" />
+			<value code="uatp" />
+			<value code="cup" />
+			<value code="visaalphabankbonus" />
+			<value code="mcalphabankbonus" />
+			<value code="karenmillen" />
+			<value code="oasis" />
+			<value code="warehouse" />
+		</enumtype>
 		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
 			<description>How the payment will be stored on Adyen</description>
 			<value code="NONE" />
@@ -26,6 +56,7 @@
 			<value code="RECURRING" />
 		</enumtype>
 	</enumtypes>
+
 	<itemtypes>
 		<itemtype code="Cart" autocreate="false" generate="false">
 			<attributes>
@@ -39,24 +70,6 @@
 				</attribute>
 				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
 					<defaultvalue>Boolean.FALSE</defaultvalue>
-					<persistence type="property" />
-				</attribute>
-				<!-- Store custom merchant reference, to be used as order code. TODO: use it -->
-				<attribute qualifier="adyenMerchantReference" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-			</attributes>
-		</itemtype>
-
-		<itemtype code="AbstractOrder" autocreate="false" generate="false">
-			<attributes>
-				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenBrandCode" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenIssuerId" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
 			</attributes>
@@ -176,6 +189,9 @@
 					<description>API endpoint</description>
 					<persistence type="property" />
 					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+				</attribute>
+				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
+					<persistence type="property"/>
 				</attribute>
 				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
 						   generate="true" autocreate="true">

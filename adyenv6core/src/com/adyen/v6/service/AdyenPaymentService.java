@@ -312,6 +312,20 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return config.getHppEndpoint() + "/details.shtml";
     }
 
+    /**
+     * Retrive the CSE JS Url
+     *
+     * @return
+     */
+    public String getCSEUrl() {
+        Config config = getConfig();
+
+        String cseId = baseStore.getAdyenCSEID();
+        Assert.notNull(cseId);
+
+        return config.getHppEndpoint() + "/cse/js/" + cseId + ".shtml";
+    }
+
     public BaseStoreModel getBaseStore() {
         return baseStore;
     }

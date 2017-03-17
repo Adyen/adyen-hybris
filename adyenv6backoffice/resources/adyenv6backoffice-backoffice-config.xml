@@ -18,22 +18,29 @@
 	<!--<context component="component-code" module="adyenv6backoffice">-->
 		<!--Please check documentation for code snippets for specific components-->
 	<!--</context>-->
-	<context merge-by="type" parent="GenericItem" type="BaseStore" component="editor-area">
+	<context merge-by="type" type="BaseStore" component="editor-area">
 		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
 			<editorArea:tab name="hmc.adyen">
-				<editorArea:section name="hmc.adyen.default">
+				<editorArea:section name="hmc.adyen.account">
 					<editorArea:attribute qualifier="adyenMerchantAccount"/>
+					<editorArea:attribute qualifier="adyenImmediateCapture"/>
+					<editorArea:attribute qualifier="adyenAllowedCards"/>
+                    <editorArea:attribute qualifier="adyenRecurringContractMode"/>
+                </editorArea:section>
+				<editorArea:section name="hmc.adyen.api">
+					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
 					<editorArea:attribute qualifier="adyenUsername"/>
 					<editorArea:attribute qualifier="adyenPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenCSEID"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.hpp">
+					<editorArea:attribute qualifier="adyenSkinCode"/>
+					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenHppTest"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.notifications">
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-					<editorArea:attribute qualifier="adyenCSEID"/>
-					<editorArea:attribute qualifier="adyenSkinCode"/>
-					<editorArea:attribute qualifier="adyenSkinHMAC"/>
-					<editorArea:attribute qualifier="adyenHppTest"/>
-					<editorArea:attribute qualifier="adyenImmediateCapture"/>
-					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
-					<editorArea:attribute qualifier="adyenRecurringContractMode"/>
 				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>

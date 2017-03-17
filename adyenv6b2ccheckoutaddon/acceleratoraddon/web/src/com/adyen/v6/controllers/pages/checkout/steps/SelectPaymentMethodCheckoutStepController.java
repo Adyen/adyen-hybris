@@ -29,7 +29,6 @@ import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -102,12 +101,16 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             return getCheckoutStep().previousStep();
         }
 
+        //Set HPP payment methods
         model.addAttribute("paymentMethods", paymentMethods);
 
+        //Set allowed Credit Cards
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-        String cseId = baseStore.getAdyenCSEID();
-        Assert.notNull(cseId);
-        model.addAttribute("cseId", cseId);
+        model.addAttribute("allowedCards", baseStore.getAdyenAllowedCards());
+
+        //Set the url for CSE script
+        String cseUrl = getAdyenPaymentService().getCSEUrl();
+        model.addAttribute("cseUrl", cseUrl);
 
         // If the RecurringContract mode is set to ONECLICK show the option to store the card
         RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
@@ -166,9 +169,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
-        cartModel.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod()); //todo: retrieve from auth/notifications?
-        cartModel.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
-        cartModel.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
         cartModel.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
 
         final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);

@@ -19,9 +19,14 @@ $expressCheckoutEnabled=true
 $adyenCheckoutGroup=adyenB2CCheckoutGroup
 $adyenResponsiveCheckoutGroup=adyenB2CResponsiveCheckoutGroup
 
+$defaultApiEndpoint=https://pal-test.adyen.com
+
 # Base Store
 UPDATE BaseStore;uid[unique=true];checkoutFlowGroup
 ;$storeUid;$adyenCheckoutGroup
+
+UPDATE BaseStore;uid[unique=true];adyenAPIEndpoint
+;$storeUid;$defaultApiEndpoint
 
 #% if: "responsive".equalsIgnoreCase(Config.getParameter("commerceservices.default.desktop.ui.experience"));
 UPDATE BaseStore;uid[unique=true];checkoutFlowGroup
