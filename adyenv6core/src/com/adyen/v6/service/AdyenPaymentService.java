@@ -84,7 +84,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return client;
     }
 
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, RecurringContractMode recurringContractMode, final CartData checkoutCartData) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, RecurringContractMode recurringContractMode) throws Exception {
         Client client = createClient();
         Payment payment = new Payment(client);
 
@@ -113,8 +113,8 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         }
 
         // if address details are provided added it into the request
-        if(checkoutCartData.getDeliveryAddress() != null)  {
-            Address deliveryAddress = fillInAddressData(checkoutCartData.getDeliveryAddress());
+        if(cartData.getDeliveryAddress() != null)  {
+            Address deliveryAddress = fillInAddressData(cartData.getDeliveryAddress());
             paymentRequest.setDeliveryAddress(deliveryAddress);
         }
 
