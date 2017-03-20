@@ -84,7 +84,7 @@
     <!-- Process notification cronjob -->
     <bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
         <property name="modelService" ref="modelService"/>
-        <property name="businessProcessService" ref="businessProcessService"/>
+        <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService"/>
         <property name="adyenTransactionService" ref="adyenTransactionService"/>
         <property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
         <property name="orderRepository" ref="adyenOrderRepository" />
@@ -152,5 +152,9 @@
 
     <bean id="adyenOrderService" class="com.adyen.v6.service.AdyenOrderService">
         <property name="modelService" ref="modelService" />
+    </bean>
+
+    <bean id="adyenBusinessProcessService" class="com.adyen.v6.service.AdyenBusinessProcessService">
+        <property name="businessProcessService" ref="businessProcessService" />
     </bean>
 </beans>

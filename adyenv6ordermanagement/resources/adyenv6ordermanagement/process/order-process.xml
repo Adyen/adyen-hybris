@@ -8,7 +8,7 @@
         <transition name="NOK" to="error"/>
     </action>
 
-    <!--Check if the payment is already authorized-->
+    <!-- Wait for HPP/3Ds authorization -->
     <action id="adyenCheckAuthorization" bean="adyenCheckAuthorizationAction">
         <transition name="OK" to="fraudCheck"/>
         <transition name="NOK" to="error"/>
