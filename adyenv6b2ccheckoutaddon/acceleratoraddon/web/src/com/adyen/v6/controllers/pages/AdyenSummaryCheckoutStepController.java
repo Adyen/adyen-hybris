@@ -10,7 +10,6 @@ import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
-import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -159,15 +158,15 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        final CartData cartData = getCartFacade().getSessionCart();
+        final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         OrderData orderData = null;
         String errorMessage = "checkout.error.authorization.failed";
         try {
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
-                BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), baseStore.getAdyenRecurringContractMode());
+                Boolean guestUser = this.getCheckoutCustomerStrategy().isAnonymousCheckout();
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), guestUser);
 
 				LOGGER.info("authorization result: " + paymentResult);
 

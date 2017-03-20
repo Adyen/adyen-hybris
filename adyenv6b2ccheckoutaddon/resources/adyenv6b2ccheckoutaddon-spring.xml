@@ -58,6 +58,11 @@
 	</bean>
 
 	<bean parent="modifyPopulatorList">
+		<property name="list" ref="extendedCartConverter"/>
+		<property name="add" ref="adyenCartPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
 		<property name="list" ref="cartConverter"/>
 		<property name="add" ref="adyenAbstractOrderPopulator"/>
 	</bean>
