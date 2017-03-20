@@ -27,6 +27,7 @@ import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
@@ -77,6 +78,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "commonI18NService")
     private CommonI18NService commonI18NService;
 
+    @Resource(name = "userService")
+    private UserService userService;
+
     /**
      * {@inheritDoc}
      */
@@ -115,9 +119,16 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         Assert.notNull(cseId);
         model.addAttribute("cseId", cseId);
 
-        // If the RecurringContract mode is set to ONECLICK show the option to store the card
+        /**
+         * The show remember me checkout should only be shown as the
+         * user is logged in and the recurirng mode is set to ONECLICK or ONECLICK,RECURRING
+         */
         RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
-        if(!recurringContractMode.getCode().isEmpty() && recurringContractMode.getCode() != Recurring.ContractEnum.RECURRING.toString()) {
+
+        if(!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
+                !recurringContractMode.getCode().isEmpty() &&
+                recurringContractMode != recurringContractMode.NONE &&
+                recurringContractMode.getCode() != Recurring.ContractEnum.RECURRING.toString()) {
             model.addAttribute("showRememberTheseDetails", true);
         } else {
             model.addAttribute("showRememberTheseDetails", false);
