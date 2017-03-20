@@ -30,8 +30,6 @@ public class AdyenOrderCancelPaymentServiceAdapter implements OrderCancelPayment
      */
     @Override
     public void recalculateOrderAndModifyPayments(final OrderModel order) {
-        final PaymentTransactionModel transaction = order.getPaymentTransactions().get(0);
-
         LOG.info("recalculateOrderAndModifyPayments received for order: " + order.getCode() + ":"
                 + order.getTotalPrice() + ":" + order.getStatus().getCode());
 
@@ -47,13 +45,15 @@ public class AdyenOrderCancelPaymentServiceAdapter implements OrderCancelPayment
             return;
         }
 
-        if (transaction == null) {
-            LOG.error("No transaction found!");
+        if(order.getPaymentTransactions().size() == 0) {
+            LOG.info("No transaction found!");
             return;
         }
+        final PaymentTransactionModel transaction = order.getPaymentTransactions().get(0);
 
         //Ignore non-Adyen payments
         if (!PAYMENT_PROVIDER.equals(transaction.getPaymentProvider())) {
+            LOG.info("Different Payment provider: " + transaction.getPaymentProvider());
             return;
         }
 

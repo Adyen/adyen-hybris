@@ -4,6 +4,7 @@ import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.NotificationItemRepository;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
+import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -48,6 +49,8 @@ public class AdyenProcessNotificationCronJobTest {
     @Mock
     private NotificationItemRepository notificationItemRepositoryMock;
 
+    private AdyenBusinessProcessService adyenBusinessProcessService;
+
     @Mock
     private BusinessProcessService businessProcessServiceMock;
 
@@ -61,9 +64,12 @@ public class AdyenProcessNotificationCronJobTest {
         when(modelServiceMock.create(PaymentTransactionEntryModel.class))
                 .thenReturn(new PaymentTransactionEntryModel());
 
+        adyenBusinessProcessService = new AdyenBusinessProcessService();
+        adyenBusinessProcessService.setBusinessProcessService(businessProcessServiceMock);
+
         adyenProcessNotificationCronJob = new AdyenProcessNotificationCronJob();
         adyenProcessNotificationCronJob.setModelService(modelServiceMock);
-        adyenProcessNotificationCronJob.setBusinessProcessService(businessProcessServiceMock);
+        adyenProcessNotificationCronJob.setAdyenBusinessProcessService(adyenBusinessProcessService);
         adyenProcessNotificationCronJob.setAdyenTransactionService(adyenTransactionServiceMock);
         adyenProcessNotificationCronJob.setOrderRepository(orderRepositoryMock);
         adyenProcessNotificationCronJob.setNotificationItemRepository(notificationItemRepositoryMock);

@@ -4,24 +4,20 @@ import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.NotificationItemRepository;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
+import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.cronjob.enums.CronJobResult;
 import de.hybris.platform.cronjob.enums.CronJobStatus;
 import de.hybris.platform.cronjob.model.CronJobModel;
-import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.processengine.BusinessProcessService;
-import de.hybris.platform.returns.model.ReturnProcessModel;
-import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.servicelayer.cronjob.AbstractJobPerformable;
 import de.hybris.platform.servicelayer.cronjob.PerformResult;
 import de.hybris.platform.servicelayer.model.ModelService;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,7 +31,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     private static final Logger LOG = Logger.getLogger(AdyenProcessNotificationCronJob.class);
 
     private ModelService modelService;
-    private BusinessProcessService businessProcessService;
+    private AdyenBusinessProcessService adyenBusinessProcessService;
     private AdyenTransactionService adyenTransactionService;
     private NotificationItemRepository notificationItemRepository;
     private OrderRepository orderRepository;
@@ -91,7 +87,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
         //Trigger Captured event
         OrderModel orderModel = (OrderModel) paymentTransactionModel.getOrder();
-        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
     }
 
     /**
@@ -116,10 +112,10 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             );
         }
 
-        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_AUTHORIZED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_AUTHORIZED);
 
         //todo: trigger only for manual capture
-        triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
         return paymentTransactionModel;
     }
 
@@ -173,7 +169,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
         //Trigger Refunded event
         OrderModel orderModel = (OrderModel) paymentTransaction.getOrder();
-        triggerReturnProcessEvent(orderModel, PROCESS_EVENT_ADYEN_REFUNDED);
+        adyenBusinessProcessService.triggerReturnProcessEvent(orderModel, PROCESS_EVENT_ADYEN_REFUNDED);
     }
 
     /**
@@ -207,41 +203,6 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
         }
     }
 
-    /**
-     * Trigger order-process event
-     *
-     * @param orderModel
-     */
-    private void triggerOrderProcessEvent(OrderModel orderModel, String event) {
-        final Collection<OrderProcessModel> orderProcesses = orderModel.getOrderProcess();
-        for (final OrderProcessModel orderProcess : orderProcesses) {
-            LOG.info("Order process code: " + orderProcess.getCode());
-            //TODO: send only on "order-process-*" ?
-            final String eventName = orderProcess.getCode() + "_" + event;
-            LOG.info("Sending event:" + eventName);
-            businessProcessService.triggerEvent(eventName);
-        }
-    }
-
-    /**
-     * Trigger return-process event
-     *
-     * @param orderModel
-     * @param event
-     */
-    private void triggerReturnProcessEvent(OrderModel orderModel, String event) {
-        List<ReturnRequestModel> returnRequests = orderModel.getReturnRequests();
-        for (ReturnRequestModel returnRequest : returnRequests) {
-            Collection<ReturnProcessModel> returnProcesses = returnRequest.getReturnProcess();
-            for (ReturnProcessModel returnProcess : returnProcesses) {
-                LOG.info("Return process code: " + returnProcess.getCode());
-                //TODO: send only on "return-process-*" ?
-                final String eventName = returnProcess.getCode() + "_" + event;
-                LOG.info("Sending event:" + eventName);
-                businessProcessService.triggerEvent(eventName);
-            }
-        }
-    }
 
     public ModelService getModelService() {
         return modelService;
@@ -250,14 +211,6 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     @Override
     public void setModelService(ModelService modelService) {
         this.modelService = modelService;
-    }
-
-    public BusinessProcessService getBusinessProcessService() {
-        return businessProcessService;
-    }
-
-    public void setBusinessProcessService(BusinessProcessService businessProcessService) {
-        this.businessProcessService = businessProcessService;
     }
 
     public AdyenTransactionService getAdyenTransactionService() {
@@ -290,5 +243,13 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
     public void setPaymentTransactionRepository(PaymentTransactionRepository paymentTransactionRepository) {
         this.paymentTransactionRepository = paymentTransactionRepository;
+    }
+
+    public AdyenBusinessProcessService getAdyenBusinessProcessService() {
+        return adyenBusinessProcessService;
+    }
+
+    public void setAdyenBusinessProcessService(AdyenBusinessProcessService adyenBusinessProcessService) {
+        this.adyenBusinessProcessService = adyenBusinessProcessService;
     }
 }
