@@ -126,9 +126,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
 
         if(!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
-                !recurringContractMode.getCode().isEmpty() &&
-                recurringContractMode != recurringContractMode.NONE &&
-                recurringContractMode.getCode() != Recurring.ContractEnum.RECURRING.toString()) {
+                (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode()) ||
+                Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode())))
+        {
             model.addAttribute("showRememberTheseDetails", true);
         } else {
             model.addAttribute("showRememberTheseDetails", false);

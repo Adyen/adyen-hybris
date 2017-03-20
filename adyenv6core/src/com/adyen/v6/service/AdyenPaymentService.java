@@ -84,7 +84,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return client;
     }
 
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, final Boolean guestUser, final RecurringContractMode recurringContractMode) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final UserModel user, final Boolean guestUser) throws Exception {
         Client client = createClient();
         Payment payment = new Payment(client);
 
@@ -107,8 +107,8 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         if(!guestUser) {
             paymentRequest.setShopperReference(user.getUid());
             // If NONE is selected the merchants don't save card data
-            if(recurringContractMode != RecurringContractMode.NONE) {
-                paymentRequest.setRecurring(getRecurringContractType(cartData, recurringContractMode));
+            if(baseStore.getAdyenRecurringContractMode() != RecurringContractMode.NONE) {
+                paymentRequest.setRecurring(getRecurringContractType(cartData, baseStore.getAdyenRecurringContractMode()));
             }
         }
 

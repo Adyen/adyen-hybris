@@ -165,9 +165,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
                 //CSE
-                BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
                 Boolean guestUser = this.getCheckoutCustomerStrategy().isAnonymousCheckout();
-                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), guestUser, baseStore.getAdyenRecurringContractMode());
+                PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, userService.getCurrentUser(), guestUser);
 
 				LOGGER.info("authorization result: " + paymentResult);
 
