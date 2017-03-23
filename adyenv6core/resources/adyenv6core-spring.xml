@@ -12,12 +12,9 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans.xsd
-           http://www.springframework.org/schema/aop
-           http://www.springframework.org/schema/aop/spring-aop.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!--
 	The hybris platform provides one single Spring application context for beans located at the jalo layer.
@@ -89,12 +86,15 @@
         <property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
         <property name="orderRepository" ref="adyenOrderRepository" />
         <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
+        <property name="cartRepository" ref="adyenCartRepository" />
+        <property name="commercePlaceOrderStrategy" ref="adyenCommercePlaceOrderStrategy" />
     </bean>
 
     <bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService" autowire="byName"/>
 
     <bean id="adyenNotificationItemRepository" class="com.adyen.v6.repository.NotificationItemRepository" autowire="byName"/>
     <bean id="adyenOrderRepository" class="com.adyen.v6.repository.OrderRepository" autowire="byName"/>
+    <bean id="adyenCartRepository" class="com.adyen.v6.repository.CartRepository" autowire="byName"/>
     <bean id="adyenPaymentTransactionRepository" class="com.adyen.v6.repository.PaymentTransactionRepository" autowire="byName"/>
     <bean id="adyenBaseStoreRepository" class="com.adyen.v6.repository.BaseStoreRepository" autowire="byName">
         <property name="orderRepository" ref="adyenOrderRepository" />
@@ -156,5 +156,21 @@
 
     <bean id="adyenBusinessProcessService" class="com.adyen.v6.service.AdyenBusinessProcessService">
         <property name="businessProcessService" ref="businessProcessService" />
+    </bean>
+
+    <bean id="adyenCommercePlaceOrderStrategy"
+          class="com.adyen.v6.order.impl.AdyenCronjobCommercePlaceOrderStrategy">
+        <property name="paymentService" ref="paymentService"/>
+        <property name="modelService" ref="modelService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="deliveryService" ref="deliveryService"/>
+        <property name="orderService" ref="orderService"/>
+        <property name="baseSiteService" ref="baseSiteService"/>
+        <property name="baseStoreService" ref="baseStoreService"/>
+        <property name="promotionsService" ref="promotionsService"/>
+        <property name="calculationService" ref="calculationService"/>
+        <property name="externalTaxesService" ref="externalTaxesService"/>
+        <property name="commercePlaceOrderMethodHooks" ref="commercePlaceOrderMethodHooks"/>
+        <property name="configurationService" ref="configurationService"/>
     </bean>
 </beans>

@@ -3,8 +3,6 @@ package com.adyen.v6.service;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.Util.Util;
-import com.adyen.enums.Environment;
-import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.*;
 import com.adyen.model.hpp.DirectoryLookupRequest;
@@ -16,12 +14,12 @@ import com.adyen.model.modification.RefundRequest;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
+import com.adyen.v6.enums.RecurringContractMode;
+import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.UserModel;
-import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
 import de.hybris.platform.store.BaseStoreModel;
-import com.adyen.model.Recurring;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
@@ -64,7 +62,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         config.setEndpoint(apiEndpoint);
         config.setHppEndpoint(HPP_LIVE);
 
-        if(isHppTest) {
+        if (isHppTest) {
             config.setHppEndpoint(HPP_TEST);
         }
 
@@ -88,7 +86,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Client client = createClient();
         Payment payment = new Payment(client);
 
-        String amount = cartData.getTotalPrice().getValue().toString();
+        String amount = String.valueOf(cartData.getTotalPrice().getValue());
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
         String cseToken = cartData.getAdyenCseToken();
@@ -104,22 +102,21 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 .setCSEToken(cseToken);
 
         // if user is logged in
-        if(!guestUser) {
+        if (!guestUser) {
             paymentRequest.setShopperReference(user.getUid());
             // If NONE is selected the merchants don't save card data
-            if(baseStore.getAdyenRecurringContractMode() != RecurringContractMode.NONE) {
+            if (baseStore.getAdyenRecurringContractMode() != RecurringContractMode.NONE) {
                 paymentRequest.setRecurring(getRecurringContractType(cartData, baseStore.getAdyenRecurringContractMode()));
             }
         }
 
         // if address details are provided added it into the request
-        if(cartData.getDeliveryAddress() != null)  {
+        if (cartData.getDeliveryAddress() != null) {
             Address deliveryAddress = fillInAddressData(cartData.getDeliveryAddress());
             paymentRequest.setDeliveryAddress(deliveryAddress);
         }
 
-        if(cartData.getPaymentInfo().getBillingAddress() != null)
-        {
+        if (cartData.getPaymentInfo().getBillingAddress() != null) {
             Address billingAddress = fillInAddressData(cartData.getPaymentInfo().getBillingAddress());
             paymentRequest.setBillingAddress(billingAddress);
         }
@@ -133,8 +130,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @param addressData
      * @return
      */
-    public Address fillInAddressData(AddressData addressData)
-    {
+    public Address fillInAddressData(AddressData addressData) {
 
         Address address = new Address();
 
@@ -147,28 +143,28 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         address.setStreet("NA");
 
         // set the actual values if they are available
-        if(addressData.getTown() !=  null &&  addressData.getTown() !=  "") {
+        if (addressData.getTown() != null && addressData.getTown() != "") {
             address.setCity(addressData.getTown());
         }
 
-        if(addressData.getCountry() != null  && addressData.getCountry().getIsocode() != "") {
+        if (addressData.getCountry() != null && addressData.getCountry().getIsocode() != "") {
             address.setCountry(addressData.getCountry().getIsocode());
         }
 
-        if(addressData.getLine2() != null && addressData.getLine2() != "") {
+        if (addressData.getLine2() != null && addressData.getLine2() != "") {
             address.setHouseNumberOrName(addressData.getLine2());
         }
 
-        if(addressData.getPostalCode() != null && address.getPostalCode() != "") {
+        if (addressData.getPostalCode() != null && address.getPostalCode() != "") {
             address.setPostalCode(addressData.getPostalCode());
         }
 
-        if(addressData.getRegion() != null && addressData.getRegion().getIsocode() != "") {
+        if (addressData.getRegion() != null && addressData.getRegion().getIsocode() != "") {
             address.setStateOrProvince(addressData.getRegion().getIsocode());
         }
 
-        if(addressData.getLine1() != null && addressData.getLine1() != "") {
-           address.setStreet(addressData.getLine1());
+        if (addressData.getLine1() != null && addressData.getLine1() != "") {
+            address.setStreet(addressData.getLine1());
         }
 
         return address;
@@ -182,15 +178,14 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @param recurringContractMode
      * @return
      */
-    public Recurring getRecurringContractType(final CartData cartData, RecurringContractMode recurringContractMode)
-    {
+    public Recurring getRecurringContractType(final CartData cartData, RecurringContractMode recurringContractMode) {
         Recurring recurringContract = new com.adyen.model.Recurring();
 
         String recurringMode = recurringContractMode.getCode();
         Recurring.ContractEnum contractEnum = Recurring.ContractEnum.valueOf(recurringMode);
 
         // if user want to save his card use the configured recurring contract type
-        if(cartData.getAdyenRememberTheseDetails() != null && cartData.getAdyenRememberTheseDetails()) {
+        if (cartData.getAdyenRememberTheseDetails() != null && cartData.getAdyenRememberTheseDetails()) {
             recurringContract.contract(contractEnum);
         } else {
 
@@ -201,9 +196,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
              * NONE => NONE
              * RECURRING => RECURRING
              */
-            if(contractEnum.equals(Recurring.ContractEnum.ONECLICK_RECURRING)) {
+            if (contractEnum.equals(Recurring.ContractEnum.ONECLICK_RECURRING)) {
                 recurringContract.contract(Recurring.ContractEnum.RECURRING);
-            } else if(!contractEnum.equals(Recurring.ContractEnum.ONECLICK)) {
+            } else if (!contractEnum.equals(Recurring.ContractEnum.ONECLICK)) {
                 recurringContract.contract(contractEnum);
             }
         }
@@ -267,7 +262,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Modification modification = new Modification(client);
 
         final CaptureRequest captureRequest = new CaptureRequest()
-                .fillAmount(amount.toString(), currency.getCurrencyCode())
+                .fillAmount(String.valueOf(amount), currency.getCurrencyCode())
                 .merchantAccount(client.getConfig().getMerchantAccount())
                 .originalReference(authReference)
                 .reference(merchantReference);
@@ -321,7 +316,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         Modification modification = new Modification(client);
 
         final RefundRequest refundRequest = new RefundRequest()
-                .fillAmount(amount.toString(), currency.getCurrencyCode())
+                .fillAmount(String.valueOf(amount), currency.getCurrencyCode())
                 .merchantAccount(client.getConfig().getMerchantAccount())
                 .originalReference(authReference)
                 .reference(merchantReference);
@@ -347,11 +342,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
                                                  final String currency,
                                                  final String countryCode) throws HTTPClientException, SignatureException, IOException {
-        Amount amountData = Util.createAmount(amount.toString(), currency);
+        Amount amountData = Util.createAmount(amount, currency);
         DirectoryLookupRequest directoryLookupRequest = new DirectoryLookupRequest()
                 .setCountryCode(countryCode)
                 .setMerchantReference("GetPaymentMethods")
-                .setPaymentAmount(amountData.getValue().toString())
+                .setPaymentAmount(String.valueOf(amountData.getValue()))
                 .setCurrencyCode(amountData.getCurrency());
 
         LOG.info(directoryLookupRequest);
@@ -363,17 +358,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         LOG.info(paymentMethods);
 
         return paymentMethods;
-    }
-
-    /**
-     * Retrive the HPP base URL for the current basestore
-     *
-     * @return
-     */
-    public String getHppUrl() {
-        Config config = getConfig();
-
-        return config.getHppEndpoint() + "/details.shtml";
     }
 
     /**
