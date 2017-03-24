@@ -1,15 +1,22 @@
 package com.adyen.v6.cronjob;
 
 import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.repository.CartRepository;
 import com.adyen.v6.repository.NotificationItemRepository;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
 import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenTransactionService;
+import de.hybris.platform.commerceservices.enums.SalesApplication;
+import de.hybris.platform.commerceservices.order.CommercePlaceOrderStrategy;
+import de.hybris.platform.commerceservices.service.data.CommerceCheckoutParameter;
+import de.hybris.platform.commerceservices.service.data.CommerceOrderResult;
+import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.cronjob.enums.CronJobResult;
 import de.hybris.platform.cronjob.enums.CronJobStatus;
 import de.hybris.platform.cronjob.model.CronJobModel;
+import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
@@ -36,6 +43,8 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     private NotificationItemRepository notificationItemRepository;
     private OrderRepository orderRepository;
     private PaymentTransactionRepository paymentTransactionRepository;
+    private CartRepository cartRepository;
+    private CommercePlaceOrderStrategy commercePlaceOrderStrategy;
 
     @Override
     public PerformResult perform(final CronJobModel cronJob) {
@@ -93,10 +102,19 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     /**
      * Handles AUTHORISATION eventCode
      */
-    public PaymentTransactionModel processAuthorisationEvent(
-            NotificationItemModel notificationItemModel,
-            OrderModel orderModel) {
-        if (orderModel == null) return null;
+    public PaymentTransactionModel processAuthorisationEvent(NotificationItemModel notificationItemModel) {
+        String orderCode = notificationItemModel.getMerchantReference();
+        OrderModel orderModel = orderRepository.getOrderModel(orderCode);
+
+        //Create order if it is successfuly authorized
+        if (orderModel == null && notificationItemModel.getSuccess()) {
+            orderModel = createOrder(orderCode);
+        }
+
+        if (orderModel == null) {
+            LOG.error("Order not found");
+            return null;
+        }
 
         PaymentTransactionModel paymentTransactionModel = null;
         if (notificationItemModel.getSuccess()) {
@@ -117,6 +135,35 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
         //todo: trigger only for manual capture
         adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
         return paymentTransactionModel;
+    }
+
+    /**
+     * Create order from cart
+     *
+     * @param orderCode
+     * @return
+     */
+    private OrderModel createOrder(String orderCode) {
+        LOG.info("Order not found. Checking Cart..");
+        CartModel cartModel = cartRepository.getCart(orderCode);
+        if (cartModel == null) {
+            LOG.error("Cart not found!");
+            return null;
+        }
+
+        try {
+            //place order similar to AcceleratorCheckoutFacade
+            CommerceCheckoutParameter parameter = new CommerceCheckoutParameter();
+            parameter.setEnableHooks(true);
+            parameter.setCart(cartModel);
+            parameter.setSalesApplication(SalesApplication.WEB);
+            CommerceOrderResult commerceOrderResult = commercePlaceOrderStrategy.placeOrder(parameter);
+            return commerceOrderResult.getOrder();
+        } catch (InvalidCartException e) {
+            LOG.error(e);
+        }
+
+        return null;
     }
 
     public void processCancelEvent(
@@ -187,8 +234,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             case EVENT_CODE_AUTHORISATION:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getPspReference());
                 if (paymentTransaction == null) {
-                    OrderModel orderModel = orderRepository.getOrderModel(notificationItemModel.getMerchantReference());
-                    processAuthorisationEvent(notificationItemModel, orderModel);
+                    processAuthorisationEvent(notificationItemModel);
                 } else {
                     LOG.info("Authorisation already processed " + paymentTransaction.getRequestId());
                 }
@@ -251,5 +297,21 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
     public void setAdyenBusinessProcessService(AdyenBusinessProcessService adyenBusinessProcessService) {
         this.adyenBusinessProcessService = adyenBusinessProcessService;
+    }
+
+    public CartRepository getCartRepository() {
+        return cartRepository;
+    }
+
+    public void setCartRepository(CartRepository cartRepository) {
+        this.cartRepository = cartRepository;
+    }
+
+    public CommercePlaceOrderStrategy getCommercePlaceOrderStrategy() {
+        return commercePlaceOrderStrategy;
+    }
+
+    public void setCommercePlaceOrderStrategy(CommercePlaceOrderStrategy commercePlaceOrderStrategy) {
+        this.commercePlaceOrderStrategy = commercePlaceOrderStrategy;
     }
 }

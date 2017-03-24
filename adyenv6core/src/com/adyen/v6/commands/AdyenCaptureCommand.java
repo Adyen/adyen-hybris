@@ -85,7 +85,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
                     result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
                 }
             } catch (Exception e) {
-                LOG.error("Capture Exception", e);
+                LOG.error("Capture Exception: " + e, e);
             }
         }
 
@@ -106,6 +106,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
 
         //Default status = ERROR
         result.setTransactionStatus(TransactionStatus.ERROR);
+        result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
 
         return result;
     }
