@@ -129,7 +129,6 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "klarna":
             case "afterpay_default":
             case "sepadirectdebit":
-            case Adyenv6coreConstants.PAYMENT_METHOD_CC: //todo: remove
                 return true;
         }
 

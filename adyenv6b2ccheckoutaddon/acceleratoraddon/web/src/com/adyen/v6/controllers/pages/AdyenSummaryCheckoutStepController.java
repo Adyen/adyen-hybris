@@ -3,6 +3,7 @@ package com.adyen.v6.controllers.pages;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -109,15 +111,20 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
+        //TODO: validate Cart and selectedAlias
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         String errorMessage = "checkout.error.authorization.failed";
-        if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
+        //Handle CreditCard/oneClick payments
+        if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())
+                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authoriseCardPayment(request, cartData);
 
                 LOGGER.info("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
+            } catch (ApiException e) {
+                LOGGER.error("API exception " + e.getError());
             } catch (AdyenNonAuthorizedPaymentException e) {
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRedirectShopper()) {
@@ -136,6 +143,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                 LOGGER.error(e);
             }
         } else {
+            //Handle APM
             try {
                 Map<String, String> hppFormData = null;
                 hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, getHppRedirectUrl());
@@ -177,7 +185,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
-            LOGGER.info("Redirecting to cart");
             return REDIRECT_PREFIX + "/cart";
         }
 

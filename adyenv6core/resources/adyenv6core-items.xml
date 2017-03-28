@@ -68,10 +68,6 @@
 						</columntype>
 					</persistence>
 				</attribute>
-				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
-					<defaultvalue>Boolean.FALSE</defaultvalue>
-					<persistence type="property" />
-				</attribute>
 			</attributes>
 		</itemtype>
 
@@ -238,6 +234,13 @@
 				</attribute>
 				<attribute qualifier="adyenThreeDAuthenticated" type="java.lang.boolean">
 					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
+					<defaultvalue>Boolean.FALSE</defaultvalue>
+					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenSelectedAlias" type="java.lang.String">
+					<persistence type="property" />
 				</attribute>
 			</attributes>
 		</itemtype>
