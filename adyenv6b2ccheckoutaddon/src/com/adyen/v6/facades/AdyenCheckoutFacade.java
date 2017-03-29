@@ -277,7 +277,7 @@ public class AdyenCheckoutFacade {
         hppFormData.put(SKIN_CODE, skinCode);
         hppFormData.put(MERCHANT_ACCOUNT, merchantAccount);
         hppFormData.put(SESSION_VALIDITY, sessionValidity);
-        hppFormData.put(BRAND_CODE, cartData.getAdyenBrandCode());
+        hppFormData.put(BRAND_CODE, cartData.getAdyenPaymentMethod());
         hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
         hppFormData.put(COUNTRY_CODE, countryCode);
         hppFormData.put(RES_URL, redirectUrl);

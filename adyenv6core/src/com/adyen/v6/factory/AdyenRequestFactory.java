@@ -50,7 +50,7 @@ public class AdyenRequestFactory {
 
         // if user is logged in
         if (customerModel != null) {
-            paymentRequest.setShopperReference(customerModel.getUid());
+            paymentRequest.setShopperReference(customerModel.getCustomerID());
             paymentRequest.setShopperEmail(customerModel.getContactEmail());
 
             Recurring recurring = getRecurringContractType(recurringContractMode, cartData.getAdyenRememberTheseDetails());
@@ -73,8 +73,8 @@ public class AdyenRequestFactory {
             paymentRequest.setSelectedRecurringDetailReference(selectedAlias);
             paymentRequest.setShopperInteraction(AbstractPaymentRequest.ShopperInteractionEnum.ECOMMERCE);
 
-            //overwrite recurring contract
-            Recurring recurring = getRecurringContractType(recurringContractMode);
+            //set oneclick
+            Recurring recurring = getRecurringContractType(RecurringContractMode.ONECLICK);
             paymentRequest.setRecurring(recurring);
         }
 
@@ -132,7 +132,7 @@ public class AdyenRequestFactory {
                                                                      final CustomerModel customerModel) {
         return new RecurringDetailsRequest()
                 .merchantAccount(merchantAccount)
-                .shopperReference(customerModel.getUid())
+                .shopperReference(customerModel.getCustomerID())
                 .selectOneClickContract();
     }
 

@@ -95,10 +95,6 @@ public class AdyenOrderService extends DefaultPaymentServiceImpl {
         paymentInfo.setAdyenThreeDOffered(paymentResult.get3DOffered());
         paymentInfo.setAdyenThreeDAuthenticated(paymentResult.get3DAuthenticated());
 
-        if (paymentResult.getCardBin() != null) {
-            paymentInfo.setAdyenBrandCode(paymentResult.getPaymentMethod());
-        }
-
         modelService.save(paymentInfo);
 
         storeFraudReportFromPaymentResult(order, paymentResult);

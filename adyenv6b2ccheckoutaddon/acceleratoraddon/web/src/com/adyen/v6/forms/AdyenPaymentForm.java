@@ -2,6 +2,8 @@ package com.adyen.v6.forms;
 
 import com.adyen.Util.Util;
 
+import javax.validation.constraints.NotNull;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
@@ -9,6 +11,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
+    @NotNull
     private String paymentMethod;
 
     //CSE
@@ -19,7 +22,6 @@ public class AdyenPaymentForm {
 
     //HPP
     private String issuerId;
-    private String brandCode;
 
     //Billing Address
     private boolean useDeliveryAddress;
@@ -57,14 +59,6 @@ public class AdyenPaymentForm {
         this.issuerId = issuerId;
     }
 
-    public String getBrandCode() {
-        return brandCode;
-    }
-
-    public void setBrandCode(String brandCode) {
-        this.brandCode = brandCode;
-    }
-
     public boolean getRememberTheseDetails() {
         return this.rememberTheseDetails;
     }
@@ -85,7 +79,7 @@ public class AdyenPaymentForm {
         return rememberTheseDetails;
     }
 
-    public boolean isCSE() {
+    public boolean isCC() {
         return PAYMENT_METHOD_CC.equals(paymentMethod);
 
     }
@@ -101,7 +95,6 @@ public class AdyenPaymentForm {
 
         sb.append("    paymentMethod: ").append(Util.toIndentedString(paymentMethod)).append("\n");
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
-        sb.append("    brandCode: ").append(Util.toIndentedString(brandCode)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedAlias: ").append(Util.toIndentedString(selectedAlias)).append("\n");

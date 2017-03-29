@@ -72,7 +72,7 @@ public class AdyenRequestFactoryTest {
         when(deliveryCountryDataMock.getIsocode()).thenReturn("NL");
         when(billingCountryDataMock.getIsocode()).thenReturn("GR");
 
-        when(customerModelMock.getUid()).thenReturn("uuid");
+        when(customerModelMock.getCustomerID()).thenReturn("uuid");
         when(customerModelMock.getContactEmail()).thenReturn("email");
 
         when(requestMock.getHeader("User-Agent")).thenReturn("User-Agent");
@@ -124,12 +124,13 @@ public class AdyenRequestFactoryTest {
 
         //When a store card is selected, send the alias and include the recurring contract
         when(cartDataMock.getAdyenSelectedAlias()).thenReturn("alias");
+        when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
         paymentRequest = adyenRequestFactory.createAuthorizationRequest(
                 "merchantAccount",
                 cartDataMock,
                 requestMock,
                 customerModelMock,
-                RecurringContractMode.ONECLICK
+                null
         );
 
         assertEquals("alias", paymentRequest.getSelectedRecurringDetailReference());

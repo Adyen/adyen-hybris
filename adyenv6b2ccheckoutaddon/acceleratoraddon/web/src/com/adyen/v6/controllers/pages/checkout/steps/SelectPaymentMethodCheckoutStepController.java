@@ -249,7 +249,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         paymentInfo.setBillingAddress(addressModel);
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
-        paymentInfo.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
 
         paymentInfo.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());

@@ -18,7 +18,6 @@ public class CartPopulator implements Populator<CartModel, CartData> {
         final PaymentInfoModel paymentInfo = source.getPaymentInfo();
         if (paymentInfo != null && isNotCreditCard(paymentInfo)) {
             target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
-            target.setAdyenBrandCode(paymentInfo.getAdyenBrandCode());
             target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
             target.setAdyenRememberTheseDetails(paymentInfo.getAdyenRememberTheseDetails());
             target.setAdyenSelectedAlias(paymentInfo.getAdyenSelectedAlias());

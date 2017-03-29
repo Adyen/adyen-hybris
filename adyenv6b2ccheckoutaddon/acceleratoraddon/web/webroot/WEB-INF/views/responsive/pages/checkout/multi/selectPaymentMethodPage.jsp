@@ -81,7 +81,6 @@
 
                                     <form:hidden path="cseToken"/>
                                     <form:hidden path="selectedAlias"/>
-                                    <form:hidden path="brandCode"/>
                                     <form:hidden path="issuerId"/>
 
                                     <div class="fieldset">
@@ -274,7 +273,6 @@
                                                     <input id="p_method_adyen_hpp_${paymentMethod.brandCode}"
                                                            value="${paymentMethod.brandCode}" type="radio"
                                                            name="paymentMethod" title="${paymentMethod.name}"
-                                                           onclick="AdyenCheckout.setBrandCode('${paymentMethod.brandCode}')"
                                                            autocomplete="off">
                                                     <img src="https://live.adyen.com/hpp/img/pm/${paymentMethod.brandCode}.png"/>
                                                     <label for="p_method_adyen_hpp_${paymentMethod.brandCode}">

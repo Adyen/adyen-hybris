@@ -109,7 +109,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 baseStore.getAdyenRecurringContractMode()
         );
 
-        return payment.authorise(paymentRequest);
+        LOG.debug(paymentRequest);
+        PaymentResult paymentResult = payment.authorise(paymentRequest);
+        LOG.debug(paymentResult);
+
+        return paymentResult;
     }
 
     /**
@@ -134,9 +138,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 paRes
         );
 
-        LOG.info(paymentRequest3d); //TODO: anonymize
+        LOG.debug(paymentRequest3d);
         PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
-        LOG.info(paymentResult);
+        LOG.debug(paymentResult);
 
         return paymentResult;
     }
@@ -166,9 +170,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 merchantReference
         );
 
-        LOG.info(captureRequest);
+        LOG.debug(captureRequest);
         ModificationResult modificationResult = modification.capture(captureRequest);
-        LOG.info(modificationResult);
+        LOG.debug(modificationResult);
 
         return modificationResult;
     }
@@ -191,9 +195,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 merchantReference
         );
 
-        LOG.info(cancelRequest);
+        LOG.debug(cancelRequest);
         ModificationResult modificationResult = modification.cancelOrRefund(cancelRequest);
-        LOG.info(modificationResult);
+        LOG.debug(modificationResult);
 
         return modificationResult;
     }
@@ -223,9 +227,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 merchantReference
         );
 
-        LOG.info(refundRequest);
+        LOG.debug(refundRequest);
         ModificationResult modificationResult = modification.refund(refundRequest);
-        LOG.info(modificationResult);
+        LOG.debug(modificationResult);
 
         return modificationResult;
     }
@@ -250,9 +254,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory()
                 .createListPaymentMethodsRequest(amount, currency, countryCode);
 
-        LOG.info(directoryLookupRequest);
+        LOG.debug(directoryLookupRequest);
         List<PaymentMethod> paymentMethods = hostedPaymentPages.getPaymentMethods(directoryLookupRequest);
-        LOG.info(paymentMethods);
+        LOG.debug(paymentMethods);
 
         return paymentMethods;
     }
@@ -270,9 +274,9 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 customerModel
         );
 
-        LOG.info(request);
+        LOG.debug(request);
         RecurringDetailsResult result = recurring.listRecurringDetails(request);
-        LOG.info(result);
+        LOG.debug(result);
 
         //Return only cards
         List<RecurringDetail> storedCards = result.getRecurringDetails().stream()

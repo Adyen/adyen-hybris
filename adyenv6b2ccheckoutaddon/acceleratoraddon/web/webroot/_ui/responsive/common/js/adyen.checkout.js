@@ -1,10 +1,6 @@
 var AdyenCheckout = (function () {
     var oneClickForms = [];
 
-    var setBrandCode = function (brandCode) {
-        $("#brandCode").val(brandCode);
-    };
-
     var updateCardType = function (cardType, friendlyName) {
         $(".cse-cardtype").removeClass("cse-cardtype-style-active");
 
@@ -57,7 +53,7 @@ var AdyenCheckout = (function () {
             }
 
             cseToken = encryptedForm.encrypt();
-            if (cseToken == null) {
+            if (cseToken == false) {
                 alert('This credit card is not valid');
                 return false;
             }
@@ -66,7 +62,7 @@ var AdyenCheckout = (function () {
         } else if (paymentMethod.indexOf("adyen_oneclick_") == 0) {
             var alias = paymentMethod.slice("adyen_oneclick_".length);
             cseToken = oneClickForms[alias].encrypt();
-            if (cseToken == null) {
+            if (cseToken == false) {
                 alert('This credit card is not valid');
                 return false;
             }
@@ -109,7 +105,6 @@ var AdyenCheckout = (function () {
     };
 
     return {
-        setBrandCode: setBrandCode,
         enableCardTypeDetection: enableCardTypeDetection,
         isAllowedCard: isAllowedCard,
         validateForm: validateForm,

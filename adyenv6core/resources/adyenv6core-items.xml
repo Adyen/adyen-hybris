@@ -205,9 +205,6 @@
 				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
-				<attribute qualifier="adyenBrandCode" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
 				<attribute qualifier="adyenIssuerId" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
