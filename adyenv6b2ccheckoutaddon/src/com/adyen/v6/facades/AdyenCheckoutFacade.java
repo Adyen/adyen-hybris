@@ -20,6 +20,7 @@ import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.session.SessionService;
@@ -29,7 +30,6 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.security.SignatureException;
 import java.util.Map;
 import java.util.SortedMap;
@@ -149,7 +149,6 @@ public class AdyenCheckoutFacade {
         validateHPPResponse(hppResponseData, merchantSig);
 
         OrderData orderData = null;
-
         //Restore the cart or find the created order
         try {
             restoreSessionCart();
@@ -177,12 +176,15 @@ public class AdyenCheckoutFacade {
      * @throws Exception
      */
     public OrderData authoriseCardPayment(final HttpServletRequest request, final CartData cartData) throws Exception {
-        Boolean guestUser = getCheckoutCustomerStrategy().isAnonymousCheckout();
+        CustomerModel customer = null;
+        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
         PaymentResult paymentResult = getAdyenPaymentService().authorise(
                 cartData,
                 request,
-                getCheckoutCustomerStrategy().getCurrentUserForCheckout(),
-                guestUser
+                customer
         );
 
         LOGGER.info("authorization result: " + paymentResult);
@@ -275,7 +277,7 @@ public class AdyenCheckoutFacade {
         hppFormData.put(SKIN_CODE, skinCode);
         hppFormData.put(MERCHANT_ACCOUNT, merchantAccount);
         hppFormData.put(SESSION_VALIDITY, sessionValidity);
-        hppFormData.put(BRAND_CODE, cartData.getAdyenBrandCode());
+        hppFormData.put(BRAND_CODE, cartData.getAdyenPaymentMethod());
         hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
         hppFormData.put(COUNTRY_CODE, countryCode);
         hppFormData.put(RES_URL, redirectUrl);

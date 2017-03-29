@@ -26,10 +26,6 @@ public class AbstractOrderPopulator implements Populator<AbstractOrderModel, Abs
             final CCPaymentInfoData ccPaymentInfoData = new CCPaymentInfoData();
             ccPaymentInfoData.setBillingAddress(addressConverter.convert(paymentInfo.getBillingAddress()));
             target.setPaymentInfo(ccPaymentInfoData);
-
-            target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
-            target.setAdyenBrandCode(paymentInfo.getAdyenBrandCode());
-            target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
         }
     }
 

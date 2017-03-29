@@ -2,26 +2,30 @@ package com.adyen.v6.forms;
 
 import com.adyen.Util.Util;
 
+import javax.validation.constraints.NotNull;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
 /**
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
+    @NotNull
     private String paymentMethod;
 
     //CSE
     private String cseToken;
+    private String selectedAlias;
+    //Save card
+    private boolean rememberTheseDetails;
 
     //HPP
     private String issuerId;
-    private String brandCode;
 
     //Billing Address
     private boolean useDeliveryAddress;
 
-    //Save card
-    private boolean rememberTheseDetails;
 
     public String getCseToken() {
         return cseToken;
@@ -55,14 +59,6 @@ public class AdyenPaymentForm {
         this.issuerId = issuerId;
     }
 
-    public String getBrandCode() {
-        return brandCode;
-    }
-
-    public void setBrandCode(String brandCode) {
-        this.brandCode = brandCode;
-    }
-
     public boolean getRememberTheseDetails() {
         return this.rememberTheseDetails;
     }
@@ -71,12 +67,25 @@ public class AdyenPaymentForm {
         this.rememberTheseDetails = rememberTheseDetails;
     }
 
-    public boolean isCSE() {
-        if(PAYMENT_METHOD_CC.equals(paymentMethod)) {
-            return true;
-        }
+    public String getSelectedAlias() {
+        return selectedAlias;
+    }
 
-        return false;
+    public void setSelectedAlias(String selectedAlias) {
+        this.selectedAlias = selectedAlias;
+    }
+
+    public boolean isRememberTheseDetails() {
+        return rememberTheseDetails;
+    }
+
+    public boolean isCC() {
+        return PAYMENT_METHOD_CC.equals(paymentMethod);
+
+    }
+
+    public boolean isOneClick() {
+        return PAYMENT_METHOD_ONECLICK.indexOf(paymentMethod) == 0;
     }
 
     @Override
@@ -86,9 +95,9 @@ public class AdyenPaymentForm {
 
         sb.append("    paymentMethod: ").append(Util.toIndentedString(paymentMethod)).append("\n");
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
-        sb.append("    brandCode: ").append(Util.toIndentedString(brandCode)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
+        sb.append("    selectedAlias: ").append(Util.toIndentedString(selectedAlias)).append("\n");
         sb.append("}");
         return sb.toString();
     }

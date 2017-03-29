@@ -4,8 +4,10 @@
 package com.adyen.v6.controllers.pages.checkout.steps;
 
 
-import com.adyen.model.Recurring;
 import com.adyen.model.hpp.PaymentMethod;
+import com.adyen.model.recurring.Recurring;
+import com.adyen.model.recurring.RecurringDetail;
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -24,6 +26,7 @@ import de.hybris.platform.core.model.c2l.RegionModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
@@ -31,6 +34,7 @@ import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -128,14 +132,26 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
          */
         RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
 
-        if(!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
+        List<RecurringDetail> storedCards = new ArrayList<>();
+        boolean showRememberTheseDetails = false;
+        if (!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
                 (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode()) ||
-                Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode())))
-        {
-            model.addAttribute("showRememberTheseDetails", true);
-        } else {
-            model.addAttribute("showRememberTheseDetails", false);
+                        Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode()))) {
+            showRememberTheseDetails = true;
+
+            //Include stored cards
+            CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+            try {
+                storedCards = getAdyenPaymentService().getStoredCards(customerModel);
+            } catch (ApiException e) {
+                LOGGER.error("API Exception " + e.getError());
+            } catch (Exception e) {
+                LOGGER.error(ExceptionUtils.getStackTrace(e));
+            }
         }
+
+        model.addAttribute("showRememberTheseDetails", showRememberTheseDetails);
+        model.addAttribute("storedCards", storedCards);
 
         super.prepareDataForPage(model);
 
@@ -186,7 +202,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
-        cartModel.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
 
         final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
 
@@ -209,7 +224,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         CountryModel country = null;
 
-        if(addressData.getCountry() != null && addressData.getCountry().getIsocode() != "") {
+        if (addressData.getCountry() != null && !addressData.getCountry().getIsocode().isEmpty()) {
 
             // countryModel from service
             country = commonI18NService.getCountry(addressData.getCountry().getIsocode());
@@ -223,7 +238,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         addressModel.setPostalcode(addressData.getPostalCode());
         addressModel.setTown(addressData.getTown());
 
-        if(addressData.getRegion() != null && addressData.getRegion().getIsocode() != "" && country != null) {
+        if (addressData.getRegion() != null && !addressData.getRegion().getIsocode().isEmpty() && country != null) {
             final RegionModel regionModel = commonI18NService.getRegion(country, addressData.getRegion().getIsocode());
             addressModel.setRegion(regionModel);
         }
@@ -234,8 +249,10 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         paymentInfo.setBillingAddress(addressModel);
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
-        paymentInfo.setAdyenBrandCode(adyenPaymentForm.getBrandCode());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
+
+        paymentInfo.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
+        paymentInfo.setAdyenSelectedAlias(adyenPaymentForm.getSelectedAlias());
 
         modelService.save(paymentInfo);
 
