@@ -23,9 +23,6 @@ public class AdyenPaymentForm {
     //HPP
     private String issuerId;
 
-    //Billing Address
-    private boolean useDeliveryAddress;
-
 
     public String getCseToken() {
         return cseToken;
@@ -33,14 +30,6 @@ public class AdyenPaymentForm {
 
     public void setCseToken(String cseToken) {
         this.cseToken = cseToken;
-    }
-
-    public boolean isUseDeliveryAddress() {
-        return useDeliveryAddress;
-    }
-
-    public void setUseDeliveryAddress(boolean useDeliveryAddress) {
-        this.useDeliveryAddress = useDeliveryAddress;
     }
 
     public String getPaymentMethod() {
