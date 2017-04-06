@@ -63,8 +63,8 @@
 				<!-- Store CSE token -->
 				<attribute qualifier="adyenCseToken" type="java.lang.String">
 					<persistence type="property">
-						<columntype database="mysql">
-							<value>text</value>
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
 						</columntype>
 					</persistence>
 				</attribute>
