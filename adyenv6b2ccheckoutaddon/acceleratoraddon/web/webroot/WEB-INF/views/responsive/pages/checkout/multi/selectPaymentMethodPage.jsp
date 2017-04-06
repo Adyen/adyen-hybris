@@ -297,37 +297,6 @@
 
                                         </dl>
                                     </div>
-
-
-                                    <hr/>
-                                    <div class="headline">
-                                        <spring:theme
-                                                code="checkout.multi.paymentMethod.addPaymentDetails.billingAddress"/>
-                                    </div>
-
-
-                                    <c:if test="${cartData.deliveryItemsQuantity > 0}">
-
-                                        <div id="useDeliveryAddressData"
-                                             data-titlecode="${deliveryAddress.titleCode}"
-                                             data-firstname="${deliveryAddress.firstName}"
-                                             data-lastname="${deliveryAddress.lastName}"
-                                             data-line1="${deliveryAddress.line1}"
-                                             data-line2="${deliveryAddress.line2}"
-                                             data-town="${deliveryAddress.town}"
-                                             data-postalcode="${deliveryAddress.postalCode}"
-                                             data-countryisocode="${deliveryAddress.country.isocode}"
-                                             data-regionisocode="${deliveryAddress.region.isocodeShort}"
-                                             data-address-id="${deliveryAddress.id}"
-                                        ></div>
-                                        <formElement:formCheckbox
-                                                path="useDeliveryAddress"
-                                                idKey="useDeliveryAddress"
-                                                labelKey="checkout.multi.sop.useMyDeliveryAddress"
-                                                tabindex="11"/>
-
-                                    </c:if>
-
                                 </form:form>
                             </div>
                         </div>

@@ -1,20 +1,18 @@
-/**
- *
- */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
-
+import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.forms.AdyenPaymentForm;
+import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
-import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
@@ -30,10 +28,8 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import de.hybris.platform.yacceleratorstorefront.controllers.ControllerConstants;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -44,6 +40,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.security.SignatureException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -81,8 +79,10 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "commonI18NService")
     private CommonI18NService commonI18NService;
 
-    @Resource(name = "userService")
-    private UserService userService;
+    private List<PaymentMethod> alternativePaymentMethods;
+    private Set<AdyenCardTypeEnum> allowedCards;
+    private List<RecurringDetail> storedCards;
+    private boolean showRememberTheseDetails = false;
 
     /**
      * {@inheritDoc}
@@ -102,56 +102,20 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute(CART_DATA_ATTR, cartData);
         model.addAttribute("expiryYears", getExpiryYears());
 
-        List<PaymentMethod> paymentMethods = null;
-        try {
-            paymentMethods = getAdyenPaymentService().getPaymentMethods(
-                    cartData.getTotalPriceWithTax().getValue(),
-                    cartData.getTotalPriceWithTax().getCurrencyIso(),
-                    cartData.getDeliveryAddress().getCountry().getIsocode()
-            );
-        } catch (Exception e) {
-            LOGGER.error(e);
-            GlobalMessages.addErrorMessage(model, "No payment methods found");
-            return getCheckoutStep().previousStep();
-        }
+        setupAvailablePaymentMethods();
 
         //Set HPP payment methods
-        model.addAttribute("paymentMethods", paymentMethods);
+        model.addAttribute("paymentMethods", alternativePaymentMethods);
 
         //Set allowed Credit Cards
-        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-        model.addAttribute("allowedCards", baseStore.getAdyenAllowedCards());
+        model.addAttribute("allowedCards", allowedCards);
+
+        model.addAttribute("showRememberTheseDetails", showRememberTheseDetails);
+        model.addAttribute("storedCards", storedCards);
 
         //Set the url for CSE script
         String cseUrl = getAdyenPaymentService().getCSEUrl();
         model.addAttribute("cseUrl", cseUrl);
-
-        /**
-         * The show remember me checkout should only be shown as the
-         * user is logged in and the recurirng mode is set to ONECLICK or ONECLICK,RECURRING
-         */
-        RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
-
-        List<RecurringDetail> storedCards = new ArrayList<>();
-        boolean showRememberTheseDetails = false;
-        if (!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
-                (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode()) ||
-                        Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode()))) {
-            showRememberTheseDetails = true;
-
-            //Include stored cards
-            CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
-            try {
-                storedCards = getAdyenPaymentService().getStoredCards(customerModel);
-            } catch (ApiException e) {
-                LOGGER.error("API Exception " + e.getError());
-            } catch (Exception e) {
-                LOGGER.error(ExceptionUtils.getStackTrace(e));
-            }
-        }
-
-        model.addAttribute("showRememberTheseDetails", showRememberTheseDetails);
-        model.addAttribute("storedCards", storedCards);
 
         super.prepareDataForPage(model);
 
@@ -160,44 +124,36 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         super.setUpMetaDataForContentPage(model, contentPage);
         super.setCheckoutStepLinksForModel(model, getCheckoutStep());
 
-        super.setCheckoutStepLinksForModel(model, getCheckoutStep());
-
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.SelectPaymentMethod;
-    }
-
-
-    protected void setupAddPaymentPage(final Model model) throws CMSItemNotFoundException {
-        model.addAttribute("metaRobots", "noindex,nofollow");
-        model.addAttribute("hasNoPaymentInfo", Boolean.valueOf(getCheckoutFlowFacade().hasNoPaymentInfo()));
-        prepareDataForPage(model);
-        model.addAttribute(WebConstants.BREADCRUMBS_KEY,
-                getResourceBreadcrumbBuilder().getBreadcrumbs("checkout.multi.paymentMethod.breadcrumb"));
-        final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
-        storeCmsPageInModel(model, contentPage);
-        setUpMetaDataForContentPage(model, contentPage);
-        setCheckoutStepLinksForModel(model, getCheckoutStep());
     }
 
     @RequestMapping(value = "", method = POST)
     @RequireHardLogIn
-    public String setPaymentMethod(final Model model, @Valid final AdyenPaymentForm adyenPaymentForm, final BindingResult bindingResult)
-            throws CMSItemNotFoundException {
-        //TODO: Validator
-        setupAddPaymentPage(model);
+    public String setPaymentMethod(final Model model,
+                                   final RedirectAttributes redirectAttributes,
+                                   @Valid final AdyenPaymentForm adyenPaymentForm,
+                                   final BindingResult bindingResult) throws CMSItemNotFoundException {
+        setupAvailablePaymentMethods();
 
-        final CartData cartData = getCheckoutFacade().getCheckoutCart();
-        model.addAttribute(CART_DATA_ATTR, cartData);
+        LOGGER.info("PaymentForm: " + adyenPaymentForm);
 
+        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(
+                alternativePaymentMethods,
+                allowedCards,
+                storedCards,
+                showRememberTheseDetails
+        );
+
+        adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {
+            LOGGER.info(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
-            return ControllerConstants.Views.Pages.MultiStepCheckout.AddPaymentMethodPage;
+            return enterStep(model, redirectAttributes);
         }
 
         //TODO: Billing address
         model.addAttribute(CSE_DATA, adyenPaymentForm);
         setCheckoutStepLinksForModel(model, getCheckoutStep());
-
-        LOGGER.info("PaymentForm: " + adyenPaymentForm);
 
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
@@ -267,6 +223,55 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         final Date date = calendar.getTime();
         final String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
         return formatted.substring(0, 22) + ":" + formatted.substring(22);
+    }
+
+    /**
+     * Setup the available payment methods
+     */
+    private void setupAvailablePaymentMethods() {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+
+        //Set APMs from Adyen HPP Directory Lookup
+        try {
+            alternativePaymentMethods = getAdyenPaymentService().getPaymentMethods(
+                    cartData.getTotalPrice().getValue(),
+                    cartData.getTotalPrice().getCurrencyIso(),
+                    cartData.getDeliveryAddress().getCountry().getIsocode()
+            );
+        } catch (HTTPClientException e) {
+            LOGGER.error("HTTPClientException: " + e);
+        } catch (SignatureException e) {
+        } catch (IOException e) {
+            ExceptionUtils.getStackTrace(e);
+        }
+
+        //Set allowed cards from BaseStore configuration
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        allowedCards = baseStore.getAdyenAllowedCards();
+
+        /**
+         * The show remember me checkout should only be shown as the
+         * user is logged in and the recurirng mode is set to ONECLICK or ONECLICK,RECURRING
+         */
+        RecurringContractMode recurringContractMode = baseStore.getAdyenRecurringContractMode();
+
+        storedCards = new ArrayList<>();
+        showRememberTheseDetails = false;
+        if (!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
+                (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode()) ||
+                        Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode()))) {
+            showRememberTheseDetails = true;
+
+            //Include stored cards
+            CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+            try {
+                storedCards = getAdyenPaymentService().getStoredCards(customerModel);
+            } catch (ApiException e) {
+                LOGGER.error("API Exception " + e.getError());
+            } catch (Exception e) {
+                LOGGER.error(ExceptionUtils.getStackTrace(e));
+            }
+        }
     }
 
     /**
