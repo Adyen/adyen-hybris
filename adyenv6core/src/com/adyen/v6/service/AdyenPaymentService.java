@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -249,6 +250,11 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                                                  final String currency,
                                                  final String countryCode) throws HTTPClientException, SignatureException, IOException {
         Client client = createClient();
+
+        if(client.getConfig().getSkinCode() == null || client.getConfig().getSkinCode().isEmpty()) {
+            return new ArrayList<>();
+        }
+
         HostedPaymentPages hostedPaymentPages = new HostedPaymentPages(client);
 
         DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory()
