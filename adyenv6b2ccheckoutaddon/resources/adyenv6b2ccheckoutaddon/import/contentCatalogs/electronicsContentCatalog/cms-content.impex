@@ -1,3 +1,34 @@
 $contentCatalog=electronicsContentCatalog
 $contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
 $jarResourceCms=jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/cockpit/cmscockpit
+
+$addonExtensionName=adyenv6b2ccheckoutaddon
+
+## Configure page for My Subscriptions / Subscription details / ...
+INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);label;defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;adyenStoredCards;Manage My Stored Cards;AccountPageTemplate;/my-account/stored-cards
+
+# CMS Link Component for the link on the main account page
+INSERT_UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];name;url;&linkRef;&componentRef;target(code)[default='sameWindow']
+;;AdyenStoredCardsLink;AdyenStoredCardsLink;/my-account/stored-cards;AdyenStoredCardsLink;AdyenStoredCardsLink;
+
+# CMS Navigation Nodes (used in the main account page)
+
+INSERT_UPDATE CMSNavigationNode;uid[unique=true];$contentCV[unique=true];name;parent(uid, $contentCV);links(&linkRef)[mode=append];&nodeRef
+;AdyenStoredCardsNavNode;;AdyenStoredCardsNavNode;MyAccountNavNode;;AdyenStoredCardsNavNode
+
+INSERT_UPDATE CMSNavigationEntry;uid[unique=true];$contentCV[unique=true];name;navigationNode(&nodeRef);item(&linkRef);
+;AdyenStoredCardsNavNodeEntry;;AdyenStoredCardsNavNodeEntry;AdyenStoredCardsNavNode;AdyenStoredCardsLink;
+
+INSERT_UPDATE JspIncludeComponent;$contentCV[unique=true];uid[unique=true];name;page;actions(uid,$contentCV);&componentRef
+;;AdyenAccountStoredCardsComponent;Account My Stored Cards Component;/WEB-INF/views/addons/$addonExtensionName/responsive/pages/account/accountStoredCardsPage.jsp;;AdyenAccountStoredCardsComponent
+
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=en]
+;;AdyenStoredCardsLink;"Stored Cards"
+
+# the content slots for the Subscriptions list page
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(uid,$contentCV);;;
+;;BodyContent-adyenStoredCards;Body Content Slot for My Stored Cards;true;AdyenAccountStoredCardsComponent;;;
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='adyenStoredCards'];contentSlot(uid,$contentCV)[unique=true];;;
+;;BodyContent-adyenStoredCards;BodyContent;;BodyContent-adyenStoredCards;;;

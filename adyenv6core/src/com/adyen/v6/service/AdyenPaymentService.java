@@ -12,9 +12,7 @@ import com.adyen.model.modification.CancelRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
-import com.adyen.model.recurring.RecurringDetail;
-import com.adyen.model.recurring.RecurringDetailsRequest;
-import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.recurring.*;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
@@ -267,8 +265,8 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return paymentMethods;
     }
 
-    public List<RecurringDetail> getStoredCards(final CustomerModel customerModel) throws IOException, ApiException {
-        if (customerModel == null) {
+    public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
+        if (customerId == null) {
             return null;
         }
 
@@ -277,7 +275,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         RecurringDetailsRequest request = getAdyenRequestFactory().createListRecurringDetailsRequest(
                 client.getConfig().getMerchantAccount(),
-                customerModel
+                customerId
         );
 
         LOG.debug(request);
@@ -290,6 +288,32 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                 .collect(Collectors.toList());
 
         return storedCards;
+    }
+
+    /**
+     * Disables a recurring contract
+     *
+     * @param customerId
+     * @param recurringReference
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public boolean disableStoredCard(final String customerId, final String recurringReference) throws IOException, ApiException {
+        Client client = createClient();
+        com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);
+
+        DisableRequest request = getAdyenRequestFactory().createDisableRequest(
+                client.getConfig().getMerchantAccount(),
+                customerId,
+                recurringReference
+        );
+
+        LOG.debug(request);
+        DisableResult result = recurring.disable(request);
+        LOG.debug(result);
+
+        return (result.getDetails() != null && result.getDetails().size() > 0);
     }
 
     /**

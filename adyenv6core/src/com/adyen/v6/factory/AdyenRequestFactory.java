@@ -6,6 +6,7 @@ import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
+import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -129,11 +130,28 @@ public class AdyenRequestFactory {
     }
 
     public RecurringDetailsRequest createListRecurringDetailsRequest(final String merchantAccount,
-                                                                     final CustomerModel customerModel) {
+                                                                     final String customerId) {
         return new RecurringDetailsRequest()
                 .merchantAccount(merchantAccount)
-                .shopperReference(customerModel.getCustomerID())
+                .shopperReference(customerId)
                 .selectOneClickContract();
+    }
+
+    /**
+     * Creates a request to disable a recurring contract
+     *
+     * @param merchantAccount
+     * @param customerId
+     * @param recurringReference
+     * @return
+     */
+    public DisableRequest createDisableRequest(final String merchantAccount,
+                                               final String customerId,
+                                               final String recurringReference) {
+        return new DisableRequest()
+                .merchantAccount(merchantAccount)
+                .shopperReference(customerId)
+                .recurringDetailReference(recurringReference);
     }
 
     private <T extends AbstractPaymentRequest> T createBasePaymentRequest(
