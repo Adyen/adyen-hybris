@@ -240,8 +240,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             );
         } catch (HTTPClientException e) {
             LOGGER.error("HTTPClientException: " + e);
-        } catch (SignatureException e) {
-        } catch (IOException e) {
+        } catch (SignatureException | IOException e) {
             ExceptionUtils.getStackTrace(e);
         }
 
@@ -265,7 +264,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             //Include stored cards
             CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
             try {
-                storedCards = getAdyenPaymentService().getStoredCards(customerModel);
+                storedCards = getAdyenPaymentService().getStoredCards(customerModel.getCustomerID());
             } catch (ApiException e) {
                 LOGGER.error("API Exception " + e.getError());
             } catch (Exception e) {
