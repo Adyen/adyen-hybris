@@ -123,14 +123,18 @@
 						</columntype>
 					</persistence>
 				</attribute>
-
 				<attribute qualifier="createdAt" type="java.util.Date">
 					<persistence type="property"/>
 				</attribute>
-				<attribute qualifier="processed" type="java.lang.Boolean">
+				<attribute qualifier="processedAt" type="java.util.Date">
 					<persistence type="property"/>
 				</attribute>
 			</attributes>
+			<indexes>
+				<index name="PspReference">
+					<key attribute="pspReference"/>
+				</index>
+			</indexes>
 		</itemtype>
 
 		<itemtype code="BaseStore" autocreate="false" generate="false">
