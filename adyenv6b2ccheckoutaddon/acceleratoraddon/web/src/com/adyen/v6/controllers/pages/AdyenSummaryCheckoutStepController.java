@@ -117,7 +117,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         String errorMessage = "checkout.error.authorization.failed";
         //Handle CreditCard/oneClick payments
         if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())
-                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0
+                || (cartData.getAdyenPaymentMethod().equals("klarna") || cartData.getAdyenPaymentMethod().equals("ratepay"))
+                ) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authoriseCardPayment(request, cartData);
 
@@ -156,6 +158,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             } catch (SignatureException e) {
                 LOGGER.error(e);
             }
+
         }
 
         LOGGER.info("Redirecting to summary view");

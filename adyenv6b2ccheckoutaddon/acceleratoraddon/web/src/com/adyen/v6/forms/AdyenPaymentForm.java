@@ -1,9 +1,9 @@
 package com.adyen.v6.forms;
 
-import com.adyen.Util.Util;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.validation.constraints.NotNull;
-
+import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
@@ -23,6 +23,10 @@ public class AdyenPaymentForm {
     //HPP
     private String issuerId;
 
+    // openinvoice fields
+    private String gender;
+    private String dob;
+    private String telephone;
 
     public String getCseToken() {
         return cseToken;
@@ -66,6 +70,36 @@ public class AdyenPaymentForm {
 
     public boolean isRememberTheseDetails() {
         return rememberTheseDetails;
+    }
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getDob() {
+        Date dateOfBirth = null;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            dateOfBirth = format.parse(dob);
+        } catch(Exception e) {
+            // do nothing for now
+        }
+        return dateOfBirth;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public boolean isCC() {

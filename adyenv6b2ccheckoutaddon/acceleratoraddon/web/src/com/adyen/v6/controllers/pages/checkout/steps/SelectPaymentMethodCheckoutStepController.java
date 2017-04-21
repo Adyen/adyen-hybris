@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
 import com.adyen.httpclient.HTTPClientException;
@@ -19,15 +22,18 @@ import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
+import de.hybris.platform.core.enums.Gender;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.c2l.RegionModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -79,6 +85,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "commonI18NService")
     private CommonI18NService commonI18NService;
 
+    @Resource(name = "flexibleSearchService")
+    private FlexibleSearchService flexibleSearchService;
+
     private List<PaymentMethod> alternativePaymentMethods;
     private Set<AdyenCardTypeEnum> allowedCards;
     private List<RecurringDetail> storedCards;
@@ -117,6 +126,19 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         String cseUrl = getAdyenPaymentService().getCSEUrl();
         model.addAttribute("cseUrl", cseUrl);
 
+        // add gender options
+        List<String> genderOptions = new ArrayList();
+        genderOptions.add(Gender.MALE.getCode());
+        genderOptions.add(Gender.FEMALE.getCode());
+        model.addAttribute("genderOptions", genderOptions);
+
+        // OpenInvoice Methods
+        // TODO: move to generic class so AdyenSummeryCheckoutStepController checks the same list
+        List<String> openInvoiceMethods = new ArrayList();
+        openInvoiceMethods.add("klarna");
+        openInvoiceMethods.add("ratepay");
+        model.addAttribute("openInvoiceMethods", openInvoiceMethods);
+
         super.prepareDataForPage(model);
 
         final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
@@ -150,6 +172,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             return enterStep(model, redirectAttributes);
         }
+
+        // set telephone,dob and gender
 
         //TODO: Billing address
         model.addAttribute(CSE_DATA, adyenPaymentForm);
@@ -202,6 +226,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         addressModel.setBillingAddress(true);
         addressModel.setOwner(paymentInfo);
 
+        final TitleModel title = new TitleModel();
+        title.setCode(addressData.getTitleCode());
+        addressModel.setTitle(flexibleSearchService.getModelByExample(title));
+
+        addressModel.setFirstname(addressData.getFirstName());
+        addressModel.setLastname(addressData.getLastName());
+        addressModel.setPhone1(addressData.getPhone());
+
         paymentInfo.setBillingAddress(addressModel);
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
@@ -209,6 +241,11 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         paymentInfo.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
         paymentInfo.setAdyenSelectedAlias(adyenPaymentForm.getSelectedAlias());
+
+        // openinvoice fields
+        paymentInfo.setAdyenGender(adyenPaymentForm.getGender());
+        paymentInfo.setAdyenDob(adyenPaymentForm.getDob());
+        paymentInfo.setAdyenTelephone(adyenPaymentForm.getTelephone());
 
         modelService.save(paymentInfo);
 

@@ -53,10 +53,10 @@
             $('input[type=radio][name=paymentMethod]').change(function () {
                 var paymentMethod = this.value;
                 $(".payment_method_details").hide();
-                $(".issuers-container").hide();
+                $(".extra-fields-container").hide();
 
                 $("#dd_method_" + paymentMethod).show();
-                $("#adyen_hpp_" + paymentMethod + "_issuers").show();
+                $("#adyen_hpp_" + paymentMethod + "_container").show();
             });
         </script>
     </jsp:attribute>
@@ -280,8 +280,8 @@
                                                     </label>
 
                                                     <c:if test="${not empty paymentMethod.issuers}">
-                                                        <div id="adyen_hpp_${paymentMethod.brandCode}_issuers"
-                                                             class="issuers-container">
+                                                        <div id="adyen_hpp_${paymentMethod.brandCode}_container"
+                                                             class="extra-fields-container">
                                                             <select class="issuer-select" tabindex="4">
                                                                 <option value="" label="Please select Issuer"/>
                                                                 <c:forEach items="${paymentMethod.issuers}"
@@ -291,7 +291,47 @@
                                                             </select>
                                                         </div>
                                                     </c:if>
+
+
+                                                    <c:if test="${openInvoiceMethods.contains(paymentMethod.brandCode)}">
+
+
+                                                        <dl id="adyen_hpp_${paymentMethod.brandCode}_container"
+                                                            class="extra-fields-container">
+                                                            <dt>
+                                                                <label for="p_method_adyen_hpp_${paymentMethod.brandCode}_gender">
+                                                                    <span>Gender</span>
+                                                                </label>
+                                                                <select id ="p_method_adyen_hpp_${paymentMethod.brandCode}_gender"
+                                                                        name="gender">
+                                                                    <c:forEach items="${genderOptions}"
+                                                                               var="gender">
+                                                                        <option value="${gender}">${gender}</option>
+                                                                    </c:forEach>
+                                                                </select>
+                                                            </dt>
+                                                            <dt>
+                                                                <label for="p_method_adyen_hpp_${paymentMethod.brandCode}_dob">
+                                                                    <span>Date of birth</span>
+                                                                </label>
+                                                                <input id="p_method_adyen_hpp_${paymentMethod.brandCode}_dob"
+                                                                       value="" type="text"
+                                                                       name="dob" title="date of birth">
+                                                            </dt>
+                                                            <dt>
+                                                                <label for="p_method_adyen_hpp_${paymentMethod.brandCode}_telephone">
+                                                                    <span>Telephone Number</span>
+                                                                </label>
+                                                                <input id="p_method_adyen_hpp_${paymentMethod.brandCode}_telephone"
+                                                                       value="" type="text"
+                                                                       name="telephone" title="telephone">
+                                                            </dt>
+                                                        </dl>
+
+                                                    </c:if>
+
                                                     </dt>
+
                                                 </c:if>
                                             </c:forEach>
 

@@ -239,6 +239,15 @@
 				<attribute qualifier="adyenSelectedAlias" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
+				<attribute qualifier="adyenTelephone" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenGender" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenDob" type="java.util.Date">
+					<persistence type="property"/>
+				</attribute>
 			</attributes>
 		</itemtype>
 	</itemtypes>
