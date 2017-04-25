@@ -1,5 +1,10 @@
 package com.adyen.v6.cronjob;
 
+import java.util.Date;
+import java.util.List;
+import org.apache.log4j.Logger;
+import com.adyen.model.notification.NotificationRequestItem;
+import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.CartRepository;
 import com.adyen.v6.repository.NotificationItemRepository;
@@ -23,13 +28,6 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.cronjob.AbstractJobPerformable;
 import de.hybris.platform.servicelayer.cronjob.PerformResult;
 import de.hybris.platform.servicelayer.model.ModelService;
-import org.apache.log4j.Logger;
-
-import java.util.Iterator;
-import java.util.List;
-
-import static com.adyen.model.notification.NotificationRequestItem.*;
-import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 
 /**
  * Notification handling cronjob
@@ -50,20 +48,22 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     public PerformResult perform(final CronJobModel cronJob) {
         LOG.info("Start processing..");
 
-        final List nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
+        final List<NotificationItemModel> nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
 
-        for (final Iterator it = nonProcessedNotifications.iterator(); it.hasNext(); ) {
-            final NotificationItemModel notificationItemModel = (NotificationItemModel) it.next();
+        for (final NotificationItemModel notificationItemModel : nonProcessedNotifications) {
+            notificationItemModel.setProcessedAt(new Date());
 
-            notificationItemModel.setProcessed(true);
-            //TODO: processedAt ?
-            //TODO: add check for duplicate notifications
+            boolean isDuplicate = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
 
             LOG.info("Processing order with code: " + notificationItemModel.getMerchantReference());
 
-            processNotification(notificationItemModel);
+            if (isDuplicate) {
+                LOG.info("Skipping duplicate notification");
+            } else {
+                processNotification(notificationItemModel);
+                LOG.info("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
+            }
 
-            LOG.info("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
             modelService.save(notificationItemModel);
         }
 
@@ -73,30 +73,24 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     /**
      * Handles CAPTURE eventCode
      *
-     * @param notificationItemModel
-     * @param paymentTransactionModel
+     * @param notificationItemModel   notification item to be processed
+     * @param paymentTransactionModel payment transaction associated to the notification
      */
-    public void processCapturedEvent(
-            NotificationItemModel notificationItemModel,
-            PaymentTransactionModel paymentTransactionModel) {
+    public void processCapturedEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
             LOG.info("Parent transaction is null");
             return;
         }
 
         //Register Captured transaction
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
-                .createCapturedTransactionFromNotification(
-                        paymentTransactionModel,
-                        notificationItemModel
-                );
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createCapturedTransactionFromNotification(paymentTransactionModel, notificationItemModel);
 
         LOG.info("Saving Captured transaction entry");
         modelService.save(paymentTransactionEntryModel);
 
         //Trigger Captured event
         OrderModel orderModel = (OrderModel) paymentTransactionModel.getOrder();
-        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
     }
 
     /**
@@ -118,30 +112,23 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
         PaymentTransactionModel paymentTransactionModel = null;
         if (notificationItemModel.getSuccess()) {
-            paymentTransactionModel = adyenTransactionService.authorizeOrderModel(
-                    orderModel,
-                    notificationItemModel.getMerchantReference(),
-                    notificationItemModel.getPspReference()
-            );
+            paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference());
         } else {
-            paymentTransactionModel = adyenTransactionService.storeFailedAuthorizationFromNotification(
-                    notificationItemModel,
-                    orderModel
-            );
+            paymentTransactionModel = adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
         }
 
-        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_AUTHORIZED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_AUTHORIZED);
 
         //todo: trigger only for manual capture
-        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, PROCESS_EVENT_ADYEN_CAPTURED);
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
         return paymentTransactionModel;
     }
 
     /**
      * Create order from cart
      *
-     * @param orderCode
-     * @return
+     * @param orderCode order code
+     * @return OrderModel or null
      */
     private OrderModel createOrder(String orderCode) {
         LOG.info("Order not found. Checking Cart..");
@@ -166,19 +153,14 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
         return null;
     }
 
-    public void processCancelEvent(
-            NotificationItemModel notificationItemModel,
-            PaymentTransactionModel paymentTransactionModel) {
+    public void processCancelEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
             return;
         }
 
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
-                .createCancellationTransaction(
-                        paymentTransactionModel,
-                        notificationItemModel.getMerchantReference(),
-                        notificationItemModel.getPspReference()
-                );
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createCancellationTransaction(paymentTransactionModel,
+                                                                                                                          notificationItemModel.getMerchantReference(),
+                                                                                                                          notificationItemModel.getPspReference());
 
         if (notificationItemModel.getSuccess()) {
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
@@ -194,44 +176,39 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     /**
      * Process refund event
      *
-     * @param notificationItem
+     * @param notificationItem notification item
      */
     private void processRefundEvent(NotificationItemModel notificationItem) {
-        PaymentTransactionModel paymentTransaction = paymentTransactionRepository
-                .getTransactionModel(notificationItem.getOriginalReference());
+        PaymentTransactionModel paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItem.getOriginalReference());
         if (paymentTransaction == null) {
             LOG.info("Parent transaction is null");
             return;
         }
 
         //Register Refund transaction
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService
-                .createRefundedTransactionFromNotification(
-                        paymentTransaction,
-                        notificationItem
-                );
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createRefundedTransactionFromNotification(paymentTransaction, notificationItem);
 
         LOG.info("Saving Refunded transaction entry");
         modelService.save(paymentTransactionEntryModel);
 
         //Trigger Refunded event
         OrderModel orderModel = (OrderModel) paymentTransaction.getOrder();
-        adyenBusinessProcessService.triggerReturnProcessEvent(orderModel, PROCESS_EVENT_ADYEN_REFUNDED);
+        adyenBusinessProcessService.triggerReturnProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_REFUNDED);
     }
 
     /**
      * Process a notification item
      *
-     * @param notificationItemModel
+     * @param notificationItemModel notification item
      */
     public void processNotification(NotificationItemModel notificationItemModel) {
         PaymentTransactionModel paymentTransaction;
         switch (notificationItemModel.getEventCode()) {
-            case EVENT_CODE_CAPTURE:
+            case NotificationRequestItem.EVENT_CODE_CAPTURE:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
                 processCapturedEvent(notificationItemModel, paymentTransaction);
                 break;
-            case EVENT_CODE_AUTHORISATION:
+            case NotificationRequestItem.EVENT_CODE_AUTHORISATION:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getPspReference());
                 if (paymentTransaction == null) {
                     processAuthorisationEvent(notificationItemModel);
@@ -239,11 +216,11 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
                     LOG.info("Authorisation already processed " + paymentTransaction.getRequestId());
                 }
                 break;
-            case EVENT_CODE_CANCEL_OR_REFUND:
+            case NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
                 processCancelEvent(notificationItemModel, paymentTransaction);
                 break;
-            case EVENT_CODE_REFUND:
+            case NotificationRequestItem.EVENT_CODE_REFUND:
                 processRefundEvent(notificationItemModel);
                 break;
         }
