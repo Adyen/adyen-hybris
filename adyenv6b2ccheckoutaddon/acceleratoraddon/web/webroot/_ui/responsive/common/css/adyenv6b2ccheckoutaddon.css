@@ -1,5 +1,5 @@
 /*Hide payment method specific selectors*/
-.payment_method_details, .issuers-container {
+.payment_method_details, .issuers-container, .boleto-container {
     display: none;
 }
 

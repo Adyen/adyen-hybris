@@ -17,12 +17,18 @@ public class AdyenPaymentForm {
     //CSE
     private String cseToken;
     private String selectedAlias;
+
     //Save card
     private boolean rememberTheseDetails;
 
     //HPP
     private String issuerId;
 
+    //Boleto
+    private String boletoSocialSecurityNumber;
+    private String boletoFirstName;
+    private String boletoLastName;
+    private String boletoBank;
 
     public String getCseToken() {
         return cseToken;
@@ -68,6 +74,38 @@ public class AdyenPaymentForm {
         return rememberTheseDetails;
     }
 
+    public String getBoletoSocialSecurityNumber() {
+        return boletoSocialSecurityNumber;
+    }
+
+    public void setBoletoSocialSecurityNumber(String boletoSocialSecurityNumber) {
+        this.boletoSocialSecurityNumber = boletoSocialSecurityNumber;
+    }
+
+    public String getBoletoFirstName() {
+        return boletoFirstName;
+    }
+
+    public void setBoletoFirstName(String boletoFirstName) {
+        this.boletoFirstName = boletoFirstName;
+    }
+
+    public String getBoletoLastName() {
+        return boletoLastName;
+    }
+
+    public void setBoletoLastName(String boletoLastName) {
+        this.boletoLastName = boletoLastName;
+    }
+
+    public String getBoletoBank() {
+        return boletoBank;
+    }
+
+    public void setBoletoBank(String boletoBank) {
+        this.boletoBank = boletoBank;
+    }
+
     public boolean isCC() {
         return PAYMENT_METHOD_CC.equals(paymentMethod);
 
@@ -87,6 +125,10 @@ public class AdyenPaymentForm {
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedAlias: ").append(Util.toIndentedString(selectedAlias)).append("\n");
+        sb.append("    boletoBank: ").append(Util.toIndentedString(boletoBank)).append("\n");
+        sb.append("    boletoSocialSecurityNumber: ").append(Util.toIndentedString(boletoSocialSecurityNumber)).append("\n");
+        sb.append("    boletoFirstName: ").append(Util.toIndentedString(boletoFirstName)).append("\n");
+        sb.append("    boletoLastName: ").append(Util.toIndentedString(boletoLastName)).append("\n");
         sb.append("}");
         return sb.toString();
     }

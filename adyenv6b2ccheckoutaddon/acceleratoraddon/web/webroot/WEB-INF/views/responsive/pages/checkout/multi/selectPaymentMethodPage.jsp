@@ -54,6 +54,7 @@
                 var paymentMethod = this.value;
                 $(".payment_method_details").hide();
                 $(".issuers-container").hide();
+                $(".boleto-container").hide();
 
                 $("#dd_method_" + paymentMethod).show();
                 $("#adyen_hpp_" + paymentMethod + "_issuers").show();
@@ -289,6 +290,36 @@
                                                                     <option value="${issuer.issuerId}">${issuer.name}</option>
                                                                 </c:forEach>
                                                             </select>
+                                                        </div>
+                                                    </c:if>
+
+                                                    <c:if test="${paymentMethod.brandCode.equals('boleto')}">
+                                                        <div id="dd_method_boleto"
+                                                             class="boleto-container">
+
+                                                            <ul class="form-list">
+                                                                <li class="adyen_payment_input_fields">
+                                                                    <label class="required">Bank</label>
+                                                                    <select class="boleto-bank-select" tabindex="4" name="boletoBank">
+                                                                        <option value="" label="Please select Bank"/>
+                                                                        <c:forEach items="${boletoBanks}" var="bank">
+                                                                            <option value="${bank}"><spring:theme code="checkout.boleto.${bank}"/></option>
+                                                                        </c:forEach>
+                                                                    </select>
+                                                                </li>
+                                                                <li class="adyen_payment_input_fields">
+                                                                    <label class="required">First name</label>
+                                                                    <input type="text" name="boletoFirstName" value="${cartData.deliveryAddress.firstName}" />
+                                                                </li>
+                                                                <li class="adyen_payment_input_fields">
+                                                                    <label class="required">Last name</label>
+                                                                    <input type="text" name="boletoLastName" value="${cartData.deliveryAddress.lastName}" />
+                                                                </li>
+                                                                <li class="adyen_payment_input_fields">
+                                                                    <label class="required">Social Security Number</label>
+                                                                    <input type="text" name="boletoSocialSecurityNumber"/>
+                                                                </li>
+                                                            </ul>
                                                         </div>
                                                     </c:if>
                                                     </dt>

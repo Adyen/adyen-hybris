@@ -1,11 +1,31 @@
 package com.adyen.v6.controllers.pages.checkout.steps;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.enums.AdyenBoletoBankEnum;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -30,21 +50,6 @@ import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.security.SignatureException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -82,6 +87,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     private List<PaymentMethod> alternativePaymentMethods;
     private Set<AdyenCardTypeEnum> allowedCards;
     private List<RecurringDetail> storedCards;
+    private Set<AdyenBoletoBankEnum> boletoBanks;
     private boolean showRememberTheseDetails = false;
 
     /**
@@ -90,7 +96,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Override
     @RequestMapping(value = "", method = GET)
     @RequireHardLogIn
-//    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
+    //    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
     public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
@@ -98,7 +104,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute("hasNoPaymentInfo", Boolean.valueOf(getCheckoutFlowFacade().hasNoPaymentInfo()));
         model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
         model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
-        model.addAttribute(CSE_GENERATION_TIME, fromCalendar(GregorianCalendar.getInstance()));
+        model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
         model.addAttribute("expiryYears", getExpiryYears());
 
@@ -112,6 +118,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         model.addAttribute("showRememberTheseDetails", showRememberTheseDetails);
         model.addAttribute("storedCards", storedCards);
+
+        //Set Boleto vars
+        model.addAttribute("boletoBanks", boletoBanks);
 
         //Set the url for CSE script
         String cseUrl = getAdyenPaymentService().getCSEUrl();
@@ -137,12 +146,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         LOGGER.info("PaymentForm: " + adyenPaymentForm);
 
-        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(
-                alternativePaymentMethods,
-                allowedCards,
-                storedCards,
-                showRememberTheseDetails
-        );
+        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(alternativePaymentMethods, allowedCards, storedCards, showRememberTheseDetails);
 
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -180,7 +184,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         CountryModel country = null;
 
-        if (addressData.getCountry() != null && !addressData.getCountry().getIsocode().isEmpty()) {
+        if (addressData.getCountry() != null && ! addressData.getCountry().getIsocode().isEmpty()) {
 
             // countryModel from service
             country = commonI18NService.getCountry(addressData.getCountry().getIsocode());
@@ -194,7 +198,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         addressModel.setPostalcode(addressData.getPostalCode());
         addressModel.setTown(addressData.getTown());
 
-        if (addressData.getRegion() != null && !addressData.getRegion().getIsocode().isEmpty() && country != null) {
+        if (addressData.getRegion() != null && ! addressData.getRegion().getIsocode().isEmpty() && country != null) {
             final RegionModel regionModel = commonI18NService.getRegion(country, addressData.getRegion().getIsocode());
             addressModel.setRegion(regionModel);
         }
@@ -233,11 +237,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         //Set APMs from Adyen HPP Directory Lookup
         try {
-            alternativePaymentMethods = getAdyenPaymentService().getPaymentMethods(
-                    cartData.getTotalPrice().getValue(),
-                    cartData.getTotalPrice().getCurrencyIso(),
-                    cartData.getDeliveryAddress().getCountry().getIsocode()
-            );
+            alternativePaymentMethods = getAdyenPaymentService().getPaymentMethods(cartData.getTotalPrice().getValue(),
+                                                                                   cartData.getTotalPrice().getCurrencyIso(),
+                                                                                   cartData.getDeliveryAddress().getCountry().getIsocode());
         } catch (HTTPClientException e) {
             LOGGER.error("HTTPClientException: " + e);
         } catch (SignatureException | IOException e) {
@@ -256,9 +258,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         storedCards = new ArrayList<>();
         showRememberTheseDetails = false;
-        if (!this.getCheckoutCustomerStrategy().isAnonymousCheckout() &&
-                (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode()) ||
-                        Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode()))) {
+        if (! this.getCheckoutCustomerStrategy().isAnonymousCheckout() && (Recurring.ContractEnum.ONECLICK_RECURRING.name().equals(recurringContractMode.getCode())
+                || Recurring.ContractEnum.ONECLICK.name().equals(recurringContractMode.getCode()))) {
             showRememberTheseDetails = true;
 
             //Include stored cards
@@ -271,6 +272,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
         }
+
+        boletoBanks = baseStore.getAdyenBoletoBanks();
     }
 
     /**

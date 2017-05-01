@@ -18,6 +18,7 @@
 			xsi:noNamespaceSchemaLocation="items.xsd">
 	<collectiontypes>
 		<collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
+		<collectiontype code="AdyenBoletoBankSet" elementtype="AdyenBoletoBankEnum" autocreate="true" generate="true" type="set"/>
 	</collectiontypes>
 
 	<enumtypes>
@@ -54,6 +55,14 @@
 			<value code="ONECLICK" />
 			<value code="ONECLICK_RECURRING" />
 			<value code="RECURRING" />
+		</enumtype>
+		<enumtype code="AdyenBoletoBankEnum" generate="true" autocreate="true" dynamic="true">
+			<description>Boleto supported banks</description>
+			<value code="boletobancario_hsbc" />
+			<value code="boletobancario_itau" />
+			<value code="boletobancario_santander" />
+			<value code="boletobancario_bradesco" />
+			<value code="boletobancario_bancodobrasil" />
 		</enumtype>
 	</enumtypes>
 
@@ -191,6 +200,9 @@
 					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
 				</attribute>
 				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenBoletoBanks" type="AdyenBoletoBankSet">
 					<persistence type="property"/>
 				</attribute>
 				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
