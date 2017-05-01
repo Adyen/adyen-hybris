@@ -51,8 +51,10 @@ public class AdyenVoidCommand implements VoidCommand {
                 result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
             }
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error("Cancellation exception",e);
         }
+
+        LOG.info("Cancellation status: " + result.getTransactionStatus().name() + ":" + result.getTransactionStatusDetails().name());
 
         return result;
     }

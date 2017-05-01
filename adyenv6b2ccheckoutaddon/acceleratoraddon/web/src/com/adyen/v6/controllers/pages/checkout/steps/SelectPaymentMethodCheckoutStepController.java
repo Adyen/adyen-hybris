@@ -135,7 +135,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         setupAvailablePaymentMethods();
 
-        LOGGER.info("PaymentForm: " + adyenPaymentForm);
+        LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
         AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(
                 alternativePaymentMethods,
@@ -146,7 +146,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {
-            LOGGER.info(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
+            LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             return enterStep(model, redirectAttributes);
         }
@@ -238,13 +238,11 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                     cartData.getTotalPrice().getCurrencyIso(),
                     cartData.getDeliveryAddress().getCountry().getIsocode()
             );
-        } catch (HTTPClientException e) {
-            LOGGER.error("HTTPClientException: " + e);
-        } catch (SignatureException | IOException e) {
-            ExceptionUtils.getStackTrace(e);
+        } catch (HTTPClientException | SignatureException | IOException e) {
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
-        //Set allowed cards from BaseStore configuration
+        //Set allowed cards from BaseStore confißguration
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
         allowedCards = baseStore.getAdyenAllowedCards();
 

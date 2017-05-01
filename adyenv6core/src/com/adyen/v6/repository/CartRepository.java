@@ -23,7 +23,7 @@ public class CartRepository extends AbstractRepository {
                 queryParams
         );
 
-        LOG.info("Finding cart with code: " + code);
+        LOG.debug("Finding cart with code: " + code);
 
         return (CartModel) getOneOrNull(query);
     }

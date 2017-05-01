@@ -21,7 +21,7 @@ public class NotificationItemRepository extends AbstractRepository {
                 "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
                         + " WHERE {" + NotificationItemModel.PROCESSEDAT + "} IS NULL ORDER BY {pk} ASC LIMIT 1000"
         );
-        LOG.info("Querying notification items");
+        LOG.debug("Querying notification items");
         final List<NotificationItemModel> nonProcessedNotifications = flexibleSearchService
                 .search(selectNonProcessedNotificationsQuery)
                 .getResult()
@@ -29,7 +29,7 @@ public class NotificationItemRepository extends AbstractRepository {
                 .map(element->(NotificationItemModel) element)
                 .collect(Collectors.toList());
 
-        LOG.info(nonProcessedNotifications.size() + " items found ");
+        LOG.debug(nonProcessedNotifications.size() + " items found ");
 
         return nonProcessedNotifications;
     }
@@ -56,12 +56,12 @@ public class NotificationItemRepository extends AbstractRepository {
                         + " AND {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL",
                 queryParams
         );
-        LOG.info("Checking if notification already exists");
+        LOG.debug("Checking if notification already exists");
         int count = flexibleSearchService
                 .search(selectNonProcessedNotificationsQuery)
                 .getCount();
 
-        LOG.info(count + " items found ");
+        LOG.debug(count + " items found ");
 
         return (count > 0);
     }
