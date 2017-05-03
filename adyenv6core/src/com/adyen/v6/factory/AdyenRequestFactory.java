@@ -39,7 +39,7 @@ public class AdyenRequestFactory {
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
         String cseToken = cartData.getAdyenCseToken();
-        String selectedAlias = cartData.getAdyenSelectedAlias();
+        String selectedReference = cartData.getAdyenSelectedReference();
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount)
                 .reference(reference)
@@ -70,8 +70,8 @@ public class AdyenRequestFactory {
         }
 
         //OneClick
-        if (selectedAlias != null && !selectedAlias.isEmpty()) {
-            paymentRequest.setSelectedRecurringDetailReference(selectedAlias);
+        if (selectedReference != null && !selectedReference.isEmpty()) {
+            paymentRequest.setSelectedRecurringDetailReference(selectedReference);
             paymentRequest.setShopperInteraction(AbstractPaymentRequest.ShopperInteractionEnum.ECOMMERCE);
 
             //set oneclick

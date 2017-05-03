@@ -68,6 +68,9 @@
 						</columntype>
 					</persistence>
 				</attribute>
+				<attribute qualifier="adyenStoredCards" type="StringSet">
+					<persistence type="property"/>
+				</attribute>
 			</attributes>
 		</itemtype>
 
@@ -240,7 +243,7 @@
 					<defaultvalue>Boolean.FALSE</defaultvalue>
 					<persistence type="property" />
 				</attribute>
-				<attribute qualifier="adyenSelectedAlias" type="java.lang.String">
+				<attribute qualifier="adyenSelectedReference" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
 			</attributes>

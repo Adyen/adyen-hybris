@@ -111,7 +111,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        //TODO: validate Cart and selectedAlias
+        //TODO: validate Cart and selectedReference
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         String errorMessage = "checkout.error.authorization.failed";
@@ -136,7 +136,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                     model.addAttribute("termUrl", termUrl);
 
                     return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
-                } else if (paymentResult.isRefused()) {
+                }
+                if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
