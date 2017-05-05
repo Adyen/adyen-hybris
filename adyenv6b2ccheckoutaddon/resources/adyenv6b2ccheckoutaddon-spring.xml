@@ -93,10 +93,12 @@
 		<property name="cartService" ref="cartService"/>
 		<property name="orderFacade" ref="orderFacade"/>
 		<property name="checkoutFacade" ref="checkoutFacade"/>
-		<property name="adyenPaymentService" ref="adyenPaymentService"/>
+		<property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
 		<property name="adyenTransactionService" ref="adyenTransactionService"/>
 		<property name="orderRepository" ref="adyenOrderRepository"/>
 		<property name="adyenOrderService" ref="adyenOrderService"/>
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
+		<property name="modelService" ref="modelService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
 	</bean>
 </beans>
