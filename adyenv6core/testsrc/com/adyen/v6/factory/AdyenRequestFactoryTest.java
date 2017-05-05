@@ -122,8 +122,8 @@ public class AdyenRequestFactoryTest {
         testRecurringOption(RecurringContractMode.RECURRING, Recurring.ContractEnum.RECURRING);
         testRecurringOption(RecurringContractMode.ONECLICK_RECURRING, Recurring.ContractEnum.ONECLICK_RECURRING);
 
-        //When a store card is selected, send the alias and include the recurring contract
-        when(cartDataMock.getAdyenSelectedAlias()).thenReturn("alias");
+        //When a store card is selected, send the reference and include the recurring contract
+        when(cartDataMock.getAdyenSelectedReference()).thenReturn("recurring_reference");
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
         paymentRequest = adyenRequestFactory.createAuthorizationRequest(
                 "merchantAccount",
@@ -133,7 +133,7 @@ public class AdyenRequestFactoryTest {
                 null
         );
 
-        assertEquals("alias", paymentRequest.getSelectedRecurringDetailReference());
+        assertEquals("recurring_reference", paymentRequest.getSelectedRecurringDetailReference());
         assertEquals(Recurring.ContractEnum.ONECLICK, paymentRequest.getRecurring().getContract());
     }
 

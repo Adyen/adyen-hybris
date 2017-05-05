@@ -60,14 +60,14 @@ var AdyenCheckout = (function () {
 
             $("#cseToken").val(cseToken);
         } else if (paymentMethod.indexOf("adyen_oneclick_") == 0) {
-            var alias = paymentMethod.slice("adyen_oneclick_".length);
-            cseToken = oneClickForms[alias].encrypt();
+            var recurringReference = paymentMethod.slice("adyen_oneclick_".length);
+            cseToken = oneClickForms[recurringReference].encrypt();
             if (cseToken == false) {
                 alert('This credit card is not valid');
                 return false;
             }
 
-            $("#selectedAlias").val(alias);
+            $("#selectedReference").val(recurringReference);
             $("#cseToken").val(cseToken);
         }
 
@@ -87,19 +87,19 @@ var AdyenCheckout = (function () {
         return adyen.createEncryptedForm(form, options);
     };
 
-    var createOneClickForm = function (alias) {
+    var createOneClickForm = function (recurringReference) {
         // The form element to encrypt.
         var form = document.getElementById('adyen-encrypted-form');
 
         // Form and encryption options. See adyen.encrypt.simple.html for details.
         var options = {};
-        options.fieldNameAttribute = "data-encrypted-name-" + alias;
+        options.fieldNameAttribute = "data-encrypted-name-" + recurringReference;
         options.enableValidations = false;
 
         // Create the form.
         // Note that the method is on the adyen object, not the adyen.encrypt object.
         var encryptedForm = adyen.createEncryptedForm(form, options);
-        oneClickForms[alias] = encryptedForm;
+        oneClickForms[recurringReference] = encryptedForm;
 
         return encryptedForm;
     };
