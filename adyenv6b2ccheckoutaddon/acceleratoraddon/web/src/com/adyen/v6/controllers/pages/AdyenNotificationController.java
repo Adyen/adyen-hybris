@@ -44,14 +44,14 @@ public class AdyenNotificationController {
             return RESPONSE_NOT_ACCEPTED;
         }
 
-        LOG.info("Received Adyen notification:" + requestString);
+        LOG.debug("Received Adyen notification:" + requestString);
         if (!adyenNotificationAuthenticationProvider.authenticateBasic(request)) {
             throw new AccessDeniedException("Wrong credentials");
         }
 
         NotificationHandler notificationHandler = new NotificationHandler();
         NotificationRequest notificationRequest = notificationHandler.handleNotificationJson(requestString);
-        LOG.info(notificationRequest);
+        LOG.debug(notificationRequest);
 
         //Save the notification items to the database
         for (NotificationRequestItem notificationRequestItem : notificationRequest.getNotificationItems()) {

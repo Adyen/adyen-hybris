@@ -120,7 +120,7 @@ public class AdyenTransactionService {
                 abstractOrderModel
         );
 
-        LOG.info("Saving AUTH transaction entry");
+        LOG.info("Saving AUTH transaction entry with psp reference: " + pspReference);
         modelService.save(authorisedTransaction);
 
         modelService.refresh(paymentTransactionModel); //refresh is needed by order-process

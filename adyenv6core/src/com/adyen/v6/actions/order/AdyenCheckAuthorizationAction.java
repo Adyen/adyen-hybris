@@ -39,7 +39,7 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
 
     @Override
     public String execute(final OrderProcessModel process) {
-        LOG.info("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+        LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
 
         final OrderModel order = process.getOrder();
 
@@ -52,13 +52,13 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
 
         //Continue if it's not Adyen payment
         if (paymentInfo.getAdyenPaymentMethod() == null || paymentInfo.getAdyenPaymentMethod().isEmpty()) {
-            LOG.info("Not Adyen Payment");
+            LOG.debug("Not Adyen Payment");
             return Transition.OK.toString();
         }
 
         //No transactions means that is not authorized yet
-        if (order.getPaymentTransactions().size() == 0) {
-            LOG.info("Process: " + process.getCode() + " Order Waiting");
+        if (order.getPaymentTransactions().isEmpty()) {
+            LOG.debug("Process: " + process.getCode() + " Order Waiting");
             return Transition.WAIT.toString();
         }
 
@@ -67,14 +67,14 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
         //Continue if all transactions are authorised
         //todo: cross verify the authorized amount
         if (orderAuthorized) {
-            LOG.info("Process: " + process.getCode() + " Order Authorized");
+            LOG.debug("Process: " + process.getCode() + " Order Authorized");
             order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
             modelService.save(order);
 
             return Transition.OK.toString();
         }
 
-        LOG.error("Process: " + process.getCode() + " Order Not Authorized");
+        LOG.debug("Process: " + process.getCode() + " Order Not Authorized");
         order.setStatus(OrderStatus.PAYMENT_NOT_AUTHORIZED);
         modelService.save(order);
 

@@ -23,10 +23,10 @@ public class AdyenBusinessProcessService {
     public void triggerOrderProcessEvent(OrderModel orderModel, String event) {
         final Collection<OrderProcessModel> orderProcesses = orderModel.getOrderProcess();
         for (final OrderProcessModel orderProcess : orderProcesses) {
-            LOG.info("Order process code: " + orderProcess.getCode());
+            LOG.debug("Order process code: " + orderProcess.getCode());
             //TODO: send only on "order-process-*" ?
             final String eventName = orderProcess.getCode() + "_" + event;
-            LOG.info("Sending event:" + eventName);
+            LOG.debug("Sending event:" + eventName);
             businessProcessService.triggerEvent(eventName);
         }
     }
@@ -42,10 +42,10 @@ public class AdyenBusinessProcessService {
         for (ReturnRequestModel returnRequest : returnRequests) {
             Collection<ReturnProcessModel> returnProcesses = returnRequest.getReturnProcess();
             for (ReturnProcessModel returnProcess : returnProcesses) {
-                LOG.info("Return process code: " + returnProcess.getCode());
+                LOG.debug("Return process code: " + returnProcess.getCode());
                 //TODO: send only on "return-process-*" ?
                 final String eventName = returnProcess.getCode() + "_" + event;
-                LOG.info("Sending event:" + eventName);
+                LOG.debug("Sending event:" + eventName);
                 businessProcessService.triggerEvent(eventName);
             }
         }

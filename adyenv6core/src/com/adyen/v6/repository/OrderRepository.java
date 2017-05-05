@@ -25,7 +25,7 @@ public class OrderRepository extends AbstractRepository {
                 queryParams
         );
 
-        LOG.info("Finding order with code: " + code);
+        LOG.debug("Finding order with code: " + code);
 
         return (OrderModel) getOneOrNull(selectOrderQuery);
     }

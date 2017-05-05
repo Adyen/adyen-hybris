@@ -79,7 +79,7 @@ public class AdyenCheckoutFacade {
 
         String dataToSign = getHmacValidator().getDataToSign(hppResponseData);
         String calculatedMerchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
-        LOGGER.info("Calculated signature: " + calculatedMerchantSig);
+        LOGGER.debug("Calculated signature: " + calculatedMerchantSig);
         if (!calculatedMerchantSig.equals(merchantSig)) {
             LOGGER.error("Signature does not match!");
             throw new SignatureException("Signatures doesn't match");
@@ -140,7 +140,7 @@ public class AdyenCheckoutFacade {
         mapRequest(request, hppResponseData, HPPConstants.Response.SHOPPER_LOCALE);
         mapRequest(request, hppResponseData, HPPConstants.Response.SKIN_CODE);
 
-        LOGGER.info("Received HPP response: " + hppResponseData);
+        LOGGER.debug("Received HPP response: " + hppResponseData);
 
         String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
         String merchantReference = request.getParameter(HPPConstants.Response.MERCHANT_REFERENCE);
@@ -158,7 +158,7 @@ public class AdyenCheckoutFacade {
                 orderData = getCheckoutFacade().placeOrder();
             }
         } catch (InvalidCartException e) {
-            LOGGER.info(e);
+            LOGGER.debug(e);
             //Cart does not exist, retrieve order
             orderData = getOrderFacade().getOrderDetailsForCode(merchantReference);
         }
@@ -187,7 +187,7 @@ public class AdyenCheckoutFacade {
                 customer
         );
 
-        LOGGER.info("authorization result: " + paymentResult);
+        LOGGER.debug("authorization result: " + paymentResult);
 
         if (paymentResult.isAuthorised()) {
             return createAuthorizedOrder(paymentResult);

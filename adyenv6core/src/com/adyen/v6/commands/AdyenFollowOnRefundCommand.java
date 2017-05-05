@@ -61,7 +61,7 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
                     reference
             );
 
-            LOG.info("Refund response: " + modificationResult.getResponse());
+            LOG.debug("Refund response: " + modificationResult.getResponse());
             //change status to ACCEPTED if there is no error
             if (modificationResult.getResponse() == ModificationResult.ResponseEnum.REFUND_RECEIVED_) {
                 result.setTransactionStatus(ACCEPTED);
@@ -70,6 +70,8 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
         } catch (Exception e) {
             LOG.error("Refund Exception", e);
         }
+
+        LOG.info("Refund status: " + result.getTransactionStatus().name() + ":" + result.getTransactionStatusDetails().name());
 
         return result;
     }

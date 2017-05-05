@@ -32,13 +32,13 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
 
     @Override
     public String execute(final ReturnProcessModel process) {
-        LOG.info("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+        LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
 
         final ReturnRequestModel returnRequest = process.getReturnRequest();
         final List<PaymentTransactionModel> transactions = returnRequest.getOrder().getPaymentTransactions();
 
         if (transactions.isEmpty()) {
-            LOG.info("Unable to refund for ReturnRequest " + returnRequest.getCode() + ", no PaymentTransactions found");
+            LOG.warn("Unable to refund for ReturnRequest " + returnRequest.getCode() + ", no PaymentTransactions found");
             return fail(returnRequest);
         }
 
@@ -53,15 +53,16 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         } else {
             amountToRefund = refundAmountCalculationService.getOriginalRefundAmount(returnRequest);
         }
-        LOG.info("Amount to refund " + amountToRefund);
+        LOG.debug("Amount to refund " + amountToRefund);
 
         //Find all entries of type REFUND_FOLLOW_ON
         List<PaymentTransactionEntryModel> refundTransactionEntries = transaction.getEntries().stream()
                 .filter(entry -> PaymentTransactionType.REFUND_FOLLOW_ON.equals(entry.getType()))
                 .collect(Collectors.toList());
 
+        //TODO: check in which cases this can happen
         if (refundTransactionEntries.isEmpty()) {
-            LOG.info("No REFUND TXs found");
+            LOG.warn("No REFUND TXs found");
             try {
                 //Send the refund API request
                 PaymentTransactionEntryModel transactionEntry = getPaymentService().refundFollowOn(transaction, amountToRefund);
@@ -87,7 +88,7 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         );
 
         if (hasError) {
-            LOG.info("Found failed REFUND transaction for ReturnRequest " + returnRequest.getCode());
+            LOG.warn("Found failed REFUND transaction for ReturnRequest " + returnRequest.getCode());
             return fail(returnRequest);
         }
 
@@ -104,11 +105,11 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         refundedAmount.setScale(3, BigDecimal.ROUND_FLOOR);
         amountToRefund.setScale(3, BigDecimal.ROUND_FLOOR);
 
-        LOG.info("Refunded amount " + refundedAmount);
+        LOG.debug("Refunded amount " + refundedAmount);
 
         //Wait if there is still remaining amount to be refunded
         if (refundedAmount.compareTo(amountToRefund) < 0) {
-            LOG.info("Waiting for the remaining amount");
+            LOG.debug("Waiting for the remaining amount");
             return Transition.WAIT.name();
         }
 
