@@ -3,6 +3,25 @@
  */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.recurring.Recurring;
@@ -36,21 +55,8 @@ import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.security.SignatureException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -113,6 +119,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         setupAvailablePaymentMethods();
 
+        // current selected PaymentMethod
+        model.addAttribute("selectedPaymentMethod", cartData.getAdyenPaymentMethod());
+
         //Set HPP payment methods
         model.addAttribute("paymentMethods", alternativePaymentMethods);
 
@@ -126,18 +135,24 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         String cseUrl = getAdyenPaymentService().getCSEUrl();
         model.addAttribute("cseUrl", cseUrl);
 
-        // add gender options
-        List<String> genderOptions = new ArrayList();
-        genderOptions.add(Gender.MALE.getCode());
-        genderOptions.add(Gender.FEMALE.getCode());
-        model.addAttribute("genderOptions", genderOptions);
-
         // OpenInvoice Methods
-        // TODO: move to generic class so AdyenSummeryCheckoutStepController checks the same list
-        List<String> openInvoiceMethods = new ArrayList();
-        openInvoiceMethods.add("klarna");
-        openInvoiceMethods.add("ratepay");
+        List<String> openInvoiceMethods = OPENINVOICE_METHODS_API;
         model.addAttribute("openInvoiceMethods", openInvoiceMethods);
+
+        // check if dob or socialSecurityNumber needs to be set for openinvoice
+        List<String> openInvoiceMethodsAllowSocialSecurityNumber = OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
+        model.addAttribute("openInvoiceMethodsAllowSocialSecurityNumber", openInvoiceMethods);
+
+        // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
+        final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+        String countryCode = addressData.getCountry().getIsocode();
+
+        Boolean showSocialSecurityNumber = false;
+        if (openInvoiceMethodsAllowSocialSecurityNumber.contains(countryCode)) {
+            showSocialSecurityNumber = true;
+        }
+        model.addAttribute("showSocialSecurityNumber", showSocialSecurityNumber);
+
 
         super.prepareDataForPage(model);
 
@@ -163,8 +178,10 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 alternativePaymentMethods,
                 allowedCards,
                 storedCards,
-                showRememberTheseDetails
+                showRememberTheseDetails,
+                getCheckoutFacade().getCheckoutCart().getDeliveryAddress()
         );
+
 
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -173,15 +190,13 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             return enterStep(model, redirectAttributes);
         }
 
-        // set telephone,dob and gender
-
-        //TODO: Billing address
         model.addAttribute(CSE_DATA, adyenPaymentForm);
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         //Update CartModel
         final CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
+
 
         final PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
 
@@ -243,10 +258,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         paymentInfo.setAdyenSelectedAlias(adyenPaymentForm.getSelectedAlias());
 
         // openinvoice fields
-        paymentInfo.setAdyenGender(adyenPaymentForm.getGender());
         paymentInfo.setAdyenDob(adyenPaymentForm.getDob());
-        paymentInfo.setAdyenTelephone(adyenPaymentForm.getTelephone());
-
+        paymentInfo.setAdyenSocialSecurityNumber(adyenPaymentForm.getSocialSecurityNumber());
         modelService.save(paymentInfo);
 
         return paymentInfo;

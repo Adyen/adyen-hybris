@@ -144,6 +144,7 @@
 				<attribute qualifier="adyenPassword" type="java.lang.String">
 					<description>System User password</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenNotificationUsername" type="java.lang.String">
 					<description>Server Communication HTTP Basic username</description>
@@ -239,13 +240,10 @@
 				<attribute qualifier="adyenSelectedAlias" type="java.lang.String">
 					<persistence type="property" />
 				</attribute>
-				<attribute qualifier="adyenTelephone" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="adyenGender" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
 				<attribute qualifier="adyenDob" type="java.util.Date">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
 					<persistence type="property"/>
 				</attribute>
 			</attributes>

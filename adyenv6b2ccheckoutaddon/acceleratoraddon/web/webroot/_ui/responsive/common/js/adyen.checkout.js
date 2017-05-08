@@ -1,5 +1,6 @@
 var AdyenCheckout = (function () {
     var oneClickForms = [];
+    var dobDateFormat = "yy-mm-dd";
 
     var updateCardType = function (cardType, friendlyName) {
         $(".cse-cardtype").removeClass("cse-cardtype-style-active");
@@ -45,6 +46,11 @@ var AdyenCheckout = (function () {
         var paymentMethod = $('input[type=radio][name=paymentMethod]:checked').val();
         var cseToken;
 
+        if(paymentMethod == "") {
+            alert("Please select a payment method");
+            return false;
+        }
+
         //Check if it is a valid card and encrypt
         if (paymentMethod == "adyen_cc") {
             if (!AdyenCheckout.isAllowedCard(allowedCards)) {
@@ -69,9 +75,40 @@ var AdyenCheckout = (function () {
 
             $("#selectedAlias").val(alias);
             $("#cseToken").val(cseToken);
+        } else {
+            // if issuerId is present let the customer select it
+            if((issuer = $('#p_method_adyen_hpp_' + paymentMethod +'_issuer').val()) != undefined) {
+                if(issuer == "") {
+                    alert('Please select issuer');
+                    return false;
+                }
+            }
         }
 
         return true;
+    };
+
+    /**
+     * Set Custom values for certain payment methods
+     */
+    var setCustomPaymentMethodValues = function () {
+
+        var paymentMethod = $('input[type=radio][name=paymentMethod]:checked').val();
+
+        // set issuer if payment method has it
+        if((issuer = $('#p_method_adyen_hpp_' + paymentMethod +'_issuer'))) {
+            $("#issuerId").val(issuer.val());
+        }
+
+        if((dob = $('#p_method_adyen_hpp_' + paymentMethod +'_dob'))) {
+            $("#dob").val(dob.val());
+        }
+
+        if((ssn = $('#p_method_adyen_hpp_' + paymentMethod +'_ssn'))) {
+            $("#socialSecurityNumber").val(ssn.val());
+        }
+
+
     };
 
     var createForm = function () {
@@ -104,11 +141,38 @@ var AdyenCheckout = (function () {
         return encryptedForm;
     };
 
+    /**
+     * Create DatePicker for Date of Birth field
+     *
+     * @param element
+     */
+    var createDobDatePicker = function(element) {
+        $( "." + element).datepicker( {
+            dateFormat: dobDateFormat,
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-120:+0"
+        });
+    };
+
+
+    var togglePaymentMethod = function(paymentMethod) {
+
+        $(".payment_method_details").hide();
+        $(".extra-fields-container").hide();
+
+        $("#dd_method_" + paymentMethod).show();
+        $("#adyen_hpp_" + paymentMethod + "_container").show();
+    }
+
     return {
         enableCardTypeDetection: enableCardTypeDetection,
         isAllowedCard: isAllowedCard,
         validateForm: validateForm,
+        setCustomPaymentMethodValues: setCustomPaymentMethodValues,
         createOneClickForm: createOneClickForm,
-        createForm: createForm
+        createForm: createForm,
+        createDobDatePicker: createDobDatePicker,
+        togglePaymentMethod: togglePaymentMethod
     }
 })();

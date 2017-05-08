@@ -3,6 +3,7 @@ package com.adyen.v6.forms;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.validation.constraints.NotNull;
+import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
@@ -11,6 +12,8 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
+
+    private static final org.apache.log4j.Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
     @NotNull
     private String paymentMethod;
 
@@ -24,9 +27,8 @@ public class AdyenPaymentForm {
     private String issuerId;
 
     // openinvoice fields
-    private String gender;
     private String dob;
-    private String telephone;
+    private String socialSecurityNumber;
 
     public String getCseToken() {
         return cseToken;
@@ -71,21 +73,20 @@ public class AdyenPaymentForm {
     public boolean isRememberTheseDetails() {
         return rememberTheseDetails;
     }
-    public String getGender() {
-        return gender;
-    }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     public Date getDob() {
         Date dateOfBirth = null;
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            dateOfBirth = format.parse(dob);
-        } catch(Exception e) {
-            // do nothing for now
+        if(dob != null) {
+            try {
+                // make sure the input format is yyyy-MM-dd
+                if (dob.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    dateOfBirth = format.parse(dob);
+                }
+            } catch(Exception e) {
+                LOG.error(e);
+            }
         }
         return dateOfBirth;
     }
@@ -94,12 +95,12 @@ public class AdyenPaymentForm {
         this.dob = dob;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public String getSocialSecurityNumber() {
+        return socialSecurityNumber;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setSocialSecurityNumber(String socialSecurityNumber) {
+        this.socialSecurityNumber = socialSecurityNumber;
     }
 
     public boolean isCC() {
@@ -121,6 +122,8 @@ public class AdyenPaymentForm {
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedAlias: ").append(Util.toIndentedString(selectedAlias)).append("\n");
+        sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
+        sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
         sb.append("}");
         return sb.toString();
     }

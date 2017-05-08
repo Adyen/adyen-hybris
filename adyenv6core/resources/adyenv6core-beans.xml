@@ -22,8 +22,7 @@
 		<property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
 		<property name="adyenPaymentMethod" type="java.lang.String"/>
 		<property name="adyenIssuerId" type="java.lang.String"/>
-		<property name="adyenTelephone" type="java.lang.String"/>
-		<property name="adyenGender" type="java.lang.String" />
 		<property name="adyenDob" type="java.util.Date" />
+		<property name="adyenSocialSecurityNumber" type="java.lang.String" />
 	</bean>
 </beans>

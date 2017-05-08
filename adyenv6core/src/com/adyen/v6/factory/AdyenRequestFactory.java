@@ -1,7 +1,9 @@
 package com.adyen.v6.factory;
 
 import com.adyen.Util.Util;
+import com.adyen.enums.VatCategory;
 import com.adyen.model.*;
+import com.adyen.model.additionalData.InvoiceLine;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelRequest;
 import com.adyen.model.modification.CaptureRequest;
@@ -11,13 +13,23 @@ import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
+import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.order.CartService;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
+import org.apache.log4j.Logger;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 
 public class AdyenRequestFactory {
+
+    private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
+
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount,
                                                          final HttpServletRequest request,
                                                          final String md,
@@ -33,7 +45,8 @@ public class AdyenRequestFactory {
                                                      final CartData cartData,
                                                      final HttpServletRequest request,
                                                      final CustomerModel customerModel,
-                                                     final RecurringContractMode recurringContractMode) {
+                                                     final RecurringContractMode recurringContractMode,
+                                                     final CartService cartService) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
@@ -45,8 +58,12 @@ public class AdyenRequestFactory {
                 .setAmountData(
                         amount,
                         currency
-                )
-                .setCSEToken(cseToken);
+                );
+
+
+        if(!cseToken.isEmpty()) {
+            paymentRequest.setCSEToken(cseToken);
+        }
 
         // if user is logged in
         if (customerModel != null) {
@@ -59,12 +76,18 @@ public class AdyenRequestFactory {
 
         // if address details are provided added it into the request
         if (cartData.getDeliveryAddress() != null) {
-            Address deliveryAddress = fillInAddressData(cartData.getDeliveryAddress());
+            Address deliveryAddress = setAddressData(cartData.getDeliveryAddress());
             paymentRequest.setDeliveryAddress(deliveryAddress);
         }
 
         if (cartData.getPaymentInfo().getBillingAddress() != null) {
-            Address billingAddress = fillInAddressData(cartData.getPaymentInfo().getBillingAddress());
+
+            // set PhoneNumber if it is provided
+            if (!cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
+                paymentRequest.setTelephoneNumber(cartData.getPaymentInfo().getBillingAddress().getPhone());
+            }
+
+            Address billingAddress = setAddressData(cartData.getPaymentInfo().getBillingAddress());
             paymentRequest.setBillingAddress(billingAddress);
         }
 
@@ -76,6 +99,14 @@ public class AdyenRequestFactory {
             //set oneclick
             Recurring recurring = getRecurringContractType(RecurringContractMode.ONECLICK);
             paymentRequest.setRecurring(recurring);
+        }
+
+        // OpenInvoice add required additional data
+        if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
+            paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
+            setOpenInvoiceData(paymentRequest, cartData, customerModel, cartService);
+            // Set only here the shopperName because it could be that Saluation is not always used
+            paymentRequest.setShopperName(setShopperName(cartData.getDeliveryAddress()));
         }
 
         return paymentRequest;
@@ -161,7 +192,7 @@ public class AdyenRequestFactory {
      * @param addressData
      * @return
      */
-    private Address fillInAddressData(AddressData addressData) {
+    private Address setAddressData(AddressData addressData) {
 
         Address address = new Address();
 
@@ -258,5 +289,146 @@ public class AdyenRequestFactory {
         }
 
         return null;
+    }
+
+    /**
+     * Set shopper info
+     *
+     * @param addressData
+     * @return
+     */
+    public Name setShopperName(AddressData addressData)
+    {
+        LOG.info("SET SHOPPER NAME TEST!!!!!!");
+        Name shopperName = new Name();
+
+        shopperName.setFirstName(addressData.getFirstName());
+        shopperName.setLastName(addressData.getLastName());
+
+        if( addressData.getTitleCode().equals("mrs") ||
+                addressData.getTitleCode().equals("miss") ||
+                addressData.getTitleCode().equals("ms"))
+        {
+            shopperName.setGender(Name.GenderEnum.FEMALE);
+        } else {
+            shopperName.setGender(Name.GenderEnum.MALE);
+        }
+
+        return shopperName;
+    }
+
+    /**
+     * Set the required fields for using the OpenInvoice API
+     *
+     *
+     * @param paymentRequest
+     * @param cartData
+     * @param customerModel
+     */
+    public void setOpenInvoiceData(PaymentRequest paymentRequest, CartData cartData, final CustomerModel customerModel, final CartService cartService)
+    {
+        // set date of birth
+        if (cartData.getAdyenDob() != null) {
+            paymentRequest.setDateOfBirth(cartData.getAdyenDob());
+        }
+
+        if (!cartData.getAdyenSocialSecurityNumber().isEmpty()) {
+            paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+        }
+
+        // set the invoice lines
+        List<InvoiceLine> invoiceLines = new ArrayList();
+        String currency = cartService.getSessionCart().getCurrency().getIsocode();
+
+        for(AbstractOrderEntryModel entry : cartService.getSessionCart().getEntries()) {
+
+            // Use totalPrice because the basePrice does include tax as well if you have configured this to be calculated in the price
+            LOG.info("TOTAL PRICE" + entry.getTotalPrice());
+            Double pricePerItem = entry.getTotalPrice() / entry.getQuantity().intValue();
+
+            String description = "NA";
+            if(entry.getProduct().getName() != null && !entry.getProduct().getName().equals("")) {
+                description  = entry.getProduct().getName();
+            }
+
+            // Tax of total price (included quantity)
+            Double tax = entry.getTaxValues().stream()
+                              .map(taxValue -> taxValue.getAppliedValue())
+                              .reduce(0.0, (x, y) -> x = x+y);
+
+
+            // Calculate Tax per quantitiy
+            if(tax > 0) {
+                tax = tax / entry.getQuantity().intValue();
+            }
+
+            LOG.info("TOTAL TAX" + tax);
+
+            // Calculate price without tax
+            Amount itemAmountWithoutTax = Util.createAmount(BigDecimal.valueOf(pricePerItem - tax), currency);
+
+            LOG.info("AMOUNT: " + itemAmountWithoutTax.getValue());
+
+            Double percentage = entry.getTaxValues().stream()
+                                     .map(taxValue -> taxValue.getValue())
+                                     .reduce(0.0, (x, y) -> x = x+y) * 100;
+
+            InvoiceLine invoiceLine = new InvoiceLine();
+            invoiceLine.setCurrencyCode(currency);
+            invoiceLine.setDescription(description);
+
+            /**
+             * The price for one item in the invoice line, represented in minor units.
+             * The due amount for the item, VAT excluded.
+             */
+            invoiceLine.setItemAmount(itemAmountWithoutTax.getValue());
+
+            // The VAT due for one item in the invoice line, represented in minor units.
+            invoiceLine.setItemVATAmount(Util.createAmount(BigDecimal.valueOf(tax), currency).getValue());
+
+            // The VAT percentage for one item in the invoice line, represented in minor units.
+            invoiceLine.setItemVatPercentage(percentage.longValue());
+
+            // The country-specific VAT category a product falls under.  Allowed values: (High,Low,None)
+            invoiceLine.setVatCategory(VatCategory.NONE);
+
+            // An unique id for this item. Required for RatePay if the description of each item is not unique.
+            if(!entry.getProduct().getCode().isEmpty()) {
+                invoiceLine.setItemId(entry.getProduct().getCode());
+            }
+
+            invoiceLine.setNumberOfItems(entry.getQuantity().intValue());
+
+            if (entry.getProduct() != null && !entry.getProduct().getCode().isEmpty()) {
+                invoiceLine.setItemId(entry.getProduct().getCode());
+            }
+
+            if (entry.getProduct() != null && !entry.getProduct().getCode().isEmpty()) {
+                invoiceLine.setItemId(entry.getProduct().getCode());
+            }
+
+            LOG.debug("InvoiceLine Product:" + invoiceLine.toString());
+            invoiceLines.add(invoiceLine);
+
+        }
+
+        // Add delivery costs
+        if (cartData.getDeliveryCost() != null) {
+
+            InvoiceLine invoiceLine = new InvoiceLine();
+            invoiceLine.setCurrencyCode(currency);
+            invoiceLine.setDescription("Delivery Costs");
+            Amount deliveryAmount = Util.createAmount(cartData.getDeliveryCost().getValue().toString(), currency);
+            invoiceLine.setItemAmount(deliveryAmount.getValue());
+            invoiceLine.setItemVATAmount(new Long("0"));
+            invoiceLine.setItemVatPercentage(new Long("0"));
+            invoiceLine.setVatCategory(VatCategory.NONE);
+            invoiceLine.setNumberOfItems(1);
+            LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine.toString());
+            invoiceLines.add(invoiceLine);
+        }
+
+        paymentRequest.setInvoiceLines(invoiceLines);
+
     }
 }
