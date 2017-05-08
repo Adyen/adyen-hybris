@@ -112,7 +112,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        //TODO: validate Cart and selectedAlias
+        //TODO: validate Cart and selectedReference
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         String errorMessage = "checkout.error.authorization.failed";
@@ -124,7 +124,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             try {
                 OrderData orderData = adyenCheckoutFacade.authoriseCardPayment(request, cartData);
 
-                LOGGER.info("Redirecting to confirmation!");
+                LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
                 LOGGER.error("API exception " + e.getError());
@@ -139,7 +139,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                     model.addAttribute("termUrl", termUrl);
 
                     return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
-                } else if (paymentResult.isRefused()) {
+                }
+                if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
@@ -162,7 +163,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
         }
 
-        LOGGER.info("Redirecting to summary view");
+        LOGGER.debug("Redirecting to summary view");
         GlobalMessages.addErrorMessage(model, errorMessage);
         return enterStep(model, redirectModel);
     }
@@ -178,11 +179,11 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             OrderData orderData = adyenCheckoutFacade.handle3DResponse(request);
 
-            LOGGER.info("Redirecting to confirmation");
+            LOGGER.debug("Redirecting to confirmation");
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
-            LOGGER.info("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
+            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
 
             if (paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
@@ -192,7 +193,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        LOGGER.info("Redirecting to final step of checkout");
+        LOGGER.debug("Redirecting to final step of checkout");
         return redirectToSummaryWithError(redirectModel, errorMessage);
     }
 
@@ -209,7 +210,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             switch (authResult) {
                 case HPPConstants.Response.AUTH_RESULT_AUTHORISED:
                 case HPPConstants.Response.AUTH_RESULT_PENDING:
-                    LOGGER.info("Redirecting to order confirmation");
+                    LOGGER.debug("Redirecting to order confirmation");
                     return redirectToOrderConfirmationPage(orderData);
                 case HPPConstants.Response.AUTH_RESULT_REFUSED:
                     return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.refused");
@@ -223,7 +224,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             LOGGER.error(e);
         }
 
-        LOGGER.info("Redirecting to cart..");
+        LOGGER.debug("Redirecting to cart..");
         GlobalMessages.addFlashMessage(
                 redirectModel,
                 GlobalMessages.ERROR_MESSAGES_HOLDER,

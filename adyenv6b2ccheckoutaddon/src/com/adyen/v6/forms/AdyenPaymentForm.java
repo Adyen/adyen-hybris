@@ -2,8 +2,8 @@ package com.adyen.v6.forms;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.validation.constraints.NotNull;
 import org.apache.log4j.Logger;
+import javax.validation.constraints.NotNull;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
@@ -13,13 +13,14 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
  */
 public class AdyenPaymentForm {
 
-    private static final org.apache.log4j.Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
+    private static final Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
+
     @NotNull
     private String paymentMethod;
 
     //CSE
     private String cseToken;
-    private String selectedAlias;
+    private String selectedReference;
     //Save card
     private boolean rememberTheseDetails;
 
@@ -62,16 +63,16 @@ public class AdyenPaymentForm {
         this.rememberTheseDetails = rememberTheseDetails;
     }
 
-    public String getSelectedAlias() {
-        return selectedAlias;
-    }
-
-    public void setSelectedAlias(String selectedAlias) {
-        this.selectedAlias = selectedAlias;
-    }
-
     public boolean isRememberTheseDetails() {
         return rememberTheseDetails;
+    }
+
+    public String getSelectedReference() {
+        return selectedReference;
+    }
+
+    public void setSelectedReference(String selectedReference) {
+        this.selectedReference = selectedReference;
     }
 
 
@@ -121,7 +122,7 @@ public class AdyenPaymentForm {
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
-        sb.append("    selectedAlias: ").append(Util.toIndentedString(selectedAlias)).append("\n");
+        sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
         sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
         sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
         sb.append("}");

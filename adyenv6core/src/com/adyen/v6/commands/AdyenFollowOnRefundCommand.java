@@ -1,18 +1,17 @@
 package com.adyen.v6.commands;
 
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Date;
+import org.apache.log4j.Logger;
 import com.adyen.model.modification.ModificationResult;
+import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.BaseStoreRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.payment.commands.FollowOnRefundCommand;
 import de.hybris.platform.payment.commands.request.FollowOnRefundRequest;
 import de.hybris.platform.payment.commands.result.RefundResult;
 import de.hybris.platform.store.BaseStoreModel;
-import org.apache.log4j.Logger;
-
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Date;
-
 import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 import static de.hybris.platform.payment.dto.TransactionStatus.ERROR;
 import static de.hybris.platform.payment.dto.TransactionStatusDetails.REVIEW_NEEDED;
@@ -24,7 +23,7 @@ import static de.hybris.platform.payment.dto.TransactionStatusDetails.UNKNOWN_CO
 public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowOnRefundRequest> {
     private static final Logger LOG = Logger.getLogger(AdyenFollowOnRefundCommand.class);
 
-    private AdyenPaymentService adyenPaymentService;
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private BaseStoreRepository baseStoreRepository;
 
     @Override
@@ -38,8 +37,7 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
         result.setTransactionStatus(ERROR);
         result.setTransactionStatusDetails(UNKNOWN_CODE);
 
-        LOG.info("Refund request received with requestId: " + request.getRequestId()
-                + ", requestToken: " + request.getRequestToken());
+        LOG.info("Refund request received with requestId: " + request.getRequestId() + ", requestToken: " + request.getRequestToken());
 
         String originalPSPReference = request.getRequestId();
         String reference = request.getRequestToken();
@@ -50,18 +48,13 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
         if (baseStore == null) {
             return result;
         }
-        adyenPaymentService.setBaseStore(baseStore);
+        AdyenPaymentService adyenPaymentService = adyenPaymentServiceFactory.createFromBaseStore(baseStore);
 
         try {
             //Do the /refund API call
-            ModificationResult modificationResult = adyenPaymentService.refund(
-                    amount,
-                    currency,
-                    originalPSPReference,
-                    reference
-            );
+            ModificationResult modificationResult = adyenPaymentService.refund(amount, currency, originalPSPReference, reference);
 
-            LOG.info("Refund response: " + modificationResult.getResponse());
+            LOG.debug("Refund response: " + modificationResult.getResponse());
             //change status to ACCEPTED if there is no error
             if (modificationResult.getResponse() == ModificationResult.ResponseEnum.REFUND_RECEIVED_) {
                 result.setTransactionStatus(ACCEPTED);
@@ -71,15 +64,17 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
             LOG.error("Refund Exception", e);
         }
 
+        LOG.info("Refund status: " + result.getTransactionStatus().name() + ":" + result.getTransactionStatusDetails().name());
+
         return result;
     }
 
-    public AdyenPaymentService getAdyenPaymentService() {
-        return adyenPaymentService;
+    public AdyenPaymentServiceFactory getAdyenPaymentServiceFactory() {
+        return adyenPaymentServiceFactory;
     }
 
-    public void setAdyenPaymentService(AdyenPaymentService adyenPaymentService) {
-        this.adyenPaymentService = adyenPaymentService;
+    public void setAdyenPaymentServiceFactory(AdyenPaymentServiceFactory adyenPaymentServiceFactory) {
+        this.adyenPaymentServiceFactory = adyenPaymentServiceFactory;
     }
 
     public BaseStoreRepository getBaseStoreRepository() {

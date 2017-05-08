@@ -38,7 +38,6 @@ public class AdyenNotificationService {
         notificationItemModel.setAdditionalData(additionalDataJson);
 
         notificationItemModel.setCreatedAt(new Date());
-        notificationItemModel.setProcessed(false);
 
         return notificationItemModel;
     }

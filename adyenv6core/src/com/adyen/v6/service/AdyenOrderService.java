@@ -27,7 +27,7 @@ public class AdyenOrderService extends DefaultPaymentServiceImpl {
         FraudResult fraudResult = paymentResult.getFraudResult();
 
         if (fraudResult == null) {
-            LOG.info("No fraud result found");
+            LOG.debug("No fraud result found");
             return null;
         }
 
@@ -57,7 +57,7 @@ public class AdyenOrderService extends DefaultPaymentServiceImpl {
 
         fraudReport.setFraudSymptomScorings(fraudSymptomScorings);
 
-        LOG.info("Returning fraud report with score: " + fraudResult.getAccountScore());
+        LOG.debug("Returning fraud report with score: " + fraudResult.getAccountScore());
 
         return fraudReport;
     }
@@ -79,7 +79,7 @@ public class AdyenOrderService extends DefaultPaymentServiceImpl {
 
     public void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
         if (order == null) {
-            LOG.error("Null order");
+            LOG.error("Order is null");
             return;
         }
 

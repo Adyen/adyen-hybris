@@ -29,7 +29,7 @@ public class PaymentTransactionRepository extends AbstractRepository {
                 queryParams
         );
 
-        LOG.info("Finding transaction with PSP reference: " + pspReference);
+        LOG.debug("Finding transaction with PSP reference: " + pspReference);
 
         return (PaymentTransactionModel) getOneOrNull(selectOrderQuery);
     }

@@ -111,7 +111,7 @@
                         <value type="java.lang.Class">de.hybris.platform.payment.commands.CaptureCommand</value>
                     </key>
                     <bean class="com.adyen.v6.commands.AdyenCaptureCommand">
-                        <property name="adyenPaymentService" ref="adyenPaymentService"/>
+                        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
                         <property name="orderRepository" ref="adyenOrderRepository"/>
                     </bean>
                 </entry>
@@ -120,7 +120,7 @@
                         <value type="java.lang.Class">de.hybris.platform.payment.commands.VoidCommand</value>
                     </key>
                     <bean class="com.adyen.v6.commands.AdyenVoidCommand">
-                        <property name="adyenPaymentService" ref="adyenPaymentService"/>
+                        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
                         <property name="baseStoreRepository" ref="adyenBaseStoreRepository"/>
                     </bean>
                 </entry>
@@ -129,7 +129,7 @@
                         <value type="java.lang.Class">de.hybris.platform.payment.commands.FollowOnRefundCommand</value>
                     </key>
                     <bean class="com.adyen.v6.commands.AdyenFollowOnRefundCommand">
-                        <property name="adyenPaymentService" ref="adyenPaymentService"/>
+                        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
                         <property name="baseStoreRepository" ref="adyenBaseStoreRepository"/>
                     </bean>
                 </entry>
@@ -138,7 +138,7 @@
     </bean>
 
 
-    <bean id="adyenPaymentService" class="com.adyen.v6.service.AdyenPaymentService" />
+    <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory" />
 
     <bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
         <property name="modelService" ref="modelService" />

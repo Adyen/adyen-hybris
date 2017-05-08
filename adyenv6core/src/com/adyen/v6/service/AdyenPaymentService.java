@@ -1,5 +1,16 @@
 package com.adyen.v6.service;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.httpclient.HTTPClientException;
@@ -10,6 +21,8 @@ import com.adyen.model.modification.CancelRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
+import com.adyen.model.recurring.DisableRequest;
+import com.adyen.model.recurring.DisableResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
@@ -21,37 +34,26 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
-import de.hybris.platform.payment.impl.DefaultPaymentServiceImpl;
 import de.hybris.platform.store.BaseStoreModel;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
 
 //TODO: implement an interface
-public class AdyenPaymentService extends DefaultPaymentServiceImpl {
+public class AdyenPaymentService {
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
+    private Config config;
+    private Client client;
 
     private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
 
     @Resource(name = "cartService")
     private CartService cartService;
 
+    private AdyenPaymentService() {}
 
-    public Config getConfig() {
-        Assert.notNull(baseStore);
+    public AdyenPaymentService(final BaseStoreModel baseStore) {
+        this.baseStore = baseStore;
 
         String username = baseStore.getAdyenUsername();
         String password = baseStore.getAdyenPassword();
@@ -63,7 +65,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         Assert.notNull(merchantAccount);
 
-        Config config = new Config();
+        config = new Config();
         config.setUsername(username);
         config.setPassword(password);
         config.setMerchantAccount(merchantAccount);
@@ -77,20 +79,7 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
             config.setHppEndpoint(HPP_TEST);
         }
 
-        return config;
-    }
-
-    /**
-     * Returns a Client
-     * It is not a singleton, so that it can support dynamic credential changes
-     *
-     * @return
-     */
-    private Client createClient() {
-        Config config = getConfig();
-        Client client = new Client(config);
-
-        return client;
+        client = new Client(config);
     }
 
     /**
@@ -103,7 +92,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @throws Exception
      */
     public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
-        Client client = createClient();
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(
@@ -124,92 +112,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     }
 
     /**
-     * Set Address Data into API
-     *
-     * @param addressData
-     * @return
-     */
-//    public Address fillInAddressData(AddressData addressData)
-//    {
-//
-//        Address address = new Address();
-//
-//        // set defaults because all fields are required into the API
-//        address.setCity("NA");
-//        address.setCountry("NA");
-//        address.setHouseNumberOrName("NA");
-//        address.setPostalCode("NA");
-//        address.setStateOrProvince("NA");
-//        address.setStreet("NA");
-//
-//        // set the actual values if they are available
-//        if(addressData.getTown() !=  null &&  addressData.getTown() !=  "") {
-//            address.setCity(addressData.getTown());
-//        }
-//
-//        if(addressData.getCountry() != null  && addressData.getCountry().getIsocode() != "") {
-//            address.setCountry(addressData.getCountry().getIsocode());
-//        }
-//
-//        if(addressData.getLine2() != null && addressData.getLine2() != "") {
-//            address.setHouseNumberOrName(addressData.getLine2());
-//        }
-//
-//        if(addressData.getPostalCode() != null && address.getPostalCode() != "") {
-//            address.setPostalCode(addressData.getPostalCode());
-//        }
-//
-//        if(addressData.getRegion() != null && addressData.getRegion().getIsocode() != "") {
-//            address.setStateOrProvince(addressData.getRegion().getIsocode());
-//        }
-//
-//        if(addressData.getLine1() != null && addressData.getLine1() != "") {
-//           address.setStreet(addressData.getLine1());
-//        }
-//
-//        return address;
-//    }
-
-
-
-
-    /**
-     * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
-     *
-     * @param cartData
-     * @param recurringContractMode
-     * @return
-     */
-//    public Recurring getRecurringContractType(final CartData cartData, RecurringContractMode recurringContractMode)
-//    {
-//        Recurring recurringContract = new Recurring();
-//
-//        String recurringMode = recurringContractMode.getCode();
-//        Recurring.ContractEnum contractEnum = Recurring.ContractEnum.valueOf(recurringMode);
-//
-//        // if user want to save his card use the configured recurring contract type
-//        if(cartData.getAdyenRememberTheseDetails() != null && cartData.getAdyenRememberTheseDetails()) {
-//            recurringContract.contract(contractEnum);
-//        } else {
-//
-//            /**
-//             * If save card is not checked do the folllowing changes:
-//             * ONECLICK => NONE
-//             * ONECLICK,RECURRING => RECURRING
-//             * NONE => NONE
-//             * RECURRING => RECURRING
-//             */
-//            if(contractEnum.equals(Recurring.ContractEnum.ONECLICK_RECURRING)) {
-//                recurringContract.contract(Recurring.ContractEnum.RECURRING);
-//            } else if(!contractEnum.equals(Recurring.ContractEnum.ONECLICK)) {
-//                recurringContract.contract(contractEnum);
-//            }
-//        }
-//
-//        return recurringContract;
-//    }
-
-    /**
      * Performs 3D secure authorization request
      *
      * @param request
@@ -221,7 +123,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     public PaymentResult authorise3D(final HttpServletRequest request,
                                      final String paRes,
                                      final String md) throws Exception {
-        Client client = createClient();
         Payment payment = new Payment(client);
 
         PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(
@@ -252,7 +153,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                                       final Currency currency,
                                       final String authReference,
                                       final String merchantReference) throws Exception {
-        Client client = createClient();
         Modification modification = new Modification(client);
 
         CaptureRequest captureRequest = getAdyenRequestFactory().createCaptureRequest(
@@ -279,7 +179,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @throws Exception
      */
     public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
-        Client client = createClient();
         Modification modification = new Modification(client);
 
         CancelRequest cancelRequest = getAdyenRequestFactory().createCancelRequest(
@@ -309,7 +208,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
                                      final Currency currency,
                                      final String authReference,
                                      final String merchantReference) throws Exception {
-        Client client = createClient();
         Modification modification = new Modification(client);
 
         RefundRequest refundRequest = getAdyenRequestFactory().createRefundRequest(
@@ -341,8 +239,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
                                                  final String currency,
                                                  final String countryCode) throws HTTPClientException, SignatureException, IOException {
-        Client client = createClient();
-
         if(client.getConfig().getSkinCode() == null || client.getConfig().getSkinCode().isEmpty()) {
             return new ArrayList<>();
         }
@@ -359,17 +255,16 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
         return paymentMethods;
     }
 
-    public List<RecurringDetail> getStoredCards(final CustomerModel customerModel) throws IOException, ApiException {
-        if (customerModel == null) {
+    public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
+        if (customerId == null) {
             return null;
         }
 
-        Client client = createClient();
         com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);
 
         RecurringDetailsRequest request = getAdyenRequestFactory().createListRecurringDetailsRequest(
                 client.getConfig().getMerchantAccount(),
-                customerModel
+                customerId
         );
 
         LOG.debug(request);
@@ -378,10 +273,35 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
         //Return only cards
         List<RecurringDetail> storedCards = result.getRecurringDetails().stream()
-                .filter(detail -> (detail.getCard() != null && detail.getAlias() != null))
+                .filter(detail -> (detail.getCard() != null && detail.getRecurringDetailReference() != null))
                 .collect(Collectors.toList());
 
         return storedCards;
+    }
+
+    /**
+     * Disables a recurring contract
+     *
+     * @param customerId
+     * @param recurringReference
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public boolean disableStoredCard(final String customerId, final String recurringReference) throws IOException, ApiException {
+        com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);
+
+        DisableRequest request = getAdyenRequestFactory().createDisableRequest(
+                client.getConfig().getMerchantAccount(),
+                customerId,
+                recurringReference
+        );
+
+        LOG.debug(request);
+        DisableResult result = recurring.disable(request);
+        LOG.debug(result);
+
+        return (result.getDetails() != null && result.getDetails().size() > 0);
     }
 
     /**
@@ -390,8 +310,6 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
      * @return
      */
     public String getCSEUrl() {
-        Config config = getConfig();
-
         String cseId = baseStore.getAdyenCSEID();
         Assert.notNull(cseId);
 
@@ -416,5 +334,21 @@ public class AdyenPaymentService extends DefaultPaymentServiceImpl {
 
     public void setBaseStore(BaseStoreModel baseStore) {
         this.baseStore = baseStore;
+    }
+
+    public void setConfig(Config config) {
+        this.config = config;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Config getConfig() {
+        return config;
     }
 }
