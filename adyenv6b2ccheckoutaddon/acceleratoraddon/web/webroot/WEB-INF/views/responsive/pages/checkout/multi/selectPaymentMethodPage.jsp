@@ -203,10 +203,13 @@
 
                                             <c:forEach items="${storedCards}" var="storedCard">
                                                 <dt id="dt_method_adyen_oneclick_${storedCard.recurringDetailReference}">
+                                                    <c:set var="cardReference" value="adyen_oneclick_${storedCard.recurringDetailReference}"/>
                                                     <input id="p_method_adyen_oneclick_${storedCard.recurringDetailReference}"
-                                                           value="adyen_oneclick_${storedCard.recurringDetailReference}" type="radio"
+                                                           value="${cardReference}" type="radio"
                                                            name="paymentMethod" title="Credit Card"
-                                                           autocomplete="off">
+                                                           autocomplete="off"
+                                                            <c:if test="${selectedPaymentMethod == cardReference}"> checked </c:if>
+                                                    >
                                                     <img src="https://live.adyen.com/hpp/img/pm/${storedCard.variant}.png"/>
                                                     <label for="p_method_adyen_oneclick_${storedCard.recurringDetailReference}">
                                                         <span>${storedCard.card.holderName} - ****${storedCard.card.number}</span>
@@ -273,7 +276,9 @@
                                                     <input id="p_method_adyen_hpp_${paymentMethod.brandCode}"
                                                            value="${paymentMethod.brandCode}" type="radio"
                                                            name="paymentMethod" title="${paymentMethod.name}"
-                                                           autocomplete="off">
+                                                           autocomplete="off"
+                                                            <c:if test="${selectedPaymentMethod == paymentMethod.brandCode}"> checked </c:if>
+                                                    >
                                                     <img src="https://live.adyen.com/hpp/img/pm/${paymentMethod.brandCode}.png"/>
                                                     <label for="p_method_adyen_hpp_${paymentMethod.brandCode}">
                                                         <span>${paymentMethod.name}</span>

@@ -431,14 +431,7 @@ public class AdyenCheckoutFacade {
         model.addAttribute(MODEL_OPEN_INVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBBER, openInvoiceMethodsAllowSocialSecurityNumber);
 
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
-        final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-        String countryCode = addressData.getCountry().getIsocode();
-
-        Boolean showSocialSecurityNumber = false;
-        if (openInvoiceMethodsAllowSocialSecurityNumber.contains(countryCode)) {
-            showSocialSecurityNumber = true;
-        }
-        model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber);
+        model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber());
 
         modelService.save(cartModel);
     }
@@ -459,6 +452,23 @@ public class AdyenCheckoutFacade {
         }
 
         return false;
+    }
+
+    /**
+     * Retrieve shipping Country to define if social security number needs to be shown
+     * or date of birth field for openinvoice methods
+     *
+     * @return boolean
+     */
+    public boolean showSocialSecurityNumber()
+    {
+        Boolean showSocialSecurityNumber = false;
+        final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+        String countryCode = addressData.getCountry().getIsocode();
+        if (OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
+            showSocialSecurityNumber = true;
+        }
+        return showSocialSecurityNumber;
     }
 
     public PaymentInfoModel createPaymentInfo(final CartModel cartModel, AdyenPaymentForm adyenPaymentForm) {
@@ -523,8 +533,9 @@ public class AdyenCheckoutFacade {
     public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult) {
         CartModel cartModel = cartService.getSessionCart();
         boolean showRememberDetails = showRememberDetails();
+        boolean showSocialSecurityNumber = showSocialSecurityNumber();
 
-        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, getCheckoutFacade().getCheckoutCart().getDeliveryAddress());
+        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, showSocialSecurityNumber);
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
 
         if(bindingResult.hasErrors()) {

@@ -11,12 +11,12 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_AP
 public class AdyenPaymentFormValidator implements Validator {
     private Set<String> storedCards;
     private boolean showRememberTheseDetails;
-    private AddressData deliveryAddress;
+    private boolean showSocialSecurityNumber;
 
-    public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails, AddressData deliveryAddress) {
+    public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails, boolean showSocialSecurityNumber) {
         this.storedCards = storedCards;
         this.showRememberTheseDetails = showRememberTheseDetails;
-        this.deliveryAddress = deliveryAddress;
+        this.showSocialSecurityNumber = showSocialSecurityNumber;
     }
 
     @Override
@@ -51,15 +51,12 @@ public class AdyenPaymentFormValidator implements Validator {
 
         // check if date or social seucrity number is set
         if( OPENINVOICE_METHODS_API.contains(form.getPaymentMethod())) {
-            String countryIsoCode = deliveryAddress.getCountry().getIsocode();
 
-            if(OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryIsoCode)) {
-
+              if(showSocialSecurityNumber) {
                 if(form.getSocialSecurityNumber().isEmpty() ) {
                     errors.reject("checkout.error.paymentethod.ssn.invalid");
                 }
             }
-
             if(form.getDob() == null) {
                 errors.reject("checkout.error.paymentethod.dob.invalid");
             }

@@ -378,13 +378,8 @@ public class AdyenRequestFactory {
                 tax = tax / entry.getQuantity().intValue();
             }
 
-            LOG.info("TOTAL TAX" + tax);
-
             // Calculate price without tax
             Amount itemAmountWithoutTax = Util.createAmount(BigDecimal.valueOf(pricePerItem - tax), currency);
-
-            LOG.info("AMOUNT: " + itemAmountWithoutTax.getValue());
-
             Double percentage = entry.getTaxValues().stream()
                                      .map(taxValue -> taxValue.getValue())
                                      .reduce(0.0, (x, y) -> x = x+y) * 100;
