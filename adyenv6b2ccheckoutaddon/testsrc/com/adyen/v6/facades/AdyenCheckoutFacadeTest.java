@@ -200,7 +200,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentResultMock.isAuthorised()).thenReturn(true);
         when(checkoutCustomerStrategyMock.isAnonymousCheckout()).thenReturn(true);
         when(checkoutCustomerStrategyMock.getCurrentUserForCheckout()).thenReturn(null);
-        when(adyenPaymentServiceMock.authorise(cartDataMock, requestMock, null)).thenReturn(paymentResultMock);
+        when(adyenPaymentServiceMock.authorise(cartDataMock, requestMock, null, cartServiceMock)).thenReturn(paymentResultMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
 
         adyenCheckoutFacade.authoriseCardPayment(requestMock, cartDataMock);
