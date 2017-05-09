@@ -104,6 +104,9 @@ public class AdyenCheckoutFacade {
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_CSE_URL = "cseUrl";
+    public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
+    public static final String MODEL_OPEN_INVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBBER = "openInvoiceMethodsAllowSocialSecurityNumber";
+    public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
 
     public AdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -421,11 +424,11 @@ public class AdyenCheckoutFacade {
 
         // OpenInvoice Methods
         List<String> openInvoiceMethods = OPENINVOICE_METHODS_API;
-        model.addAttribute("openInvoiceMethods", openInvoiceMethods);
+        model.addAttribute(MODEL_OPEN_INVOICE_METHODS, openInvoiceMethods);
 
         // check if dob or socialSecurityNumber needs to be set for openinvoice
         List<String> openInvoiceMethodsAllowSocialSecurityNumber = OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-        model.addAttribute("openInvoiceMethodsAllowSocialSecurityNumber", openInvoiceMethods);
+        model.addAttribute(MODEL_OPEN_INVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBBER, openInvoiceMethodsAllowSocialSecurityNumber);
 
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
         final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
@@ -435,7 +438,7 @@ public class AdyenCheckoutFacade {
         if (openInvoiceMethodsAllowSocialSecurityNumber.contains(countryCode)) {
             showSocialSecurityNumber = true;
         }
-        model.addAttribute("showSocialSecurityNumber", showSocialSecurityNumber);
+        model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber);
 
         modelService.save(cartModel);
     }
