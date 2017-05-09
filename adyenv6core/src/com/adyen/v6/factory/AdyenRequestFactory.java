@@ -82,9 +82,8 @@ public class AdyenRequestFactory {
         }
 
         if (cartData.getPaymentInfo().getBillingAddress() != null) {
-
             // set PhoneNumber if it is provided
-            if (!cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
+            if (cartData.getPaymentInfo().getBillingAddress().getPhone() != null && !cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
                 paymentRequest.setTelephoneNumber(cartData.getPaymentInfo().getBillingAddress().getPhone());
             }
 
