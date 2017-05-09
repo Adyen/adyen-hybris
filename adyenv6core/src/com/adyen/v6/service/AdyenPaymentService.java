@@ -47,9 +47,6 @@ public class AdyenPaymentService {
 
     private static final Logger LOG = Logger.getLogger(AdyenPaymentService.class);
 
-    @Resource(name = "cartService")
-    private CartService cartService;
-
     private AdyenPaymentService() {}
 
     public AdyenPaymentService(final BaseStoreModel baseStore) {
@@ -91,7 +88,7 @@ public class AdyenPaymentService {
      * @return
      * @throws Exception
      */
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel, final CartService cartService) throws Exception {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(

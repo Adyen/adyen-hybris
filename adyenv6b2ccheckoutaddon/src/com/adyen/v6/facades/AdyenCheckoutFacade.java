@@ -49,10 +49,12 @@ import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -89,6 +91,7 @@ public class AdyenCheckoutFacade {
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
     private CommonI18NService commonI18NService;
+    private FlexibleSearchService flexibleSearchService;
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_MD = "adyen_md";
@@ -223,7 +226,7 @@ public class AdyenCheckoutFacade {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
+        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer, cartService);
 
         LOGGER.debug("authorization result: " + paymentResult);
 
@@ -494,6 +497,13 @@ public class AdyenCheckoutFacade {
         addressModel.setBillingAddress(true);
         addressModel.setOwner(paymentInfo);
 
+        final TitleModel title = new TitleModel();
+        title.setCode(addressData.getTitleCode());
+        addressModel.setTitle(flexibleSearchService.getModelByExample(title));
+        addressModel.setFirstname(addressData.getFirstName());
+        addressModel.setLastname(addressData.getLastName());
+        addressModel.setPhone1(addressData.getPhone());
+
         paymentInfo.setBillingAddress(addressModel);
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
@@ -501,6 +511,10 @@ public class AdyenCheckoutFacade {
 
         paymentInfo.setAdyenRememberTheseDetails(adyenPaymentForm.getRememberTheseDetails());
         paymentInfo.setAdyenSelectedReference(adyenPaymentForm.getSelectedReference());
+
+        // openinvoice fields
+        paymentInfo.setAdyenDob(adyenPaymentForm.getDob());
+        paymentInfo.setAdyenSocialSecurityNumber(adyenPaymentForm.getSocialSecurityNumber());
 
         modelService.save(paymentInfo);
 
@@ -636,5 +650,13 @@ public class AdyenCheckoutFacade {
 
     public void setCommonI18NService(CommonI18NService commonI18NService) {
         this.commonI18NService = commonI18NService;
+    }
+
+    public FlexibleSearchService getFlexibleSearchService() {
+        return flexibleSearchService;
+    }
+
+    public void setFlexibleSearchService(FlexibleSearchService flexibleSearchService) {
+        this.flexibleSearchService = flexibleSearchService;
     }
 }

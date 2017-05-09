@@ -317,7 +317,6 @@ public class AdyenRequestFactory {
      */
     public Name setShopperName(AddressData addressData)
     {
-        LOG.info("SET SHOPPER NAME TEST!!!!!!");
         Name shopperName = new Name();
 
         shopperName.setFirstName(addressData.getFirstName());
@@ -350,7 +349,7 @@ public class AdyenRequestFactory {
             paymentRequest.setDateOfBirth(cartData.getAdyenDob());
         }
 
-        if (!cartData.getAdyenSocialSecurityNumber().isEmpty()) {
+        if (cartData.getAdyenSocialSecurityNumber() != null && !cartData.getAdyenSocialSecurityNumber().isEmpty()) {
             paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
         }
 
