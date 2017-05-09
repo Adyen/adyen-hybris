@@ -81,16 +81,12 @@
     <!-- Process notification cronjob -->
     <bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
         <property name="modelService" ref="modelService"/>
-        <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService"/>
-        <property name="adyenTransactionService" ref="adyenTransactionService"/>
         <property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
-        <property name="orderRepository" ref="adyenOrderRepository" />
-        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
-        <property name="cartRepository" ref="adyenCartRepository" />
-        <property name="commercePlaceOrderStrategy" ref="adyenCommercePlaceOrderStrategy" />
+        <property name="adyenNotificationService" ref="adyenNotificationService" />
     </bean>
 
-    <bean id="adyenTransactionService" class="com.adyen.v6.service.AdyenTransactionService" autowire="byName"/>
+    <alias name="defaultAdyenTransactionService" alias="adyenTransactionService"/>
+    <bean id="defaultAdyenTransactionService" class="com.adyen.v6.service.DefaultAdyenTransactionService" autowire="byName"/>
 
     <bean id="adyenNotificationItemRepository" class="com.adyen.v6.repository.NotificationItemRepository" autowire="byName"/>
     <bean id="adyenOrderRepository" class="com.adyen.v6.repository.OrderRepository" autowire="byName"/>
@@ -99,7 +95,6 @@
     <bean id="adyenBaseStoreRepository" class="com.adyen.v6.repository.BaseStoreRepository" autowire="byName">
         <property name="orderRepository" ref="adyenOrderRepository" />
     </bean>
-
 
     <!-- Used for commands triggered by order-process -->
     <bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
@@ -140,8 +135,15 @@
 
     <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory" />
 
-    <bean id="adyenNotificationService" class="com.adyen.v6.service.AdyenNotificationService">
+    <alias name="defaultAdyenNotificationService" alias="adyenNotificationService"/>
+    <bean id="defaultAdyenNotificationService" class="com.adyen.v6.service.DefaultAdyenNotificationService">
         <property name="modelService" ref="modelService" />
+        <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService"/>
+        <property name="adyenTransactionService" ref="adyenTransactionService"/>
+        <property name="orderRepository" ref="adyenOrderRepository" />
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
+        <property name="cartRepository" ref="adyenCartRepository" />
+        <property name="commercePlaceOrderStrategy" ref="adyenCommercePlaceOrderStrategy" />
     </bean>
 
     <bean id="adyenOrderCancelPaymentServiceAdapter" class="com.adyen.v6.service.AdyenOrderCancelPaymentServiceAdapter">
@@ -150,11 +152,13 @@
         <property name="calculationService" ref="calculationService" />
     </bean>
 
-    <bean id="adyenOrderService" class="com.adyen.v6.service.AdyenOrderService">
+    <alias name="defaultAdyenOrderService" alias="adyenOrderService"/>
+    <bean id="defaultAdyenOrderService" class="com.adyen.v6.service.DefaultAdyenOrderService">
         <property name="modelService" ref="modelService" />
     </bean>
 
-    <bean id="adyenBusinessProcessService" class="com.adyen.v6.service.AdyenBusinessProcessService">
+    <alias name="defaultAdyenBusinessProcessService" alias="adyenBusinessProcessService"/>
+    <bean id="defaultAdyenBusinessProcessService" class="com.adyen.v6.service.DefaultAdyenBusinessProcessService">
         <property name="businessProcessService" ref="businessProcessService" />
     </bean>
 

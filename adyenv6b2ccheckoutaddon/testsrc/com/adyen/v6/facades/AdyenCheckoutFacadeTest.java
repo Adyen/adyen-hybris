@@ -20,8 +20,8 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
-import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.adyen.v6.service.DefaultAdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
@@ -40,10 +40,10 @@ import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
 import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.v6.facades.AdyenCheckoutFacade.SESSION_LOCKED_CART;
-import static com.adyen.v6.facades.AdyenCheckoutFacade.SESSION_MD;
-import static com.adyen.v6.facades.AdyenCheckoutFacade.THREE_D_MD;
-import static com.adyen.v6.facades.AdyenCheckoutFacade.THREE_D_PARES;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_LOCKED_CART;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_MD;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_MD;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_PARES;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -70,7 +70,7 @@ public class AdyenCheckoutFacadeTest {
     private CheckoutFacade checkoutFacadeMock;
 
     @Mock
-    private AdyenPaymentService adyenPaymentServiceMock;
+    private DefaultAdyenPaymentService adyenPaymentServiceMock;
 
     @Mock
     private AdyenTransactionService adyenTransactionServiceMock;
@@ -91,11 +91,9 @@ public class AdyenCheckoutFacadeTest {
     private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
 
     @InjectMocks
-    private AdyenCheckoutFacade adyenCheckoutFacade;
+    private DefaultAdyenCheckoutFacade adyenCheckoutFacade;
 
     private CartModel cartModelMock;
-
-    private OrderData orderDataMock;
 
     private PaymentResult paymentResultMock;
 
@@ -103,7 +101,7 @@ public class AdyenCheckoutFacadeTest {
     public void setUp() throws SignatureException, InvalidCartException {
         BaseStoreModel baseStoreModelMock = mock(BaseStoreModel.class);
         cartModelMock = mock(CartModel.class);
-        orderDataMock = mock(OrderData.class);
+        OrderData orderDataMock = mock(OrderData.class);
         paymentResultMock = mock(PaymentResult.class);
 
         when(baseStoreModelMock.getAdyenSkinHMAC()).thenReturn("hmacKey");

@@ -36,7 +36,7 @@ public class AdyenTransactionServiceTest {
     @Mock
     private CommonI18NService commonI18NServiceMock;
 
-    private AdyenTransactionService adyenTransactionService;
+    private DefaultAdyenTransactionService adyenTransactionService;
 
     @Before
     public void setUp() {
@@ -48,7 +48,7 @@ public class AdyenTransactionServiceTest {
         when(modelServiceMock.create(PaymentTransactionModel.class))
                 .thenReturn(paymentTransactionModel);
 
-        adyenTransactionService = new AdyenTransactionService();
+        adyenTransactionService = new DefaultAdyenTransactionService();
 
         adyenTransactionService.setModelService(modelServiceMock);
         adyenTransactionService.setCommonI18NService(commonI18NServiceMock);

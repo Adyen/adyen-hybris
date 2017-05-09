@@ -91,7 +91,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             return enterStep(model, redirectAttributes);
         }
 
-        //TODO: Billing address
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         return getCheckoutStep().nextStep();

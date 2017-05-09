@@ -87,7 +87,8 @@
 	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
 	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
 
-	<bean id="adyenCheckoutFacade" class="com.adyen.v6.facades.AdyenCheckoutFacade">
+	<alias name="defaultAdyenCheckoutFacade" alias="adyenCheckoutFacade" />
+	<bean id="defaultAdyenCheckoutFacade" class="com.adyen.v6.facades.DefaultAdyenCheckoutFacade">
 		<property name="baseStoreService" ref="baseStoreService"/>
 		<property name="sessionService" ref="sessionService"/>
 		<property name="cartService" ref="cartService"/>
