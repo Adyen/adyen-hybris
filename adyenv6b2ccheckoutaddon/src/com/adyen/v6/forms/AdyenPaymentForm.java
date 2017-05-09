@@ -2,8 +2,8 @@ package com.adyen.v6.forms;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.log4j.Logger;
 import javax.validation.constraints.NotNull;
+import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
@@ -117,7 +117,6 @@ public class AdyenPaymentForm {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class AdyenPaymentForm {\n");
-
         sb.append("    paymentMethod: ").append(Util.toIndentedString(paymentMethod)).append("\n");
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");

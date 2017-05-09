@@ -17,6 +17,10 @@ public class AdyenPaymentFormValidator implements Validator {
         this.storedCards = storedCards;
         this.showRememberTheseDetails = showRememberTheseDetails;
         this.deliveryAddress = deliveryAddress;
+
+    public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails) {
+        this.storedCards = storedCards;
+        this.showRememberTheseDetails = showRememberTheseDetails;
     }
 
     @Override

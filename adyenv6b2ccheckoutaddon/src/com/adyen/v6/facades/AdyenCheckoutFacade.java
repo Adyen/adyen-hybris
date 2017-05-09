@@ -98,7 +98,6 @@ public class AdyenCheckoutFacade {
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
     public static final Logger LOGGER = Logger.getLogger(AdyenCheckoutFacade.class);
-
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
@@ -399,9 +398,8 @@ public class AdyenCheckoutFacade {
             }
         }
 
-
         // current selected PaymentMethod
-        model.addAttribute("selectedPaymentMethod", MODEL_SELECTED_PAYMENT_METHOD);
+        model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, cartData.getAdyenPaymentMethod());
 
         //Set HPP payment methods
         model.addAttribute(MODEL_PAYMENT_METHODS, alternativePaymentMethods);
@@ -421,7 +419,6 @@ public class AdyenCheckoutFacade {
         CartModel cartModel = cartService.getSessionCart();
         cartModel.setAdyenStoredCards(recurringDetailReferences);
 
-
         // OpenInvoice Methods
         List<String> openInvoiceMethods = OPENINVOICE_METHODS_API;
         model.addAttribute("openInvoiceMethods", openInvoiceMethods);
@@ -439,7 +436,6 @@ public class AdyenCheckoutFacade {
             showSocialSecurityNumber = true;
         }
         model.addAttribute("showSocialSecurityNumber", showSocialSecurityNumber);
-
 
         modelService.save(cartModel);
     }
@@ -524,8 +520,8 @@ public class AdyenCheckoutFacade {
     public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult) {
         CartModel cartModel = cartService.getSessionCart();
         boolean showRememberDetails = showRememberDetails();
-        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, getCheckoutFacade().getCheckoutCart().getDeliveryAddress());
 
+        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, getCheckoutFacade().getCheckoutCart().getDeliveryAddress());
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
 
         if(bindingResult.hasErrors()) {

@@ -213,7 +213,6 @@
                                                     </label>
                                                 </dt>
 
-
                                                 <div id="dd_method_adyen_oneclick_${storedCard.recurringDetailReference}" class="payment_method_details">
                                                     <ul class="form-list" id="payment_form_adyen_oneclick_${storedCard.recurringDetailReference}">
                                                         <li class="adyen_payment_input_fields adyen_payment_input_fields_expiry">

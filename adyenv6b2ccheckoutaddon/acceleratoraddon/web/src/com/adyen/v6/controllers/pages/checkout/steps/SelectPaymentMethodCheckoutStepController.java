@@ -69,7 +69,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         adyenCheckoutFacade.initializeCheckoutData(model);
 
-
         super.prepareDataForPage(model);
 
         final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
@@ -87,7 +86,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    @Valid final AdyenPaymentForm adyenPaymentForm,
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
-
 
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {
