@@ -7,15 +7,17 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
+<<<<<<< HEAD
+import javax.annotation.Resource;
+=======
+>>>>>>> origin/develop-merge-PW-140
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.httpclient.HTTPClientException;
-import com.adyen.model.PaymentRequest;
-import com.adyen.model.PaymentRequest3d;
-import com.adyen.model.PaymentResult;
+import com.adyen.model.*;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.CancelRequest;
@@ -34,6 +36,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.order.CartService;
 import de.hybris.platform.store.BaseStoreModel;
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
@@ -88,7 +91,7 @@ public class AdyenPaymentService {
      * @return
      * @throws Exception
      */
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel, final CartService cartService) throws Exception {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(
@@ -96,8 +99,10 @@ public class AdyenPaymentService {
                 cartData,
                 request,
                 customerModel,
-                baseStore.getAdyenRecurringContractMode()
+                baseStore.getAdyenRecurringContractMode(),
+                cartService
         );
+
 
         LOG.debug(paymentRequest);
         PaymentResult paymentResult = payment.authorise(paymentRequest);

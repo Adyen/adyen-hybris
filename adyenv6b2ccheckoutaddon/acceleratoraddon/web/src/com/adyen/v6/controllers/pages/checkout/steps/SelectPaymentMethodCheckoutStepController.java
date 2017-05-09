@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
 import java.text.SimpleDateFormat;
@@ -91,7 +94,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             return enterStep(model, redirectAttributes);
         }
 
-        //TODO: Billing address
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         return getCheckoutStep().nextStep();

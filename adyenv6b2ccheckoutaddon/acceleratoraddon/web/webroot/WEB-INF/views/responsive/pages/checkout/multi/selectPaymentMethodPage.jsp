@@ -19,15 +19,15 @@
 
         <script type="text/javascript">
             <c:if test="${not empty allowedCards}">
-                //Set the allowed cards
-                var allowedCards = [];
-                <c:forEach items="${allowedCards}" var="allowedCard">
-                allowedCards.push("${allowedCard.code}");
-                </c:forEach>
+            //Set the allowed cards
+            var allowedCards = [];
+            <c:forEach items="${allowedCards}" var="allowedCard">
+            allowedCards.push("${allowedCard.code}");
+            </c:forEach>
 
-                var encryptedForm = AdyenCheckout.createForm();
-                var cardLogosContainer = document.getElementById('cardLogos');
-                AdyenCheckout.enableCardTypeDetection(allowedCards, cardLogosContainer, encryptedForm);
+            var encryptedForm = AdyenCheckout.createForm();
+            var cardLogosContainer = document.getElementById('cardLogos');
+            AdyenCheckout.enableCardTypeDetection(allowedCards, cardLogosContainer, encryptedForm);
             </c:if>
 
             <c:forEach items="${storedCards}" var="storedCard">
@@ -40,24 +40,22 @@
                     return false;
                 }
 
+                AdyenCheckout.setCustomPaymentMethodValues();
+
                 $("#adyen-encrypted-form").submit();
             });
 
-            // Set issuerId when an issuer is selected
-            $(".issuer-select").change(function () {
-                var issuerId = this.value;
-                $("#issuerId").val(issuerId);
-            });
+            <c:if test="${not empty selectedPaymentMethod}">
+                AdyenCheckout.togglePaymentMethod("${selectedPaymentMethod}");
+            </c:if>
 
             // Toggle payment method specific areas (credit card form and issuers list)
             $('input[type=radio][name=paymentMethod]').change(function () {
                 var paymentMethod = this.value;
-                $(".payment_method_details").hide();
-                $(".issuers-container").hide();
-
-                $("#dd_method_" + paymentMethod).show();
-                $("#adyen_hpp_" + paymentMethod + "_issuers").show();
+                AdyenCheckout.togglePaymentMethod(paymentMethod);
             });
+
+            AdyenCheckout.createDobDatePicker("p_method_adyen_hpp_dob");
         </script>
     </jsp:attribute>
 
@@ -82,6 +80,8 @@
                                     <form:hidden path="cseToken"/>
                                     <form:hidden path="selectedReference"/>
                                     <form:hidden path="issuerId"/>
+                                    <form:hidden path="dob"/>
+                                    <form:hidden path="socialSecurityNumber"/>
 
                                     <div class="fieldset">
                                         <dl class="sp-methods" id="checkout-payment-method-load">
@@ -89,6 +89,7 @@
                                                 <dt id="dt_method_adyen_cc">
                                                     <input id="p_method_adyen_cc" value="adyen_cc" type="radio"
                                                            name="paymentMethod" title="Credit Card"
+                                                           <c:if test="${selectedPaymentMethod == 'adyen_cc'}"> checked </c:if>
                                                            autocomplete="off">
                                                     <label for="p_method_adyen_cc">
                                                         <span>Credit Card</span>
@@ -201,17 +202,16 @@
 
 
                                             <c:forEach items="${storedCards}" var="storedCard">
-                                            <dt id="dt_method_adyen_oneclick_${storedCard.recurringDetailReference}">
-                                                <input id="p_method_adyen_oneclick_${storedCard.recurringDetailReference}"
-                                                       value="adyen_oneclick_${storedCard.recurringDetailReference}" type="radio"
-                                                       name="paymentMethod" title="Credit Card"
-                                                       autocomplete="off">
-                                                <img src="https://live.adyen.com/hpp/img/pm/${storedCard.variant}.png"/>
-                                                <label for="p_method_adyen_oneclick_${storedCard.recurringDetailReference}">
-                                                    <span>${storedCard.card.holderName} - ****${storedCard.card.number}</span>
-                                                </label>
-                                            </dt>
-
+                                                <dt id="dt_method_adyen_oneclick_${storedCard.recurringDetailReference}">
+                                                    <input id="p_method_adyen_oneclick_${storedCard.recurringDetailReference}"
+                                                           value="adyen_oneclick_${storedCard.recurringDetailReference}" type="radio"
+                                                           name="paymentMethod" title="Credit Card"
+                                                           autocomplete="off">
+                                                    <img src="https://live.adyen.com/hpp/img/pm/${storedCard.variant}.png"/>
+                                                    <label for="p_method_adyen_oneclick_${storedCard.recurringDetailReference}">
+                                                        <span>${storedCard.card.holderName} - ****${storedCard.card.number}</span>
+                                                    </label>
+                                                </dt>
 
                                                 <div id="dd_method_adyen_oneclick_${storedCard.recurringDetailReference}" class="payment_method_details">
                                                     <ul class="form-list" id="payment_form_adyen_oneclick_${storedCard.recurringDetailReference}">
@@ -280,9 +280,10 @@
                                                     </label>
 
                                                     <c:if test="${not empty paymentMethod.issuers}">
-                                                        <div id="adyen_hpp_${paymentMethod.brandCode}_issuers"
-                                                             class="issuers-container">
-                                                            <select class="issuer-select" tabindex="4">
+                                                        <div id="adyen_hpp_${paymentMethod.brandCode}_container"
+                                                             class="extra-fields-container">
+                                                            <select class="issuer-select" tabindex="4"
+                                                                id ="p_method_adyen_hpp_${paymentMethod.brandCode}_issuer">
                                                                 <option value="" label="Please select Issuer"/>
                                                                 <c:forEach items="${paymentMethod.issuers}"
                                                                            var="issuer">
@@ -291,7 +292,40 @@
                                                             </select>
                                                         </div>
                                                     </c:if>
+
+
+                                                    <c:if test="${openInvoiceMethods.contains(paymentMethod.brandCode)}">
+
+                                                        <dl id="adyen_hpp_${paymentMethod.brandCode}_container"
+                                                            class="extra-fields-container">
+
+                                                            <dt>
+                                                            <label for="p_method_adyen_hpp_${paymentMethod.brandCode}_dob">
+                                                                <span>Date of birth</span>
+                                                            </label>
+                                                            <input id="p_method_adyen_hpp_${paymentMethod.brandCode}_dob"
+                                                                   class="p_method_adyen_hpp_dob"
+                                                                   type="text"
+                                                                   title="date of birth">
+                                                            </dt>
+
+                                                            <c:if test="${showSocialSecurityNumber}">
+                                                                <dt>
+                                                                    <label for="p_method_adyen_hpp_${paymentMethod.brandCode}_ssn">
+                                                                        <span>Personal Number (last 4 digits)</span>
+                                                                    </label>
+
+                                                                    <input id="p_method_adyen_hpp_${paymentMethod.brandCode}_ssn"
+                                                                           class="p_method_adyen_hpp_ssn"
+                                                                           type="text"
+                                                                           size="4"
+                                                                           title="personal number">
+                                                                </dt>
+                                                            </c:if>
+                                                        </dl>
+                                                    </c:if>
                                                     </dt>
+
                                                 </c:if>
                                             </c:forEach>
 

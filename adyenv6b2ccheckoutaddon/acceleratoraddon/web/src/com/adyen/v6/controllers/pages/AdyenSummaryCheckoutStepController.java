@@ -40,6 +40,7 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Map;
 
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
@@ -117,7 +118,9 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         String errorMessage = "checkout.error.authorization.failed";
         //Handle CreditCard/oneClick payments
         if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())
-                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0
+                || (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod()))
+                ) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authoriseCardPayment(request, cartData);
 
@@ -141,13 +144,13 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 LOGGER.error(e);
             }
         } else {
             //Handle APM
             try {
-                Map<String, String> hppFormData = null;
-                hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, getHppRedirectUrl());
+                Map<String, String> hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, getHppRedirectUrl());
 
                 //HPP data
                 model.addAttribute("hppUrl", adyenCheckoutFacade.getHppUrl());
@@ -157,6 +160,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             } catch (SignatureException e) {
                 LOGGER.error(e);
             }
+
         }
 
         LOGGER.debug("Redirecting to summary view");

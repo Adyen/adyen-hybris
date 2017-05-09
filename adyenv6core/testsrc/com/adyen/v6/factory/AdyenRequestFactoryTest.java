@@ -1,5 +1,12 @@
 package com.adyen.v6.factory;
 
+import java.math.BigDecimal;
+import javax.servlet.http.HttpServletRequest;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -10,15 +17,7 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-
+import de.hybris.platform.order.CartService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
@@ -51,6 +50,9 @@ public class AdyenRequestFactoryTest {
 
     @Mock
     CountryData billingCountryDataMock;
+
+    @Mock
+    CartService cartServiceMock;
 
     @Before
     public void setUp() {
@@ -90,7 +92,8 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 null,
-                RecurringContractMode.NONE
+                RecurringContractMode.NONE,
+                cartServiceMock
         );
 
         //use delivery/billing address from cart
@@ -130,7 +133,8 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 customerModelMock,
-                null
+                null,
+                cartServiceMock
         );
 
         assertEquals("recurring_reference", paymentRequest.getSelectedRecurringDetailReference());
@@ -145,7 +149,8 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 customerModelMock,
-                recurringContractModeSetting
+                recurringContractModeSetting,
+                cartServiceMock
         );
 
         if (expectedRecurringContractMode == null) {
