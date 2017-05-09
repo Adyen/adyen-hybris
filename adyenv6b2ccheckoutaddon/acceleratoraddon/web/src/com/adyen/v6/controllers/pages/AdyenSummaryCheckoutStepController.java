@@ -144,7 +144,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.error(e);
             }
         } else {

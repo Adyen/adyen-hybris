@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
-<<<<<<< HEAD
-import javax.annotation.Resource;
-=======
->>>>>>> origin/develop-merge-PW-140
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;

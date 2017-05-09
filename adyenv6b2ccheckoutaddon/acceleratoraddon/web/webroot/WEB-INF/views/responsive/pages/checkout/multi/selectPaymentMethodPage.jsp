@@ -19,19 +19,19 @@
 
         <script type="text/javascript">
             <c:if test="${not empty allowedCards}">
-            //Set the allowed cards
-            var allowedCards = [];
-            <c:forEach items="${allowedCards}" var="allowedCard">
-            allowedCards.push("${allowedCard.code}");
-            </c:forEach>
+                //Set the allowed cards
+                var allowedCards = [];
+                <c:forEach items="${allowedCards}" var="allowedCard">
+                allowedCards.push("${allowedCard.code}");
+                </c:forEach>
 
-            var encryptedForm = AdyenCheckout.createForm();
-            var cardLogosContainer = document.getElementById('cardLogos');
-            AdyenCheckout.enableCardTypeDetection(allowedCards, cardLogosContainer, encryptedForm);
+                var encryptedForm = AdyenCheckout.createForm();
+                var cardLogosContainer = document.getElementById('cardLogos');
+                AdyenCheckout.enableCardTypeDetection(allowedCards, cardLogosContainer, encryptedForm);
             </c:if>
 
             <c:forEach items="${storedCards}" var="storedCard">
-            AdyenCheckout.createOneClickForm("${storedCard.recurringDetailReference}");
+                AdyenCheckout.createOneClickForm("${storedCard.recurringDetailReference}");
             </c:forEach>
 
             //Handle form submission
