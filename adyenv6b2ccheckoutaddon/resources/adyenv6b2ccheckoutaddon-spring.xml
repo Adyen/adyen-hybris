@@ -52,6 +52,8 @@
 
 	<bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
 
+	<bean id="adyenOrderEntryPopulator" class="com.adyen.v6.populator.TaxValuesOrderEntryPopulator" parent="defaultOrderEntryPopulator" />
+
 	<bean parent="modifyPopulatorList">
 		<property name="list" ref="cartConverter"/>
 		<property name="add" ref="adyenCartPopulator"/>
@@ -76,6 +78,11 @@
 	<bean parent="modifyPopulatorList">
 		<property name="list" ref="orderConverter"/>
 		<property name="add" ref="adyenAbstractOrderPopulator"/>
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="orderEntryConverter"/>
+		<property name="add" ref="adyenOrderEntryPopulator"/>
 	</bean>
 
 
