@@ -42,19 +42,14 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
-import de.hybris.platform.core.model.c2l.CountryModel;
-import de.hybris.platform.core.model.c2l.RegionModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
-import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
-import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -90,8 +85,6 @@ public class AdyenCheckoutFacade {
     private HMACValidator hmacValidator;
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
-    private CommonI18NService commonI18NService;
-    private FlexibleSearchService flexibleSearchService;
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_MD = "adyen_md";
@@ -228,7 +221,7 @@ public class AdyenCheckoutFacade {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer, cartService);
+        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
 
         LOGGER.debug("authorization result: " + paymentResult);
 
@@ -477,43 +470,11 @@ public class AdyenCheckoutFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-        final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-        addressData.setEmail(getCheckoutCustomerStrategy().getCurrentUserForCheckout().getContactEmail());
-
-        AddressModel addressModel = new AddressModel();
-
-        CountryModel country = null;
-
-        if (addressData.getCountry() != null && ! addressData.getCountry().getIsocode().isEmpty()) {
-
-            // countryModel from service
-            country = commonI18NService.getCountry(addressData.getCountry().getIsocode());
-            addressModel.setCountry(country);
-        }
-
-        addressModel.setEmail(getCheckoutCustomerStrategy().getCurrentUserForCheckout().getContactEmail());
-
-        addressModel.setStreetname(addressData.getLine1());
-        addressModel.setLine2(addressData.getLine2());
-        addressModel.setPostalcode(addressData.getPostalCode());
-        addressModel.setTown(addressData.getTown());
-
-        if (addressData.getRegion() != null && ! addressData.getRegion().getIsocode().isEmpty() && country != null) {
-            final RegionModel regionModel = commonI18NService.getRegion(country, addressData.getRegion().getIsocode());
-            addressModel.setRegion(regionModel);
-        }
-
-        addressModel.setBillingAddress(true);
-        addressModel.setOwner(paymentInfo);
-
-        final TitleModel title = new TitleModel();
-        title.setCode(addressData.getTitleCode());
-        addressModel.setTitle(flexibleSearchService.getModelByExample(title));
-        addressModel.setFirstname(addressData.getFirstName());
-        addressModel.setLastname(addressData.getLastName());
-        addressModel.setPhone1(addressData.getPhone());
-
-        paymentInfo.setBillingAddress(addressModel);
+        // Clone DeliveryAdress to BillingAddress
+        final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
+        clonedAddress.setBillingAddress(true);
+        clonedAddress.setOwner(paymentInfo);
+        paymentInfo.setBillingAddress(clonedAddress);
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
@@ -652,21 +613,5 @@ public class AdyenCheckoutFacade {
 
     public void setModelService(ModelService modelService) {
         this.modelService = modelService;
-    }
-
-    public CommonI18NService getCommonI18NService() {
-        return commonI18NService;
-    }
-
-    public void setCommonI18NService(CommonI18NService commonI18NService) {
-        this.commonI18NService = commonI18NService;
-    }
-
-    public FlexibleSearchService getFlexibleSearchService() {
-        return flexibleSearchService;
-    }
-
-    public void setFlexibleSearchService(FlexibleSearchService flexibleSearchService) {
-        this.flexibleSearchService = flexibleSearchService;
     }
 }

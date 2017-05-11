@@ -87,7 +87,7 @@ public class AdyenPaymentService {
      * @return
      * @throws Exception
      */
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel, final CartService cartService) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(
@@ -95,8 +95,7 @@ public class AdyenPaymentService {
                 cartData,
                 request,
                 customerModel,
-                baseStore.getAdyenRecurringContractMode(),
-                cartService
+                baseStore.getAdyenRecurringContractMode()
         );
 
 

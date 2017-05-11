@@ -13,14 +13,15 @@ import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -46,8 +47,7 @@ public class AdyenRequestFactory {
                                                      final CartData cartData,
                                                      final HttpServletRequest request,
                                                      final CustomerModel customerModel,
-                                                     final RecurringContractMode recurringContractMode,
-                                                     final CartService cartService) {
+                                                     final RecurringContractMode recurringContractMode) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
@@ -104,7 +104,7 @@ public class AdyenRequestFactory {
         // OpenInvoice add required additional data
         if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
             paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
-            setOpenInvoiceData(paymentRequest, cartData, customerModel, cartService);
+            setOpenInvoiceData(paymentRequest, cartData, customerModel);
             // Set only here the shopperName because it could be that Saluation is not always used
             paymentRequest.setShopperName(setShopperName(cartData.getDeliveryAddress()));
         }
@@ -341,7 +341,7 @@ public class AdyenRequestFactory {
      * @param cartData
      * @param customerModel
      */
-    public void setOpenInvoiceData(PaymentRequest paymentRequest, CartData cartData, final CustomerModel customerModel, final CartService cartService)
+    public void setOpenInvoiceData(PaymentRequest paymentRequest, CartData cartData, final CustomerModel customerModel)
     {
         // set date of birth
         if (cartData.getAdyenDob() != null) {
@@ -354,13 +354,13 @@ public class AdyenRequestFactory {
 
         // set the invoice lines
         List<InvoiceLine> invoiceLines = new ArrayList();
-        String currency = cartService.getSessionCart().getCurrency().getIsocode();
+        String currency = cartData.getTotalPrice().getCurrencyIso();
 
-        for(AbstractOrderEntryModel entry : cartService.getSessionCart().getEntries()) {
+        for(OrderEntryData entry : cartData.getEntries()) {
 
             // Use totalPrice because the basePrice does include tax as well if you have configured this to be calculated in the price
-            LOG.info("TOTAL PRICE" + entry.getTotalPrice());
-            Double pricePerItem = entry.getTotalPrice() / entry.getQuantity().intValue();
+            BigDecimal pricePerItem = entry.getTotalPrice().getValue().divide(new BigDecimal(entry.getQuantity()));
+
 
             String description = "NA";
             if(entry.getProduct().getName() != null && !entry.getProduct().getName().equals("")) {
@@ -379,7 +379,7 @@ public class AdyenRequestFactory {
             }
 
             // Calculate price without tax
-            Amount itemAmountWithoutTax = Util.createAmount(BigDecimal.valueOf(pricePerItem - tax), currency);
+            Amount itemAmountWithoutTax = Util.createAmount(pricePerItem.subtract(new BigDecimal(tax)), currency);
             Double percentage = entry.getTaxValues().stream()
                                      .map(taxValue -> taxValue.getValue())
                                      .reduce(0.0, (x, y) -> x = x+y) * 100;

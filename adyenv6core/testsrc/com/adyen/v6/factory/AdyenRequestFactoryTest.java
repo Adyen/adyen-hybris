@@ -92,8 +92,7 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 null,
-                RecurringContractMode.NONE,
-                cartServiceMock
+                RecurringContractMode.NONE
         );
 
         //use delivery/billing address from cart
@@ -133,8 +132,7 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 customerModelMock,
-                null,
-                cartServiceMock
+                null
         );
 
         assertEquals("recurring_reference", paymentRequest.getSelectedRecurringDetailReference());
@@ -149,8 +147,7 @@ public class AdyenRequestFactoryTest {
                 cartDataMock,
                 requestMock,
                 customerModelMock,
-                recurringContractModeSetting,
-                cartServiceMock
+                recurringContractModeSetting
         );
 
         if (expectedRecurringContractMode == null) {
