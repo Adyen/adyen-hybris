@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.facades;
 
 import java.io.IOException;
@@ -98,7 +118,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_CSE_URL = "cseUrl";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
-    public static final String MODEL_OPEN_INVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBBER = "openInvoiceMethodsAllowSocialSecurityNumber";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
 
     public DefaultAdyenCheckoutFacade() {

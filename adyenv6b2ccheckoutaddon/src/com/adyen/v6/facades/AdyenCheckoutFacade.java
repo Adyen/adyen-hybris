@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.facades;
 
 import java.security.SignatureException;
@@ -17,12 +37,6 @@ import de.hybris.platform.order.InvalidCartException;
  * Adyen Checkout Facade for initiating payments using CC or APM
  */
 public interface AdyenCheckoutFacade {
-    String MODEL_PAYMENT_METHODS = "paymentMethods";
-    String MODEL_ALLOWED_CARDS = "allowedCards";
-    String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
-    String MODEL_STORED_CARDS = "storedCards";
-    String MODEL_CSE_URL = "cseUrl";
-
     /**
      * Validates an HPP response
      *

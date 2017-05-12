@@ -1,13 +1,22 @@
 /*
- * [y] hybris Platform
- * 
- * Copyright (c) 2000-2016 SAP SE
- * All rights reserved.
- * 
- * This software is the confidential and proprietary information of SAP 
- * Hybris ("Confidential Information"). You shall not disclose such 
- * Confidential Information and shall use it only in accordance with the 
- * terms of the license agreement you entered into with SAP Hybris.
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
  */
 package com.adyen.v6.constants;
 
