@@ -3,9 +3,6 @@ package com.adyen.v6.acceleratorfacades.flow.impl;
 import de.hybris.platform.acceleratorfacades.flow.impl.DefaultCheckoutFlowFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 
-/**
- * Created by georgios on 30/12/16.
- */
 public class AdyenCheckoutFlowFacade extends DefaultCheckoutFlowFacade
 {
     @Override
