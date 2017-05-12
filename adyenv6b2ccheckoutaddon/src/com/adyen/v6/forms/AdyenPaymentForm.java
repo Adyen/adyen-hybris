@@ -1,6 +1,9 @@
 package com.adyen.v6.forms;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.validation.constraints.NotNull;
+import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
@@ -9,6 +12,9 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
+
+    private static final Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
+
     @NotNull
     private String paymentMethod;
 
@@ -21,6 +27,9 @@ public class AdyenPaymentForm {
     //HPP
     private String issuerId;
 
+    // openinvoice fields
+    private String dob;
+    private String socialSecurityNumber;
 
     public String getCseToken() {
         return cseToken;
@@ -66,6 +75,35 @@ public class AdyenPaymentForm {
         this.selectedReference = selectedReference;
     }
 
+
+    public Date getDob() {
+        Date dateOfBirth = null;
+        if(dob != null) {
+            try {
+                // make sure the input format is yyyy-MM-dd
+                if (dob.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    dateOfBirth = format.parse(dob);
+                }
+            } catch(Exception e) {
+                LOG.error(e);
+            }
+        }
+        return dateOfBirth;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getSocialSecurityNumber() {
+        return socialSecurityNumber;
+    }
+
+    public void setSocialSecurityNumber(String socialSecurityNumber) {
+        this.socialSecurityNumber = socialSecurityNumber;
+    }
+
     public boolean isCC() {
         return PAYMENT_METHOD_CC.equals(paymentMethod);
 
@@ -79,12 +117,13 @@ public class AdyenPaymentForm {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class AdyenPaymentForm {\n");
-
         sb.append("    paymentMethod: ").append(Util.toIndentedString(paymentMethod)).append("\n");
         sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
+        sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
+        sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
         sb.append("}");
         return sb.toString();
     }

@@ -11,9 +11,6 @@
   ~ terms of the license agreement you entered into with SAP Hybris.
   -->
 
-<!--
-	ATTENTION: This is just an example file. You have to edit it according to your needs.
--->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
 	<bean class="de.hybris.platform.commercefacades.order.data.CartData">
@@ -22,5 +19,11 @@
 		<property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
 		<property name="adyenPaymentMethod" type="java.lang.String"/>
 		<property name="adyenIssuerId" type="java.lang.String"/>
+		<property name="adyenDob" type="java.util.Date" />
+		<property name="adyenSocialSecurityNumber" type="java.lang.String" />
+	</bean>
+
+	<bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
+		<property name="taxValues" type="java.util.Collection&lt;de.hybris.platform.util.TaxValue>"/>
 	</bean>
 </beans>

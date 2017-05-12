@@ -52,6 +52,8 @@
 
 	<bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
 
+	<bean id="adyenOrderEntryPopulator" class="com.adyen.v6.populator.TaxValuesOrderEntryPopulator" parent="defaultOrderEntryPopulator" />
+
 	<bean parent="modifyPopulatorList">
 		<property name="list" ref="cartConverter"/>
 		<property name="add" ref="adyenCartPopulator"/>
@@ -78,6 +80,11 @@
 		<property name="add" ref="adyenAbstractOrderPopulator"/>
 	</bean>
 
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="orderEntryConverter"/>
+		<property name="add" ref="adyenOrderEntryPopulator"/>
+	</bean>
+
 
 	<!--To support hasNoPaymentInfo for non credit cards-->
 	<alias name="adyenCheckoutFlowFacade" alias="checkoutFlowFacade"/>
@@ -100,6 +107,5 @@
 		<property name="adyenOrderService" ref="adyenOrderService"/>
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
 		<property name="modelService" ref="modelService"/>
-		<property name="commonI18NService" ref="commonI18NService"/>
 	</bean>
 </beans>

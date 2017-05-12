@@ -1,11 +1,11 @@
 #Ant properties
 #Fri Jun 24 06:56:55 CEST 2016
-builddate=20160624 0656
+builddate=20170509 0656
 description=adyenv6b2ccheckoutaddon
-group.id=de.hybris.platform
+group.id=com.adyen.v6
 module.name=platform-module
 name=adyenv6b2ccheckoutaddon
-releasedate=20160623 1903
-vendor=hybris
-version=6.0.0.0-SNAPSHOT
-version.api=6.0.0
+releasedate=20170509 1903
+vendor=adyen
+version=3.0.0
+version.api=3.0.0
