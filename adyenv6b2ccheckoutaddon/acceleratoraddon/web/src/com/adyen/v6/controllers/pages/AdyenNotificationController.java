@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.controllers.pages;
 
 import java.io.IOException;
@@ -10,9 +30,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.adyen.model.notification.NotificationRequest;
-import com.adyen.model.notification.NotificationRequestItem;
-import com.adyen.notification.NotificationHandler;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.security.AdyenNotificationAuthenticationProvider;
 import com.adyen.v6.service.AdyenNotificationService;
@@ -44,18 +61,11 @@ public class AdyenNotificationController {
         }
 
         LOG.debug("Received Adyen notification:" + requestString);
-        if (!adyenNotificationAuthenticationProvider.authenticateBasic(request)) {
+        if (! adyenNotificationAuthenticationProvider.authenticateBasic(request)) {
             throw new AccessDeniedException("Wrong credentials");
         }
 
-        NotificationHandler notificationHandler = new NotificationHandler();
-        NotificationRequest notificationRequest = notificationHandler.handleNotificationJson(requestString);
-        LOG.debug(notificationRequest);
-
-        //Save the notification items to the database
-        for (NotificationRequestItem notificationRequestItem : notificationRequest.getNotificationItems()) {
-            adyenNotificationService.saveFromNotificationRequest(notificationRequestItem);
-        }
+        adyenNotificationService.saveNotifications(requestString);
 
         return RESPONSE_ACCEPTED;
     }

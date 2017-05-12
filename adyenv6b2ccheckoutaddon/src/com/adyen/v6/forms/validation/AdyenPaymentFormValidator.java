@@ -1,11 +1,29 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.forms.validation;
 
 import java.util.Set;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.adyen.v6.forms.AdyenPaymentForm;
-import de.hybris.platform.commercefacades.user.data.AddressData;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 
 public class AdyenPaymentFormValidator implements Validator {
@@ -50,14 +68,14 @@ public class AdyenPaymentFormValidator implements Validator {
         }
 
         // check if date or social seucrity number is set
-        if( OPENINVOICE_METHODS_API.contains(form.getPaymentMethod())) {
+        if (OPENINVOICE_METHODS_API.contains(form.getPaymentMethod())) {
 
-              if(showSocialSecurityNumber) {
-                if(form.getSocialSecurityNumber().isEmpty() ) {
+            if (showSocialSecurityNumber) {
+                if (form.getSocialSecurityNumber().isEmpty()) {
                     errors.reject("checkout.error.paymentethod.ssn.invalid");
                 }
             }
-            if(form.getDob() == null) {
+            if (form.getDob() == null) {
                 errors.reject("checkout.error.paymentethod.dob.invalid");
             }
         }

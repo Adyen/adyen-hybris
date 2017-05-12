@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.commands;
 
 import java.math.BigDecimal;
@@ -12,7 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
-import com.adyen.v6.service.AdyenPaymentService;
+import com.adyen.v6.service.DefaultAdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -34,7 +54,7 @@ public class AdyenCaptureCommandTest {
     private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
 
     @Mock
-    private AdyenPaymentService adyenPaymentServiceMock;
+    private DefaultAdyenPaymentService adyenPaymentServiceMock;
 
     @Mock
     private OrderRepository orderRepositoryMock;

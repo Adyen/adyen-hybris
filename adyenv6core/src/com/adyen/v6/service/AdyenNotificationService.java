@@ -1,58 +1,72 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.service;
 
 import com.adyen.model.notification.NotificationRequestItem;
 import com.adyen.v6.model.NotificationItemModel;
-import com.google.gson.Gson;
-import de.hybris.platform.servicelayer.model.ModelService;
-import org.apache.log4j.Logger;
-
-import java.util.Date;
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
+import de.hybris.platform.payment.model.PaymentTransactionModel;
 
 /**
- * Adapter for notification items
+ * Service for Adyen notifications manipulation
  */
-public class AdyenNotificationService {
-    private ModelService modelService;
-    private static final Logger LOG = Logger.getLogger(AdyenNotificationService.class);
+public interface AdyenNotificationService {
+    /**
+     * Process NotificationItemModel
+     * Handles multiple eventCodes
+     */
+    void processNotification(NotificationItemModel notificationItemModel);
 
-    public NotificationItemModel createFromNotificationRequest(NotificationRequestItem notificationRequestItem) {
-        Gson gson = new Gson();
-        NotificationItemModel notificationItemModel = modelService.create(NotificationItemModel.class);
+    /**
+     * Parse HTTP request body and save NotificationItemModels
+     */
+    void saveNotifications(String requestString);
 
-        if (notificationRequestItem.getAmount() != null) {
-            notificationItemModel.setAmountCurrency(notificationRequestItem.getAmount().getCurrency());
-            notificationItemModel.setAmountValue(notificationRequestItem.getAmount().getDecimalValue());
-        }
+    /**
+     * Create NotificationItemModel from NotificationRequestItem
+     */
+    NotificationItemModel createFromNotificationRequest(NotificationRequestItem notificationRequestItem);
 
-        notificationItemModel.setEventCode(notificationRequestItem.getEventCode());
-        notificationItemModel.setEventDate(notificationRequestItem.getEventDate());
-        notificationItemModel.setMerchantAccountCode(notificationRequestItem.getMerchantAccountCode());
-        notificationItemModel.setMerchantReference(notificationRequestItem.getMerchantReference());
-        notificationItemModel.setOriginalReference(notificationRequestItem.getOriginalReference());
-        notificationItemModel.setPspReference(notificationRequestItem.getPspReference());
-        notificationItemModel.setReason(notificationRequestItem.getReason());
-        notificationItemModel.setSuccess(notificationRequestItem.isSuccess());
-        notificationItemModel.setPaymentMethod(notificationRequestItem.getPaymentMethod());
+    /**
+     * Save NotificationItemModel from NotificationRequestItem
+     */
+    void saveFromNotificationRequest(NotificationRequestItem notificationRequestItem);
 
-        String additionalDataJson = gson.toJson(notificationRequestItem.getAdditionalData());
-        notificationItemModel.setAdditionalData(additionalDataJson);
+    /**
+     * Process notification with eventCode=CAPTURED
+     */
+    PaymentTransactionEntryModel processCapturedEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
 
-        notificationItemModel.setCreatedAt(new Date());
+    /**
+     * Process notification with eventCode=AUTHORISED
+     */
+    PaymentTransactionModel processAuthorisationEvent(NotificationItemModel notificationItemModel);
 
-        return notificationItemModel;
-    }
+    /**
+     * Process notification with eventCode=CANCEL_OR_REFUND
+     */
+    PaymentTransactionEntryModel processCancelEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
 
-    public void saveFromNotificationRequest(NotificationRequestItem notificationRequestItem) {
-        NotificationItemModel notificationItemModel = createFromNotificationRequest(notificationRequestItem);
-
-        modelService.save(notificationItemModel);
-    }
-
-    public ModelService getModelService() {
-        return modelService;
-    }
-
-    public void setModelService(ModelService modelService) {
-        this.modelService = modelService;
-    }
+    /**
+     * Process notification with eventCode=REFUND
+     */
+    PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItem);
 }

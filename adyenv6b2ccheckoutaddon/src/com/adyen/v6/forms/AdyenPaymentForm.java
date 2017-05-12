@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.forms;
 
 import java.text.SimpleDateFormat;
@@ -12,7 +32,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
  * Form for select payment method page
  */
 public class AdyenPaymentForm {
-
     private static final Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
 
     @NotNull
@@ -78,14 +97,14 @@ public class AdyenPaymentForm {
 
     public Date getDob() {
         Date dateOfBirth = null;
-        if(dob != null) {
+        if (dob != null) {
             try {
                 // make sure the input format is yyyy-MM-dd
                 if (dob.matches("\\d{4}-\\d{2}-\\d{2}")) {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     dateOfBirth = format.parse(dob);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 LOG.error(e);
             }
         }

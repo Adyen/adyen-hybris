@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.actions.order;
 
 import de.hybris.platform.core.enums.OrderStatus;
@@ -65,7 +85,6 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
         boolean orderAuthorized = isOrderAuthorized(order);
 
         //Continue if all transactions are authorised
-        //todo: cross verify the authorized amount
         if (orderAuthorized) {
             LOG.debug("Process: " + process.getCode() + " Order Authorized");
             order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
