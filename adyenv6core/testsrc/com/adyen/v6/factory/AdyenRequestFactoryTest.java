@@ -51,9 +51,6 @@ public class AdyenRequestFactoryTest {
     @Mock
     CountryData billingCountryDataMock;
 
-    @Mock
-    CartService cartServiceMock;
-
     @Before
     public void setUp() {
         PriceData priceData = new PriceData();

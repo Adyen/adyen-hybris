@@ -419,10 +419,6 @@ public class AdyenCheckoutFacade {
         List<String> openInvoiceMethods = OPENINVOICE_METHODS_API;
         model.addAttribute(MODEL_OPEN_INVOICE_METHODS, openInvoiceMethods);
 
-        // check if dob or socialSecurityNumber needs to be set for openinvoice
-        List<String> openInvoiceMethodsAllowSocialSecurityNumber = OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-        model.addAttribute(MODEL_OPEN_INVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBBER, openInvoiceMethodsAllowSocialSecurityNumber);
-
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
         model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber());
 
