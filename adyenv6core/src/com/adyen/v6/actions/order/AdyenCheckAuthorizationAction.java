@@ -65,7 +65,6 @@ public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessMo
         boolean orderAuthorized = isOrderAuthorized(order);
 
         //Continue if all transactions are authorised
-        //todo: cross verify the authorized amount
         if (orderAuthorized) {
             LOG.debug("Process: " + process.getCode() + " Order Authorized");
             order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);

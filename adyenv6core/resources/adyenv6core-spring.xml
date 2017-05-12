@@ -77,14 +77,6 @@
 	       <aop:pointcut id="profiledMethods" expression="execution(* *(..))" />	
 	  -->
 
-
-    <!-- Process notification cronjob -->
-    <bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
-        <property name="modelService" ref="modelService"/>
-        <property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
-        <property name="adyenNotificationService" ref="adyenNotificationService" />
-    </bean>
-
     <alias name="defaultAdyenTransactionService" alias="adyenTransactionService"/>
     <bean id="defaultAdyenTransactionService" class="com.adyen.v6.service.DefaultAdyenTransactionService" autowire="byName"/>
 
@@ -176,5 +168,12 @@
         <property name="externalTaxesService" ref="externalTaxesService"/>
         <property name="commercePlaceOrderMethodHooks" ref="commercePlaceOrderMethodHooks"/>
         <property name="configurationService" ref="configurationService"/>
+    </bean>
+
+    <!-- Process notification cronjob -->
+    <bean id="adyenProcessNotificationCronJob" class="com.adyen.v6.cronjob.AdyenProcessNotificationCronJob" autowire="byName">
+        <property name="modelService" ref="modelService"/>
+        <property name="notificationItemRepository" ref="adyenNotificationItemRepository" />
+        <property name="adyenNotificationService" ref="adyenNotificationService" />
     </bean>
 </beans>

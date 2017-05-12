@@ -38,7 +38,6 @@ import de.hybris.platform.store.BaseStoreModel;
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
 
-//TODO: implement an interface
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
@@ -89,6 +88,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                                                             request,
                                                                                             customerModel,
                                                                                             baseStore.getAdyenRecurringContractMode());
+
 
         LOG.debug(paymentRequest);
         PaymentResult paymentResult = payment.authorise(paymentRequest);
@@ -181,7 +181,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         LOG.debug(result);
 
         //Return only cards
-        List<RecurringDetail> storedCards = result.getRecurringDetails().stream()
+        List<RecurringDetail> storedCards = result.getRecurringDetails()
+                                                  .stream()
                                                   .filter(detail -> (detail.getCard() != null && detail.getRecurringDetailReference() != null))
                                                   .collect(Collectors.toList());
 

@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
-//TODO: implement an interface
 public class DefaultAdyenTransactionService implements AdyenTransactionService {
     private ModelService modelService;
     private CommonI18NService commonI18NService;
@@ -72,7 +71,6 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         } else {
             transactionEntryModel.setTransactionStatus(TransactionStatus.REJECTED.name());
             transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.GENERAL_SYSTEM_ERROR.name());
-            //TODO: store reasoning
         }
 
         return transactionEntryModel;

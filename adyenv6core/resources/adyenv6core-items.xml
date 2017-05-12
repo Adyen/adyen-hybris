@@ -151,6 +151,7 @@
 				<attribute qualifier="adyenNotificationPassword" type="java.lang.String">
 					<description>Server Communication HTTP Basic password</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenMerchantAccount" type="java.lang.String">
 					<description>Merchant account name</description>
@@ -167,6 +168,7 @@
 				<attribute qualifier="adyenSkinHMAC" type="java.lang.String">
 					<description>HPP skin HMAC key</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenImmediateCapture" type="java.lang.boolean">
 					<description>Immediate capture flow</description>

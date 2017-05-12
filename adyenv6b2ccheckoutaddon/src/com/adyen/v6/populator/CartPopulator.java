@@ -8,7 +8,6 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.servicelayer.dto.converter.ConversionException;
 
 public class CartPopulator implements Populator<CartModel, CartData> {
-
     /**
      * {@inheritDoc}
      */

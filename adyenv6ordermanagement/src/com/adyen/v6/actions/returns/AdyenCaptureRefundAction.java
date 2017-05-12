@@ -1,5 +1,10 @@
 package com.adyen.v6.actions.returns;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import com.adyen.v6.actions.AbstractWaitableAction;
 import de.hybris.platform.basecommerce.enums.ReturnStatus;
 import de.hybris.platform.payment.AdapterException;
@@ -12,14 +17,6 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.returns.model.ReturnProcessModel;
 import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.warehousing.returns.service.RefundAmountCalculationService;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 
 /**
  * Refund step of the return-process
@@ -60,7 +57,6 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
                 .filter(entry -> PaymentTransactionType.REFUND_FOLLOW_ON.equals(entry.getType()))
                 .collect(Collectors.toList());
 
-        //TODO: check in which cases this can happen
         if (refundTransactionEntries.isEmpty()) {
             LOG.warn("No REFUND TXs found");
             try {

@@ -110,6 +110,12 @@ public interface AdyenCheckoutFacade {
     boolean showRememberDetails();
 
     /**
+     * Returns whether Social Security Number should be shown on the checkout page
+     * Relevant for openinvoice methods
+     */
+    boolean showSocialSecurityNumber();
+
+    /**
      * Creates PaymentInfoModel based on cart and form data
      */
     PaymentInfoModel createPaymentInfo(CartModel cartModel, AdyenPaymentForm adyenPaymentForm);

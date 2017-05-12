@@ -112,7 +112,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        //TODO: validate Cart and selectedReference
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         String errorMessage = "checkout.error.authorization.failed";
@@ -159,7 +158,6 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             } catch (SignatureException e) {
                 LOGGER.error(e);
             }
-
         }
 
         LOGGER.debug("Redirecting to summary view");

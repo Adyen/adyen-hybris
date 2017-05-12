@@ -28,7 +28,6 @@ public class AdyenCancelOrRefundAction extends AbstractProceduralAction<OrderPro
                 continue;
             }
 
-            //TODO: exclude cases?
             PaymentTransactionEntryModel cancelledTransaction = paymentService.cancel(transactionModel.getEntries().get(0));
         }
     }

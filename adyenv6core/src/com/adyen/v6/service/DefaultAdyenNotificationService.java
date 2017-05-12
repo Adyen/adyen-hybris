@@ -124,7 +124,6 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
 
         adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_AUTHORIZED);
 
-        //todo: trigger only for manual capture
         adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
         return paymentTransactionModel;
     }
@@ -171,7 +170,6 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         if (notificationItemModel.getSuccess()) {
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
         } else {
-            //TODO: propagate fail reasons
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
         }
 
