@@ -1,11 +1,8 @@
 package com.adyen.v6.controllers.pages;
 
-import com.adyen.model.notification.NotificationRequest;
-import com.adyen.model.notification.NotificationRequestItem;
-import com.adyen.notification.NotificationHandler;
-import com.adyen.v6.constants.AdyenControllerConstants;
-import com.adyen.v6.security.AdyenNotificationAuthenticationProvider;
-import com.adyen.v6.service.AdyenNotificationService;
+import java.io.IOException;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import com.adyen.model.notification.NotificationRequest;
+import com.adyen.model.notification.NotificationRequestItem;
+import com.adyen.notification.NotificationHandler;
+import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.security.AdyenNotificationAuthenticationProvider;
+import com.adyen.v6.service.AdyenNotificationService;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.NOTIFICATION_PREFIX)
