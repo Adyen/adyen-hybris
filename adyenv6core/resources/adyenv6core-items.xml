@@ -31,22 +31,13 @@
 			<value code="bcmc" />
 			<value code="cartebancaire" />
 			<value code="visadankort" />
-			<value code="vias" />
-			<value code="maestrouk" />
 			<value code="solo" />
 			<value code="laser" />
 			<value code="jcb" />
-			<value code="bijcard" />
 			<value code="dankort" />
 			<value code="hipercard" />
 			<value code="elo" />
-			<value code="uatp" />
 			<value code="cup" />
-			<value code="visaalphabankbonus" />
-			<value code="mcalphabankbonus" />
-			<value code="karenmillen" />
-			<value code="oasis" />
-			<value code="warehouse" />
 		</enumtype>
 		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
 			<description>How the payment will be stored on Adyen</description>
