@@ -32,22 +32,13 @@
 			<value code="bcmc" />
 			<value code="cartebancaire" />
 			<value code="visadankort" />
-			<value code="vias" />
-			<value code="maestrouk" />
 			<value code="solo" />
 			<value code="laser" />
 			<value code="jcb" />
-			<value code="bijcard" />
 			<value code="dankort" />
 			<value code="hipercard" />
 			<value code="elo" />
-			<value code="uatp" />
 			<value code="cup" />
-			<value code="visaalphabankbonus" />
-			<value code="mcalphabankbonus" />
-			<value code="karenmillen" />
-			<value code="oasis" />
-			<value code="warehouse" />
 		</enumtype>
 		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
 			<description>How the payment will be stored on Adyen</description>
@@ -76,6 +67,9 @@
 							<value>HYBRIS.LONG_STRING</value>
 						</columntype>
 					</persistence>
+				</attribute>
+				<attribute qualifier="adyenStoredCards" type="StringSet">
+					<persistence type="property"/>
 				</attribute>
 			</attributes>
 		</itemtype>
@@ -157,6 +151,7 @@
 				<attribute qualifier="adyenPassword" type="java.lang.String">
 					<description>System User password</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenNotificationUsername" type="java.lang.String">
 					<description>Server Communication HTTP Basic username</description>
@@ -165,6 +160,7 @@
 				<attribute qualifier="adyenNotificationPassword" type="java.lang.String">
 					<description>Server Communication HTTP Basic password</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenMerchantAccount" type="java.lang.String">
 					<description>Merchant account name</description>
@@ -181,6 +177,7 @@
 				<attribute qualifier="adyenSkinHMAC" type="java.lang.String">
 					<description>HPP skin HMAC key</description>
 					<persistence type="property" />
+					<modifiers encrypted="true"/>
 				</attribute>
 				<attribute qualifier="adyenImmediateCapture" type="java.lang.boolean">
 					<description>Immediate capture flow</description>
@@ -252,8 +249,14 @@
 					<defaultvalue>Boolean.FALSE</defaultvalue>
 					<persistence type="property" />
 				</attribute>
-				<attribute qualifier="adyenSelectedAlias" type="java.lang.String">
+				<attribute qualifier="adyenSelectedReference" type="java.lang.String">
 					<persistence type="property" />
+				</attribute>
+				<attribute qualifier="adyenDob" type="java.util.Date">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
+					<persistence type="property"/>
 				</attribute>
 			</attributes>
 		</itemtype>

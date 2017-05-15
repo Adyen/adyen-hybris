@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.populator;
 
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -20,7 +40,9 @@ public class CartPopulator implements Populator<CartModel, CartData> {
             target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
             target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
             target.setAdyenRememberTheseDetails(paymentInfo.getAdyenRememberTheseDetails());
-            target.setAdyenSelectedAlias(paymentInfo.getAdyenSelectedAlias());
+            target.setAdyenSelectedReference(paymentInfo.getAdyenSelectedReference());
+            target.setAdyenDob(paymentInfo.getAdyenDob());
+            target.setAdyenSocialSecurityNumber(paymentInfo.getAdyenSocialSecurityNumber());
         }
     }
 

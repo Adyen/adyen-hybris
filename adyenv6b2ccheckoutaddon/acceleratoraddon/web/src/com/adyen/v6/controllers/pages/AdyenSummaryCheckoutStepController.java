@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.controllers.pages;
 
 import com.adyen.constants.ApiConstants.RefusalReason;
@@ -40,6 +60,7 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Map;
 
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
@@ -111,17 +132,18 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        //TODO: validate Cart and selectedAlias
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
 
         String errorMessage = "checkout.error.authorization.failed";
         //Handle CreditCard/oneClick payments
         if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())
-                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0
+                || (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod()))
+                ) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authoriseCardPayment(request, cartData);
 
-                LOGGER.info("Redirecting to confirmation!");
+                LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
                 LOGGER.error("API exception " + e.getError());
@@ -136,7 +158,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
                     model.addAttribute("termUrl", termUrl);
 
                     return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
-                } else if (paymentResult.isRefused()) {
+                }
+                if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
@@ -145,8 +168,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         } else {
             //Handle APM
             try {
-                Map<String, String> hppFormData = null;
-                hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, getHppRedirectUrl());
+                Map<String, String> hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, getHppRedirectUrl());
 
                 //HPP data
                 model.addAttribute("hppUrl", adyenCheckoutFacade.getHppUrl());
@@ -158,7 +180,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             }
         }
 
-        LOGGER.info("Redirecting to summary view");
+        LOGGER.debug("Redirecting to summary view");
         GlobalMessages.addErrorMessage(model, errorMessage);
         return enterStep(model, redirectModel);
     }
@@ -174,11 +196,11 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         try {
             OrderData orderData = adyenCheckoutFacade.handle3DResponse(request);
 
-            LOGGER.info("Redirecting to confirmation");
+            LOGGER.debug("Redirecting to confirmation");
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
-            LOGGER.info("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
+            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
 
             if (paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
@@ -188,7 +210,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             return REDIRECT_PREFIX + "/cart";
         }
 
-        LOGGER.info("Redirecting to final step of checkout");
+        LOGGER.debug("Redirecting to final step of checkout");
         return redirectToSummaryWithError(redirectModel, errorMessage);
     }
 
@@ -205,7 +227,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             switch (authResult) {
                 case HPPConstants.Response.AUTH_RESULT_AUTHORISED:
                 case HPPConstants.Response.AUTH_RESULT_PENDING:
-                    LOGGER.info("Redirecting to order confirmation");
+                    LOGGER.debug("Redirecting to order confirmation");
                     return redirectToOrderConfirmationPage(orderData);
                 case HPPConstants.Response.AUTH_RESULT_REFUSED:
                     return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.refused");
@@ -219,7 +241,7 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
             LOGGER.error(e);
         }
 
-        LOGGER.info("Redirecting to cart..");
+        LOGGER.debug("Redirecting to cart..");
         GlobalMessages.addFlashMessage(
                 redirectModel,
                 GlobalMessages.ERROR_MESSAGES_HOLDER,

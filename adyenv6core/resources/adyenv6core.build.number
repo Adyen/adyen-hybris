@@ -1,10 +1,10 @@
 #Ant properties
 #Thu Jul 21 18:02:44 CEST 2016
-builddate=20160721 1802
+builddate=20170509 1802
 description=adyenv6core
-group.id=de.hybris.platform
+group.id=com.adyen.v6
 module.name=platform-module
 name=adyenv6core
-vendor=hybris
-version=6.0.0.0-SNAPSHOT
-version.api=6.0.0
+vendor=adyen
+version=3.0.0
+version.api=3.0.0

@@ -18,31 +18,22 @@
  *  This file is open source and available under the MIT license.
  *  See the LICENSE file for more info.
  */
-package com.adyen.v6.service;
+package com.adyen.v6.populator;
 
-import com.adyen.model.PaymentResult;
-import de.hybris.platform.core.model.order.OrderModel;
-import de.hybris.platform.fraud.model.FraudReportModel;
+import javax.annotation.Nonnull;
+import de.hybris.platform.commercefacades.order.data.OrderEntryData;
+import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
+import de.hybris.platform.commercefacades.order.converters.populator.OrderEntryPopulator;
 
-public interface AdyenOrderService {
-    /**
-     * Updates order's metadata using the API Payment response
-     * Covers fraud, avs, cc authorisation data
-     */
-    void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult);
+/**
+ * Populate TaxValues into the OrderEntryData object.
+ * This data is needed for OpenInvoice Payment Methods
+ */
+public class TaxValuesOrderEntryPopulator extends OrderEntryPopulator {
 
-    /**
-     * Creates FraudReportModel from PaymentResult
-     */
-    FraudReportModel createFraudReportFromPaymentResult(PaymentResult paymentResult);
-
-    /**
-     * Store FraudReportModel
-     */
-    void storeFraudReport(FraudReportModel fraudReport);
-
-    /**
-     * Create FraudReportModel from PaymentResult and assigns it to order
-     */
-    void storeFraudReportFromPaymentResult(OrderModel order, PaymentResult paymentResult);
+    @Override
+    public void populate(@Nonnull final AbstractOrderEntryModel source, @Nonnull final OrderEntryData target)
+    {
+        target.setTaxValues(source.getTaxValues());
+    }
 }

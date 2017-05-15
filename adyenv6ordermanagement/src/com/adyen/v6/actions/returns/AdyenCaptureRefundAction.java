@@ -1,5 +1,30 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.actions.returns;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import com.adyen.v6.actions.AbstractWaitableAction;
 import de.hybris.platform.basecommerce.enums.ReturnStatus;
 import de.hybris.platform.payment.AdapterException;
@@ -12,14 +37,6 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.returns.model.ReturnProcessModel;
 import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.warehousing.returns.service.RefundAmountCalculationService;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static de.hybris.platform.payment.dto.TransactionStatus.ACCEPTED;
 
 /**
  * Refund step of the return-process
@@ -32,13 +49,13 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
 
     @Override
     public String execute(final ReturnProcessModel process) {
-        LOG.info("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+        LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
 
         final ReturnRequestModel returnRequest = process.getReturnRequest();
         final List<PaymentTransactionModel> transactions = returnRequest.getOrder().getPaymentTransactions();
 
         if (transactions.isEmpty()) {
-            LOG.info("Unable to refund for ReturnRequest " + returnRequest.getCode() + ", no PaymentTransactions found");
+            LOG.warn("Unable to refund for ReturnRequest " + returnRequest.getCode() + ", no PaymentTransactions found");
             return fail(returnRequest);
         }
 
@@ -53,7 +70,7 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         } else {
             amountToRefund = refundAmountCalculationService.getOriginalRefundAmount(returnRequest);
         }
-        LOG.info("Amount to refund " + amountToRefund);
+        LOG.debug("Amount to refund " + amountToRefund);
 
         //Find all entries of type REFUND_FOLLOW_ON
         List<PaymentTransactionEntryModel> refundTransactionEntries = transaction.getEntries().stream()
@@ -61,7 +78,7 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
                 .collect(Collectors.toList());
 
         if (refundTransactionEntries.isEmpty()) {
-            LOG.info("No REFUND TXs found");
+            LOG.warn("No REFUND TXs found");
             try {
                 //Send the refund API request
                 PaymentTransactionEntryModel transactionEntry = getPaymentService().refundFollowOn(transaction, amountToRefund);
@@ -87,7 +104,7 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         );
 
         if (hasError) {
-            LOG.info("Found failed REFUND transaction for ReturnRequest " + returnRequest.getCode());
+            LOG.warn("Found failed REFUND transaction for ReturnRequest " + returnRequest.getCode());
             return fail(returnRequest);
         }
 
@@ -104,11 +121,11 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
         refundedAmount.setScale(3, BigDecimal.ROUND_FLOOR);
         amountToRefund.setScale(3, BigDecimal.ROUND_FLOOR);
 
-        LOG.info("Refunded amount " + refundedAmount);
+        LOG.debug("Refunded amount " + refundedAmount);
 
         //Wait if there is still remaining amount to be refunded
         if (refundedAmount.compareTo(amountToRefund) < 0) {
-            LOG.info("Waiting for the remaining amount");
+            LOG.debug("Waiting for the remaining amount");
             return Transition.WAIT.name();
         }
 

@@ -1,6 +1,29 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.commands;
 
+import java.util.Date;
+import org.apache.log4j.Logger;
 import com.adyen.model.modification.ModificationResult;
+import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.BaseStoreRepository;
 import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.platform.payment.commands.VoidCommand;
@@ -9,9 +32,6 @@ import de.hybris.platform.payment.commands.result.VoidResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.store.BaseStoreModel;
-import org.apache.log4j.Logger;
-
-import java.util.Date;
 
 /**
  * Issues a Cancel request
@@ -19,7 +39,7 @@ import java.util.Date;
 public class AdyenVoidCommand implements VoidCommand {
     private static final Logger LOG = Logger.getLogger(AdyenVoidCommand.class);
 
-    private AdyenPaymentService adyenPaymentService;
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private BaseStoreRepository baseStoreRepository;
 
     @Override
@@ -38,7 +58,7 @@ public class AdyenVoidCommand implements VoidCommand {
         if (baseStore == null) {
             return result;
         }
-        adyenPaymentService.setBaseStore(baseStore);
+        AdyenPaymentService adyenPaymentService = adyenPaymentServiceFactory.createFromBaseStore(baseStore);
 
         try {
             ModificationResult modificationResult = adyenPaymentService.cancelOrRefund(authReference, reference);
@@ -51,18 +71,20 @@ public class AdyenVoidCommand implements VoidCommand {
                 result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
             }
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error("Cancellation exception", e);
         }
+
+        LOG.info("Cancellation status: " + result.getTransactionStatus().name() + ":" + result.getTransactionStatusDetails().name());
 
         return result;
     }
 
-    public AdyenPaymentService getAdyenPaymentService() {
-        return adyenPaymentService;
+    public AdyenPaymentServiceFactory getAdyenPaymentServiceFactory() {
+        return adyenPaymentServiceFactory;
     }
 
-    public void setAdyenPaymentService(AdyenPaymentService adyenPaymentService) {
-        this.adyenPaymentService = adyenPaymentService;
+    public void setAdyenPaymentServiceFactory(AdyenPaymentServiceFactory adyenPaymentServiceFactory) {
+        this.adyenPaymentServiceFactory = adyenPaymentServiceFactory;
     }
 
     public BaseStoreRepository getBaseStoreRepository() {

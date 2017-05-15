@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.actions.order;
 
 import com.adyen.v6.actions.AbstractWaitableAction;
@@ -28,12 +48,12 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
 
     @Override
     public String execute(final OrderProcessModel process) {
-        LOG.info("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+        LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
 
         final OrderModel order = process.getOrder();
 
         if (order.getPaymentInfo().getAdyenPaymentMethod() == null) {
-            LOG.info("Not Adyen Payment");
+            LOG.debug("Not Adyen Payment");
             return Transition.OK.toString();
         }
 
@@ -60,7 +80,7 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
 
             //Fail if capture is rejected
             if (isErroneous || isRejected) {
-                LOG.info("Process: " + process.getCode() + " Order Not Captured");
+                LOG.debug("Process: " + process.getCode() + " Order Not Captured");
                 return Transition.NOK.toString();
             }
 
@@ -72,7 +92,7 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
 
             if (transactionEntry != null) {
                 remainingAmount = remainingAmount.subtract(transactionEntry.getAmount());
-                LOG.info("Remaining amount: " + remainingAmount);
+                LOG.debug("Remaining amount: " + remainingAmount);
             }
         }
 
@@ -84,14 +104,14 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
 
         //Return success if all transactions are captured
         if (remainingAmount.compareTo(zero) <= 0) {
-            LOG.info("Process: " + process.getCode() + " Order Captured");
+            LOG.debug("Process: " + process.getCode() + " Order Captured");
             order.setStatus(OrderStatus.PAYMENT_CAPTURED);
             modelService.save(order);
             return Transition.OK.toString();
         }
 
         //By default Wait for capture result
-        LOG.info("Process: " + process.getCode() + " Order Waiting");
+        LOG.debug("Process: " + process.getCode() + " Order Waiting");
         return Transition.WAIT.toString();
     }
 }

@@ -1,11 +1,28 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.acceleratorfacades.flow.impl;
 
 import de.hybris.platform.acceleratorfacades.flow.impl.DefaultCheckoutFlowFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 
-/**
- * Created by georgios on 30/12/16.
- */
 public class AdyenCheckoutFlowFacade extends DefaultCheckoutFlowFacade
 {
     @Override

@@ -1,3 +1,23 @@
+/*
+ *                        ######
+ *                        ######
+ *  ############    ####( ######  #####. ######  ############   ############
+ *  #############  #####( ######  #####. ######  #############  #############
+ *         ######  #####( ######  #####. ######  #####  ######  #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+ *  ###### ######  #####( ######  #####. ######  #####          #####  ######
+ *  #############  #############  #############  #############  #####  ######
+ *   ############   ############  #############   ############  #####  ######
+ *                                       ######
+ *                                #############
+ *                                ############
+ *
+ *  Adyen Hybris Extension
+ *
+ *  Copyright (c) 2017 Adyen B.V.
+ *  This file is open source and available under the MIT license.
+ *  See the LICENSE file for more info.
+ */
 package com.adyen.v6.service;
 
 import de.hybris.platform.core.model.order.OrderModel;
@@ -30,7 +50,7 @@ public class AdyenOrderCancelPaymentServiceAdapter implements OrderCancelPayment
      */
     @Override
     public void recalculateOrderAndModifyPayments(final OrderModel order) {
-        LOG.info("recalculateOrderAndModifyPayments received for order: " + order.getCode() + ":"
+        LOG.debug("recalculateOrderAndModifyPayments received for order: " + order.getCode() + ":"
                 + order.getTotalPrice() + ":" + order.getStatus().getCode());
 
         try {
@@ -41,28 +61,28 @@ public class AdyenOrderCancelPaymentServiceAdapter implements OrderCancelPayment
 
         //Send the cancel request only when the whole order is cancelled
         if (!CANCELLED.getCode().equals(order.getStatus().getCode())) {
-            LOG.info("Partial cancellation");
+            LOG.info("Partial cancellation - do nothing");
             return;
         }
 
-        if(order.getPaymentTransactions().size() == 0) {
-            LOG.info("No transaction found!");
+        if(order.getPaymentTransactions().isEmpty()) {
+            LOG.warn("No transaction found!");
             return;
         }
         final PaymentTransactionModel transaction = order.getPaymentTransactions().get(0);
 
         //Ignore non-Adyen payments
         if (!PAYMENT_PROVIDER.equals(transaction.getPaymentProvider())) {
-            LOG.info("Different Payment provider: " + transaction.getPaymentProvider());
+            LOG.debug("Different Payment provider: " + transaction.getPaymentProvider());
+            return;
+        }
+
+        if (transaction.getEntries().isEmpty()) {
+            LOG.warn("Cannot find auth transaction!");
             return;
         }
 
         PaymentTransactionEntryModel authorizationTransaction = transaction.getEntries().get(0);
-
-        if (authorizationTransaction == null) {
-            LOG.error("Cannot find auth transaction!");
-            return;
-        }
 
         PaymentTransactionEntryModel cancellationTransaction = paymentService.cancel(authorizationTransaction);
 
