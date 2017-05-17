@@ -93,8 +93,10 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     @Override
     public void storeFraudReportFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
         FraudReportModel fraudReport = createFraudReportFromPaymentResult(paymentResult);
-        fraudReport.setOrder(order);
-        storeFraudReport(fraudReport);
+        if(fraudReport != null) {
+            fraudReport.setOrder(order);
+            storeFraudReport(fraudReport);
+        }
     }
 
     @Override

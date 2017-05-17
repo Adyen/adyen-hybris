@@ -33,6 +33,7 @@ public interface AdyenOrderService {
 
     /**
      * Creates FraudReportModel from PaymentResult
+     * @return FraudReportModel|null
      */
     FraudReportModel createFraudReportFromPaymentResult(PaymentResult paymentResult);
 
