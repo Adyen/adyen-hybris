@@ -481,6 +481,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Update CartModel
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
+        cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
 
         //Create payment info
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
