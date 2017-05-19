@@ -69,7 +69,6 @@ public class AdyenRequestFactory {
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
 
-
         if (! cseToken.isEmpty()) {
             paymentRequest.setCSEToken(cseToken);
         }
@@ -307,6 +306,10 @@ public class AdyenRequestFactory {
 
         if (cartData.getAdyenSocialSecurityNumber() != null && ! cartData.getAdyenSocialSecurityNumber().isEmpty()) {
             paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+        }
+
+        if (cartData.getAdyenDfValue() != null && ! cartData.getAdyenDfValue().isEmpty()) {
+            paymentRequest.setDeviceFingerprint(cartData.getAdyenDfValue());
         }
 
         // set the invoice lines
