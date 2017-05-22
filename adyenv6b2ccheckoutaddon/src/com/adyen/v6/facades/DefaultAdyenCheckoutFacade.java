@@ -117,6 +117,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_CSE_URL = "cseUrl";
+    public static final String MODEL_DF_URL = "dfUrl";
+    public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
 
@@ -297,6 +299,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
         hppFormData.put(COUNTRY_CODE, countryCode);
         hppFormData.put(RES_URL, redirectUrl);
+        hppFormData.put(DF_VALUE, cartData.getAdyenDfValue());
 
         String dataToSign = getHmacValidator().getDataToSign(hppFormData);
         String merchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
@@ -387,6 +390,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set the url for CSE script
         model.addAttribute(MODEL_CSE_URL, getCSEUrl());
+        model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
 
         Set<String> recurringDetailReferences = storedCards.stream().map(RecurringDetail::getRecurringDetailReference).collect(Collectors.toSet());
 
@@ -477,6 +481,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Update CartModel
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
+        cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
 
         //Create payment info
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);

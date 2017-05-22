@@ -49,6 +49,7 @@ public class AdyenPaymentForm {
     // openinvoice fields
     private String dob;
     private String socialSecurityNumber;
+    private String dfValue;
 
     public String getCseToken() {
         return cseToken;
@@ -132,6 +133,14 @@ public class AdyenPaymentForm {
         return PAYMENT_METHOD_ONECLICK.indexOf(paymentMethod) == 0;
     }
 
+    public String getDfValue() {
+        return dfValue;
+    }
+
+    public void setDfValue(String dfValue) {
+        this.dfValue = dfValue;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -143,6 +152,7 @@ public class AdyenPaymentForm {
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
         sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
         sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
+        sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("}");
         return sb.toString();
     }
