@@ -356,11 +356,11 @@
                                                     <ul class="form-list">
                                                         <li class="adyen_payment_input_fields">
                                                             <label class="required">First name</label>
-                                                            <input type="text" name="firstName" value="${cartData.deliveryAddress.firstName}" />
+                                                            <input type="text" name="firstName" value="${cartData.deliveryAddress.firstName}"/>
                                                         </li>
                                                         <li class="adyen_payment_input_fields">
                                                             <label class="required">Last name</label>
-                                                            <input type="text" name="lastName" value="${cartData.deliveryAddress.lastName}" />
+                                                            <input type="text" name="lastName" value="${cartData.deliveryAddress.lastName}"/>
                                                         </li>
                                                         <li class="adyen_payment_input_fields">
                                                             <label class="required">Social Security Number</label>

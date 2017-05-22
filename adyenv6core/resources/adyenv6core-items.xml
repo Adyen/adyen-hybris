@@ -206,8 +206,8 @@
                 </attribute>
                 <attribute qualifier="adyenBoleto" type="java.lang.boolean">
                     <description>Enable Boleto</description>
-                    <persistence type="property" />
-                    <modifiers optional="false" />
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
             </attributes>
