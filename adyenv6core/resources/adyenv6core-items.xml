@@ -18,7 +18,6 @@
 			xsi:noNamespaceSchemaLocation="items.xsd">
 	<collectiontypes>
 		<collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
-		<collectiontype code="AdyenBoletoBankSet" elementtype="AdyenBoletoBankEnum" autocreate="true" generate="true" type="set"/>
 	</collectiontypes>
 
 	<enumtypes>
@@ -46,14 +45,6 @@
 			<value code="ONECLICK" />
 			<value code="ONECLICK_RECURRING" />
 			<value code="RECURRING" />
-		</enumtype>
-		<enumtype code="AdyenBoletoBankEnum" generate="true" autocreate="true" dynamic="true">
-			<description>Boleto supported banks</description>
-			<value code="boletobancario_hsbc" />
-			<value code="boletobancario_itau" />
-			<value code="boletobancario_santander" />
-			<value code="boletobancario_bradesco" />
-			<value code="boletobancario_bancodobrasil" />
 		</enumtype>
 	</enumtypes>
 
@@ -199,8 +190,11 @@
 				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
 					<persistence type="property"/>
 				</attribute>
-				<attribute qualifier="adyenBoletoBanks" type="AdyenBoletoBankSet">
-					<persistence type="property"/>
+				<attribute qualifier="adyenBoleto" type="java.lang.boolean">
+					<description>Enable Boleto</description>
+					<persistence type="property" />
+					<modifiers optional="false" />
+					<defaultvalue>Boolean.FALSE</defaultvalue>
 				</attribute>
 				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
 						   generate="true" autocreate="true">
@@ -257,6 +251,19 @@
 				</attribute>
 				<attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
 					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenFirstName" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenLastName" type="java.lang.String">
+					<persistence type="property"/>
+				</attribute>
+				<attribute qualifier="adyenBoletoUrl" type="java.lang.String">
+					<persistence type="property">
+						<columntype>
+							<value>HYBRIS.LONG_STRING</value>
+						</columntype>
+					</persistence>
 				</attribute>
 			</attributes>
 		</itemtype>

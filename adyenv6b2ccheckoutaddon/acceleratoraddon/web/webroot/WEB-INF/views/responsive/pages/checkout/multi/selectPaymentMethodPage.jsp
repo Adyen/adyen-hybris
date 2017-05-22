@@ -330,10 +330,44 @@
                                                         </dl>
                                                     </c:if>
                                                     </dt>
-
                                                 </c:if>
                                             </c:forEach>
 
+                                            <c:if test="${showBoleto}">
+                                                <dt id="dt_method_adyen_boleto">
+                                                    <input id="p_method_adyen_boleto"
+                                                           value="boleto" type="radio"
+                                                           name="paymentMethod" title="Boleto"
+                                                           autocomplete="off"
+                                                    <c:if test="${selectedPaymentMethod == 'boleto'}"> checked </c:if>
+                                                    >
+                                                    <img src="https://live.adyen.com/hpp/img/pm/boleto.png"/>
+                                                    <label for="p_method_adyen_boleto">
+                                                        <span>Boleto</span>
+                                                    </label>
+                                                </dt>
+                                                <div id="dd_method_boleto"
+                                                     class="extra-fields-container">
+
+                                                    <ul class="form-list">
+                                                        <li class="adyen_payment_input_fields">
+                                                            <label class="required">First name</label>
+                                                            <input type="text" name="firstName" value="${cartData.deliveryAddress.firstName}" />
+                                                        </li>
+                                                        <li class="adyen_payment_input_fields">
+                                                            <label class="required">Last name</label>
+                                                            <input type="text" name="lastName" value="${cartData.deliveryAddress.lastName}" />
+                                                        </li>
+                                                        <li class="adyen_payment_input_fields">
+                                                            <label class="required">Social Security Number</label>
+
+                                                            <input id="p_method_adyen_hpp_boleto_ssn"
+                                                                   class="p_method_adyen_hpp_ssn"
+                                                                   type="text">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </c:if>
                                         </dl>
                                     </div>
                                 </form:form>

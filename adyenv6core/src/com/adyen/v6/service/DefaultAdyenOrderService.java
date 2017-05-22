@@ -109,6 +109,8 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         PaymentInfoModel paymentInfo = order.getPaymentInfo();
 
         paymentInfo.setAdyenPaymentMethod(paymentResult.getPaymentMethod());
+
+        //Card specific data
         paymentInfo.setAdyenAuthCode(paymentResult.getAuthCode());
         paymentInfo.setAdyenAvsResult(paymentResult.getAvsResult());
         paymentInfo.setAdyenCardBin(paymentResult.getCardBin());
@@ -117,6 +119,9 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         paymentInfo.setAdyenCardExpiry(paymentResult.getExpiryDate());
         paymentInfo.setAdyenThreeDOffered(paymentResult.get3DOffered());
         paymentInfo.setAdyenThreeDAuthenticated(paymentResult.get3DAuthenticated());
+
+        //Boleto data
+        paymentInfo.setAdyenBoletoUrl(paymentResult.getBoletoUrl());
 
         modelService.save(paymentInfo);
 

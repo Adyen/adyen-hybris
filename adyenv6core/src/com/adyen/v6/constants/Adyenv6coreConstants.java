@@ -33,6 +33,8 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
 	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
+	final public static String PAYMENT_METHOD_BOLETO = "boleto";
+	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_AUTHORIZED = "AdyenAuthorized";

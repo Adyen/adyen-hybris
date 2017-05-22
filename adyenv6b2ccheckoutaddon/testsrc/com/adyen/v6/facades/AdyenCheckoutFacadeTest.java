@@ -221,7 +221,7 @@ public class AdyenCheckoutFacadeTest {
         when(adyenPaymentServiceMock.authorise(cartDataMock, requestMock, null)).thenReturn(paymentResultMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
 
-        adyenCheckoutFacade.authoriseCardPayment(requestMock, cartDataMock);
+        adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
 
         verifyAuthorized(orderModelMock);
 
@@ -231,7 +231,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentResultMock.isRedirectShopper()).thenReturn(true);
 
         try {
-            adyenCheckoutFacade.authoriseCardPayment(requestMock, cartDataMock);
+            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
@@ -249,7 +249,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentResultMock.isRedirectShopper()).thenReturn(false);
 
         try {
-            adyenCheckoutFacade.authoriseCardPayment(requestMock, cartDataMock);
+            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
