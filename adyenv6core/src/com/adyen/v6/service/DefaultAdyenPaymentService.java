@@ -23,8 +23,12 @@ package com.adyen.v6.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -225,6 +229,13 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     public String getHppEndpoint() {
         return config.getHppEndpoint();
+    }
+
+    @Override
+    public String getDeviceFingerprintUrl() {
+        DateFormat df = new SimpleDateFormat("yyyyMMdd");
+        Date today = Calendar.getInstance().getTime();
+        return "https://live.adyen.com/hpp/js/df.js?v=" + df.format(today);
     }
 
     public AdyenRequestFactory getAdyenRequestFactory() {

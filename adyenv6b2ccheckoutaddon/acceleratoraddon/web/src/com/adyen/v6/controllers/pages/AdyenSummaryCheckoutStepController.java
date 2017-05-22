@@ -20,22 +20,6 @@
  */
 package com.adyen.v6.controllers.pages;
 
-import java.net.UnknownHostException;
-import java.security.SignatureException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
@@ -43,10 +27,13 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
+import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
+import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.PlaceOrderForm;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
@@ -60,7 +47,23 @@ import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.site.BaseSiteService;
-import de.hybris.platform.yacceleratorstorefront.controllers.pages.checkout.steps.SummaryCheckoutStepController;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.net.UnknownHostException;
+import java.security.SignatureException;
+import java.util.Arrays;
+import java.util.Map;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -68,7 +71,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
-public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepController {
+public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(AdyenSummaryCheckoutStepController.class);
 
     private final static String SUMMARY = "summary";
@@ -121,11 +124,8 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
 
     @RequestMapping({"/placeOrder"})
     @RequireHardLogIn
-    @Override
-    public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm,
-                             final Model model,
-                             final HttpServletRequest request,
-                             final RedirectAttributes redirectModel) throws CMSItemNotFoundException, // NOSONAR
+    public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm, final Model model,
+                             final HttpServletRequest request, final RedirectAttributes redirectModel) throws CMSItemNotFoundException, // NOSONAR
             InvalidCartException, CommerceCartModificationException {
         if (validateOrderForm(placeOrderForm, model)) {
             return enterStep(model, redirectModel);
@@ -321,5 +321,83 @@ public class AdyenSummaryCheckoutStepController extends SummaryCheckoutStepContr
         }
 
         return errorMessage;
+    }
+
+    /**
+     * Validates the order form before to filter out invalid order states
+     *
+     * @param placeOrderForm The spring form of the order being submitted
+     * @param model          A spring Model
+     * @return True if the order form is invalid and false if everything is valid.
+     */
+    protected boolean validateOrderForm(final PlaceOrderForm placeOrderForm, final Model model) {
+        final String securityCode = placeOrderForm.getSecurityCode();
+        boolean invalid = false;
+
+        if (getCheckoutFlowFacade().hasNoDeliveryAddress()) {
+            GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
+            invalid = true;
+        }
+
+        if (getCheckoutFlowFacade().hasNoDeliveryMode()) {
+            GlobalMessages.addErrorMessage(model, "checkout.deliveryMethod.notSelected");
+            invalid = true;
+        }
+
+        if (getCheckoutFlowFacade().hasNoPaymentInfo()) {
+            GlobalMessages.addErrorMessage(model, "checkout.paymentMethod.notSelected");
+            invalid = true;
+        } else {
+            // Only require the Security Code to be entered on the summary page if the SubscriptionPciOption is set to Default.
+            if (CheckoutPciOptionEnum.DEFAULT.equals(getCheckoutFlowFacade().getSubscriptionPciOption()) && StringUtils
+                    .isBlank(securityCode)) {
+                GlobalMessages.addErrorMessage(model, "checkout.paymentMethod.noSecurityCode");
+                invalid = true;
+            }
+        }
+
+        if (!placeOrderForm.isTermsCheck()) {
+            GlobalMessages.addErrorMessage(model, "checkout.error.terms.not.accepted");
+            invalid = true;
+            return invalid;
+        }
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+
+        if (!getCheckoutFacade().containsTaxValues()) {
+            LOGGER.error(String.format(
+                    "Cart %s does not have any tax values, which means the tax cacluation was not properly done, placement of order can't continue",
+                    cartData.getCode()));
+            GlobalMessages.addErrorMessage(model, "checkout.error.tax.missing");
+            invalid = true;
+        }
+
+        if (!cartData.isCalculated()) {
+            LOGGER.error(String.format("Cart %s has a calculated flag of FALSE, placement of order can't continue",
+                    cartData.getCode()));
+            GlobalMessages.addErrorMessage(model, "checkout.error.cart.notcalculated");
+            invalid = true;
+        }
+
+        return invalid;
+    }
+
+    @RequestMapping(value = "/back",
+            method = RequestMethod.GET)
+    @RequireHardLogIn
+    @Override
+    public String back(final RedirectAttributes redirectAttributes) {
+        return getCheckoutStep().previousStep();
+    }
+
+    @RequestMapping(value = "/next",
+            method = RequestMethod.GET)
+    @RequireHardLogIn
+    @Override
+    public String next(final RedirectAttributes redirectAttributes) {
+        return getCheckoutStep().nextStep();
+    }
+
+    protected CheckoutStep getCheckoutStep() {
+        return getCheckoutStep(SUMMARY);
     }
 }

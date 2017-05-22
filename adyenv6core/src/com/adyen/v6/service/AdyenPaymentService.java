@@ -80,4 +80,9 @@ public interface AdyenPaymentService {
      * Returns the HPP base URL for the current basestore
      */
     String getHppEndpoint();
+
+    /**
+     * Returns the Device Fingerprint url
+     */
+    String getDeviceFingerprintUrl();
 }

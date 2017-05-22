@@ -34,6 +34,7 @@ public class CartPopulator implements Populator<CartModel, CartData> {
     @Override
     public void populate(final CartModel source, final CartData target) throws ConversionException {
         target.setAdyenCseToken(source.getAdyenCseToken());
+        target.setAdyenDfValue(source.getAdyenDfValue());
 
         final PaymentInfoModel paymentInfo = source.getPaymentInfo();
         if (paymentInfo != null && isNotCreditCard(paymentInfo)) {
@@ -49,6 +50,6 @@ public class CartPopulator implements Populator<CartModel, CartData> {
     }
 
     protected boolean isNotCreditCard(final PaymentInfoModel paymentInfo) {
-        return !(paymentInfo instanceof CreditCardPaymentInfoModel);
+        return ! (paymentInfo instanceof CreditCardPaymentInfoModel);
     }
 }

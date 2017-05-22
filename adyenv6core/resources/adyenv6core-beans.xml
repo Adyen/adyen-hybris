@@ -21,13 +21,14 @@
 		<property name="adyenIssuerId" type="java.lang.String"/>
 		<property name="adyenDob" type="java.util.Date" />
 		<property name="adyenSocialSecurityNumber" type="java.lang.String" />
-		<property name="adyenFirstName" type="java.lang.String" />
-		<property name="adyenLastName" type="java.lang.String" />
+        <property name="adyenDfValue" type="java.lang.String"/>
+        <property name="adyenFirstName" type="java.lang.String" />
+        <property name="adyenLastName" type="java.lang.String" />
 	</bean>
 
-	<bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
-		<property name="adyenBoletoUrl" type="java.lang.String"/>
-	</bean>
+    <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
+        <property name="adyenBoletoUrl" type="java.lang.String"/>
+    </bean>
 
 	<bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
 		<property name="taxValues" type="java.util.Collection&lt;de.hybris.platform.util.TaxValue>"/>

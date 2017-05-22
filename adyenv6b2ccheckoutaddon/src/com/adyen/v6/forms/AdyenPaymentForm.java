@@ -49,6 +49,7 @@ public class AdyenPaymentForm {
 
     // openinvoice fields
     private String dob;
+    private String dfValue;
 
     //Boleto
     private String firstName;
@@ -154,6 +155,14 @@ public class AdyenPaymentForm {
         return PAYMENT_METHOD_ONECLICK.indexOf(paymentMethod) == 0;
     }
 
+    public String getDfValue() {
+        return dfValue;
+    }
+
+    public void setDfValue(String dfValue) {
+        this.dfValue = dfValue;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -167,6 +176,7 @@ public class AdyenPaymentForm {
         sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
         sb.append("    firstName: ").append(Util.toIndentedString(firstName)).append("\n");
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
+        sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("}");
         return sb.toString();
     }

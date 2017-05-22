@@ -163,7 +163,11 @@ var AdyenCheckout = (function () {
 
         $("#dd_method_" + paymentMethod).show();
         $("#adyen_hpp_" + paymentMethod + "_container").show();
-    }
+    };
+
+    var createDfValue = function() {
+        dfDo("dfValue");
+    };
 
     return {
         enableCardTypeDetection: enableCardTypeDetection,
@@ -173,6 +177,7 @@ var AdyenCheckout = (function () {
         createOneClickForm: createOneClickForm,
         createForm: createForm,
         createDobDatePicker: createDobDatePicker,
-        togglePaymentMethod: togglePaymentMethod
+        togglePaymentMethod: togglePaymentMethod,
+        createDfValue: createDfValue
     }
 })();
