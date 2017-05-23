@@ -204,6 +204,12 @@
                     <defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
                     <description>How the payment will be stored on Adyen</description>
                 </attribute>
+                <attribute qualifier="adyenBoleto" type="java.lang.boolean">
+                    <description>Enable Boleto</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                </attribute>
             </attributes>
         </itemtype>
 
@@ -252,6 +258,19 @@
                 </attribute>
                 <attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
                     <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenFirstName" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenLastName" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenBoletoUrl" type="java.lang.String">
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
                 </attribute>
             </attributes>
         </itemtype>

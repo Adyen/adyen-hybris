@@ -81,8 +81,11 @@ public interface AdyenCheckoutFacade {
      */
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
 
+    @Deprecated
+    OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
+
     /**
-     * Authorizes a CC payment
+     * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
      * @param request  HTTP Request object
@@ -90,7 +93,7 @@ public interface AdyenCheckoutFacade {
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
+    OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
 
     /**
      * Handles an 3D response
@@ -117,6 +120,12 @@ public interface AdyenCheckoutFacade {
      * Retrieve available payment methods
      */
     void initializeCheckoutData(Model model);
+
+    /**
+     * Returns whether Boleto should be shown as an available payment method on the checkout page
+     * Relevant for Brasil
+     */
+    boolean showBoleto();
 
     /**
      * Returns whether CC can be stored depending on the recurring contract settings

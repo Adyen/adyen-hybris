@@ -40,6 +40,7 @@ public class AdyenPaymentForm {
     //CSE
     private String cseToken;
     private String selectedReference;
+
     //Save card
     private boolean rememberTheseDetails;
 
@@ -48,8 +49,14 @@ public class AdyenPaymentForm {
 
     // openinvoice fields
     private String dob;
-    private String socialSecurityNumber;
     private String dfValue;
+
+    //Boleto
+    private String firstName;
+    private String lastName;
+
+    // used in openinvoice and boleto
+    private String socialSecurityNumber;
 
     public String getCseToken() {
         return cseToken;
@@ -95,6 +102,21 @@ public class AdyenPaymentForm {
         this.selectedReference = selectedReference;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     public Date getDob() {
         Date dateOfBirth = null;
@@ -152,6 +174,8 @@ public class AdyenPaymentForm {
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
         sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
         sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
+        sb.append("    firstName: ").append(Util.toIndentedString(firstName)).append("\n");
+        sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
         sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("}");
         return sb.toString();

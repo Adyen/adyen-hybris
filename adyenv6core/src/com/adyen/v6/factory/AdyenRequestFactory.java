@@ -48,6 +48,9 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 
 public class AdyenRequestFactory {
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
@@ -73,11 +76,14 @@ public class AdyenRequestFactory {
             paymentRequest.setCSEToken(cseToken);
         }
 
-        // if user is logged in
+        // set shopper details
         if (customerModel != null) {
             paymentRequest.setShopperReference(customerModel.getCustomerID());
             paymentRequest.setShopperEmail(customerModel.getContactEmail());
+        }
 
+        // set recurring contract
+        if (customerModel != null && PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
             Recurring recurring = getRecurringContractType(recurringContractMode, cartData.getAdyenRememberTheseDetails());
             paymentRequest.setRecurring(recurring);
         }
@@ -112,8 +118,13 @@ public class AdyenRequestFactory {
         if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
             paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
             setOpenInvoiceData(paymentRequest, cartData, customerModel);
-            // Set only here the shopperName because it could be that Saluation is not always used
-            paymentRequest.setShopperName(setShopperName(cartData.getDeliveryAddress()));
+
+            paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
+        }
+
+        //Set Boleto parameters
+        if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+            setBoletoData(paymentRequest, cartData);
         }
 
         return paymentRequest;
@@ -271,21 +282,21 @@ public class AdyenRequestFactory {
     }
 
     /**
-     * Set shopper info
-     *
-     * @param addressData
-     * @return
+     * Get shopper name and gender
      */
-    public Name setShopperName(AddressData addressData) {
+    private Name getShopperNameFromAddress(AddressData addressData) {
         Name shopperName = new Name();
 
         shopperName.setFirstName(addressData.getFirstName());
         shopperName.setLastName(addressData.getLastName());
+        shopperName.setGender(Name.GenderEnum.UNKNOWN);
 
-        if (addressData.getTitleCode().equals("mrs") || addressData.getTitleCode().equals("miss") || addressData.getTitleCode().equals("ms")) {
-            shopperName.setGender(Name.GenderEnum.FEMALE);
-        } else {
-            shopperName.setGender(Name.GenderEnum.MALE);
+        if (addressData.getTitleCode() != null && ! addressData.getTitleCode().isEmpty()) {
+            if (addressData.getTitleCode().equals("mrs") || addressData.getTitleCode().equals("miss") || addressData.getTitleCode().equals("ms")) {
+                shopperName.setGender(Name.GenderEnum.FEMALE);
+            } else {
+                shopperName.setGender(Name.GenderEnum.MALE);
+            }
         }
 
         return shopperName;
@@ -396,6 +407,18 @@ public class AdyenRequestFactory {
         }
 
         paymentRequest.setInvoiceLines(invoiceLines);
+    }
 
+    /**
+     * Set Boleto payment request data
+     */
+    private void setBoletoData(PaymentRequest paymentRequest, CartData cartData) {
+        paymentRequest.selectedBrand(PAYMENT_METHOD_BOLETO_SANTANDER);
+        paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+
+        Name shopperName = new Name();
+        shopperName.setFirstName(cartData.getAdyenFirstName());
+        shopperName.setLastName(cartData.getAdyenLastName());
+        paymentRequest.setShopperName(shopperName);
     }
 }
