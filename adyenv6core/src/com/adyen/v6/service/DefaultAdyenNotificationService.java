@@ -41,7 +41,10 @@ import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
+import de.hybris.platform.servicelayer.internal.i18n.I18NConstants;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.session.SessionExecutionBody;
+import de.hybris.platform.servicelayer.session.SessionService;
 
 public class DefaultAdyenNotificationService implements AdyenNotificationService {
     private ModelService modelService;
@@ -51,6 +54,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     private PaymentTransactionRepository paymentTransactionRepository;
     private CartRepository cartRepository;
     private CommercePlaceOrderStrategy commercePlaceOrderStrategy;
+    private SessionService sessionService;
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenNotificationService.class);
 
@@ -162,19 +166,30 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             return null;
         }
 
-        try {
-            //place order similar to AcceleratorCheckoutFacade
-            CommerceCheckoutParameter parameter = new CommerceCheckoutParameter();
-            parameter.setEnableHooks(true);
-            parameter.setCart(cartModel);
-            parameter.setSalesApplication(SalesApplication.WEB);
-            CommerceOrderResult commerceOrderResult = commercePlaceOrderStrategy.placeOrder(parameter);
-            return commerceOrderResult.getOrder();
-        } catch (InvalidCartException e) {
-            LOG.error(e);
-        }
+        //place order similar to AcceleratorCheckoutFacade
+        CommerceCheckoutParameter parameter = new CommerceCheckoutParameter();
+        parameter.setEnableHooks(true);
+        parameter.setCart(cartModel);
+        parameter.setSalesApplication(SalesApplication.WEB);
 
-        return null;
+        //Set current baseSite and current language on session-level (to be used by commercePlaceOrderStrategy)
+        return sessionService.executeInLocalView(new SessionExecutionBody() {
+            @Override
+            public Object execute() {
+                //Used in DefaultBaseSiteService
+                sessionService.setAttribute("currentSite", cartModel.getSite());
+                //Used in DefaultCommonI18NService
+                sessionService.setAttribute(I18NConstants.LANGUAGE_SESSION_ATTR_KEY, cartModel.getSite().getDefaultLanguage());
+                try {
+                    LOG.debug("Placing order for: " + cartModel.getCode());
+                    CommerceOrderResult commerceOrderResult = commercePlaceOrderStrategy.placeOrder(parameter);
+                    return commerceOrderResult.getOrder();
+                } catch (InvalidCartException e) {
+                    LOG.error(e);
+                }
+                return null;
+            }
+        });
     }
 
     @Override
@@ -300,5 +315,13 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
 
     public void setCommercePlaceOrderStrategy(CommercePlaceOrderStrategy commercePlaceOrderStrategy) {
         this.commercePlaceOrderStrategy = commercePlaceOrderStrategy;
+    }
+
+    public SessionService getSessionService() {
+        return sessionService;
+    }
+
+    public void setSessionService(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 }
