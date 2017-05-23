@@ -135,7 +135,8 @@
         <property name="orderRepository" ref="adyenOrderRepository" />
         <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository" />
         <property name="cartRepository" ref="adyenCartRepository" />
-        <property name="commercePlaceOrderStrategy" ref="adyenCommercePlaceOrderStrategy" />
+        <property name="commercePlaceOrderStrategy" ref="commercePlaceOrderStrategy" />
+        <property name="sessionService" ref="sessionService" />
     </bean>
 
     <bean id="adyenOrderCancelPaymentServiceAdapter" class="com.adyen.v6.service.AdyenOrderCancelPaymentServiceAdapter">
@@ -152,22 +153,6 @@
     <alias name="defaultAdyenBusinessProcessService" alias="adyenBusinessProcessService"/>
     <bean id="defaultAdyenBusinessProcessService" class="com.adyen.v6.service.DefaultAdyenBusinessProcessService">
         <property name="businessProcessService" ref="businessProcessService" />
-    </bean>
-
-    <bean id="adyenCommercePlaceOrderStrategy"
-          class="com.adyen.v6.order.impl.AdyenCronjobCommercePlaceOrderStrategy">
-        <property name="paymentService" ref="paymentService"/>
-        <property name="modelService" ref="modelService"/>
-        <property name="commonI18NService" ref="commonI18NService"/>
-        <property name="deliveryService" ref="deliveryService"/>
-        <property name="orderService" ref="orderService"/>
-        <property name="baseSiteService" ref="baseSiteService"/>
-        <property name="baseStoreService" ref="baseStoreService"/>
-        <property name="promotionsService" ref="promotionsService"/>
-        <property name="calculationService" ref="calculationService"/>
-        <property name="externalTaxesService" ref="externalTaxesService"/>
-        <property name="commercePlaceOrderMethodHooks" ref="commercePlaceOrderMethodHooks"/>
-        <property name="configurationService" ref="configurationService"/>
     </bean>
 
     <!-- Process notification cronjob -->
