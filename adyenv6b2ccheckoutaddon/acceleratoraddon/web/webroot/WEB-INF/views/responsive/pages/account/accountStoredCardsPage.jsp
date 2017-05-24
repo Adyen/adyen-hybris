@@ -30,10 +30,10 @@
                                     <c:if test="${storedCard.card.expiryMonth lt 10}">0</c:if>
                                         ${fn:escapeXml(storedCard.card.expiryMonth)}&nbsp;/&nbsp;${fn:escapeXml(storedCard.card.expiryYear)}
                                 </li>
-                                <c:if test="${storedCard.card.billingAddress ne null}">
-                                    <li>${fn:escapeXml(storedCard.card.billingAddress.street)}</li>
-                                    <li>${fn:escapeXml(storedCard.card.billingAddress.city)}</li>
-                                    <li>${fn:escapeXml(storedCard.card.billingAddress.country)}&nbsp;${fn:escapeXml(storedCard.card.billingAddress.postalCode)}</li>
+                                <c:if test="${storedCard.billingAddress ne null}">
+                                    <li>${fn:escapeXml(storedCard.billingAddress.street)}</li>
+                                    <li>${fn:escapeXml(storedCard.billingAddress.city)}</li>
+                                    <li>${fn:escapeXml(storedCard.billingAddress.country)}&nbsp;${fn:escapeXml(storedCard.billingAddress.postalCode)}</li>
                                 </c:if>
                             </ul>
                             <div class="account-cards-actions pull-left">
@@ -57,10 +57,10 @@
                                     <br>
                                     <c:if test="${storedCard.card.expiryMonth lt 10}">0</c:if>
                                         ${fn:escapeXml(storedCard.card.expiryMonth)}&nbsp;/&nbsp;${fn:escapeXml(storedCard.card.expiryYear)}
-                                    <c:if test="${storedCard.card.billingAddress ne null}">
-                                        <br>${fn:escapeXml(storedCard.card.billingAddress.street)}
-                                        <br>${fn:escapeXml(storedCard.card.billingAddress.city)}
-                                        <br>${fn:escapeXml(storedCard.card.billingAddress.country)}&nbsp;${fn:escapeXml(storedCard.card.billingAddress.postalCode)}
+                                    <c:if test="${storedCard.billingAddress ne null}">
+                                        <br>${fn:escapeXml(storedCard.billingAddress.street)}
+                                        <br>${fn:escapeXml(storedCard.billingAddress.city)}
+                                        <br>${fn:escapeXml(storedCard.billingAddress.country)}&nbsp;${fn:escapeXml(storedCard.billingAddress.postalCode)}
                                     </c:if>
                                 </div>
                                 <c:url value="/my-account/stored-cards/remove" var="removePaymentActionUrl"/>
