@@ -87,6 +87,7 @@ import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
 import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -117,8 +118,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_CSE_URL = "cseUrl";
+    public static final String MODEL_DF_URL = "dfUrl";
+    public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
+    public static final String MODEL_SHOW_BOLETO = "showBoleto";
 
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -212,7 +216,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
+    @Deprecated
     public OrderData authoriseCardPayment(final HttpServletRequest request, final CartData cartData) throws Exception {
+        return authorisePayment(request, cartData);
+    }
+
+    @Override
+    public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
@@ -222,10 +232,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         LOGGER.debug("authorization result: " + paymentResult);
 
+        //In case of Authorized: create order and authorize it
         if (paymentResult.isAuthorised()) {
             return createAuthorizedOrder(paymentResult);
         }
 
+        //In case of Received: create order
+        if (paymentResult.isReceived()) {
+            return createOrderFromPaymentResult(paymentResult);
+        }
+
+        //In case of RedirectShopper: Lock cart
         if (paymentResult.isRedirectShopper()) {
             getSessionService().setAttribute(SESSION_MD, paymentResult.getMd());
 
@@ -297,6 +314,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
         hppFormData.put(COUNTRY_CODE, countryCode);
         hppFormData.put(RES_URL, redirectUrl);
+        hppFormData.put(DF_VALUE, cartData.getAdyenDfValue());
 
         String dataToSign = getHmacValidator().getDataToSign(hppFormData);
         String merchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
@@ -326,6 +344,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //First save the transactions to the CartModel < AbstractOrderModel
         getAdyenTransactionService().authorizeOrderModel(cartModel, merchantTransactionCode, paymentResult.getPspReference());
 
+        return createOrderFromPaymentResult(paymentResult);
+    }
+
+    /**
+     * Create order
+     */
+    private OrderData createOrderFromPaymentResult(final PaymentResult paymentResult) throws InvalidCartException {
+        LOGGER.debug("Create order from payment result: " + paymentResult.getPspReference());
+
         OrderData orderData = getCheckoutFacade().placeOrder();
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         updateOrder(orderModel, paymentResult);
@@ -352,6 +379,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
                                                                               cartData.getTotalPrice().getCurrencyIso(),
                                                                               cartData.getDeliveryAddress().getCountry().getIsocode());
+
+            //Exclude cards and boleto
+            alternativePaymentMethods = alternativePaymentMethods.stream()
+                                                                 .filter(paymentMethod -> ! paymentMethod.getBrandCode().isEmpty()
+                                                                         && ! paymentMethod.isCard()
+                                                                         && paymentMethod.getBrandCode().indexOf(PAYMENT_METHOD_BOLETO) != 0)
+                                                                 .collect(Collectors.toList());
         } catch (HTTPClientException | SignatureException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
@@ -387,6 +421,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set the url for CSE script
         model.addAttribute(MODEL_CSE_URL, getCSEUrl());
+        model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
 
         Set<String> recurringDetailReferences = storedCards.stream().map(RecurringDetail::getRecurringDetailReference).collect(Collectors.toSet());
 
@@ -401,7 +436,26 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
         model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber());
 
+        //Include Boleto banks
+        model.addAttribute(MODEL_SHOW_BOLETO, showBoleto());
+
         modelService.save(cartModel);
+    }
+
+    @Override
+    public boolean showBoleto() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        //Check base store settings
+        if (baseStore.getAdyenBoleto() == null || ! baseStore.getAdyenBoleto()) {
+            return false;
+        }
+
+        CartData cartData = getCheckoutFacade().getCheckoutCart();
+        String currency = cartData.getTotalPrice().getCurrencyIso();
+        String country = cartData.getDeliveryAddress().getCountry().getIsocode();
+
+        //Show only on Brasil with BRL
+        return "BRL".equals(currency) && "BR".equals(country);
     }
 
     @Override
@@ -454,7 +508,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         // openinvoice fields
         paymentInfo.setAdyenDob(adyenPaymentForm.getDob());
+
         paymentInfo.setAdyenSocialSecurityNumber(adyenPaymentForm.getSocialSecurityNumber());
+
+        // Boleto fields
+        paymentInfo.setAdyenFirstName(adyenPaymentForm.getFirstName());
+        paymentInfo.setAdyenLastName(adyenPaymentForm.getLastName());
 
         modelService.save(paymentInfo);
 
@@ -477,6 +536,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Update CartModel
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
+        cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
 
         //Create payment info
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);

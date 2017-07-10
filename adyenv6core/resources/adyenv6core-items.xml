@@ -14,239 +14,265 @@
 	ATTENTION: This is just an example file. You have to edit it according to your needs.
 -->
 
-<items 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-			xsi:noNamespaceSchemaLocation="items.xsd">
-	<collectiontypes>
-		<collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
-	</collectiontypes>
+<items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="items.xsd">
+    <collectiontypes>
+        <collectiontype code="AdyenCardTypeSet" elementtype="AdyenCardTypeEnum" autocreate="true" generate="true" type="set"/>
+    </collectiontypes>
 
-	<enumtypes>
-		<enumtype code="AdyenCardTypeEnum" autocreate="true" generate="true" dynamic="true">
-			<value code="mc" />
-			<value code="visa" />
-			<value code="amex" />
-			<value code="diners" />
-			<value code="discover" />
-			<value code="maestro" />
-			<value code="bcmc" />
-			<value code="cartebancaire" />
-			<value code="visadankort" />
-			<value code="solo" />
-			<value code="laser" />
-			<value code="jcb" />
-			<value code="dankort" />
-			<value code="hipercard" />
-			<value code="elo" />
-			<value code="cup" />
-		</enumtype>
-		<enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
-			<description>How the payment will be stored on Adyen</description>
-			<value code="NONE" />
-			<value code="ONECLICK" />
-			<value code="ONECLICK_RECURRING" />
-			<value code="RECURRING" />
-		</enumtype>
-	</enumtypes>
+    <enumtypes>
+        <enumtype code="AdyenCardTypeEnum" autocreate="true" generate="true" dynamic="true">
+            <value code="mc"/>
+            <value code="visa"/>
+            <value code="amex"/>
+            <value code="diners"/>
+            <value code="discover"/>
+            <value code="maestro"/>
+            <value code="bcmc"/>
+            <value code="cartebancaire"/>
+            <value code="visadankort"/>
+            <value code="solo"/>
+            <value code="laser"/>
+            <value code="jcb"/>
+            <value code="dankort"/>
+            <value code="hipercard"/>
+            <value code="elo"/>
+            <value code="cup"/>
+        </enumtype>
+        <enumtype code="RecurringContractMode" generate="true" autocreate="true" dynamic="true">
+            <description>How the payment will be stored on Adyen</description>
+            <value code="NONE"/>
+            <value code="ONECLICK"/>
+            <value code="ONECLICK_RECURRING"/>
+            <value code="RECURRING"/>
+        </enumtype>
+    </enumtypes>
 
-	<itemtypes>
-		<itemtype code="Cart" autocreate="false" generate="false">
-			<attributes>
-				<!-- Store CSE token -->
-				<attribute qualifier="adyenCseToken" type="java.lang.String">
-					<persistence type="property">
-						<columntype>
-							<value>HYBRIS.LONG_STRING</value>
-						</columntype>
-					</persistence>
-				</attribute>
-				<attribute qualifier="adyenStoredCards" type="StringSet">
-					<persistence type="property"/>
-				</attribute>
-			</attributes>
-		</itemtype>
+    <itemtypes>
+        <itemtype code="Cart" autocreate="false" generate="false">
+            <attributes>
+                <!-- Store CSE token -->
+                <attribute qualifier="adyenCseToken" type="java.lang.String">
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenStoredCards" type="StringSet">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenDfValue" type="java.lang.String">
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+            </attributes>
+        </itemtype>
 
-		<itemtype code="NotificationItem" generate="true" autocreate="true">
-			<deployment table="AdyenNotificationItem" typecode="19030"/>
-			<attributes>
-				<attribute qualifier="amountValue" type="java.math.BigDecimal">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="amountCurrency" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="eventCode" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="eventDate" type="java.util.Date">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="merchantAccountCode" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="merchantReference" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="originalReference" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="pspReference" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="reason" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="success" type="java.lang.Boolean">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="paymentMethod" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="additionalData" type="java.lang.String">
-					<persistence type="property">
-						<columntype database="oracle">
-							<value>CLOB</value>
-						</columntype>
-						<columntype database="sap">
-							<value>NCLOB</value>
-						</columntype>
-						<columntype>
-							<value>HYBRIS.LONG_STRING</value>
-						</columntype>
-						<columntype database="mysql">
-							<value>TEXT</value>
-						</columntype>
-					</persistence>
-				</attribute>
-				<attribute qualifier="createdAt" type="java.util.Date">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="processedAt" type="java.util.Date">
-					<persistence type="property"/>
-				</attribute>
-			</attributes>
-			<indexes>
-				<index name="PspReference">
-					<key attribute="pspReference"/>
-				</index>
-			</indexes>
-		</itemtype>
+        <itemtype code="NotificationItem" generate="true" autocreate="true">
+            <deployment table="AdyenNotificationItem" typecode="19030"/>
+            <attributes>
+                <attribute qualifier="amountValue" type="java.math.BigDecimal">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="amountCurrency" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="eventCode" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="eventDate" type="java.util.Date">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="merchantAccountCode" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="merchantReference" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="originalReference" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="pspReference" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="reason" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="success" type="java.lang.Boolean">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="paymentMethod" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="additionalData" type="java.lang.String">
+                    <persistence type="property">
+                        <columntype database="oracle">
+                            <value>CLOB</value>
+                        </columntype>
+                        <columntype database="sap">
+                            <value>NCLOB</value>
+                        </columntype>
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                        <columntype database="mysql">
+                            <value>TEXT</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="createdAt" type="java.util.Date">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="processedAt" type="java.util.Date">
+                    <persistence type="property"/>
+                </attribute>
+            </attributes>
+            <indexes>
+                <index name="PspReference">
+                    <key attribute="pspReference"/>
+                </index>
+            </indexes>
+        </itemtype>
 
-		<itemtype code="BaseStore" autocreate="false" generate="false">
-			<description>Extending BaseStore type with Adyen configurations.</description>
+        <itemtype code="BaseStore" autocreate="false" generate="false">
+            <description>Extending BaseStore type with Adyen configurations.</description>
 
-			<attributes>
-				<attribute qualifier="adyenUsername" type="java.lang.String">
-					<description>System User username</description>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenPassword" type="java.lang.String">
-					<description>System User password</description>
-					<persistence type="property" />
-					<modifiers encrypted="true"/>
-				</attribute>
-				<attribute qualifier="adyenNotificationUsername" type="java.lang.String">
-					<description>Server Communication HTTP Basic username</description>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenNotificationPassword" type="java.lang.String">
-					<description>Server Communication HTTP Basic password</description>
-					<persistence type="property" />
-					<modifiers encrypted="true"/>
-				</attribute>
-				<attribute qualifier="adyenMerchantAccount" type="java.lang.String">
-					<description>Merchant account name</description>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenCSEID" type="java.lang.String">
-					<description>Client Side Encryption Library token</description>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenSkinCode" type="java.lang.String">
-					<description>HPP skin code</description>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenSkinHMAC" type="java.lang.String">
-					<description>HPP skin HMAC key</description>
-					<persistence type="property" />
-					<modifiers encrypted="true"/>
-				</attribute>
-				<attribute qualifier="adyenImmediateCapture" type="java.lang.boolean">
-					<description>Immediate capture flow</description>
-					<persistence type="property" />
-					<modifiers optional="false" />
-					<defaultvalue>Boolean.FALSE</defaultvalue>
-				</attribute>
-				<attribute qualifier="adyenHppTest" type="java.lang.boolean">
-					<description>HPP Test mode</description>
-					<persistence type="property" />
-					<modifiers optional="false" />
-					<defaultvalue>Boolean.TRUE</defaultvalue>
-				</attribute>
-				<attribute qualifier="adyenAPIEndpoint" type="java.lang.String">
-					<description>API endpoint</description>
-					<persistence type="property" />
-					<defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
-				</attribute>
-				<attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
-					<persistence type="property"/>
-				</attribute>
-				<attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
-						   generate="true" autocreate="true">
-					<persistence type="property"/>
-					<modifiers optional="false" />
-					<defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
-					<description>How the payment will be stored on Adyen</description>
-				</attribute>
-			</attributes>
-		</itemtype>
+            <attributes>
+                <attribute qualifier="adyenUsername" type="java.lang.String">
+                    <description>System User username</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenPassword" type="java.lang.String">
+                    <description>System User password</description>
+                    <persistence type="property"/>
+                    <modifiers encrypted="true"/>
+                </attribute>
+                <attribute qualifier="adyenNotificationUsername" type="java.lang.String">
+                    <description>Server Communication HTTP Basic username</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenNotificationPassword" type="java.lang.String">
+                    <description>Server Communication HTTP Basic password</description>
+                    <persistence type="property"/>
+                    <modifiers encrypted="true"/>
+                </attribute>
+                <attribute qualifier="adyenMerchantAccount" type="java.lang.String">
+                    <description>Merchant account name</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenCSEID" type="java.lang.String">
+                    <description>Client Side Encryption Library token</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenSkinCode" type="java.lang.String">
+                    <description>HPP skin code</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenSkinHMAC" type="java.lang.String">
+                    <description>HPP skin HMAC key</description>
+                    <persistence type="property"/>
+                    <modifiers encrypted="true"/>
+                </attribute>
+                <attribute qualifier="adyenImmediateCapture" type="java.lang.boolean">
+                    <description>Immediate capture flow</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                </attribute>
+                <attribute qualifier="adyenHppTest" type="java.lang.boolean">
+                    <description>HPP Test mode</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.TRUE</defaultvalue>
+                </attribute>
+                <attribute qualifier="adyenAPIEndpoint" type="java.lang.String">
+                    <description>API endpoint</description>
+                    <persistence type="property"/>
+                    <defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
+                </attribute>
+                <attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute type="RecurringContractMode" qualifier="adyenRecurringContractMode"
+                           generate="true" autocreate="true">
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
+                    <description>How the payment will be stored on Adyen</description>
+                </attribute>
+                <attribute qualifier="adyenBoleto" type="java.lang.boolean">
+                    <description>Enable Boleto</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                </attribute>
+            </attributes>
+        </itemtype>
 
-		<itemtype code="PaymentInfo" autocreate="false" generate="false">
-			<description>Extending PaymentInfo type with Adyen properties.</description>
-			<attributes>
-				<attribute qualifier="adyenPaymentMethod" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenIssuerId" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenAvsResult" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenCardBin" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenCardSummary" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenAuthCode" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenCardHolder" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenCardExpiry" type="java.util.Date">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenThreeDOffered" type="java.lang.boolean">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="adyenThreeDAuthenticated" type="java.lang.boolean">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
-					<defaultvalue>Boolean.FALSE</defaultvalue>
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenSelectedReference" type="java.lang.String">
-					<persistence type="property" />
-				</attribute>
-				<attribute qualifier="adyenDob" type="java.util.Date">
-					<persistence type="property"/>
-				</attribute>
-				<attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
-					<persistence type="property"/>
-				</attribute>
-			</attributes>
-		</itemtype>
-	</itemtypes>
+        <itemtype code="PaymentInfo" autocreate="false" generate="false">
+            <description>Extending PaymentInfo type with Adyen properties.</description>
+            <attributes>
+                <attribute qualifier="adyenPaymentMethod" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenIssuerId" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenAvsResult" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenCardBin" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenCardSummary" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenAuthCode" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenCardHolder" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenCardExpiry" type="java.util.Date">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenThreeDOffered" type="java.lang.boolean">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenThreeDAuthenticated" type="java.lang.boolean">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenSelectedReference" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenDob" type="java.util.Date">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenFirstName" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenLastName" type="java.lang.String">
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenBoletoUrl" type="java.lang.String">
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+            </attributes>
+        </itemtype>
+    </itemtypes>
 </items>

@@ -42,6 +42,9 @@
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 				</editorArea:section>
+				<editorArea:section name="hmc.adyen.advanced">
+					<editorArea:attribute qualifier="adyenBoleto"/>
+				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>
 	</context>

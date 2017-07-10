@@ -37,6 +37,7 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,7 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getAdyenCseToken()).thenReturn("AdyenCseToken");
         when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddressMock);
         when(cartDataMock.getPaymentInfo()).thenReturn(paymentInfoMock);
+        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
         when(paymentInfoMock.getBillingAddress()).thenReturn(billingAddressMock);
         when(deliveryAddressMock.getTown()).thenReturn("deliveryTown");
