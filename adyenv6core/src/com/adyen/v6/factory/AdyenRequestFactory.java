@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import com.adyen.enums.VatCategory;
@@ -36,7 +37,7 @@ import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.additionalData.InvoiceLine;
 import com.adyen.model.hpp.DirectoryLookupRequest;
-import com.adyen.model.modification.CancelRequest;
+import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
 import com.adyen.model.recurring.DisableRequest;
@@ -47,6 +48,7 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
@@ -72,7 +74,7 @@ public class AdyenRequestFactory {
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
 
-        if (! cseToken.isEmpty()) {
+        if (! StringUtils.isEmpty(cseToken)) {
             paymentRequest.setCSEToken(cseToken);
         }
 
@@ -127,6 +129,11 @@ public class AdyenRequestFactory {
             setBoletoData(paymentRequest, cartData);
         }
 
+        //Set Paypal Express Checkout Shortcut parameters
+        if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
+            setPaypalEcsData(paymentRequest, cartData);
+        }
+
         return paymentRequest;
     }
 
@@ -134,8 +141,8 @@ public class AdyenRequestFactory {
         return new CaptureRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode()).merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
     }
 
-    public CancelRequest createCancelRequest(final String merchantAccount, final String authReference, final String merchantReference) {
-        return new CancelRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
+    public CancelOrRefundRequest createCancelOrRefundRequest(final String merchantAccount, final String authReference, final String merchantReference) {
+        return new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
     }
 
     public RefundRequest createRefundRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
@@ -157,11 +164,6 @@ public class AdyenRequestFactory {
 
     /**
      * Creates a request to disable a recurring contract
-     *
-     * @param merchantAccount
-     * @param customerId
-     * @param recurringReference
-     * @return
      */
     public DisableRequest createDisableRequest(final String merchantAccount, final String customerId, final String recurringReference) {
         return new DisableRequest().merchantAccount(merchantAccount).shopperReference(customerId).recurringDetailReference(recurringReference);
@@ -179,9 +181,6 @@ public class AdyenRequestFactory {
 
     /**
      * Set Address Data into API
-     *
-     * @param addressData
-     * @return
      */
     private Address setAddressData(AddressData addressData) {
 
@@ -226,9 +225,6 @@ public class AdyenRequestFactory {
 
     /**
      * Return Recurring object from RecurringContractMode
-     *
-     * @param recurringContractMode
-     * @return
      */
     private Recurring getRecurringContractType(RecurringContractMode recurringContractMode) {
         Recurring recurringContract = new Recurring();
@@ -248,10 +244,6 @@ public class AdyenRequestFactory {
 
     /**
      * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
-     *
-     * @param recurringContractMode
-     * @param enableOneClick
-     * @return
      */
     private Recurring getRecurringContractType(RecurringContractMode recurringContractMode, final Boolean enableOneClick) {
         Recurring recurringContract = getRecurringContractType(recurringContractMode);
@@ -264,18 +256,18 @@ public class AdyenRequestFactory {
         // if user want to save his card use the configured recurring contract type
         if (enableOneClick != null && enableOneClick) {
             return recurringContract;
-        } else {
-            Recurring.ContractEnum contractEnum = recurringContract.getContract();
-            /**
-             * If save card is not checked do the folllowing changes:
-             * NONE => NONE
-             * ONECLICK => NONE
-             * ONECLICK,RECURRING => RECURRING
-             * RECURRING => RECURRING
-             */
-            if (Recurring.ContractEnum.ONECLICK_RECURRING.equals(contractEnum) || Recurring.ContractEnum.RECURRING.equals(contractEnum)) {
-                return recurringContract.contract(Recurring.ContractEnum.RECURRING);
-            }
+        }
+
+        Recurring.ContractEnum contractEnum = recurringContract.getContract();
+        /**
+         * If save card is not checked do the folllowing changes:
+         * NONE => NONE
+         * ONECLICK => NONE
+         * ONECLICK,RECURRING => RECURRING
+         * RECURRING => RECURRING
+         */
+        if (Recurring.ContractEnum.ONECLICK_RECURRING.equals(contractEnum) || Recurring.ContractEnum.RECURRING.equals(contractEnum)) {
+            return recurringContract.contract(Recurring.ContractEnum.RECURRING);
         }
 
         return null;
@@ -420,5 +412,13 @@ public class AdyenRequestFactory {
         shopperName.setFirstName(cartData.getAdyenFirstName());
         shopperName.setLastName(cartData.getAdyenLastName());
         paymentRequest.setShopperName(shopperName);
+    }
+
+    /**
+     * Set Paypal ECS request data
+     */
+    private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
+        paymentRequest.selectedBrand(PAYPAL_ECS);
+        paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
     }
 }

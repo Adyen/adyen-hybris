@@ -107,11 +107,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
 
+    public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
+
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_MD = "adyen_md";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
-    public static final Logger LOGGER = Logger.getLogger(AdyenCheckoutFacade.class);
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
@@ -145,6 +146,24 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
+    public void validateHPPResponse(final HttpServletRequest request) throws SignatureException {
+        final SortedMap<String, String> hppResponseData = new TreeMap<>();
+
+        mapRequest(request, hppResponseData, HPPConstants.Response.AUTH_RESULT);
+        mapRequest(request, hppResponseData, HPPConstants.Response.MERCHANT_REFERENCE);
+        mapRequest(request, hppResponseData, HPPConstants.Response.PAYMENT_METHOD);
+        mapRequest(request, hppResponseData, HPPConstants.Response.PSP_REFERENCE);
+        mapRequest(request, hppResponseData, HPPConstants.Response.SHOPPER_LOCALE);
+        mapRequest(request, hppResponseData, HPPConstants.Response.SKIN_CODE);
+
+        LOGGER.debug("Received HPP response: " + hppResponseData);
+
+        String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
+
+        validateHPPResponse(hppResponseData, merchantSig);
+    }
+
+    @Override
     public String getCSEUrl() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
@@ -160,11 +179,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public void lockSessionCart() {
+    public void lockSessionCart() throws InvalidCartException {
+        if (getSessionService().getAttribute(SESSION_LOCKED_CART) != null) {
+            throw new InvalidCartException("There is already a locked cart in the session");
+        }
+
         getSessionService().setAttribute(SESSION_LOCKED_CART, cartService.getSessionCart());
         getSessionService().removeAttribute(SESSION_CART_PARAMETER_NAME);
-        //Refresh session
-        getCartService().getSessionCart();
+
+        //Refresh session for registered users
+        if (getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            getCartService().getSessionCart();
+        }
     }
 
     @Override
@@ -173,41 +199,35 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (cartModel == null) {
             throw new InvalidCartException("Cart does not exist!");
         }
+
         getCartService().setSessionCart(cartModel);
+        getSessionService().removeAttribute(SESSION_LOCKED_CART);
 
         return cartModel;
     }
 
     @Override
     public OrderData handleHPPResponse(final HttpServletRequest request) throws SignatureException {
-        final SortedMap<String, String> hppResponseData = new TreeMap<>();
+        validateHPPResponse(request);
 
-        //Compose HPP response data map
-        mapRequest(request, hppResponseData, HPPConstants.Response.AUTH_RESULT);
-        mapRequest(request, hppResponseData, HPPConstants.Response.MERCHANT_REFERENCE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.PAYMENT_METHOD);
-        mapRequest(request, hppResponseData, HPPConstants.Response.PSP_REFERENCE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.SHOPPER_LOCALE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.SKIN_CODE);
-
-        LOGGER.debug("Received HPP response: " + hppResponseData);
-
-        String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
         String merchantReference = request.getParameter(HPPConstants.Response.MERCHANT_REFERENCE);
         String authResult = request.getParameter(HPPConstants.Response.AUTH_RESULT);
-
-        validateHPPResponse(hppResponseData, merchantSig);
 
         OrderData orderData = null;
         //Restore the cart or find the created order
         try {
             restoreSessionCart();
 
+            CartData cartData = getCheckoutFacade().getCheckoutCart();
+            if (! cartData.getCode().equals(merchantReference)) {
+                throw new InvalidCartException("Merchant reference doesn't match cart's code");
+            }
+
             if (HPPConstants.Response.AUTH_RESULT_AUTHORISED.equals(authResult) || HPPConstants.Response.AUTH_RESULT_PENDING.equals(authResult)) {
                 orderData = getCheckoutFacade().placeOrder();
             }
         } catch (InvalidCartException e) {
-            LOGGER.debug(e);
+            LOGGER.warn(e);
             //Cart does not exist, retrieve order
             orderData = getOrderFacade().getOrderDetailsForCode(merchantReference);
         }
@@ -229,8 +249,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
-
-        LOGGER.debug("authorization result: " + paymentResult);
 
         //In case of Authorized: create order and authorize it
         if (paymentResult.isAuthorised()) {
@@ -281,7 +299,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public Map<String, String> initializeHostedPayment(final CartData cartData, final String redirectUrl) throws SignatureException {
+    public Map<String, String> initializeHostedPayment(final CartData cartData, final String redirectUrl) throws SignatureException, InvalidCartException {
         final String sessionValidity = Util.calculateSessionValidity();
         final SortedMap<String, String> hppFormData = new TreeMap<>();
 
@@ -297,10 +315,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
 
+        //Identify country code based on shopper's delivery address
         String countryCode = "";
-        CountryData deliveryCountry = cartData.getDeliveryAddress().getCountry();
-        if (deliveryCountry != null) {
-            countryCode = deliveryCountry.getIsocode();
+        AddressData deliveryAddress = cartData.getDeliveryAddress();
+        if (deliveryAddress != null) {
+            CountryData deliveryCountry = deliveryAddress.getCountry();
+            if (deliveryCountry != null) {
+                countryCode = deliveryCountry.getIsocode();
+            }
         }
 
         hppFormData.put(PAYMENT_AMOUNT, String.valueOf(amount.getValue()));
@@ -430,8 +452,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         cartModel.setAdyenStoredCards(recurringDetailReferences);
 
         // OpenInvoice Methods
-        List<String> openInvoiceMethods = OPENINVOICE_METHODS_API;
-        model.addAttribute(MODEL_OPEN_INVOICE_METHODS, openInvoiceMethods);
+        model.addAttribute(MODEL_OPEN_INVOICE_METHODS, OPENINVOICE_METHODS_API);
 
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
         model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber());

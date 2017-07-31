@@ -42,7 +42,7 @@ import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.hpp.PaymentMethod;
-import com.adyen.model.modification.CancelRequest;
+import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
@@ -151,7 +151,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
         Modification modification = new Modification(client);
 
-        CancelRequest cancelRequest = getAdyenRequestFactory().createCancelRequest(client.getConfig().getMerchantAccount(), authReference, merchantReference);
+        CancelOrRefundRequest cancelRequest = getAdyenRequestFactory().createCancelOrRefundRequest(client.getConfig().getMerchantAccount(), authReference, merchantReference);
 
         LOG.debug(cancelRequest);
         ModificationResult modificationResult = modification.cancelOrRefund(cancelRequest);
