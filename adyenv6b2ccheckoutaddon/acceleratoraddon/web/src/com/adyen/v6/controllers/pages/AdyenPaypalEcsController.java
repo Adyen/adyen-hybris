@@ -89,11 +89,10 @@ public class AdyenPaypalEcsController {
 
     @RequestMapping(value = "/initialize", method = RequestMethod.GET)
     public String initialize(final Model model, final RedirectAttributes redirectModel, final HttpServletRequest request) {
-        //Handle APM
         try {
             Map<String, String> hppFormData = adyenPaypalFacade.initializePaypalECS(getRedirectUrl());
 
-            //HPP data
+            //Building HPP data
             model.addAttribute("hppUrl", adyenCheckoutFacade.getHppUrl());
             model.addAttribute("hppFormData", hppFormData);
 
@@ -110,9 +109,12 @@ public class AdyenPaypalEcsController {
     @RequestMapping(value = PROCESS_URL)
     public String process(final HttpServletRequest request, final HttpServletResponse response, final RedirectAttributes redirectModel) {
         try {
+            //Handle PP ECS response
             boolean success = adyenPaypalFacade.handlePaypalECSResponse(request);
 
+            //On success, update user and cart
             if (success) {
+                //If the user is anonymous, convert him to guest
                 if (userFacade.isAnonymousUser()) {
                     getCustomerFacade().createGuestUserForAnonymousCheckout(request.getParameter(PAYPAL_ECS_SHOPPER_EMAIL),
                                                                             request.getParameter(PAYPAL_ECS_SHOPPER_FIRST_NAME) + request.getParameter(PAYPAL_ECS_SHOPPER_LAST_NAME));
@@ -120,13 +122,16 @@ public class AdyenPaypalEcsController {
                     getSessionService().setAttribute(WebConstants.ANONYMOUS_CHECKOUT, Boolean.TRUE);
                 }
 
+                //Update the cart
                 adyenPaypalFacade.updateCart(request, false);
 
+                //Pick the cheapest delivery mode and redirect to the last step of checkout
                 checkoutFlowFacade.setCheapestDeliveryModeForCheckout();
 
                 return REDIRECT_PREFIX + "/checkout/multi/adyen/summary/view";
             }
 
+            //In case of error, display the appropriate flash message
             switch (request.getParameter(AUTH_RESULT)) {
                 case HPPConstants.Response.AUTH_RESULT_REFUSED:
                     GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, "checkout.error.authorization.payment.refused");

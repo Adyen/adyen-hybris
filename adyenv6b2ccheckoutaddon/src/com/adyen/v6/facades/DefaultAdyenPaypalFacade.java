@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
-import com.adyen.v6.factory.DefaultAdyenAddressDataFactory;
+import com.adyen.v6.factory.AdyenAddressDataFactory;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.UserFacade;
@@ -44,7 +44,7 @@ import static com.adyen.constants.HPPConstants.Response.AUTH_RESULT_PENDING;
 import static com.adyen.constants.HPPConstants.Response.MERCHANT_REFERENCE;
 
 public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
-    private DefaultAdyenAddressDataFactory adyenAddressDataFactory;
+    private AdyenAddressDataFactory adyenAddressDataFactory;
     private AdyenCheckoutFacade adyenCheckoutFacade;
     private ModelService modelService;
     private CartService cartService;
@@ -60,6 +60,7 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(cartModel.getCode() + "_" + UUID.randomUUID());
 
+        //Set billing address
         AddressData billingAddressData = adyenAddressDataFactory.createAddressData(request.getParameter(PAYPAL_ECS_BILLING_ADDRESS_COUNTRY),
                                                                                    request.getParameter(PAYPAL_ECS_BILLING_ADDRESS_STATE),
                                                                                    request.getParameter(PAYPAL_ECS_BILLING_ADDRESS_STATE_OR_PROVINCE),
@@ -72,11 +73,11 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
         AddressModel billingAddressModel = getModelService().create(AddressModel.class);
         getAddressReverseConverter().convert(billingAddressData, billingAddressModel);
 
-        // Clone DeliveryAdress to BillingAddress
         billingAddressModel.setBillingAddress(true);
         billingAddressModel.setOwner(paymentInfo);
         paymentInfo.setBillingAddress(billingAddressModel);
 
+        //Add PP ECS data to the payment info
         paymentInfo.setAdyenPaymentMethod(PAYPAL_ECS);
         paymentInfo.setAdyenPaypalPayerId(request.getParameter(PAYPAL_ECS_PAYMENT_PAYER_ID));
         paymentInfo.setAdyenPaypalEcsToken(request.getParameter(PAYPAL_ECS_PAYMENT_TOKEN));
@@ -86,16 +87,19 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
 
     @Override
     public boolean handlePaypalECSResponse(final HttpServletRequest request) throws SignatureException, InvalidCartException {
+        //Validate merchant signature
         adyenCheckoutFacade.validateHPPResponse(request);
 
         adyenCheckoutFacade.restoreSessionCart();
 
+        //Validate merchant reference
         String merchantReference = request.getParameter(MERCHANT_REFERENCE);
         CartData cartData = getCheckoutFacade().getCheckoutCart();
         if (! cartData.getCode().equals(merchantReference)) {
             throw new InvalidCartException("Merchant reference doesn't match cart's code");
         }
 
+        //Return true for Authorised or Pending result
         String authResult = request.getParameter(AUTH_RESULT);
         return AUTH_RESULT_PENDING.equals(authResult) || AUTH_RESULT_AUTHORISED.equals(authResult);
     }
@@ -107,6 +111,7 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
             return;
         }
 
+        //Create a delivery address from PP response
         if (updateExistingDeliveryAddress || cartData.getDeliveryAddress() == null) {
             final AddressData deliveryAddress = adyenAddressDataFactory.createAddressData(request.getParameter(PAYPAL_ECS_DELIVERY_ADDRESS_COUNTRY),
                                                                                           request.getParameter(PAYPAL_ECS_DELIVERY_ADDRESS_STATE),
@@ -117,6 +122,7 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
                                                                                           request.getParameter(PAYPAL_ECS_SHOPPER_FIRST_NAME),
                                                                                           request.getParameter(PAYPAL_ECS_SHOPPER_LAST_NAME));
 
+            deliveryAddress.setShippingAddress(true);
             userFacade.addAddress(deliveryAddress);
             checkoutFacade.setDeliveryAddress(deliveryAddress);
 
@@ -142,11 +148,11 @@ public class DefaultAdyenPaypalFacade implements AdyenPaypalFacade {
         return adyenCheckoutFacade.initializeHostedPayment(cartData, redirectUrl);
     }
 
-    public DefaultAdyenAddressDataFactory getAdyenAddressDataFactory() {
+    public AdyenAddressDataFactory getAdyenAddressDataFactory() {
         return adyenAddressDataFactory;
     }
 
-    public void setAdyenAddressDataFactory(DefaultAdyenAddressDataFactory adyenAddressDataFactory) {
+    public void setAdyenAddressDataFactory(AdyenAddressDataFactory adyenAddressDataFactory) {
         this.adyenAddressDataFactory = adyenAddressDataFactory;
     }
 

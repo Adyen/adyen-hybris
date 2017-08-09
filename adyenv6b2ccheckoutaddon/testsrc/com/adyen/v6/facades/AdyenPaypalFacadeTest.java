@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import com.adyen.v6.factory.DefaultAdyenAddressDataFactory;
+import com.adyen.v6.factory.AdyenAddressDataFactory;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -74,7 +74,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AdyenPaypalFacadeTest {
     @Mock
-    private DefaultAdyenAddressDataFactory adyenAddressDataFactoryMock;
+    private AdyenAddressDataFactory adyenAddressDataFactoryMock;
 
     @Mock
     private AdyenCheckoutFacade adyenCheckoutFacadeMock;

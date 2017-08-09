@@ -31,16 +31,16 @@ import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 
-public class DefaultAdyenAddressDataFactory {
+public class DefaultAdyenAddressDataFactory implements AdyenAddressDataFactory {
     private ModelService modelService;
     private CommonI18NService commonI18NService;
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenAddressDataFactory.class);
 
+    @Override
     public AddressData createAddressData(String country, String state, String stateOrProvince, String city, String street, String postalCode, String firstName, String lastName) {
         AddressData addressData = new AddressData();
 
-        addressData.setShippingAddress(true);
         addressData.setFirstName(firstName);
         addressData.setLastName(lastName);
         addressData.setLine1(street);
@@ -49,12 +49,14 @@ public class DefaultAdyenAddressDataFactory {
         addressData.setVisibleInAddressBook(false);
         addressData.setDefaultAddress(false);
 
+        //Find country by iso code
         if (StringUtils.isNotBlank(country)) {
             final CountryData countryData = new CountryData();
             countryData.setIsocode(country);
             addressData.setCountry(countryData);
         }
 
+        //Find Region/state
         if (StringUtils.isNotBlank(stateOrProvince) && StringUtils.isNotBlank(country)) {
             final RegionData regionData = new RegionData();
             final CountryModel countryModel = commonI18NService.getCountry(country);
