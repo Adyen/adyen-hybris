@@ -70,6 +70,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
 
+    /**
+     * Prevent initialization without base store
+     */
     private DefaultAdyenPaymentService() {
     }
 
@@ -193,7 +196,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
         if (customerId == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);

@@ -23,6 +23,7 @@ package com.adyen.v6.facades;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,7 +189,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getSessionService().removeAttribute(SESSION_CART_PARAMETER_NAME);
 
         //Refresh session for registered users
-        if (getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             getCartService().getSessionCart();
         }
     }
@@ -445,7 +446,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CSE_URL, getCSEUrl());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
 
-        Set<String> recurringDetailReferences = storedCards.stream().map(RecurringDetail::getRecurringDetailReference).collect(Collectors.toSet());
+        Set<String> recurringDetailReferences = new HashSet<>();
+        if(storedCards != null) {
+            recurringDetailReferences = storedCards.stream().map(RecurringDetail::getRecurringDetailReference).collect(Collectors.toSet());
+        }
 
         //Set stored cards to model
         CartModel cartModel = cartService.getSessionCart();
