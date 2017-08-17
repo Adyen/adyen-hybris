@@ -38,13 +38,21 @@ import de.hybris.platform.order.InvalidCartException;
  */
 public interface AdyenCheckoutFacade {
     /**
-     * Validates an HPP response
+     * Validates an HPP response based on Map
      *
      * @param hppResponseData map with hpp data
      * @param merchantSig     merchant signature
      * @throws SignatureException in case signature doesn't match
      */
     void validateHPPResponse(SortedMap<String, String> hppResponseData, String merchantSig) throws SignatureException;
+
+    /**
+     * Validates an HPP response based on the HTTP request object
+     *
+     * @param request HTTP request object
+     * @throws SignatureException in case signature doesn't match
+     */
+    void validateHPPResponse(HttpServletRequest request) throws SignatureException;
 
     /**
      * Retrieve the CSE JS Url
@@ -61,7 +69,7 @@ public interface AdyenCheckoutFacade {
     /**
      * Removes cart from the session so that users can't update it while being in a payment page
      */
-    void lockSessionCart();
+    void lockSessionCart() throws InvalidCartException;
 
     /**
      * Restores the sessionCart that has been previously locked
@@ -113,8 +121,9 @@ public interface AdyenCheckoutFacade {
      * @param redirectUrl HPP result url
      * @return HPP data
      * @throws SignatureException In case signature cannot be generated
+     * @throws InvalidCartException In case there is an existing locked cart
      */
-    Map<String, String> initializeHostedPayment(CartData cartData, String redirectUrl) throws SignatureException;
+    Map<String, String> initializeHostedPayment(CartData cartData, String redirectUrl) throws SignatureException, InvalidCartException;
 
     /**
      * Retrieve available payment methods
