@@ -6,9 +6,10 @@ package com.adyen.commerceservices.rest;
 import de.hybris.platform.servicelayer.event.EventService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser.Feature;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.adyen.services.event.AdyenNotificationEvent;
+import com.adyen.services.integration.data.NotificationItemDto;
 import com.adyen.services.integration.data.request.AdyenNotificationRequest;
 import com.adyen.services.listener.AdyenNotificationListener;
 
@@ -58,9 +60,20 @@ public class AdyenNotificationReceiver
 			om.setSerializationInclusion(Inclusion.NON_NULL);
 			om.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 			request = om.readValue(requestString, AdyenNotificationRequest.class);
-			LOG.info("Publish Adyen event.");
-			getEventService().registerEventListener(getAdyenNotificationListener());
-			getEventService().publishEvent(new AdyenNotificationEvent(request));
+
+            getEventService().registerEventListener(getAdyenNotificationListener());
+
+            //Publish a separate event for every notification item
+			for(NotificationItemDto notificationItemDto : request.getNotificationItems()) {
+				AdyenNotificationRequest emittedRequest = new AdyenNotificationRequest();
+				emittedRequest.setLive(request.isLive());
+				List<NotificationItemDto> notificationItemDtoList = new ArrayList<>();
+				notificationItemDtoList.add(notificationItemDto);
+				emittedRequest.setNotificationItems(notificationItemDtoList);
+
+				LOG.info("Publish Adyen event.");
+				getEventService().publishEvent(new AdyenNotificationEvent(emittedRequest));
+			}
 		}
 		catch (final JsonParseException e)
 		{
