@@ -75,9 +75,28 @@ public class AbstractAdyenNotificationStrategy implements AdyenNotificationStrat
 		{
 			for (final PaymentTransactionEntryModel paymentTransactionEntry : entries)
 			{
-				if (StringUtils.isEmpty(paymentTransactionEntry.getVersionID()))
+				if (paymentTransactionEntry != null && StringUtils.isEmpty(paymentTransactionEntry.getVersionID()))
 				{
+					//Get the order's transaction entry only
+					if (entries.size() > 1 && paymentTransactionEntry.getPaymentTransaction() != null
+							&& paymentTransactionEntry.getPaymentTransaction().getOrder() != null
+							&& paymentTransactionEntry.getPaymentTransaction().getOrder() instanceof CartModel)
+					{
+						continue;
+					}
+					LOG.debug("Transaction entry exists for the PSP - " + getPspReference(request));
 					entry = paymentTransactionEntry;
+
+					if (entry.getPaymentTransaction() != null && entry.getPaymentTransaction().getOrder() != null)
+					{
+						LOG.debug("Payment transaction is associated with - "
+										 + entry.getPaymentTransaction().getOrder().getClass().getName());
+					}
+					else
+					{
+						LOG.debug("Payment transaction is not associated with any order-");
+					}
+
 					break;
 				}
 			}
