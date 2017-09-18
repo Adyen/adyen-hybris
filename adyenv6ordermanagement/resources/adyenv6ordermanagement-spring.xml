@@ -20,5 +20,11 @@
 
     <import resource="adyenv6ordermanagement-process-definitions-spring.xml"/>
 
+    <!--Definition of refundAmountCalculationService to fix rounding issues-->
+    <alias name="adyenRefundAmountCalculationService" alias="refundAmountCalculationService"/>
+    <bean id="adyenRefundAmountCalculationService"
+          class="com.adyen.v6.actions.returns.service.AdyenRefundAmountCalculationService">
+    </bean>
+
     <context:annotation-config/>
 </beans>
