@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~                        ######
+  ~                        ######
+  ~  ############    ####( ######  #####. ######  ############   ############
+  ~  #############  #####( ######  #####. ######  #############  #############
+  ~         ######  #####( ######  #####. ######  #####  ######  #####  ######
+  ~  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+  ~  ###### ######  #####( ######  #####. ######  #####          #####  ######
+  ~  #############  #############  #############  #############  #####  ######
+  ~   ############   ############  #############   ############  #####  ######
+  ~                                       ######
+  ~                                #############
+  ~                                ############
+  ~
+  ~  Adyen Hybris Extension
+  ~
+  ~  Copyright (c) 2017 Adyen B.V.
+  ~  This file is open source and available under the MIT license.
+  ~  See the LICENSE file for more info.
+  -->
 <process xmlns="http://www.hybris.de/xsd/processdefinition" start="checkOrder"
          name="order-process" processClass="de.hybris.platform.orderprocessing.model.OrderProcessModel">
 
@@ -53,6 +73,7 @@
     <action id="orderManualChecked" bean="orderManualCheckedAction">
         <transition name="OK" to="sendOrderPlacedNotification"/>
         <transition name="NOK" to="cancelOrder"/>
+        <transition name="CANCELLED" to="success"/>
     </action>
 
     <!-- Sourcing and Allocation -->
@@ -69,6 +90,7 @@
         <case event="OrderActionEvent">
             <choice id="consignmentProcessEnded" then="verifyOrderCompletion"/>
             <choice id="cancelOrder" then="processOrderCancellation"/>
+            <choice id="cancelled" then="success"/>
             <choice id="reSource" then="sourceOrder"/>
         </case>
     </wait>
