@@ -41,3 +41,33 @@ ant clean all
 ### 5. Add your Adyen credentials to the BaseStore via Hybris backoffice
 
 For more detailed instructions you can visit the [documentation page](https://docs.adyen.com/developers/plug-ins-and-partners/hybris)
+
+
+## Supported payment methods
+
+### Credit Cards
+
+Credit Card payments are supported using [Client Side Encryption](https://docs.adyen.com/support/payment-glossary/client-side-encryption-cse).
+
+### Klarna
+
+Klarna is supported via Adyen API.
+Requires shopper data listed in: https://developers.klarna.com/en/se/kpm/test-credentials
+
+### Boleto
+
+[Boleto](https://docs.adyen.com/developers/payment-methods/boleto-bancario) is supported via Adyen API.
+
+### Paypal Express Checkout Shortcut
+
+Requires both Adyen API and HPP credentials.
+
+The plugin offers:
+ - a facade (AdyenPaypalFacade) that takes care of the communication from and to Adyen regarding Paypal ECS
+ - a default controller that given a valid Cart, can initiate such payment "/en/adyen/paypal-ecs/initialize"
+
+More details can be found here: https://docs.adyen.com/developers/payment-methods/paypal/express-checkout-shortcut
+
+### Other alternative payment methods
+
+Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/developers/products-and-subscriptions/hosted-payment-pages).
