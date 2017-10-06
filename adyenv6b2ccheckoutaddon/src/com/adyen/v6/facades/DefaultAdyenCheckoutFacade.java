@@ -148,18 +148,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public void validateHPPResponse(final HttpServletRequest request) throws SignatureException {
-        final SortedMap<String, String> hppResponseData = new TreeMap<>();
-
-        mapRequest(request, hppResponseData, HPPConstants.Response.AUTH_RESULT);
-        mapRequest(request, hppResponseData, HPPConstants.Response.MERCHANT_REFERENCE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.PAYMENT_METHOD);
-        mapRequest(request, hppResponseData, HPPConstants.Response.PSP_REFERENCE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.SHOPPER_LOCALE);
-        mapRequest(request, hppResponseData, HPPConstants.Response.SKIN_CODE);
+        SortedMap<String, String> hppResponseData = new TreeMap<>();
+        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+            String value = entry.getValue()[0];
+            hppResponseData.put(entry.getKey(), value);
+        }
 
         LOGGER.debug("Received HPP response: " + hppResponseData);
 
-        String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
+        if (! hppResponseData.containsKey(HPPConstants.Response.MERCHANT_SIG)) {
+            throw new SignatureException("MerchantSig not provided");
+        }
+
+        String merchantSig = hppResponseData.get(HPPConstants.Response.MERCHANT_SIG);
+        // Remove merchantSig from the map
+        hppResponseData.remove(HPPConstants.Response.MERCHANT_SIG);
 
         validateHPPResponse(hppResponseData, merchantSig);
     }
@@ -189,7 +192,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getSessionService().removeAttribute(SESSION_CART_PARAMETER_NAME);
 
         //Refresh session for registered users
-        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             getCartService().getSessionCart();
         }
     }
@@ -350,13 +353,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return hppFormData;
     }
 
-    private void mapRequest(final HttpServletRequest request, final Map<String, String> map, String parameterName) {
-        String value = request.getParameter(parameterName);
-        if (value != null) {
-            map.put(parameterName, value);
-        }
-    }
-
     /**
      * Create order and authorized TX
      */
@@ -447,7 +443,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
 
         Set<String> recurringDetailReferences = new HashSet<>();
-        if(storedCards != null) {
+        if (storedCards != null) {
             recurringDetailReferences = storedCards.stream().map(RecurringDetail::getRecurringDetailReference).collect(Collectors.toSet());
         }
 
