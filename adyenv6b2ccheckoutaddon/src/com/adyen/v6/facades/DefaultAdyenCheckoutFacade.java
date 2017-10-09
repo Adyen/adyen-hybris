@@ -32,6 +32,11 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import de.hybris.platform.commerceservices.enums.CustomerType;
+import de.hybris.platform.commerceservices.order.CommerceCartService;
+import de.hybris.platform.commerceservices.service.data.CommerceCartParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
@@ -107,6 +112,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private HMACValidator hmacValidator;
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
+    private CommerceCartService commerceCartService;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -555,14 +561,45 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
+        CustomerModel customer = handleGuestCustomer(cartModel);
+
         //Update CartModel
         cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
         cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
+        cartModel.setUser(customer);
+        recalculateCart(cartModel);
 
         //Create payment info
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
         cartModel.setPaymentInfo(paymentInfo);
+
         modelService.save(cartModel);
+    }
+
+    private CustomerModel handleGuestCustomer(CartModel cartModel) {
+        CustomerModel customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        if (CustomerType.GUEST.equals(customer.getType())) {
+            final StringBuilder name = new StringBuilder();
+            AddressModel deliveryAddress = cartModel.getDeliveryAddress();
+            if (!StringUtils.isBlank(deliveryAddress.getFirstname())) {
+                name.append(deliveryAddress.getFirstname());
+                name.append(' ');
+            }
+            if (!StringUtils.isBlank(deliveryAddress.getLastname())) {
+                name.append(deliveryAddress.getLastname());
+            }
+            customer.setName(name.toString());
+            modelService.save(customer);
+        }
+        return customer;
+    }
+
+    private void recalculateCart(CartModel cartModel) {
+        final CommerceCartParameter parameter = new CommerceCartParameter();
+        cartModel.setCalculated(Boolean.FALSE);
+        parameter.setEnableHooks(true);
+        parameter.setCart(cartModel);
+        commerceCartService.calculateCart(parameter);
     }
 
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {
@@ -659,6 +696,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAdyenPaymentServiceFactory(AdyenPaymentServiceFactory adyenPaymentServiceFactory) {
         this.adyenPaymentServiceFactory = adyenPaymentServiceFactory;
+    }
+
+    public CommerceCartService getCommerceCartService() {
+        return commerceCartService;
+    }
+
+    public void setCommerceCartService(CommerceCartService commerceCartService) {
+        this.commerceCartService = commerceCartService;
     }
 
     public ModelService getModelService() {

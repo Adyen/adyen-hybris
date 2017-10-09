@@ -107,6 +107,7 @@
 		<property name="adyenOrderService" ref="adyenOrderService"/>
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
 		<property name="modelService" ref="modelService"/>
+		<property name="commerceCartService" ref="commerceCartService"/>
 	</bean>
 
 	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
