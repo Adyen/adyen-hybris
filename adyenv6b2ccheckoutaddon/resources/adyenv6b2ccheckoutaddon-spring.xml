@@ -107,6 +107,7 @@
 		<property name="adyenOrderService" ref="adyenOrderService"/>
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
 		<property name="modelService" ref="modelService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
 	</bean>
 
 	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
