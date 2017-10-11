@@ -25,7 +25,6 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -33,6 +32,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
@@ -343,9 +343,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         hppFormData.put(BRAND_CODE, cartData.getAdyenPaymentMethod());
         hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
         hppFormData.put(COUNTRY_CODE, countryCode);
-        hppFormData.put(SHOPPER_LOCALE, getShopperLocale());
         hppFormData.put(RES_URL, redirectUrl);
         hppFormData.put(DF_VALUE, cartData.getAdyenDfValue());
+
+        if (! StringUtils.isEmpty(getShopperLocale())) {
+            hppFormData.put(SHOPPER_LOCALE, getShopperLocale());
+        }
 
         String dataToSign = getHmacValidator().getDataToSign(hppFormData);
         String merchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
@@ -572,11 +575,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private String getShopperLocale() {
-        if(commonI18NService.getCurrentLanguage() != null) {
+        if (commonI18NService.getCurrentLanguage() != null) {
             return commonI18NService.getCurrentLanguage().getIsocode();
         }
 
-        return Locale.ENGLISH.getISO3Language();
+        return null;
     }
 
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {

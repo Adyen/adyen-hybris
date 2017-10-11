@@ -196,7 +196,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode) throws HTTPClientException, SignatureException, IOException {
-        return getPaymentMethods(amount, currency, countryCode, Locale.ENGLISH.getISO3Language());
+        return getPaymentMethods(amount, currency, countryCode, null);
     }
 
     @Override

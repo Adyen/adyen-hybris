@@ -152,11 +152,16 @@ public class AdyenRequestFactory {
     public DirectoryLookupRequest createListPaymentMethodsRequest(final BigDecimal amount, final String currency, final String countryCode, final String shopperLocale) {
         Amount amountData = Util.createAmount(amount, currency);
 
-        return new DirectoryLookupRequest().setCountryCode(countryCode)
-                                           .setMerchantReference("GetPaymentMethods")
-                                           .setPaymentAmount(String.valueOf(amountData.getValue()))
-                                           .setCurrencyCode(amountData.getCurrency())
-                                           .setShopperLocale(shopperLocale);
+        DirectoryLookupRequest directoryLookupRequest = new DirectoryLookupRequest().setCountryCode(countryCode)
+                                                                                    .setMerchantReference("GetPaymentMethods")
+                                                                                    .setPaymentAmount(String.valueOf(amountData.getValue()))
+                                                                                    .setCurrencyCode(amountData.getCurrency());
+
+        if (! StringUtils.isEmpty(shopperLocale)) {
+            directoryLookupRequest.setShopperLocale(shopperLocale);
+        }
+
+        return directoryLookupRequest;
     }
 
     public RecurringDetailsRequest createListRecurringDetailsRequest(final String merchantAccount, final String customerId) {
