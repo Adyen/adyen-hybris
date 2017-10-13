@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
@@ -70,6 +71,7 @@ import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
@@ -86,6 +88,7 @@ import static com.adyen.constants.HPPConstants.Fields.RES_URL;
 import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
 import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
 import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
+import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
@@ -107,6 +110,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private HMACValidator hmacValidator;
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
+    private CommonI18NService commonI18NService;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -342,6 +346,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         hppFormData.put(RES_URL, redirectUrl);
         hppFormData.put(DF_VALUE, cartData.getAdyenDfValue());
 
+        if (! StringUtils.isEmpty(getShopperLocale())) {
+            hppFormData.put(SHOPPER_LOCALE, getShopperLocale());
+        }
+
         String dataToSign = getHmacValidator().getDataToSign(hppFormData);
         String merchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
 
@@ -397,7 +405,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         try {
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
                                                                               cartData.getTotalPrice().getCurrencyIso(),
-                                                                              cartData.getDeliveryAddress().getCountry().getIsocode());
+                                                                              cartData.getDeliveryAddress().getCountry().getIsocode(),
+                                                                              getShopperLocale());
 
             //Exclude cards and boleto
             alternativePaymentMethods = alternativePaymentMethods.stream()
@@ -565,6 +574,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         modelService.save(cartModel);
     }
 
+    private String getShopperLocale() {
+        if (commonI18NService.getCurrentLanguage() != null) {
+            return commonI18NService.getCurrentLanguage().getIsocode();
+        }
+
+        return null;
+    }
+
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {
         return cartModel.getCode() + "_" + UUID.randomUUID();
     }
@@ -667,5 +684,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setModelService(ModelService modelService) {
         this.modelService = modelService;
+    }
+
+    public CommonI18NService getCommonI18NService() {
+        return commonI18NService;
+    }
+
+    public void setCommonI18NService(CommonI18NService commonI18NService) {
+        this.commonI18NService = commonI18NService;
     }
 }

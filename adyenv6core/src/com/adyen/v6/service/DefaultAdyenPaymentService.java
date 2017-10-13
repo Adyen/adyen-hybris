@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -177,20 +178,25 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode) throws HTTPClientException, SignatureException, IOException {
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode, final String shopperLocale) throws HTTPClientException, SignatureException, IOException {
         if (client.getConfig().getSkinCode() == null || client.getConfig().getSkinCode().isEmpty()) {
             return new ArrayList<>();
         }
 
         HostedPaymentPages hostedPaymentPages = new HostedPaymentPages(client);
 
-        DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory().createListPaymentMethodsRequest(amount, currency, countryCode);
+        DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory().createListPaymentMethodsRequest(amount, currency, countryCode, shopperLocale);
 
         LOG.debug(directoryLookupRequest);
         List<PaymentMethod> paymentMethods = hostedPaymentPages.getPaymentMethods(directoryLookupRequest);
         LOG.debug(paymentMethods);
 
         return paymentMethods;
+    }
+
+    @Override
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode) throws HTTPClientException, SignatureException, IOException {
+        return getPaymentMethods(amount, currency, countryCode, null);
     }
 
     @Override
