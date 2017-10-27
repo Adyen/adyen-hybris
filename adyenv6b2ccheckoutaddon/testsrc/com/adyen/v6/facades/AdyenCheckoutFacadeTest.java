@@ -51,10 +51,12 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.core.model.c2l.LanguageModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -110,6 +112,9 @@ public class AdyenCheckoutFacadeTest {
     @Mock
     private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
 
+    @Mock
+    private CommonI18NService commonI18NServiceMock;
+
     @InjectMocks
     private DefaultAdyenCheckoutFacade adyenCheckoutFacade;
 
@@ -145,6 +150,11 @@ public class AdyenCheckoutFacadeTest {
         when(paymentResultMock.getMd()).thenReturn("md");
 
         when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
+
+        LanguageModel languageModel = new LanguageModel();
+        languageModel.setIsocode("en");
+
+        when(commonI18NServiceMock.getCurrentLanguage()).thenReturn(languageModel);
     }
 
     @Test
@@ -207,6 +217,25 @@ public class AdyenCheckoutFacadeTest {
         when(requestMock.getParameter(HPPConstants.Response.SHOPPER_LOCALE)).thenReturn("shopperLocale");
         when(requestMock.getParameter(HPPConstants.Response.SKIN_CODE)).thenReturn("skinCode");
         when(requestMock.getParameter(HPPConstants.Response.MERCHANT_SIG)).thenReturn("merchantSig");
+
+        when(requestMock.getQueryString()).thenReturn(HPPConstants.Response.AUTH_RESULT
+                                                              + "="
+                                                              + HPPConstants.Response.AUTH_RESULT_AUTHORISED
+                                                              + "&"
+                                                              + HPPConstants.Response.PAYMENT_METHOD
+                                                              + "=code"
+                                                              + "&"
+                                                              + HPPConstants.Response.PSP_REFERENCE
+                                                              + "=paymentMethod"
+                                                              + "&"
+                                                              + HPPConstants.Response.SHOPPER_LOCALE
+                                                              + "=pspReference"
+                                                              + "&"
+                                                              + HPPConstants.Response.SKIN_CODE
+                                                              + "=skinCode"
+                                                              + "&"
+                                                              + HPPConstants.Response.MERCHANT_SIG
+                                                              + "=merchantSig");
 
         OrderData existingOrderDataMock = mock(OrderData.class);
         when(orderFacadeMock.getOrderDetailsForCode("code")).thenReturn(existingOrderDataMock);

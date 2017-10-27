@@ -143,7 +143,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String dataToSign = getHmacValidator().getDataToSign(hppResponseData);
         String calculatedMerchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
-        LOGGER.debug("Calculated signature: " + calculatedMerchantSig);
+        LOGGER.debug("Calculated signature: " + calculatedMerchantSig + " from data: " + dataToSign);
         if (! calculatedMerchantSig.equals(merchantSig)) {
             LOGGER.error("Signature does not match!");
             throw new SignatureException("Signatures doesn't match");
@@ -152,11 +152,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public void validateHPPResponse(final HttpServletRequest request) throws SignatureException {
-        SortedMap<String, String> hppResponseData = new TreeMap<>();
-        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-            String value = entry.getValue()[0];
-            hppResponseData.put(entry.getKey(), value);
-        }
+        SortedMap<String, String> hppResponseData = getQueryParameters(request);
 
         LOGGER.debug("Received HPP response: " + hppResponseData);
 
@@ -580,6 +576,32 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         return null;
+    }
+
+    /**
+     * Helper function for retrieving only GET parameters (of querystring)
+     *
+     * @param request HttpServletRequest request object
+     * @return Sorted map with parameters
+     */
+    private static SortedMap<String, String> getQueryParameters(HttpServletRequest request) {
+        SortedMap<String, String> queryParameters = new TreeMap<>();
+        String queryString = request.getQueryString();
+
+        if (StringUtils.isEmpty(queryString)) {
+            return queryParameters;
+        }
+
+        String[] parameters = queryString.split("&");
+
+        for (String parameter : parameters) {
+            String[] keyValuePair = parameter.split("=");
+            String key = keyValuePair[0];
+            String value = request.getParameter(key);
+            queryParameters.put(key, value);
+        }
+
+        return queryParameters;
     }
 
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {
