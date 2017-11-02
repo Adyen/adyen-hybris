@@ -73,8 +73,12 @@
         </itemtype>
 
         <itemtype code="NotificationItem" generate="true" autocreate="true">
-            <deployment table="AdyenNotificationItem" typecode="19030"/>
+            <deployment table="AdyenNotificationItem" typecode="23936"/>
             <attributes>
+                <attribute qualifier="uuid" type="java.lang.String">
+                    <persistence type="property"/>
+                    <modifiers optional="false" initial="true" unique="true"/>
+                </attribute>
                 <attribute qualifier="amountValue" type="java.math.BigDecimal">
                     <persistence type="property"/>
                 </attribute>
@@ -104,6 +108,8 @@
                 </attribute>
                 <attribute qualifier="success" type="java.lang.Boolean">
                     <persistence type="property"/>
+                    <defaultvalue>java.lang.Boolean.FALSE</defaultvalue>
+                    <modifiers optional="false"/>
                 </attribute>
                 <attribute qualifier="paymentMethod" type="java.lang.String">
                     <persistence type="property"/>
@@ -132,8 +138,11 @@
                 </attribute>
             </attributes>
             <indexes>
-                <index name="PspReference">
+                <index name="pspReferenceIdx">
                     <key attribute="pspReference"/>
+                </index>
+                <index name="uuidIdx" unique="true">
+                    <key attribute="uuid"/>
                 </index>
             </indexes>
         </itemtype>
