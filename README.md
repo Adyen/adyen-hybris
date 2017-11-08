@@ -1,6 +1,6 @@
 # Adyen Hybris v6 plugin
 
-This plugin supports Hybris versions 6.0 to 6.3
+This plugin supports Hybris versions 6.x
 
 ## Installation
 
