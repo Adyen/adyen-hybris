@@ -96,7 +96,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
-        config.setApplicationName("Hybris v6.0");
+        config.setApplicationName("Adyen Hybris v3.2.0");
         config.setEndpoint(apiEndpoint);
         config.setHppEndpoint(HPP_LIVE);
 
