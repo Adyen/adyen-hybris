@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~                        ######
+  ~                        ######
+  ~  ############    ####( ######  #####. ######  ############   ############
+  ~  #############  #####( ######  #####. ######  #############  #############
+  ~         ######  #####( ######  #####. ######  #####  ######  #####  ######
+  ~  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+  ~  ###### ######  #####( ######  #####. ######  #####          #####  ######
+  ~  #############  #############  #############  #############  #####  ######
+  ~   ############   ############  #############   ############  #####  ######
+  ~                                       ######
+  ~                                #############
+  ~                                ############
+  ~
+  ~  Adyen Hybris Extension
+  ~
+  ~  Copyright (c) 2017 Adyen B.V.
+  ~  This file is open source and available under the MIT license.
+  ~  See the LICENSE file for more info.
+  -->
+<project name="adyenv6ordermanagement_buildcallbacks">
+	<macrodef name="adyenv6ordermanagement_before_build">
+		<sequential>
+			<if>
+				<or>
+					<contains string="V${hybris.build.version}" substring="V6.4" />
+					<contains string="V${hybris.build.version}" substring="V6.3" />
+					<contains string="V${hybris.build.version}" substring="V6.2" />
+					<contains string="V${hybris.build.version}" substring="V6.1" />
+					<contains string="V${hybris.build.version}" substring="V6.0" />
+				</or>
+				<then>
+					<echo level="info" message="Using order-process.xml for Hybris 6.4 and lower" />
+				</then>
+				<else>
+					<echo level="info" message="Using DynamicProcessDefinition for Hybris 6.5 and greater" />
+					<copy file="${ext.adyenv6ordermanagement.path}/resources/impex/projectdata-dynamic-business-process-order.impex.6.5.dist"
+						  tofile="${ext.adyenv6ordermanagement.path}/resources/impex/projectdata-dynamic-business-process-order.impex" />
+					<copy file="${ext.adyenv6ordermanagement.path}/resources/impex/projectdata-dynamic-business-return-order.impex.6.5.dist"
+						  tofile="${ext.adyenv6ordermanagement.path}/resources/impex/projectdata-dynamic-business-return-order.impex" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+	<macrodef name="adyenv6ordermanagement_after_build">
+		<sequential>
+			<if>
+				<or>
+					<contains string="V${hybris.build.version}" substring="V6.3" />
+					<contains string="V${hybris.build.version}" substring="V6.2" />
+					<contains string="V${hybris.build.version}" substring="V6.1" />
+					<contains string="V${hybris.build.version}" substring="V6.0" />
+				</or>
+				<then>
+					<echo level="info" message="Using order-process.6.0.xml for Hybris 6.3 and lower" />
+					<copy file="${ext.adyenv6ordermanagement.path}/resources/adyenv6ordermanagement/process/order-process.6.0.xml"
+						  tofile="${ext.adyenv6ordermanagement.path}/resources/adyenv6ordermanagement/process/order-process.xml" />
+				</then>
+				<elseif>
+					<contains string="V${hybris.build.version}" substring="V6.4" />
+					<then>
+						<echo level="info" message="Using order-process.6.4.xml for Hybris 6.4" />
+						<copy file="${ext.adyenv6ordermanagement.path}/resources/adyenv6ordermanagement/process/order-process.6.4.xml"
+							  tofile="${ext.adyenv6ordermanagement.path}/resources/adyenv6ordermanagement/process/order-process.xml" />
+					</then>
+				</elseif>
+			</if>
+		</sequential>
+	</macrodef>
+</project>

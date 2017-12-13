@@ -21,6 +21,7 @@
 package com.adyen.v6.service;
 
 import java.util.Date;
+import java.util.UUID;
 import org.apache.log4j.Logger;
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
@@ -68,6 +69,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             notificationItemModel.setAmountValue(notificationRequestItem.getAmount().getDecimalValue());
         }
 
+        notificationItemModel.setUuid(UUID.randomUUID().toString());
         notificationItemModel.setEventCode(notificationRequestItem.getEventCode());
         notificationItemModel.setEventDate(notificationRequestItem.getEventDate());
         notificationItemModel.setMerchantAccountCode(notificationRequestItem.getMerchantAccountCode());

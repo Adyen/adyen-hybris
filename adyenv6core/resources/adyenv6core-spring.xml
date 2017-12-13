@@ -124,8 +124,13 @@
         </property>
     </bean>
 
-
     <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory" />
+
+    <alias name="defaultAdyenAddressDataFactory" alias="adyenAddressDataFactory"/>
+    <bean id="defaultAdyenAddressDataFactory" class="com.adyen.v6.factory.DefaultAdyenAddressDataFactory">
+        <property name="modelService" ref="modelService" />
+        <property name="commonI18NService" ref="commonI18NService" />
+    </bean>
 
     <alias name="defaultAdyenNotificationService" alias="adyenNotificationService"/>
     <bean id="defaultAdyenNotificationService" class="com.adyen.v6.service.DefaultAdyenNotificationService">

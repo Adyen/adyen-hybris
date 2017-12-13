@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -42,7 +43,7 @@ import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.hpp.PaymentMethod;
-import com.adyen.model.modification.CancelRequest;
+import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
@@ -70,6 +71,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
 
+    /**
+     * Prevent initialization without base store
+     */
     private DefaultAdyenPaymentService() {
     }
 
@@ -92,7 +96,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
-        config.setApplicationName("Hybris v6.0");
+        config.setApplicationName("Adyen Hybris v3.2.0");
         config.setEndpoint(apiEndpoint);
         config.setHppEndpoint(HPP_LIVE);
 
@@ -151,7 +155,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
         Modification modification = new Modification(client);
 
-        CancelRequest cancelRequest = getAdyenRequestFactory().createCancelRequest(client.getConfig().getMerchantAccount(), authReference, merchantReference);
+        CancelOrRefundRequest cancelRequest = getAdyenRequestFactory().createCancelOrRefundRequest(client.getConfig().getMerchantAccount(), authReference, merchantReference);
 
         LOG.debug(cancelRequest);
         ModificationResult modificationResult = modification.cancelOrRefund(cancelRequest);
@@ -174,14 +178,14 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode) throws HTTPClientException, SignatureException, IOException {
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode, final String shopperLocale) throws HTTPClientException, SignatureException, IOException {
         if (client.getConfig().getSkinCode() == null || client.getConfig().getSkinCode().isEmpty()) {
             return new ArrayList<>();
         }
 
         HostedPaymentPages hostedPaymentPages = new HostedPaymentPages(client);
 
-        DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory().createListPaymentMethodsRequest(amount, currency, countryCode);
+        DirectoryLookupRequest directoryLookupRequest = getAdyenRequestFactory().createListPaymentMethodsRequest(amount, currency, countryCode, shopperLocale);
 
         LOG.debug(directoryLookupRequest);
         List<PaymentMethod> paymentMethods = hostedPaymentPages.getPaymentMethods(directoryLookupRequest);
@@ -191,9 +195,14 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode) throws HTTPClientException, SignatureException, IOException {
+        return getPaymentMethods(amount, currency, countryCode, null);
+    }
+
+    @Override
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
         if (customerId == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);

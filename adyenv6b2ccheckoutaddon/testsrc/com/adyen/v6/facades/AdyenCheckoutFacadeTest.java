@@ -51,10 +51,12 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.core.model.c2l.LanguageModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -110,6 +112,9 @@ public class AdyenCheckoutFacadeTest {
     @Mock
     private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
 
+    @Mock
+    private CommonI18NService commonI18NServiceMock;
+
     @InjectMocks
     private DefaultAdyenCheckoutFacade adyenCheckoutFacade;
 
@@ -123,6 +128,7 @@ public class AdyenCheckoutFacadeTest {
         cartModelMock = mock(CartModel.class);
         OrderData orderDataMock = mock(OrderData.class);
         paymentResultMock = mock(PaymentResult.class);
+        CartData cartDataMock = mock(CartData.class);
 
         when(baseStoreModelMock.getAdyenSkinHMAC()).thenReturn("hmacKey");
         when(baseStoreModelMock.getAdyenMerchantAccount()).thenReturn("merchantAccount");
@@ -137,10 +143,18 @@ public class AdyenCheckoutFacadeTest {
         when(orderDataMock.getCode()).thenReturn("code");
         when(checkoutFacadeMock.placeOrder()).thenReturn(orderDataMock);
 
+        when(cartDataMock.getCode()).thenReturn("code");
+        when(checkoutFacadeMock.getCheckoutCart()).thenReturn(cartDataMock);
+
         when(paymentResultMock.getPspReference()).thenReturn("pspRef");
         when(paymentResultMock.getMd()).thenReturn("md");
 
         when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
+
+        LanguageModel languageModel = new LanguageModel();
+        languageModel.setIsocode("en");
+
+        when(commonI18NServiceMock.getCurrentLanguage()).thenReturn(languageModel);
     }
 
     @Test
@@ -149,18 +163,36 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.restoreSessionCart();
             fail("Expecting exception");
-        } catch (InvalidCartException e) {
+        } catch (InvalidCartException ignored) {
         }
 
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
         adyenCheckoutFacade.restoreSessionCart();
 
         verify(cartServiceMock).setSessionCart(cartModelMock);
+        verify(sessionServiceMock).removeAttribute(SESSION_LOCKED_CART);
+    }
+
+    @Test
+    public void testLockSessionCart() throws InvalidCartException {
+        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
+        try {
+            adyenCheckoutFacade.lockSessionCart();
+            fail("Expecting exception");
+        } catch (InvalidCartException ignored) {
+        }
+
+        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(null);
+
+        adyenCheckoutFacade.lockSessionCart();
+
+        verify(sessionServiceMock).setAttribute(SESSION_LOCKED_CART, cartModelMock);
+        verify(sessionServiceMock).removeAttribute(SESSION_CART_PARAMETER_NAME);
     }
 
     @Test
     public void testValidateHPPResponse() throws NoSuchAlgorithmException, SignatureException {
-        SortedMap<String, String> hppResponseData = new TreeMap<String, String>();
+        SortedMap<String, String> hppResponseData = new TreeMap<>();
 
         adyenCheckoutFacade.validateHPPResponse(hppResponseData, "merchantSig");
 
@@ -168,7 +200,7 @@ public class AdyenCheckoutFacadeTest {
             adyenCheckoutFacade.validateHPPResponse(hppResponseData, "wrongMerchantSig");
 
             fail("Expected exception!");
-        } catch (SignatureException e) {
+        } catch (SignatureException ignored) {
         }
     }
 
@@ -179,15 +211,34 @@ public class AdyenCheckoutFacadeTest {
 
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         when(requestMock.getParameter(HPPConstants.Response.AUTH_RESULT)).thenReturn(HPPConstants.Response.AUTH_RESULT_AUTHORISED);
-        when(requestMock.getParameter(HPPConstants.Response.MERCHANT_REFERENCE)).thenReturn("merchantReference");
+        when(requestMock.getParameter(HPPConstants.Response.MERCHANT_REFERENCE)).thenReturn("code");
         when(requestMock.getParameter(HPPConstants.Response.PAYMENT_METHOD)).thenReturn("paymentMethod");
         when(requestMock.getParameter(HPPConstants.Response.PSP_REFERENCE)).thenReturn("pspReference");
         when(requestMock.getParameter(HPPConstants.Response.SHOPPER_LOCALE)).thenReturn("shopperLocale");
         when(requestMock.getParameter(HPPConstants.Response.SKIN_CODE)).thenReturn("skinCode");
         when(requestMock.getParameter(HPPConstants.Response.MERCHANT_SIG)).thenReturn("merchantSig");
 
+        when(requestMock.getQueryString()).thenReturn(HPPConstants.Response.AUTH_RESULT
+                                                              + "="
+                                                              + HPPConstants.Response.AUTH_RESULT_AUTHORISED
+                                                              + "&"
+                                                              + HPPConstants.Response.PAYMENT_METHOD
+                                                              + "=code"
+                                                              + "&"
+                                                              + HPPConstants.Response.PSP_REFERENCE
+                                                              + "=paymentMethod"
+                                                              + "&"
+                                                              + HPPConstants.Response.SHOPPER_LOCALE
+                                                              + "=pspReference"
+                                                              + "&"
+                                                              + HPPConstants.Response.SKIN_CODE
+                                                              + "=skinCode"
+                                                              + "&"
+                                                              + HPPConstants.Response.MERCHANT_SIG
+                                                              + "=merchantSig");
+
         OrderData existingOrderDataMock = mock(OrderData.class);
-        when(orderFacadeMock.getOrderDetailsForCode("merchantReference")).thenReturn(existingOrderDataMock);
+        when(orderFacadeMock.getOrderDetailsForCode("code")).thenReturn(existingOrderDataMock);
 
         OrderData newOrderDataMock = mock(OrderData.class);
 
@@ -297,13 +348,22 @@ public class AdyenCheckoutFacadeTest {
             adyenCheckoutFacade.handle3DResponse(requestMock);
             //throw SignatureException
             fail("Expecting exception");
-        } catch (SignatureException e) {
+        } catch (SignatureException ignored) {
         }
     }
 
     @Test
-    public void testInitializeHostedPayment() throws SignatureException {
-        CartData cartDataMock = mock(CartData.class);
+    public void testInitializeHostedPayment() throws SignatureException, InvalidCartException {
+        CartData cartData = createCartData();
+
+        Map<String, String> hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, "redirectUrl");
+
+        assertEquals("1234", hppFormData.get(PAYMENT_AMOUNT));
+        assertEquals("EUR", hppFormData.get(CURRENCY_CODE));
+    }
+
+    private CartData createCartData() {
+        CartData cartData = new CartData();
 
         PriceData priceData = new PriceData();
         priceData.setValue(new BigDecimal("12.34"));
@@ -312,14 +372,11 @@ public class AdyenCheckoutFacadeTest {
         AddressData deliveryAddress = new AddressData();
         deliveryAddress.setCountry(new CountryData());
 
-        when(cartDataMock.getTotalPrice()).thenReturn(priceData);
-        when(cartDataMock.getCode()).thenReturn("code");
-        when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddress);
+        cartData.setTotalPrice(priceData);
+        cartData.setCode("code");
+        cartData.setDeliveryAddress(deliveryAddress);
 
-        Map<String, String> hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartDataMock, "redirectUrl");
-
-        assertEquals("1234", hppFormData.get(PAYMENT_AMOUNT));
-        assertEquals("EUR", hppFormData.get(CURRENCY_CODE));
+        return cartData;
     }
 
     private void verifyAuthorized(OrderModel orderModelMock) throws InvalidCartException {

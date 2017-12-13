@@ -1,0 +1,120 @@
+#                        ######
+#                        ######
+#  ############    ####( ######  #####. ######  ############   ############
+#  #############  #####( ######  #####. ######  #############  #############
+#         ######  #####( ######  #####. ######  #####  ######  #####  ######
+#  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
+#  ###### ######  #####( ######  #####. ######  #####          #####  ######
+#  #############  #############  #############  #############  #####  ######
+#   ############   ############  #############   ############  #####  ######
+#                                       ######
+#                                #############
+#                                ############
+#
+#  Adyen Hybris Extension
+#
+#  Copyright (c) 2017 Adyen B.V.
+#  This file is open source and available under the MIT license.
+#  See the LICENSE file for more info.
+
+INSERT_UPDATE DynamicProcessDefinition;code[unique=true];active[unique=true];content
+;adyen-return-process;true;"<process xmlns='http://www.hybris.de/xsd/processdefinition' start='initialReturnAction'
+name='adyen-return-process' processClass='de.hybris.platform.returns.model.ReturnProcessModel'>
+
+<action id='initialReturnAction' bean='initialReturnAction'>
+   <transition name='ONLINE' to='waitForConfirmOrCancelReturnAction'/>
+   <transition name='INSTORE' to='captureRefundAction'/>
+</action>
+
+<wait id='waitForConfirmOrCancelReturnAction' prependProcessCode='true' then='failed'>
+   <case event='ConfirmOrCancelRefundEvent'>
+       <choice id='cancelReturn' then='cancelReturnAction'/>
+       <choice id='approveReturn' then='approveReturnAction'/>
+   </case>
+</wait>
+
+<action id='cancelReturnAction' bean='cancelReturnAction'>
+   <transition name='OK' to='success'/>
+</action>
+
+<action id='approveReturnAction' bean='approveReturnAction'>
+   <transition name='OK' to='printReturnLabelAction'/>
+</action>
+
+<action id='printReturnLabelAction' bean='printReturnLabelAction'>
+   <transition name='OK' to='printPackingLabelAction'/>
+</action>
+
+<action id='printPackingLabelAction' bean='printPackingLabelAction'>
+   <transition name='OK' to='waitForGoodsAction'/>
+</action>
+
+<wait id='waitForGoodsAction' prependProcessCode='true' then='failed'>
+   <case event='ApproveOrCancelGoodsEvent'>
+       <choice id='cancelReturn' then='cancelReturnAction'/>
+       <choice id='acceptGoods' then='acceptGoodsAction'/>
+   </case>
+</wait>
+
+<action id='acceptGoodsAction' bean='acceptGoodsAction'>
+   <transition name='OK' to='captureRefundAction'/>
+</action>
+
+<action id='captureRefundAction' bean='captureRefundAction'>
+   <transition name='OK' to='adyenCaptureRefundAction'/>
+   <transition name='NOK' to='waitForFailCaptureAction'/>
+</action>
+
+<!--Refund action for Adyen payments-->
+<action id='adyenCaptureRefundAction' bean='adyenCaptureRefundAction'>
+   <transition name='OK' to='successCaptureAction'/>
+   <transition name='WAIT' to='waitForAdyenRefunded'/>
+   <transition name='NOK' to='waitForFailCaptureAction'/>
+</action>
+
+<!--Wait for refund notification-->
+<wait id='waitForAdyenRefunded' then='adyenCaptureRefundAction' prependProcessCode='true'>
+   <event>AdyenRefunded</event>
+</wait>
+
+<wait id='waitForFailCaptureAction' prependProcessCode='true' then='failed'>
+   <case event='FailCaptureActionEvent'>
+       <choice id='bypassCapture' then='taxReverseAction'/>
+       <choice id='cancelReturn' then='cancelReturnAction'/>
+   </case>
+</wait>
+
+<action id='successCaptureAction' bean='successCaptureAction'>
+   <transition name='OK' to='taxReverseAction'/>
+</action>
+
+<action id='taxReverseAction' bean='taxReverseAction'>
+   <transition name='OK' to='successTaxReverseAction'/>
+   <transition name='NOK' to='waitForFailTaxReverseAction'/>
+</action>
+
+<wait id='waitForFailTaxReverseAction' then='inventoryUpdateAction' prependProcessCode='true'>
+   <event>FailTaxReverseEvent</event>
+</wait>
+
+<action id='successTaxReverseAction' bean='successTaxReverseAction'>
+   <transition name='OK' to='inventoryUpdateAction'/>
+</action>
+
+<action id='inventoryUpdateAction' bean='inventoryUpdateAction'>
+   <transition name='OK' to='completeReturnAction'/>
+</action>
+
+<action id='completeReturnAction' bean='completeReturnAction'>
+   <transition name='OK' to='success'/>
+</action>
+
+<end id='failed' state='FAILED'>Return issue detected.</end>
+<end id='success' state='SUCCEEDED'>Return process ended as expected.</end>
+</process>"
+
+$storeUid=electronics
+$orderReturnCode=adyen-return-process
+
+UPDATE BaseStore;uid[unique=true];createReturnProcessCode
+;$storeUid;$orderReturnCode

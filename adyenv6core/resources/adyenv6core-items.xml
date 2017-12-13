@@ -73,8 +73,12 @@
         </itemtype>
 
         <itemtype code="NotificationItem" generate="true" autocreate="true">
-            <deployment table="AdyenNotificationItem" typecode="19030"/>
+            <deployment table="AdyenNotificationItem" typecode="23936"/>
             <attributes>
+                <attribute qualifier="uuid" type="java.lang.String">
+                    <persistence type="property"/>
+                    <modifiers optional="false" initial="true" unique="true"/>
+                </attribute>
                 <attribute qualifier="amountValue" type="java.math.BigDecimal">
                     <persistence type="property"/>
                 </attribute>
@@ -104,6 +108,8 @@
                 </attribute>
                 <attribute qualifier="success" type="java.lang.Boolean">
                     <persistence type="property"/>
+                    <defaultvalue>java.lang.Boolean.FALSE</defaultvalue>
+                    <modifiers optional="false"/>
                 </attribute>
                 <attribute qualifier="paymentMethod" type="java.lang.String">
                     <persistence type="property"/>
@@ -132,8 +138,11 @@
                 </attribute>
             </attributes>
             <indexes>
-                <index name="PspReference">
+                <index name="pspReferenceIdx">
                     <key attribute="pspReference"/>
+                </index>
+                <index name="uuidIdx" unique="true">
+                    <key attribute="uuid"/>
                 </index>
             </indexes>
         </itemtype>
@@ -217,60 +226,89 @@
             <description>Extending PaymentInfo type with Adyen properties.</description>
             <attributes>
                 <attribute qualifier="adyenPaymentMethod" type="java.lang.String">
+                    <description>Payment method</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenIssuerId" type="java.lang.String">
+                    <description>Issuer identifier (e.g. iDeal bank)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenAvsResult" type="java.lang.String">
+                    <description>AVS check result code</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenCardBin" type="java.lang.String">
+                    <description>Credit Card BIN (first 4 to 6 digits)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenCardSummary" type="java.lang.String">
+                    <description>Credit Card last digits</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenAuthCode" type="java.lang.String">
+                    <description>Credit Card payment auth code</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenCardHolder" type="java.lang.String">
+                    <description>Credit Card holder name</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenCardExpiry" type="java.util.Date">
+                    <description>Credit Card expiration date</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenThreeDOffered" type="java.lang.boolean">
+                    <description>Whether 3D secure was offered or not</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenThreeDAuthenticated" type="java.lang.boolean">
+                    <description>Whether 3D secure was authenticated or not</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenRememberTheseDetails" type="java.lang.Boolean">
+                    <description>Whether shopper selected to remember his payment details</description>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenSelectedReference" type="java.lang.String">
+                    <description>Shopper's selected recurring contract reference</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenDob" type="java.util.Date">
+                    <description>Shopper's date of birth</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenSocialSecurityNumber" type="java.lang.String">
+                    <description>Shopper's social security number (applicable for openinvoice methods)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenFirstName" type="java.lang.String">
+                    <description>Shopper's first name (applicable for Boleto)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenLastName" type="java.lang.String">
+                    <description>Shopper's last name (applicable for Boleto)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenBoletoUrl" type="java.lang.String">
+                    <description>Boleto pdf URL</description>
                     <persistence type="property">
                         <columntype>
                             <value>HYBRIS.LONG_STRING</value>
                         </columntype>
                     </persistence>
+                </attribute>
+                <attribute qualifier="adyenPaypalEcsToken" type="java.lang.String">
+                    <description>Paypal ECS payment token</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenPaypalPayerId" type="java.lang.String">
+                    <description>Paypal ECS payer ID</description>
+                    <persistence type="property"/>
                 </attribute>
             </attributes>
         </itemtype>
