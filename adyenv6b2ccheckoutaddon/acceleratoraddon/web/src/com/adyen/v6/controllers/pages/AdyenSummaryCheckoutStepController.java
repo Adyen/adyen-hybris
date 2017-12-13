@@ -64,6 +64,7 @@ import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.site.BaseSiteService;
+import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -172,7 +173,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
             } catch (Exception e) {
-                LOGGER.error(e);
+                LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
         } else {
             //Handle APM
@@ -245,7 +246,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.error");
             }
         } catch (SignatureException e) {
-            LOGGER.error(e);
+            LOGGER.error("SignatureException: " + e);
         }
 
         LOGGER.debug("Redirecting to cart..");
@@ -276,6 +277,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         apiPaymentMethods.add(PAYMENT_METHOD_CC);
         apiPaymentMethods.add(PAYMENT_METHOD_BOLETO);
+        apiPaymentMethods.add(PAYPAL_ECS);
         apiPaymentMethods.addAll(OPENINVOICE_METHODS_API);
 
         return (paymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0 || apiPaymentMethods.contains(paymentMethod));

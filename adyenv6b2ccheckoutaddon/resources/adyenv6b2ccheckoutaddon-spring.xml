@@ -107,5 +107,17 @@
 		<property name="adyenOrderService" ref="adyenOrderService"/>
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
 		<property name="modelService" ref="modelService"/>
+		<property name="commonI18NService" ref="commonI18NService"/>
+	</bean>
+
+	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
+	<bean id="defaultAdyenPaypalFacade" class="com.adyen.v6.facades.DefaultAdyenPaypalFacade">
+		<property name="adyenAddressDataFactory" ref="adyenAddressDataFactory"/>
+		<property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
+		<property name="modelService" ref="modelService"/>
+		<property name="cartService" ref="cartService"/>
+		<property name="checkoutFacade" ref="checkoutFacade"/>
+		<property name="userFacade" ref="userFacade"/>
+		<property name="addressReverseConverter" ref="addressReverseConverter"/>
 	</bean>
 </beans>
