@@ -51,14 +51,6 @@
     <itemtypes>
         <itemtype code="Cart" autocreate="false" generate="false">
             <attributes>
-                <!-- Store CSE token -->
-                <attribute qualifier="adyenCseToken" type="java.lang.String">
-                    <persistence type="property">
-                        <columntype>
-                            <value>HYBRIS.LONG_STRING</value>
-                        </columntype>
-                    </persistence>
-                </attribute>
                 <attribute qualifier="adyenStoredCards" type="StringSet">
                     <persistence type="property"/>
                 </attribute>
