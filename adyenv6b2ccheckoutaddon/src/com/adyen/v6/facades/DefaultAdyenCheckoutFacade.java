@@ -116,6 +116,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_MD = "adyen_md";
+    public static final String SESSION_CSE_TOKEN = "adyen_cse_token";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
@@ -250,6 +251,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CustomerModel customer = null;
         if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        if (! StringUtils.isEmpty(getSessionService().getAttribute(SESSION_CSE_TOKEN))) {
+            cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
         }
 
         PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
@@ -560,8 +565,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
+        //Put CSE token to session
+        if (! StringUtils.isEmpty(adyenPaymentForm.getCseToken())) {
+            getSessionService().setAttribute(SESSION_CSE_TOKEN, adyenPaymentForm.getCseToken());
+        }
+
         //Update CartModel
-        cartModel.setAdyenCseToken(adyenPaymentForm.getCseToken());
         cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
 
         //Create payment info
