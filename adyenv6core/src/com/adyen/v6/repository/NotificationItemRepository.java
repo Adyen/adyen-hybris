@@ -39,8 +39,9 @@ public class NotificationItemRepository extends AbstractRepository {
         //Select the non-processed notifications
         final FlexibleSearchQuery selectNonProcessedNotificationsQuery = new FlexibleSearchQuery(
                 "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
-                        + " WHERE {" + NotificationItemModel.PROCESSEDAT + "} IS NULL ORDER BY {pk} ASC LIMIT 1000"
+                        + " WHERE {" + NotificationItemModel.PROCESSEDAT + "} IS NULL ORDER BY {pk} ASC"
         );
+        selectNonProcessedNotificationsQuery.setCount(1000);
         LOG.debug("Querying notification items");
         final List<NotificationItemModel> nonProcessedNotifications = flexibleSearchService
                 .search(selectNonProcessedNotificationsQuery)
