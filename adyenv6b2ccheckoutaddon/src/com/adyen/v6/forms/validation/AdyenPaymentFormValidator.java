@@ -21,6 +21,7 @@
 package com.adyen.v6.forms.validation;
 
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -47,8 +48,18 @@ public class AdyenPaymentFormValidator implements Validator {
         AdyenPaymentForm form = (AdyenPaymentForm) o;
 
         //Check CSE token in case of CC/OneClick
-        if (form.isCC() || form.isOneClick()) {
-            if (form.getCseToken() == null || form.getCseToken().isEmpty()) {
+        if (form.isCC()) {
+            if (StringUtils.isEmpty(form.getCseToken()) && (StringUtils.isEmpty(form.getEncryptedCardNumber())
+                    || StringUtils.isEmpty(form.getEncryptedExpiryMonth())
+                    || StringUtils.isEmpty(form.getEncryptedExpiryYear())
+                    || StringUtils.isEmpty(form.getEncryptedSecurityCode())
+                    || StringUtils.isEmpty(form.getCardHolder()))) {
+                errors.reject("checkout.error.paymentmethod.cse.missing");
+            }
+        }
+
+        if (form.isOneClick()) {
+            if (StringUtils.isEmpty(form.getCseToken()) && StringUtils.isEmpty(form.getEncryptedSecurityCode())) {
                 errors.reject("checkout.error.paymentmethod.cse.missing");
             }
         }

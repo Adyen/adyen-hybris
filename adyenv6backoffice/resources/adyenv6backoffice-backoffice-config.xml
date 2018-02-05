@@ -31,6 +31,7 @@
 					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
 					<editorArea:attribute qualifier="adyenUsername"/>
 					<editorArea:attribute qualifier="adyenPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenOriginKey"/>
 					<editorArea:attribute qualifier="adyenCSEID"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.hpp">
