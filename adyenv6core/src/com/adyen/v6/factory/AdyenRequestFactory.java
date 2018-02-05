@@ -77,6 +77,21 @@ public class AdyenRequestFactory {
         if (! StringUtils.isEmpty(cseToken)) {
             paymentRequest.setCSEToken(cseToken);
         }
+        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedCardNumber())) {
+            paymentRequest.setEncryptedCardNumber(cartData.getAdyenEncryptedCardNumber());
+        }
+        if (! StringUtils.isEmpty(cartData.getAdyenCardHolder())) {
+            paymentRequest.setCardHolder(cartData.getAdyenCardHolder());
+        }
+        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryMonth())) {
+            paymentRequest.setEncryptedExpiryMonth(cartData.getAdyenEncryptedExpiryMonth());
+        }
+        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryYear())) {
+            paymentRequest.setEncryptedExpiryYear(cartData.getAdyenEncryptedExpiryYear());
+        }
+        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedSecurityCode())) {
+            paymentRequest.setEncryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode());
+        }
 
         // set shopper details
         if (customerModel != null) {
@@ -302,10 +317,6 @@ public class AdyenRequestFactory {
 
     /**
      * Set the required fields for using the OpenInvoice API
-     *
-     * @param paymentRequest
-     * @param cartData
-     * @param customerModel
      */
     public void setOpenInvoiceData(PaymentRequest paymentRequest, CartData cartData, final CustomerModel customerModel) {
         // set date of birth
