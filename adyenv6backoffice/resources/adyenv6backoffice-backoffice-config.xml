@@ -26,6 +26,7 @@
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
 					<editorArea:attribute qualifier="adyenAllowedCards"/>
                     <editorArea:attribute qualifier="adyenRecurringContractMode"/>
+					<editorArea:attribute qualifier="adyenTestMode"/>
                 </editorArea:section>
 				<editorArea:section name="hmc.adyen.api">
 					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
@@ -37,7 +38,6 @@
 				<editorArea:section name="hmc.adyen.hpp">
 					<editorArea:attribute qualifier="adyenSkinCode"/>
 					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-					<editorArea:attribute qualifier="adyenHppTest"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.notifications">
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>

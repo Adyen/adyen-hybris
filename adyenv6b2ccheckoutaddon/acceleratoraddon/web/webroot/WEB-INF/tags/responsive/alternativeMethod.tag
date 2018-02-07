@@ -35,7 +35,7 @@
         <adyen:methodSelector name="${brandCode}"/>
         <span class="chckt-pm__name js-chckt-pm__name">${name}</span>
         <span class="chckt-pm__image">
-            <img width="40" src="https://checkoutshopper-test.adyen.com/checkoutshopper/img/pm/${brandCode}@2x.png" alt="">
+            <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/img/pm/${brandCode}@2x.png" alt="">
             <span class="chckt-pm__image-border"></span>
         </span>
     </div>
@@ -43,7 +43,6 @@
         <div class="chckt-form chckt-form--max-width">
             <c:if test="${not empty issuers}">
                 <label class="chckt-form-label chckt-form-label--full-width">
-                        <%--<span class="chckt-form-label__text">Bank:</span>--%>
                     <select class="chckt-select-box js-chckt-issuer-select-box" id="p_method_adyen_hpp_${brandCode}_issuer" name="${brandCode}Issuer">
                         <option value="" label="Please select Issuer"/>
                         <c:forEach items="${issuers}" var="issuer">

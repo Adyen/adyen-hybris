@@ -131,10 +131,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_CSE_URL = "cseUrl";
     public static final String MODEL_DF_URL = "dfUrl";
     public static final String MODEL_ORIGIN_KEY = "originKey";
+    public static final String MODEL_CHECKOUT_SHOPPER_HOST = "checkoutShopperHost";
     public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
     public static final String MODEL_SHOW_BOLETO = "showBoleto";
+    public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
+    public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
 
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -191,6 +194,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
         return baseStore.getAdyenOriginKey();
+    }
+
+    @Override
+    public String getCheckoutShopperHost() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        if(baseStore.getAdyenTestMode()) {
+            return CHECKOUT_SHOPPER_HOST_TEST;
+        }
+
+        return CHECKOUT_SHOPPER_HOST_LIVE;
     }
 
     @Override
@@ -479,6 +493,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CSE_URL, getCSEUrl());
         model.addAttribute(MODEL_ORIGIN_KEY, getOriginKey());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
 
         Set<String> recurringDetailReferences = new HashSet<>();
         if (storedCards != null) {
