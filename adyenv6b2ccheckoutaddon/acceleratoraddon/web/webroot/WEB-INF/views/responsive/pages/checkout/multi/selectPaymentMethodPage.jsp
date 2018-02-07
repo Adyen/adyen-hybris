@@ -17,8 +17,8 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://checkoutshopper-test.adyen.com/checkoutshopper/assets/js/sdk/checkoutSecuredFields.1.1.0.js"></script>
-        <link rel="stylesheet" href="https://checkoutshopper-test.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/assets/js/sdk/checkoutSecuredFields.1.1.0.js"></script>
+        <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
 
         <script type="text/javascript">
             <c:if test="${not empty allowedCards}">

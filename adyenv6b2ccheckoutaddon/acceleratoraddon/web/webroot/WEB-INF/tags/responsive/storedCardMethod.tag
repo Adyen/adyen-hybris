@@ -31,7 +31,7 @@
         <adyen:methodSelector name="adyen_oneclick_${cardReference}"/>
         <span class="chckt-pm__name js-chckt-pm__name">**** **** **** ${cardNumber}</span>
         <span class="chckt-pm__image">
-            <img width="40" src="https://checkoutshopper-test.adyen.com/checkoutshopper/img/pm/${variant}@2x.png" alt="">
+            <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/img/pm/${variant}@2x.png" alt="">
             <span class="chckt-pm__image-border"></span>
         </span>
     </div>

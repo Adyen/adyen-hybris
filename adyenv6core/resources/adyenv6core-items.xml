@@ -192,8 +192,8 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenHppTest" type="java.lang.boolean">
-                    <description>HPP Test mode</description>
+                <attribute qualifier="adyenTestMode" type="java.lang.boolean">
+                    <description>Adyen Test mode</description>
                     <persistence type="property"/>
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.TRUE</defaultvalue>
