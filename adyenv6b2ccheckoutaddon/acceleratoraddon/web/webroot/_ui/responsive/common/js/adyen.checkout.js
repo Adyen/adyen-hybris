@@ -198,14 +198,15 @@ var AdyenCheckout = (function () {
         },
 
         createSecuredFieldsForm: function ( originKey, rootNode ) {
+            var self = this;
             var securedFieldsConfiguration = {
                 configObject: {
-                    originKey: originKey
+                    originKey: originKey,
+                    cardGroupTypes: self.allowedCards
                 },
                 rootNode: rootNode
             };
 
-            var self = this;
             var securedFields = window.csf( securedFieldsConfiguration );
             securedFields.onBrand( function ( brandObject ) {
                 if ( brandObject.brand ) {

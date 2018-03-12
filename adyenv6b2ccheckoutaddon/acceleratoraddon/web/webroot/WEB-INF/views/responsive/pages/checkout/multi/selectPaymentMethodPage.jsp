@@ -28,9 +28,10 @@
             allowedCards.push( "${allowedCard.code}" );
             </c:forEach>
 
-            var securedFieldsForm = AdyenCheckout.createSecuredFieldsForm( "${originKey}", ".js-chckt-pm-list" );
             var cardLogosContainer = document.getElementById( 'cardLogos' );
             AdyenCheckout.enableCardTypeDetection( allowedCards, cardLogosContainer );
+
+            var securedFieldsForm = AdyenCheckout.createSecuredFieldsForm( "${originKey}", ".js-chckt-pm-list" );
             </c:if>
 
             //Handle form submission
