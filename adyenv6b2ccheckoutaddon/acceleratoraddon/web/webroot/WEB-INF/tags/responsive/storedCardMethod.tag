@@ -26,7 +26,7 @@
 
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 
-<div class="chckt-pm chckt-pm-${variant}_r@1 js-chckt-pm js-chckt-pm__pm-holder" data-additional-required="" data-pm="${variant}_r@1">
+<div class="chckt-pm chckt-pm-${variant}_r@1 js-chckt-pm js-chckt-pm__pm-holder" data-additional-required="" data-pm="${variant}_${cardReference}">
     <div class="chckt-pm__header js-chckt-pm__header">
         <adyen:methodSelector name="adyen_oneclick_${cardReference}"/>
         <span class="chckt-pm__name js-chckt-pm__name">**** **** **** ${cardNumber}</span>
@@ -39,7 +39,7 @@
     <div class="chckt-pm__details js-chckt-pm__details" id="dd_method_adyen_oneclick_${cardReference}">
         <div class="chckt-form chckt-form--max-width">
             <div class="chckt-pm__recurring-details">
-                <input type="hidden" name="txvariant" value="${variant}_r@1"/>
+                <input type="hidden" name="txvariant" value="${variant}_${cardReference}"/>
                 <label class="chckt-form-label chckt-form-label--exp-date">
                     <span class="chckt-form-label__text">Expiry Date:</span>
                     <span class="chckt-input-field chckt-input-field--recurring" data-cse="encryptedSecurityCode">${expiryMonth}/${expiryYear}</span>

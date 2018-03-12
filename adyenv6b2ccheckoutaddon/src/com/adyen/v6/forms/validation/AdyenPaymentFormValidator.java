@@ -52,7 +52,6 @@ public class AdyenPaymentFormValidator implements Validator {
             if (StringUtils.isEmpty(form.getCseToken()) && (StringUtils.isEmpty(form.getEncryptedCardNumber())
                     || StringUtils.isEmpty(form.getEncryptedExpiryMonth())
                     || StringUtils.isEmpty(form.getEncryptedExpiryYear())
-                    || StringUtils.isEmpty(form.getEncryptedSecurityCode())
                     || StringUtils.isEmpty(form.getCardHolder()))) {
                 errors.reject("checkout.error.paymentmethod.cse.missing");
             }
