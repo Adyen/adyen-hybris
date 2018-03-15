@@ -97,7 +97,7 @@
 
                 <input id="p_method_adyen_hpp_${brandCode}_last_name"
                        type="text"
-                       name="firstName"
+                       name="lastName"
                        value="${cartData.deliveryAddress.lastName}">
             </c:if>
         </div>
