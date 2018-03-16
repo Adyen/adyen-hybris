@@ -117,6 +117,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_MD = "adyen_md";
     public static final String SESSION_CSE_TOKEN = "adyen_cse_token";
+    public static final String SESSION_SF_CARD_NUMBER = "encryptedCardNumber";
+    public static final String SESSION_SF_EXPIRY_MONTH = "encryptedExpiryMonth";
+    public static final String SESSION_SF_EXPIRY_YEAR = "encryptedExpiryYear";
+    public static final String SESSION_SF_SECURITY_CODE = "encryptedSecurityCode";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
@@ -126,10 +130,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_CSE_URL = "cseUrl";
     public static final String MODEL_DF_URL = "dfUrl";
+    public static final String MODEL_ORIGIN_KEY = "originKey";
+    public static final String MODEL_CHECKOUT_SHOPPER_HOST = "checkoutShopperHost";
     public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
     public static final String MODEL_SHOW_BOLETO = "showBoleto";
+    public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
+    public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
 
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -173,9 +181,30 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
         String cseId = baseStore.getAdyenCSEID();
-        Assert.notNull(cseId);
 
-        return getAdyenPaymentService().getHppEndpoint() + "/cse/js/" + cseId + ".shtml";
+        if (! StringUtils.isEmpty(cseId)) {
+            return getAdyenPaymentService().getHppEndpoint() + "/cse/js/" + cseId + ".shtml";
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getOriginKey() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        return baseStore.getAdyenOriginKey();
+    }
+
+    @Override
+    public String getCheckoutShopperHost() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        if(baseStore.getAdyenTestMode()) {
+            return CHECKOUT_SHOPPER_HOST_TEST;
+        }
+
+        return CHECKOUT_SHOPPER_HOST_LIVE;
     }
 
     @Override
@@ -253,9 +282,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        if (! StringUtils.isEmpty(getSessionService().getAttribute(SESSION_CSE_TOKEN))) {
-            cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
-        }
+        updateCartWithSessionData(cartData);
 
         PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
 
@@ -277,6 +304,20 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         throw new AdyenNonAuthorizedPaymentException(paymentResult);
+    }
+
+    private void updateCartWithSessionData(CartData cartData) {
+        cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
+        cartData.setAdyenEncryptedCardNumber(getSessionService().getAttribute(SESSION_SF_CARD_NUMBER));
+        cartData.setAdyenEncryptedExpiryMonth(getSessionService().getAttribute(SESSION_SF_EXPIRY_MONTH));
+        cartData.setAdyenEncryptedExpiryYear(getSessionService().getAttribute(SESSION_SF_EXPIRY_YEAR));
+        cartData.setAdyenEncryptedSecurityCode(getSessionService().getAttribute(SESSION_SF_SECURITY_CODE));
+
+        getSessionService().removeAttribute(SESSION_CSE_TOKEN);
+        getSessionService().removeAttribute(SESSION_SF_CARD_NUMBER);
+        getSessionService().removeAttribute(SESSION_SF_EXPIRY_MONTH);
+        getSessionService().removeAttribute(SESSION_SF_EXPIRY_YEAR);
+        getSessionService().removeAttribute(SESSION_SF_SECURITY_CODE);
     }
 
     @Override
@@ -450,7 +491,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set the url for CSE script
         model.addAttribute(MODEL_CSE_URL, getCSEUrl());
+        model.addAttribute(MODEL_ORIGIN_KEY, getOriginKey());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
 
         Set<String> recurringDetailReferences = new HashSet<>();
         if (storedCards != null) {
@@ -546,6 +589,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenFirstName(adyenPaymentForm.getFirstName());
         paymentInfo.setAdyenLastName(adyenPaymentForm.getLastName());
 
+        paymentInfo.setAdyenCardHolder(adyenPaymentForm.getCardHolder());
+
         modelService.save(paymentInfo);
 
         return paymentInfo;
@@ -565,9 +610,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
-        //Put CSE token to session
+        //Put encrypted data to session
         if (! StringUtils.isEmpty(adyenPaymentForm.getCseToken())) {
             getSessionService().setAttribute(SESSION_CSE_TOKEN, adyenPaymentForm.getCseToken());
+        }
+        if (! StringUtils.isEmpty(adyenPaymentForm.getEncryptedCardNumber())) {
+            getSessionService().setAttribute(SESSION_SF_CARD_NUMBER, adyenPaymentForm.getEncryptedCardNumber());
+        }
+        if (! StringUtils.isEmpty(adyenPaymentForm.getEncryptedExpiryMonth())) {
+            getSessionService().setAttribute(SESSION_SF_EXPIRY_MONTH, adyenPaymentForm.getEncryptedExpiryMonth());
+        }
+        if (! StringUtils.isEmpty(adyenPaymentForm.getEncryptedExpiryYear())) {
+            getSessionService().setAttribute(SESSION_SF_EXPIRY_YEAR, adyenPaymentForm.getEncryptedExpiryYear());
+        }
+        if (! StringUtils.isEmpty(adyenPaymentForm.getEncryptedSecurityCode())) {
+            getSessionService().setAttribute(SESSION_SF_SECURITY_CODE, adyenPaymentForm.getEncryptedSecurityCode());
         }
 
         //Update CartModel
