@@ -30,9 +30,9 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import com.adyen.Client;
@@ -60,6 +60,8 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import static com.adyen.Client.ENDPOINT_LIVE;
+import static com.adyen.Client.ENDPOINT_TEST;
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
 
@@ -86,7 +88,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpoint = baseStore.getAdyenAPIEndpoint();
-        boolean isHppTest = baseStore.getAdyenHppTest();
+        boolean isTestMode = baseStore.getAdyenTestMode();
 
         Assert.notNull(merchantAccount);
 
@@ -96,12 +98,19 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
-        config.setApplicationName("Adyen Hybris v3.2.0");
-        config.setEndpoint(apiEndpoint);
-        config.setHppEndpoint(HPP_LIVE);
+        config.setApplicationName("Adyen Hybris v3.3.0");
 
-        if (isHppTest) {
+        if (isTestMode) {
+            config.setEndpoint(ENDPOINT_TEST);
             config.setHppEndpoint(HPP_TEST);
+        } else {
+            config.setEndpoint(ENDPOINT_LIVE);
+            config.setHppEndpoint(HPP_LIVE);
+        }
+
+        //Use custom endpoint if set
+        if (! StringUtils.isEmpty(apiEndpoint)) {
+            config.setEndpoint(apiEndpoint);
         }
 
         client = new Client(config);
@@ -178,7 +187,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount, final String currency, final String countryCode, final String shopperLocale) throws HTTPClientException, SignatureException, IOException {
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
+                                                 final String currency,
+                                                 final String countryCode,
+                                                 final String shopperLocale) throws HTTPClientException, SignatureException, IOException {
         if (client.getConfig().getSkinCode() == null || client.getConfig().getSkinCode().isEmpty()) {
             return new ArrayList<>();
         }
