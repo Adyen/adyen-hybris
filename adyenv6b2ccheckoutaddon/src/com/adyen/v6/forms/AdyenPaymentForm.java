@@ -23,6 +23,7 @@ package com.adyen.v6.forms;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -39,6 +40,14 @@ public class AdyenPaymentForm {
 
     //CSE
     private String cseToken;
+
+    //Secured Fields
+    private String encryptedCardNumber;
+    private String encryptedExpiryMonth;
+    private String encryptedExpiryYear;
+    private String encryptedSecurityCode;
+    private String cardHolder;
+
     private String selectedReference;
 
     //Save card
@@ -163,12 +172,57 @@ public class AdyenPaymentForm {
         this.dfValue = dfValue;
     }
 
+    public String getEncryptedCardNumber() {
+        return encryptedCardNumber;
+    }
+
+    public void setEncryptedCardNumber(String encryptedCardNumber) {
+        this.encryptedCardNumber = encryptedCardNumber;
+    }
+
+    public String getEncryptedExpiryMonth() {
+        return encryptedExpiryMonth;
+    }
+
+    public void setEncryptedExpiryMonth(String encryptedExpiryMonth) {
+        this.encryptedExpiryMonth = encryptedExpiryMonth;
+    }
+
+    public String getEncryptedExpiryYear() {
+        return encryptedExpiryYear;
+    }
+
+    public void setEncryptedExpiryYear(String encryptedExpiryYear) {
+        this.encryptedExpiryYear = encryptedExpiryYear;
+    }
+
+    public String getEncryptedSecurityCode() {
+        return encryptedSecurityCode;
+    }
+
+    public void setEncryptedSecurityCode(String encryptedSecurityCode) {
+        this.encryptedSecurityCode = encryptedSecurityCode;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class AdyenPaymentForm {\n");
         sb.append("    paymentMethod: ").append(Util.toIndentedString(paymentMethod)).append("\n");
-        sb.append("    cseToken: ").append(Util.toIndentedString(cseToken)).append("\n");
+        sb.append("    cseToken isEmpty?: ").append(StringUtils.isEmpty(cseToken)).append("\n");
+        sb.append("    encryptedCardNumber isEmpty?: ").append(StringUtils.isEmpty(encryptedCardNumber)).append("\n");
+        sb.append("    encryptedExpiryMonth isEmpty?: ").append(StringUtils.isEmpty(encryptedExpiryMonth)).append("\n");
+        sb.append("    encryptedExpiryYear isEmpty?: ").append(StringUtils.isEmpty(encryptedExpiryYear)).append("\n");
+        sb.append("    encryptedSecurityCode isEmpty?: ").append(StringUtils.isEmpty(encryptedSecurityCode)).append("\n");
+        sb.append("    cardHolder: ").append(Util.toIndentedString(cardHolder)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");

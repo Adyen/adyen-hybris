@@ -60,6 +60,16 @@ public interface AdyenCheckoutFacade {
     String getCSEUrl();
 
     /**
+     * Retrieve the WS User Origin Key
+     */
+    String getOriginKey();
+
+    /**
+     * Retrieve the host of Secured Fields
+     */
+    String getCheckoutShopperHost();
+
+    /**
      * Retrieve the HPP base URL for the current basestore
      *
      * @return HPP url

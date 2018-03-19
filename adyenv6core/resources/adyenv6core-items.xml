@@ -51,14 +51,6 @@
     <itemtypes>
         <itemtype code="Cart" autocreate="false" generate="false">
             <attributes>
-                <!-- Store CSE token -->
-                <attribute qualifier="adyenCseToken" type="java.lang.String">
-                    <persistence type="property">
-                        <columntype>
-                            <value>HYBRIS.LONG_STRING</value>
-                        </columntype>
-                    </persistence>
-                </attribute>
                 <attribute qualifier="adyenStoredCards" type="StringSet">
                     <persistence type="property"/>
                 </attribute>
@@ -173,8 +165,16 @@
                     <description>Merchant account name</description>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="adyenOriginKey" type="java.lang.String">
+                    <description>WS User Origin key</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
                 <attribute qualifier="adyenCSEID" type="java.lang.String">
-                    <description>Client Side Encryption Library token</description>
+                    <description>Client Side Encryption Library token (deprecated)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenSkinCode" type="java.lang.String">
@@ -192,8 +192,8 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenHppTest" type="java.lang.boolean">
-                    <description>HPP Test mode</description>
+                <attribute qualifier="adyenTestMode" type="java.lang.boolean">
+                    <description>Adyen Test mode</description>
                     <persistence type="property"/>
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.TRUE</defaultvalue>

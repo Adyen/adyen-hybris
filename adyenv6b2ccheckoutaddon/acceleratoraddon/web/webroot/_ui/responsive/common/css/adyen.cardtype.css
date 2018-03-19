@@ -1,3 +1,44 @@
+/* Page styling */
+.content {
+    float: left;
+    position: relative;
+    width: 100%;
+}
+
+.explanation {
+    margin: 20px auto 0;
+    position: relative;
+    width: 60%;
+}
+
+.explanation.hidden {
+    display: none;
+}
+
+.checkout-container {
+    float: left;
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+}
+
+.checkout {
+    margin: 0 auto;
+    position: relative;
+    width: 60%;
+}
+
+@media (max-width: 520px) {
+    .explanation {
+        width: 100%;
+    }
+
+    .checkout {
+        width: 100%;
+    }
+}
+
+
 /* In case you only want to show the icon */
 .cse-cardtype {
     height: 22px;
