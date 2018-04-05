@@ -69,6 +69,7 @@ import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_PARES;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -135,7 +136,7 @@ public class AdyenCheckoutFacadeTest {
         when(baseStoreModelMock.getAdyenSkinCode()).thenReturn("skinCode");
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
 
-        when(hmacValidatorMock.calculateHMAC(null, "hmacKey")).thenReturn("merchantSig");
+        when(hmacValidatorMock.calculateHMAC(isA(String.class), "hmacKey")).thenReturn("merchantSig");
 
         when(cartModelMock.getCode()).thenReturn("code");
         when(cartServiceMock.getSessionCart()).thenReturn(cartModelMock);
