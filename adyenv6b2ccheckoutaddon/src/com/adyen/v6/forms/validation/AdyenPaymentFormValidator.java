@@ -71,7 +71,7 @@ public class AdyenPaymentFormValidator implements Validator {
         }
 
         //Check remember these details
-        if (form.getRememberTheseDetails()) {
+        if (form.isCC() && form.getRememberTheseDetails()) {
             if (! showRememberTheseDetails) {
                 errors.reject("checkout.error.paymentethod.rememberdetails.invalid");
             }
