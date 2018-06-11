@@ -72,6 +72,7 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
@@ -111,6 +112,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
     private CommonI18NService commonI18NService;
+    private KeyGenerator keyGenerator;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -200,7 +202,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public String getCheckoutShopperHost() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
-        if(baseStore.getAdyenTestMode()) {
+        if (baseStore.getAdyenTestMode()) {
             return CHECKOUT_SHOPPER_HOST_TEST;
         }
 
@@ -375,10 +377,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
         }
 
+        CartModel cartModel = regenerateCartCode();
+        String merchantReference = cartModel.getCode();
+
         hppFormData.put(PAYMENT_AMOUNT, String.valueOf(amount.getValue()));
         hppFormData.put(CURRENCY_CODE, cartData.getTotalPrice().getCurrencyIso());
         hppFormData.put(SHIP_BEFORE_DATE, sessionValidity);
-        hppFormData.put(MERCHANT_REFERENCE, cartData.getCode());
+        hppFormData.put(MERCHANT_REFERENCE, merchantReference);
         hppFormData.put(SKIN_CODE, skinCode);
         hppFormData.put(MERCHANT_ACCOUNT, merchantAccount);
         hppFormData.put(SESSION_VALIDITY, sessionValidity);
@@ -401,6 +406,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         lockSessionCart();
 
         return hppFormData;
+    }
+
+    private CartModel regenerateCartCode() {
+        final CartModel cartModel = cartService.getSessionCart();
+        cartModel.setCode(String.valueOf(keyGenerator.generate()));
+        cartService.saveOrder(cartModel);
+        return cartModel;
     }
 
     /**
@@ -780,5 +792,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setCommonI18NService(CommonI18NService commonI18NService) {
         this.commonI18NService = commonI18NService;
+    }
+
+    public KeyGenerator getKeyGenerator() {
+        return keyGenerator;
+    }
+
+    public void setKeyGenerator(KeyGenerator keyGenerator) {
+        this.keyGenerator = keyGenerator;
     }
 }
