@@ -108,6 +108,7 @@
 		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
 		<property name="modelService" ref="modelService"/>
 		<property name="commonI18NService" ref="commonI18NService"/>
+		<property name="keyGenerator" ref="orderCodeGenerator"/>
 	</bean>
 
 	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
