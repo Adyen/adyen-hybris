@@ -244,7 +244,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         DisableResult result = recurring.disable(request);
         LOG.debug(result);
 
-        return (result.getDetails() != null && ! result.getDetails().isEmpty());
+        return ("[detail-successfully-disabled]".equals(result.getResponse()) || "[all-details-successfully-disabled]".equals(result.getResponse()));
     }
 
     @Override
