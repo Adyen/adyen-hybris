@@ -57,6 +57,7 @@ import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -116,6 +117,9 @@ public class AdyenCheckoutFacadeTest {
     @Mock
     private CommonI18NService commonI18NServiceMock;
 
+    @Mock
+    private KeyGenerator keyGeneratorMock;
+
     @InjectMocks
     private DefaultAdyenCheckoutFacade adyenCheckoutFacade;
 
@@ -136,7 +140,8 @@ public class AdyenCheckoutFacadeTest {
         when(baseStoreModelMock.getAdyenSkinCode()).thenReturn("skinCode");
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
 
-        when(hmacValidatorMock.calculateHMAC(isA(String.class), "hmacKey")).thenReturn("merchantSig");
+        when(hmacValidatorMock.calculateHMAC(isA(String.class), isA(String.class))).thenReturn("merchantSig");
+        when(hmacValidatorMock.getDataToSign(isA(SortedMap.class))).thenReturn("dataToSign");
 
         when(cartModelMock.getCode()).thenReturn("code");
         when(cartServiceMock.getSessionCart()).thenReturn(cartModelMock);
@@ -156,6 +161,7 @@ public class AdyenCheckoutFacadeTest {
         languageModel.setIsocode("en");
 
         when(commonI18NServiceMock.getCurrentLanguage()).thenReturn(languageModel);
+        when(keyGeneratorMock.generate()).thenReturn(new Object());
     }
 
     @Test
@@ -175,14 +181,7 @@ public class AdyenCheckoutFacadeTest {
     }
 
     @Test
-    public void testLockSessionCart() throws InvalidCartException {
-        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
-        try {
-            adyenCheckoutFacade.lockSessionCart();
-            fail("Expecting exception");
-        } catch (InvalidCartException ignored) {
-        }
-
+    public void testLockSessionCart() {
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(null);
 
         adyenCheckoutFacade.lockSessionCart();
