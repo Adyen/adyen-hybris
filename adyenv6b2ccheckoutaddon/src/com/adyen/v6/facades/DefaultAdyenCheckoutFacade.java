@@ -23,6 +23,7 @@ package com.adyen.v6.facades;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +142,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
 
+    public static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
+                                                                                          HPPConstants.Response.SKIN_CODE,
+                                                                                          HPPConstants.Response.SHOPPER_LOCALE,
+                                                                                          HPPConstants.Response.PAYMENT_METHOD,
+                                                                                          HPPConstants.Response.AUTH_RESULT,
+                                                                                          HPPConstants.Response.PSP_REFERENCE,
+                                                                                          HPPConstants.Response.MERCHANT_RETURN_DATA));
+
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
     }
@@ -150,12 +159,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         BaseStoreModel baseStore = getBaseStoreService().getCurrentBaseStore();
 
         String hmacKey = baseStore.getAdyenSkinHMAC();
-        Assert.notNull(hmacKey);
-
+        if (StringUtils.isEmpty(hmacKey)) {
+            LOGGER.error("Empty HMAC Key");
+            throw new SignatureException("Empty HMAC Key");
+        }
         String dataToSign = getHmacValidator().getDataToSign(hppResponseData);
         String calculatedMerchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
         LOGGER.debug("Calculated signature: " + calculatedMerchantSig + " from data: " + dataToSign);
-        if (! calculatedMerchantSig.equals(merchantSig)) {
+        if (StringUtils.isEmpty(calculatedMerchantSig) || ! calculatedMerchantSig.equals(merchantSig)) {
             LOGGER.error("Signature does not match!");
             throw new SignatureException("Signatures doesn't match");
         }
@@ -167,13 +178,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         LOGGER.debug("Received HPP response: " + hppResponseData);
 
-        if (! hppResponseData.containsKey(HPPConstants.Response.MERCHANT_SIG)) {
-            throw new SignatureException("MerchantSig not provided");
+        String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
+        if (StringUtils.isEmpty(merchantSig)) {
+            LOGGER.error("MerchantSig was not provided");
+            throw new SignatureException("MerchantSig was not provided");
         }
-
-        String merchantSig = hppResponseData.get(HPPConstants.Response.MERCHANT_SIG);
-        // Remove merchantSig from the map
-        hppResponseData.remove(HPPConstants.Response.MERCHANT_SIG);
 
         validateHPPResponse(hppResponseData, merchantSig);
     }
@@ -215,11 +224,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public void lockSessionCart() throws InvalidCartException {
-        if (getSessionService().getAttribute(SESSION_LOCKED_CART) != null) {
-            throw new InvalidCartException("There is already a locked cart in the session");
-        }
-
+    public void lockSessionCart() {
         getSessionService().setAttribute(SESSION_LOCKED_CART, cartService.getSessionCart());
         getSessionService().removeAttribute(SESSION_CART_PARAMETER_NAME);
 
@@ -676,7 +681,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             String[] keyValuePair = parameter.split("=");
             String key = keyValuePair[0];
             String value = request.getParameter(key);
-            queryParameters.put(key, value);
+
+            // Add only HPP parameters for signature calculation
+            if (HPP_RESPONSE_PARAMETERS.contains(key) || key.startsWith("additionalData.")) {
+                queryParameters.put(key, value);
+            }
         }
 
         return queryParameters;
