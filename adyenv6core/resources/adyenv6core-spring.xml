@@ -125,6 +125,7 @@
     </bean>
 
     <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory" />
+    <bean id="adyenPaymentsResponseConverter" class="com.adyen.v6.converters.PaymentsResponseConverter" />
 
     <alias name="defaultAdyenAddressDataFactory" alias="adyenAddressDataFactory"/>
     <bean id="defaultAdyenAddressDataFactory" class="com.adyen.v6.factory.DefaultAdyenAddressDataFactory">
@@ -153,6 +154,7 @@
     <alias name="defaultAdyenOrderService" alias="adyenOrderService"/>
     <bean id="defaultAdyenOrderService" class="com.adyen.v6.service.DefaultAdyenOrderService">
         <property name="modelService" ref="modelService" />
+        <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
     </bean>
 
     <alias name="defaultAdyenBusinessProcessService" alias="adyenBusinessProcessService"/>
