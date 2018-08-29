@@ -40,6 +40,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
@@ -209,10 +210,14 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
+            PaymentsResponse paymentsResponse = e.getPaymentsResponse();
             LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
 
-            if (paymentResult.isRefused()) {
+            if (paymentResult != null && paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
+            }
+            if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
+                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));

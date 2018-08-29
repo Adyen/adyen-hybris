@@ -36,6 +36,7 @@ import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.additionalData.InvoiceLine;
+import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
@@ -151,6 +152,80 @@ public class AdyenRequestFactory {
 
         return paymentRequest;
     }
+
+
+    public PaymentsRequest createPaymentsRequest(final String merchantAccount,
+                                                 final CartData cartData,
+                                                 final HttpServletRequest request,
+                                                 final CustomerModel customerModel,
+                                                 final RecurringContractMode recurringContractMode) {
+        String amount = String.valueOf(cartData.getTotalPrice().getValue());
+        String currency = cartData.getTotalPrice().getCurrencyIso();
+        String reference = cartData.getCode();
+        String selectedReference = cartData.getAdyenSelectedReference();
+
+        PaymentsRequest paymentsRequest = new PaymentsRequest();
+        String userAgent = request.getHeader("User-Agent");
+        String acceptHeader = request.getHeader("Accept");
+        String shopperIP = request.getRemoteAddr();
+
+        paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
+
+        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedCardNumber())
+                && ! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryMonth())
+                && ! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryYear())) {
+            paymentsRequest.addEncryptedCardData(cartData.getAdyenEncryptedCardNumber(),
+                                                 cartData.getAdyenEncryptedExpiryMonth(),
+                                                 cartData.getAdyenEncryptedExpiryYear(),
+                                                 cartData.getAdyenEncryptedSecurityCode(),
+                                                 cartData.getAdyenCardHolder());
+        }
+
+        Recurring recurringContract = getRecurringContractType(recurringContractMode);
+        Recurring.ContractEnum contractEnum = null;
+        if(recurringContract != null) {
+            contractEnum = recurringContract.getContract();
+        }
+
+        // set shopper details
+        if (customerModel != null) {
+            paymentsRequest.setShopperReference(customerModel.getCustomerID());
+            paymentsRequest.setShopperEmail(customerModel.getContactEmail());
+
+            if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod()) && cartData.getAdyenRememberTheseDetails()) {
+                if(Recurring.ContractEnum.ONECLICK_RECURRING.equals(contractEnum)) {
+                    paymentsRequest.setEnableRecurring(true);
+                    paymentsRequest.setEnableOneClick(true);
+                } else if (Recurring.ContractEnum.ONECLICK.equals(contractEnum)) {
+                    paymentsRequest.setEnableOneClick(true);
+                }
+            }
+        }
+
+        // if address details are provided added it into the request
+        if (cartData.getDeliveryAddress() != null) {
+            Address deliveryAddress = setAddressData(cartData.getDeliveryAddress());
+            paymentsRequest.setDeliveryAddress(deliveryAddress);
+        }
+
+        if (cartData.getPaymentInfo().getBillingAddress() != null) {
+            // set PhoneNumber if it is provided
+            if (cartData.getPaymentInfo().getBillingAddress().getPhone() != null && ! cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
+                paymentsRequest.setTelephoneNumber(cartData.getPaymentInfo().getBillingAddress().getPhone());
+            }
+
+            Address billingAddress = setAddressData(cartData.getPaymentInfo().getBillingAddress());
+            paymentsRequest.setBillingAddress(billingAddress);
+        }
+
+        //OneClick
+        if (selectedReference != null && ! selectedReference.isEmpty()) {
+            paymentsRequest.addOneClickData(selectedReference, cartData.getAdyenEncryptedSecurityCode());
+        }
+
+        return paymentsRequest;
+    }
+
 
     public CaptureRequest createCaptureRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
         return new CaptureRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode()).merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);

@@ -18,36 +18,23 @@
  *  This file is open source and available under the MIT license.
  *  See the LICENSE file for more info.
  */
-package com.adyen.v6.exceptions;
+package com.adyen.v6.converters;
 
+import org.springframework.core.convert.converter.Converter;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
+import static com.adyen.constants.ApiConstants.AdditionalData.AUTH_CODE;
 
-public class AdyenNonAuthorizedPaymentException extends Exception {
-    private PaymentResult paymentResult;
-    private PaymentsResponse paymentsResponse;
+public class PaymentsResponseConverter implements Converter<PaymentResult, PaymentsResponse> {
+    @Override
+    public PaymentsResponse convert(PaymentResult paymentResult) {
+        PaymentsResponse paymentsResponse = new PaymentsResponse();
+        paymentsResponse.setPspReference(paymentResult.getPspReference());
+        paymentsResponse.setFraudResult(paymentResult.getFraudResult());
 
-    public AdyenNonAuthorizedPaymentException(PaymentResult paymentResult) {
-        this.paymentResult = paymentResult;
-    }
+        paymentsResponse.setAdditionalData(paymentResult.getAdditionalData());
+        paymentsResponse.putAdditionalDataItem(AUTH_CODE, paymentResult.getAuthCode());
 
-    public AdyenNonAuthorizedPaymentException(PaymentsResponse paymentsResponse) {
-        this.paymentsResponse = paymentsResponse;
-    }
-
-    public PaymentResult getPaymentResult() {
-        return paymentResult;
-    }
-
-    public void setPaymentResult(PaymentResult paymentResult) {
-        this.paymentResult = paymentResult;
-    }
-
-    public PaymentsResponse getPaymentsResponse() {
         return paymentsResponse;
-    }
-
-    public void setPaymentsResponse(PaymentsResponse paymentsResponse) {
-        this.paymentsResponse = paymentsResponse;
     }
 }
