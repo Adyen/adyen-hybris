@@ -63,6 +63,8 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
 import static com.adyen.Client.ENDPOINT_LIVE;
 import static com.adyen.Client.ENDPOINT_TEST;
 import static com.adyen.Client.HPP_LIVE;
@@ -104,9 +106,11 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         if (isTestMode) {
             config.setEndpoint(ENDPOINT_TEST);
             config.setHppEndpoint(HPP_TEST);
+            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_TEST);
         } else {
             config.setEndpoint(ENDPOINT_LIVE);
             config.setHppEndpoint(HPP_LIVE);
+            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE);
         }
 
         //Use custom endpoint if set
