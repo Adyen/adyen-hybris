@@ -28,6 +28,9 @@ import static com.adyen.constants.ApiConstants.AdditionalData.AUTH_CODE;
 public class PaymentsResponseConverter implements Converter<PaymentResult, PaymentsResponse> {
     @Override
     public PaymentsResponse convert(PaymentResult paymentResult) {
+        if (paymentResult == null) {
+            throw new IllegalArgumentException("Null PaymentResult");
+        }
         PaymentsResponse paymentsResponse = new PaymentsResponse();
         paymentsResponse.setPspReference(paymentResult.getPspReference());
         paymentsResponse.setFraudResult(paymentResult.getFraudResult());
