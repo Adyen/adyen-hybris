@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import com.adyen.model.checkout.PaymentsDetailsRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -152,6 +153,19 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
+        LOG.debug(paymentsResponse);
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse authorise3DPayment(final String paymentData, final String paRes, final String md) throws Exception {
+        Checkout checkout = new Checkout(client);
+
+        PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DPaymentsRequest(paymentData, md, paRes);
+        LOG.debug(paymentsDetailsRequest);
+
+        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
         LOG.debug(paymentsResponse);
 
         return paymentsResponse;

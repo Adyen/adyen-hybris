@@ -48,6 +48,7 @@ public interface AdyenPaymentService {
      * Performs 3D secure authorization request via Adyen API
      */
     PaymentResult authorise3D(HttpServletRequest request, String paRes, String md) throws Exception;
+    PaymentsResponse authorise3DPayment(String paymentData, String paRes, String md) throws Exception;
 
     /**
      * Performs Capture request via Adyen API
