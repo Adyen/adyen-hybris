@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.additionalData.InvoiceLine;
+import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -151,6 +153,20 @@ public class AdyenRequestFactory {
         }
 
         return paymentRequest;
+    }
+
+    public PaymentsDetailsRequest create3DPaymentsRequest(final String paymentData, final String md, final String paRes) {
+
+        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
+
+        HashMap<String, String> details = new HashMap<>();
+        details.put("MD", md);
+        details.put("PaRes", paRes);
+
+        paymentsDetailsRequest.setDetails(details);
+        paymentsDetailsRequest.setPaymentData(paymentData);
+
+        return paymentsDetailsRequest;
     }
 
 
