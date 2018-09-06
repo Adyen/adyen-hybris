@@ -40,6 +40,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
@@ -64,7 +65,11 @@ import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.site.BaseSiteService;
+import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
+import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
+import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
+import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -144,7 +149,31 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         String errorMessage = "checkout.error.authorization.failed";
         //Handle CreditCard/oneClick, openinvoice, boleto payments
-        if (canUseAPI(cartData.getAdyenPaymentMethod())) {
+        if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
+            try {
+                OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (ApiException e) {
+                LOGGER.error("API exception " + e.getError());
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+                if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
+                    final String termUrl = getTermUrl();
+
+                    model.addAttribute("paReq", paymentsResponse.getRedirect().getData().get(PAREQ));
+                    model.addAttribute("md", paymentsResponse.getRedirect().getData().get(MD));
+                    model.addAttribute("issuerUrl", paymentsResponse.getRedirect().getUrl());
+                    model.addAttribute("termUrl", termUrl);
+
+                    return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
+                }
+                if (REFUSED == paymentsResponse.getResultCode()) {
+                    errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
+                }
+            } catch (Exception e) {
+                LOGGER.error(ExceptionUtils.getStackTrace(e));
+            }
+        } else if (canUseAPI(cartData.getAdyenPaymentMethod())) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
 
@@ -211,7 +240,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             PaymentResult paymentResult = e.getPaymentResult();
             LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
 
-            if (paymentResult.isRefused()) {
+            if (paymentResult != null && paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
             }
         } catch (Exception e) {
