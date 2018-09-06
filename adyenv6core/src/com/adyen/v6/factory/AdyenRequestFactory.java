@@ -158,17 +158,9 @@ public class AdyenRequestFactory {
     public PaymentsDetailsRequest create3DPaymentsRequest(final String paymentData, final String md, final String paRes) {
 
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
-
-        HashMap<String, String> details = new HashMap<>();
-        details.put("MD", md);
-        details.put("PaRes", paRes);
-
-        paymentsDetailsRequest.setDetails(details);
-        paymentsDetailsRequest.setPaymentData(paymentData);
-
+        paymentsDetailsRequest.set3DRequestData(md, paRes, paymentData);
         return paymentsDetailsRequest;
     }
-
 
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
                                                  final CartData cartData,

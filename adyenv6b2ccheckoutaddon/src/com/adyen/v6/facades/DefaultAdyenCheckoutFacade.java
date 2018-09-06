@@ -131,7 +131,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_SF_SECURITY_CODE = "encryptedSecurityCode";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
-    public static final String SESSION_PAYMENT_DATA = "paymentData";
+    public static final String SESSION_PAYMENT_DATA = "adyen_payment_data";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
