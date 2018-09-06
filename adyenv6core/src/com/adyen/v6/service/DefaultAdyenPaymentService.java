@@ -41,6 +41,8 @@ import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsRequest;
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -52,6 +54,7 @@ import com.adyen.model.recurring.DisableResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.service.Checkout;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
@@ -60,6 +63,8 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
 import static com.adyen.Client.ENDPOINT_LIVE;
 import static com.adyen.Client.ENDPOINT_TEST;
 import static com.adyen.Client.HPP_LIVE;
@@ -82,8 +87,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     public DefaultAdyenPaymentService(final BaseStoreModel baseStore) {
         this.baseStore = baseStore;
 
-        String username = baseStore.getAdyenUsername();
-        String password = baseStore.getAdyenPassword();
+        String apiKey = baseStore.getAdyenAPIKey();
         String merchantAccount = baseStore.getAdyenMerchantAccount();
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
@@ -93,8 +97,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         Assert.notNull(merchantAccount);
 
         config = new Config();
-        config.setUsername(username);
-        config.setPassword(password);
+        config.setApiKey(apiKey);
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
@@ -103,9 +106,11 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         if (isTestMode) {
             config.setEndpoint(ENDPOINT_TEST);
             config.setHppEndpoint(HPP_TEST);
+            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_TEST);
         } else {
             config.setEndpoint(ENDPOINT_LIVE);
             config.setHppEndpoint(HPP_LIVE);
+            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE);
         }
 
         //Use custom endpoint if set
@@ -132,6 +137,24 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         LOG.debug(paymentResult);
 
         return paymentResult;
+    }
+
+    @Override
+    public PaymentsResponse authorisePayment(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+        Checkout checkout = new Checkout(client);
+
+        PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
+                                                                                              cartData,
+                                                                                              request,
+                                                                                              customerModel,
+                                                                                              baseStore.getAdyenRecurringContractMode());
+
+
+        LOG.debug(paymentsRequest);
+        PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
+        LOG.debug(paymentsResponse);
+
+        return paymentsResponse;
     }
 
     @Override
