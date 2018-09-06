@@ -131,7 +131,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_SF_SECURITY_CODE = "encryptedSecurityCode";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
-    public static final String SESSION_PAYEMENT_DATA = "paymentData";
+    public static final String SESSION_PAYMENT_DATA = "paymentData";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
@@ -287,7 +287,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
             if(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
-                getSessionService().setAttribute(SESSION_PAYEMENT_DATA, paymentsResponse.getPaymentData());
+                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
                 lockSessionCart();
             }
@@ -331,7 +331,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String md = request.getParameter(THREE_D_MD);
 
         String sessionMd = getSessionService().getAttribute(SESSION_MD);
-        String sessionPaymentData = getSessionService().getAttribute(SESSION_PAYEMENT_DATA);
+        String sessionPaymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
         try {
             //Check if MD matches in order to avoid authorizing wrong order
