@@ -440,7 +440,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
      * Create order
      */
     private OrderData createOrderFromPaymentsResponse(final PaymentsResponse paymentsResponse) throws InvalidCartException {
-        LOGGER.debug("Create order from payment result: " + paymentsResponse.getPspReference());
+        LOGGER.debug("Create order from paymentsResponse: " + paymentsResponse.getPspReference());
 
         OrderData orderData = getCheckoutFacade().placeOrder();
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());

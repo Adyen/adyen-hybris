@@ -238,14 +238,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
-            PaymentsResponse paymentsResponse = e.getPaymentsResponse();
             LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
 
             if (paymentResult != null && paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
-            }
-            if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
-                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
