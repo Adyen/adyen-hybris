@@ -373,7 +373,7 @@ public class AdyenCheckoutFacadeTest {
         //When payment is authorized
         when(paymentResultMock.isAuthorised()).thenReturn(true);
         when(sessionServiceMock.getAttribute(SESSION_MD)).thenReturn("md");
-        when(sessionServiceMock.getAttribute(SESSION_PAYEMENT_DATA)).thenReturn("This is test payment data");
+        when(sessionServiceMock.getAttribute(SESSION_PAYMENT_DATA)).thenReturn("This is test payment data");
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
         when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
         when(adyenPaymentServiceMock.authorise3DPayment("This is test payment data", "PaRes", "md")).thenReturn(paymentsResponseMock);
