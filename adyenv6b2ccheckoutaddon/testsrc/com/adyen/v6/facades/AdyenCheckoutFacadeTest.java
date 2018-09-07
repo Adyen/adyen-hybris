@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,10 +70,8 @@ import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
 import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_LOCKED_CART;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_MD;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_MD;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_PARES;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.*;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -133,6 +132,7 @@ public class AdyenCheckoutFacadeTest {
     private CartModel cartModelMock;
 
     private PaymentResult paymentResultMock;
+    private PaymentsResponse paymentsResponseMock;
 
     private PaymentsResponse paymentsResponse;
 
@@ -142,6 +142,7 @@ public class AdyenCheckoutFacadeTest {
         cartModelMock = mock(CartModel.class);
         OrderData orderDataMock = mock(OrderData.class);
         paymentResultMock = mock(PaymentResult.class);
+        paymentsResponseMock = mock(PaymentsResponse.class);
         CartData cartDataMock = mock(CartData.class);
 
         when(baseStoreModelMock.getAdyenSkinHMAC()).thenReturn("hmacKey");
@@ -164,11 +165,13 @@ public class AdyenCheckoutFacadeTest {
         when(paymentResultMock.getPspReference()).thenReturn("pspRef");
         when(paymentResultMock.getMd()).thenReturn("md");
 
+        when(paymentsResponseMock.getPspReference()).thenReturn("pspRef");
         paymentsResponse = new PaymentsResponse();
         paymentsResponse.setPspReference("pspRef");
         paymentsResponse.setRedirect(new Redirect());
         paymentsResponse.getRedirect().setData(new HashMap<>());
         paymentsResponse.getRedirect().getData().put(MD, "md");
+        paymentsResponse.setPaymentData("This is test payment data");
 
         when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
 
@@ -327,6 +330,7 @@ public class AdyenCheckoutFacadeTest {
     public void testHandle3DResponse() throws Exception {
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         OrderModel orderModelMock = mock(OrderModel.class);
+        PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
 
         when(requestMock.getParameter(THREE_D_PARES)).thenReturn("PaRes");
         when(requestMock.getParameter(THREE_D_MD)).thenReturn("md");
@@ -337,6 +341,8 @@ public class AdyenCheckoutFacadeTest {
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
         when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
+        when(cartModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
 
         adyenCheckoutFacade.handle3DResponse(requestMock);
 
@@ -352,6 +358,47 @@ public class AdyenCheckoutFacadeTest {
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
             assertEquals(paymentResultMock, e.getPaymentResult());
+        }
+    }
+
+    @Test
+    public void testHandle3DResponseCC() throws Exception {
+        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        OrderModel orderModelMock = mock(OrderModel.class);
+        PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
+
+        when(requestMock.getParameter(THREE_D_PARES)).thenReturn("PaRes");
+        when(requestMock.getParameter(THREE_D_MD)).thenReturn("md");
+
+        //When payment is authorized
+        when(paymentResultMock.isAuthorised()).thenReturn(true);
+        when(sessionServiceMock.getAttribute(SESSION_MD)).thenReturn("md");
+        when(sessionServiceMock.getAttribute(SESSION_PAYMENT_DATA)).thenReturn("This is test payment data");
+        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
+        when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
+        when(adyenPaymentServiceMock.authorise3DPayment("This is test payment data", "PaRes", "md")).thenReturn(paymentsResponseMock);
+        when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
+
+        //When payment is authorized
+        when(paymentsResponseMock.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
+
+        when(cartModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
+
+        adyenCheckoutFacade.handle3DResponse(requestMock);
+
+        //the order should be created
+        verifyAuthorized(orderModelMock);
+
+        //When is not authorized
+        when(paymentsResponseMock.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.REFUSED);
+
+        try {
+            adyenCheckoutFacade.handle3DResponse(requestMock);
+            fail("Expecting exception");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            //throw exception with getPaymentsResponse details
+            assertEquals(paymentsResponseMock, e.getPaymentsResponse());
         }
 
 
