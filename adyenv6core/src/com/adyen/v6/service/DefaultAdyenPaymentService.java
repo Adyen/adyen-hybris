@@ -98,7 +98,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
-        config.setApplicationName("Adyen Hybris v3.3.0");
+        config.setApplicationName("Adyen Hybris v3.4.0");
 
         if (isTestMode) {
             config.setEndpoint(ENDPOINT_TEST);
@@ -244,7 +244,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         DisableResult result = recurring.disable(request);
         LOG.debug(result);
 
-        return (result.getDetails() != null && ! result.getDetails().isEmpty());
+        return ("[detail-successfully-disabled]".equals(result.getResponse()) || "[all-details-successfully-disabled]".equals(result.getResponse()));
     }
 
     @Override

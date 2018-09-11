@@ -79,7 +79,7 @@ public interface AdyenCheckoutFacade {
     /**
      * Removes cart from the session so that users can't update it while being in a payment page
      */
-    void lockSessionCart() throws InvalidCartException;
+    void lockSessionCart();
 
     /**
      * Restores the sessionCart that has been previously locked
