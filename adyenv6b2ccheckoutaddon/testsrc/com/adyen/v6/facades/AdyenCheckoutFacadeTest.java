@@ -327,6 +327,41 @@ public class AdyenCheckoutFacadeTest {
     }
 
     @Test
+    public void testHandle3DResponse() throws Exception {
+        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        OrderModel orderModelMock = mock(OrderModel.class);
+        PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
+
+        when(requestMock.getParameter(THREE_D_PARES)).thenReturn("PaRes");
+        when(requestMock.getParameter(THREE_D_MD)).thenReturn("md");
+
+        //When payment is authorized
+        when(paymentResultMock.isAuthorised()).thenReturn(true);
+        when(sessionServiceMock.getAttribute(SESSION_MD)).thenReturn("md");
+        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
+        when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
+        when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
+        when(cartModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
+
+        adyenCheckoutFacade.handle3DResponse(requestMock);
+
+        //the order should be created
+        verifyAuthorized(orderModelMock);
+
+        //When is not authorized
+        when(paymentResultMock.isAuthorised()).thenReturn(false);
+
+        try {
+            adyenCheckoutFacade.handle3DResponse(requestMock);
+            fail("Expecting exception");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            //throw exception with paymentResult details
+            assertEquals(paymentResultMock, e.getPaymentResult());
+        }
+    }
+
+    @Test
     public void testHandle3DResponseCC() throws Exception {
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         OrderModel orderModelMock = mock(OrderModel.class);
@@ -348,7 +383,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentsResponseMock.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
 
         when(cartModelMock.getPaymentInfo()).thenReturn(paymentInfoModelMock);
-        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
+        when(paymentInfoModelMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
         adyenCheckoutFacade.handle3DResponse(requestMock);
 
