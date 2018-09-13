@@ -327,7 +327,7 @@ public class AdyenCheckoutFacadeTest {
     }
 
     @Test
-    public void testHandle3DResponseCC() throws Exception {
+    public void testHandle3DResponse() throws Exception {
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         OrderModel orderModelMock = mock(OrderModel.class);
         PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
