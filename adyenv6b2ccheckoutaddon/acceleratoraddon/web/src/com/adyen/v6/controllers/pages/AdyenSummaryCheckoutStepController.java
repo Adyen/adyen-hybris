@@ -150,7 +150,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         String errorMessage = "checkout.error.authorization.failed";
         //Handle CreditCard/oneClick, openinvoice, boleto payments
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| PAYMENT_METHOD_ONECLICK.equals(adyenPaymentMethod)) {
+        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| PAYMENT_METHOD_ONECLICK.indexOf(adyenPaymentMethod) == 0) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 return redirectToOrderConfirmationPage(orderData);
