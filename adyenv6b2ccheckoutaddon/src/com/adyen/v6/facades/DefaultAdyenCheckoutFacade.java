@@ -278,7 +278,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         updateCartWithSessionData(cartData);
 
-        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| PAYMENT_METHOD_ONECLICK.indexOf(cartData.getAdyenPaymentMethod()) == 0) {
+        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
             if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
