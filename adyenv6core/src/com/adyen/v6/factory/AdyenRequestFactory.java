@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -51,6 +50,7 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import static com.adyen.constants.ApiConstants.PaymentMethod.STORE_DETAILS;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
@@ -72,40 +72,13 @@ public class AdyenRequestFactory {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
-        String cseToken = cartData.getAdyenCseToken();
-        String selectedReference = cartData.getAdyenSelectedReference();
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
-
-        if (! StringUtils.isEmpty(cseToken)) {
-            paymentRequest.setCSEToken(cseToken);
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedCardNumber())) {
-            paymentRequest.setEncryptedCardNumber(cartData.getAdyenEncryptedCardNumber());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenCardHolder())) {
-            paymentRequest.setCardHolder(cartData.getAdyenCardHolder());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryMonth())) {
-            paymentRequest.setEncryptedExpiryMonth(cartData.getAdyenEncryptedExpiryMonth());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryYear())) {
-            paymentRequest.setEncryptedExpiryYear(cartData.getAdyenEncryptedExpiryYear());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedSecurityCode())) {
-            paymentRequest.setEncryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode());
-        }
 
         // set shopper details
         if (customerModel != null) {
             paymentRequest.setShopperReference(customerModel.getCustomerID());
             paymentRequest.setShopperEmail(customerModel.getContactEmail());
-        }
-
-        // set recurring contract
-        if (customerModel != null && PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
-            Recurring recurring = getRecurringContractType(recurringContractMode, cartData.getAdyenRememberTheseDetails());
-            paymentRequest.setRecurring(recurring);
         }
 
         // if address details are provided added it into the request
@@ -122,16 +95,6 @@ public class AdyenRequestFactory {
 
             Address billingAddress = setAddressData(cartData.getPaymentInfo().getBillingAddress());
             paymentRequest.setBillingAddress(billingAddress);
-        }
-
-        //OneClick
-        if (selectedReference != null && ! selectedReference.isEmpty()) {
-            paymentRequest.setSelectedRecurringDetailReference(selectedReference);
-            paymentRequest.setShopperInteraction(AbstractPaymentRequest.ShopperInteractionEnum.ECOMMERCE);
-
-            //set oneclick
-            Recurring recurring = getRecurringContractType(RecurringContractMode.ONECLICK);
-            paymentRequest.setRecurring(recurring);
         }
 
         // OpenInvoice add required additional data
@@ -191,7 +154,7 @@ public class AdyenRequestFactory {
 
         Recurring recurringContract = getRecurringContractType(recurringContractMode);
         Recurring.ContractEnum contractEnum = null;
-        if(recurringContract != null) {
+        if (recurringContract != null) {
             contractEnum = recurringContract.getContract();
         }
 
@@ -200,12 +163,23 @@ public class AdyenRequestFactory {
             paymentsRequest.setShopperReference(customerModel.getCustomerID());
             paymentsRequest.setShopperEmail(customerModel.getContactEmail());
 
-            if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod()) && cartData.getAdyenRememberTheseDetails()) {
-                if(Recurring.ContractEnum.ONECLICK_RECURRING.equals(contractEnum)) {
+            if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
+                // Set oneclick and recurring preferences
+                paymentsRequest.setEnableRecurring(false);
+                paymentsRequest.setEnableOneClick(false);
+
+                if (Recurring.ContractEnum.ONECLICK_RECURRING.equals(contractEnum)) {
                     paymentsRequest.setEnableRecurring(true);
                     paymentsRequest.setEnableOneClick(true);
                 } else if (Recurring.ContractEnum.ONECLICK.equals(contractEnum)) {
                     paymentsRequest.setEnableOneClick(true);
+                } else if (Recurring.ContractEnum.RECURRING.equals(contractEnum)) {
+                    paymentsRequest.setEnableRecurring(true);
+                }
+
+                // Set storeDetails parameter when shopper selected to have his card details stored
+                if( cartData.getAdyenRememberTheseDetails()) {
+                    paymentsRequest.getPaymentMethod().put(STORE_DETAILS, "true");
                 }
             }
         }
