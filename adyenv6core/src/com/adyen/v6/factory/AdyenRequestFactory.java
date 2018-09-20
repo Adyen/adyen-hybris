@@ -20,21 +20,9 @@
  */
 package com.adyen.v6.factory;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import com.adyen.enums.VatCategory;
-import com.adyen.model.AbstractPaymentRequest;
-import com.adyen.model.Address;
-import com.adyen.model.Amount;
-import com.adyen.model.Name;
-import com.adyen.model.PaymentRequest;
-import com.adyen.model.PaymentRequest3d;
+import com.adyen.model.*;
 import com.adyen.model.additionalData.InvoiceLine;
 import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -44,26 +32,32 @@ import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
+
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 
 public class AdyenRequestFactory {
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
-    public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
-        return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
+    public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final RequestInfo requestInfo, final String md, final String paRes) {
+        return createBasePaymentRequest(new PaymentRequest3d(), requestInfo, merchantAccount).set3DRequestData(md, paRes);
     }
 
     public PaymentRequest createAuthorizationRequest(final String merchantAccount,
                                                      final CartData cartData,
-                                                     final HttpServletRequest request,
+                                                     final RequestInfo requestInfo,
                                                      final CustomerModel customerModel,
                                                      final RecurringContractMode recurringContractMode) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
@@ -72,7 +66,7 @@ public class AdyenRequestFactory {
         String cseToken = cartData.getAdyenCseToken();
         String selectedReference = cartData.getAdyenSelectedReference();
 
-        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
+        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), requestInfo, merchantAccount).reference(reference).setAmountData(amount, currency);
 
         if (! StringUtils.isEmpty(cseToken)) {
             paymentRequest.setCSEToken(cseToken);
@@ -190,12 +184,8 @@ public class AdyenRequestFactory {
         return new DisableRequest().merchantAccount(merchantAccount).shopperReference(customerId).recurringDetailReference(recurringReference);
     }
 
-    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, final HttpServletRequest request, final String merchantAccount) {
-        String userAgent = request.getHeader("User-Agent");
-        String acceptHeader = request.getHeader("Accept");
-        String shopperIP = request.getRemoteAddr();
-
-        abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
+    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, RequestInfo requestInfo, final String merchantAccount) {
+        abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(requestInfo.getUserAgent(), requestInfo.getAcceptHeader()).shopperIP(requestInfo.getShopperIp());
 
         return abstractPaymentRequest;
     }

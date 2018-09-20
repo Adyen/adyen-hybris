@@ -20,21 +20,6 @@
  */
 package com.adyen.v6.service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.httpclient.HTTPClientException;
@@ -47,23 +32,30 @@ import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
-import com.adyen.model.recurring.DisableRequest;
-import com.adyen.model.recurring.DisableResult;
-import com.adyen.model.recurring.RecurringDetail;
-import com.adyen.model.recurring.RecurringDetailsRequest;
-import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.recurring.*;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.factory.AdyenRequestFactory;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
-import static com.adyen.Client.ENDPOINT_LIVE;
-import static com.adyen.Client.ENDPOINT_TEST;
-import static com.adyen.Client.HPP_LIVE;
-import static com.adyen.Client.HPP_TEST;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.adyen.Client.*;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
@@ -117,12 +109,12 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(client.getConfig().getMerchantAccount(),
                                                                                             cartData,
-                                                                                            request,
+                                                                                            requestInfo,
                                                                                             customerModel,
                                                                                             baseStore.getAdyenRecurringContractMode());
 
@@ -135,10 +127,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentResult authorise3D(final HttpServletRequest request, final String paRes, final String md) throws Exception {
+    public PaymentResult authorise3D(final RequestInfo requestInfo, final String paRes, final String md) throws Exception {
         Payment payment = new Payment(client);
 
-        PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(client.getConfig().getMerchantAccount(), request, md, paRes);
+        PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(client.getConfig().getMerchantAccount(), requestInfo, md, paRes);
 
         LOG.debug(paymentRequest3d);
         PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
