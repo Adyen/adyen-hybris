@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import com.adyen.v6.model.RequestInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -146,7 +148,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         //Handle CreditCard/oneClick, openinvoice, boleto payments
         if (canUseAPI(cartData.getAdyenPaymentMethod())) {
             try {
-                OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
+                OrderData orderData = adyenCheckoutFacade.authorisePayment(new RequestInfo(request), cartData);
 
                 //In case of Boleto, show link to pdf
                 if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {

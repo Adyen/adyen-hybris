@@ -108,7 +108,7 @@ public interface AdyenCheckoutFacade {
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
-     * @param request  HTTP Request object
+     * @param requestInfo  HTTP Request info
      * @param cartData cartData object
      * @return OrderData
      * @throws Exception In case order failed to be created
