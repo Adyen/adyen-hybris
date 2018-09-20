@@ -20,25 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -54,6 +35,7 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
+import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -78,22 +60,22 @@ import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
-import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.constants.HPPConstants.Fields.RES_URL;
-import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
-import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
-import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.adyen.constants.HPPConstants.Fields.*;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -278,12 +260,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     @Deprecated
-    public OrderData authoriseCardPayment(final HttpServletRequest request, final CartData cartData) throws Exception {
-        return authorisePayment(request, cartData);
+    public OrderData authoriseCardPayment(final RequestInfo requestInfo, final CartData cartData) throws Exception {
+        return authorisePayment(requestInfo, cartData);
     }
 
     @Override
-    public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
+    public OrderData authorisePayment(final RequestInfo requestInfo, final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
@@ -291,7 +273,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         updateCartWithSessionData(cartData);
 
-        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
+        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, requestInfo, customer);
 
         //In case of Authorized: create order and authorize it
         if (paymentResult.isAuthorised()) {
@@ -342,7 +324,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             restoreSessionCart();
 
-            PaymentResult paymentResult = getAdyenPaymentService().authorise3D(request, paRes, md);
+            PaymentResult paymentResult = getAdyenPaymentService().authorise3D(new RequestInfo(request), paRes, md);
 
             if (paymentResult.isAuthorised()) {
                 return createAuthorizedOrder(paymentResult);

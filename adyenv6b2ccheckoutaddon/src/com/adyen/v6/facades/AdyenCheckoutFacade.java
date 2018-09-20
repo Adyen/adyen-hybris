@@ -24,6 +24,8 @@ import java.security.SignatureException;
 import java.util.Map;
 import java.util.SortedMap;
 import javax.servlet.http.HttpServletRequest;
+
+import com.adyen.v6.model.RequestInfo;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -100,7 +102,7 @@ public interface AdyenCheckoutFacade {
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
 
     @Deprecated
-    OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
+    OrderData authoriseCardPayment(RequestInfo requestInfo, CartData cartData) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -111,7 +113,7 @@ public interface AdyenCheckoutFacade {
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
+    OrderData authorisePayment(RequestInfo requestInfo, CartData cartData) throws Exception;
 
     /**
      * Handles an 3D response

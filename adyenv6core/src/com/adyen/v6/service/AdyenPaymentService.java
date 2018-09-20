@@ -20,31 +20,32 @@
  */
 package com.adyen.v6.service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.util.Currency;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.service.exception.ApiException;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.util.Currency;
+import java.util.List;
 
 public interface AdyenPaymentService {
     /**
      * Performs authorization request via Adyen API
      */
-    PaymentResult authorise(CartData cartData, HttpServletRequest request, CustomerModel customerModel) throws Exception;
+    PaymentResult authorise(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
     /**
      * Performs 3D secure authorization request via Adyen API
      */
-    PaymentResult authorise3D(HttpServletRequest request, String paRes, String md) throws Exception;
+    PaymentResult authorise3D(RequestInfo requestInfo, String paRes, String md) throws Exception;
 
     /**
      * Performs Capture request via Adyen API
