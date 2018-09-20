@@ -98,6 +98,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_AL
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -277,7 +278,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         updateCartWithSessionData(cartData);
 
-        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
+        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
             if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
@@ -301,12 +302,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             if(PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
                 return createOrderFromPaymentResult(paymentResult);
             }
-            if(PaymentResult.ResultCodeEnum.REDIRECTSHOPPER == paymentResult.getResultCode()) {
-                getSessionService().setAttribute(SESSION_MD, paymentResult.getMd());
-
-                lockSessionCart();
-            }
-
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         }
     }
@@ -340,24 +335,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
 
             restoreSessionCart();
-            CartModel cartModel = getCartService().getSessionCart();
-
-            if (PAYMENT_METHOD_CC.equals(cartModel.getPaymentInfo().getAdyenPaymentMethod())) {
-                PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
                 if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                     return createAuthorizedOrder(paymentsResponse);
                 }
                 throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-            } else {
-
-                PaymentResult paymentResult = getAdyenPaymentService().authorise3D(request, paRes, md);
-
-                if (paymentResult.isAuthorised()) {
-                    return createAuthorizedOrder(paymentResult);
-                }
-
-                throw new AdyenNonAuthorizedPaymentException(paymentResult);
-            }
         } catch (ApiException e) {
             LOGGER.error("API Exception " + e.getError());
             throw e;
