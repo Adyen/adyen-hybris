@@ -42,11 +42,10 @@ import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
-import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.service.exception.ApiException;
@@ -272,34 +271,33 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
-        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
         updateCartWithSessionData(cartData);
 
-        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+        if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod()) || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
-            if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
             }
-            if(PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
                 return createOrderFromPaymentsResponse(paymentsResponse);
             }
-            if(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
                 lockSessionCart();
             }
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-        }
-        else {
+        } else {
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
-            if(PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
+            if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
                 return createAuthorizedOrder(paymentResult);
             }
-            if(PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
+            if (PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
                 return createOrderFromPaymentResult(paymentResult);
             }
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
@@ -330,16 +328,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         try {
             //Check if MD matches in order to avoid authorizing wrong order
-            if (sessionMd != null && !sessionMd.equals(md)) {
+            if (sessionMd != null && ! sessionMd.equals(md)) {
                 throw new SignatureException("MD does not match!");
             }
 
             restoreSessionCart();
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
-                if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-                    return createAuthorizedOrder(paymentsResponse);
-                }
-                throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                return createAuthorizedOrder(paymentsResponse);
+            }
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         } catch (ApiException e) {
             LOGGER.error("API Exception " + e.getError());
             throw e;
@@ -468,19 +466,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set APMs from Adyen HPP Directory Lookup
         List<PaymentMethod> alternativePaymentMethods = new ArrayList<>();
+
         try {
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
                                                                               cartData.getTotalPrice().getCurrencyIso(),
                                                                               cartData.getDeliveryAddress().getCountry().getIsocode(),
-                                                                              getShopperLocale());
+                                                                              getShopperLocale(),
+                                                                              null);
 
             //Exclude cards and boleto
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getBrandCode().isEmpty()
-                                                                         && ! paymentMethod.isCard()
-                                                                         && paymentMethod.getBrandCode().indexOf(PAYMENT_METHOD_BOLETO) != 0)
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
+                                                                         && ! "scheme".equals(paymentMethod.getType())
+                                                                         && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
                                                                  .collect(Collectors.toList());
-        } catch (HTTPClientException | SignatureException | IOException e) {
+        } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 

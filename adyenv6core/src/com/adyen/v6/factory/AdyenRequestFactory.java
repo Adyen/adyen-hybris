@@ -38,7 +38,6 @@ import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.additionalData.InvoiceLine;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
-import com.adyen.model.hpp.DirectoryLookupRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
@@ -178,7 +177,7 @@ public class AdyenRequestFactory {
                 }
 
                 // Set storeDetails parameter when shopper selected to have his card details stored
-                if( cartData.getAdyenRememberTheseDetails()) {
+                if (cartData.getAdyenRememberTheseDetails()) {
                     paymentsRequest.getPaymentMethod().put(STORE_DETAILS, "true");
                 }
             }
@@ -219,21 +218,6 @@ public class AdyenRequestFactory {
 
     public RefundRequest createRefundRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
         return new RefundRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode()).merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
-    }
-
-    public DirectoryLookupRequest createListPaymentMethodsRequest(final BigDecimal amount, final String currency, final String countryCode, final String shopperLocale) {
-        Amount amountData = Util.createAmount(amount, currency);
-
-        DirectoryLookupRequest directoryLookupRequest = new DirectoryLookupRequest().setCountryCode(countryCode)
-                                                                                    .setMerchantReference("GetPaymentMethods")
-                                                                                    .setPaymentAmount(String.valueOf(amountData.getValue()))
-                                                                                    .setCurrencyCode(amountData.getCurrency());
-
-        if (! StringUtils.isEmpty(shopperLocale)) {
-            directoryLookupRequest.setShopperLocale(shopperLocale);
-        }
-
-        return directoryLookupRequest;
     }
 
     public RecurringDetailsRequest createListRecurringDetailsRequest(final String merchantAccount, final String customerId) {
