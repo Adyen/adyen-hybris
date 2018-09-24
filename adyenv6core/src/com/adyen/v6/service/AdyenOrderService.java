@@ -21,15 +21,20 @@
 package com.adyen.v6.service;
 
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsResponse;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.fraud.model.FraudReportModel;
 
 public interface AdyenOrderService {
+    void updateOrderFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse);
+
     /**
      * Updates order's metadata using the API Payment response
      * Covers fraud, avs, cc authorisation data
      */
     void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult);
+
+    FraudReportModel createFraudReportFromPaymentsResponse(PaymentsResponse paymentsResponse);
 
     /**
      * Creates FraudReportModel from PaymentResult
@@ -41,6 +46,8 @@ public interface AdyenOrderService {
      * Store FraudReportModel
      */
     void storeFraudReport(FraudReportModel fraudReport);
+
+    void storeFraudReportFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse);
 
     /**
      * Create FraudReportModel from PaymentResult and assigns it to order

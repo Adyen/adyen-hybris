@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 import com.adyen.model.FraudCheckResult;
 import com.adyen.model.FraudResult;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.v6.converters.PaymentsResponseConverter;
 import de.hybris.platform.basecommerce.enums.FraudStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -38,18 +40,19 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 public class DefaultAdyenOrderService implements AdyenOrderService {
     private static final Logger LOG = Logger.getLogger(DefaultAdyenOrderService.class);
     private ModelService modelService;
+    private PaymentsResponseConverter paymentsResponseConverter;
 
     @Override
-    public FraudReportModel createFraudReportFromPaymentResult(PaymentResult paymentResult) {
+    public FraudReportModel createFraudReportFromPaymentsResponse(PaymentsResponse paymentsResponse) {
         FraudReportModel fraudReport = modelService.create(FraudReportModel.class);
-        FraudResult fraudResult = paymentResult.getFraudResult();
+        FraudResult fraudResult = paymentsResponse.getFraudResult();
 
         if (fraudResult == null) {
             LOG.debug("No fraud result found");
             return null;
         }
 
-        fraudReport.setCode(paymentResult.getPspReference());
+        fraudReport.setCode(paymentsResponse.getPspReference());
         fraudReport.setStatus(FraudStatus.OK);
         fraudReport.setExplanation("Score: " + fraudResult.getAccountScore());
         fraudReport.setTimestamp(new Date());
@@ -78,6 +81,13 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         LOG.debug("Returning fraud report with score: " + fraudResult.getAccountScore());
 
         return fraudReport;
+
+    }
+
+    @Override
+    public FraudReportModel createFraudReportFromPaymentResult(PaymentResult paymentResult) {
+        PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
+        return createFraudReportFromPaymentsResponse(paymentsResponse);
     }
 
     @Override
@@ -91,8 +101,8 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     }
 
     @Override
-    public void storeFraudReportFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
-        FraudReportModel fraudReport = createFraudReportFromPaymentResult(paymentResult);
+    public void storeFraudReportFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse) {
+        FraudReportModel fraudReport = createFraudReportFromPaymentsResponse(paymentsResponse);
         if(fraudReport != null) {
             fraudReport.setOrder(order);
             storeFraudReport(fraudReport);
@@ -100,7 +110,13 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     }
 
     @Override
-    public void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
+    public void storeFraudReportFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
+        PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
+        storeFraudReportFromPaymentsResponse(order, paymentsResponse);
+    }
+
+    @Override
+    public void updateOrderFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse) {
         if (order == null) {
             LOG.error("Order is null");
             return;
@@ -108,24 +124,30 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         PaymentInfoModel paymentInfo = order.getPaymentInfo();
 
-        paymentInfo.setAdyenPaymentMethod(paymentResult.getPaymentMethod());
+        paymentInfo.setAdyenPaymentMethod(paymentsResponse.getPaymentMethod());
 
         //Card specific data
-        paymentInfo.setAdyenAuthCode(paymentResult.getAuthCode());
-        paymentInfo.setAdyenAvsResult(paymentResult.getAvsResult());
-        paymentInfo.setAdyenCardBin(paymentResult.getCardBin());
-        paymentInfo.setAdyenCardHolder(paymentResult.getCardHolderName());
-        paymentInfo.setAdyenCardSummary(paymentResult.getCardSummary());
-        paymentInfo.setAdyenCardExpiry(paymentResult.getExpiryDate());
-        paymentInfo.setAdyenThreeDOffered(paymentResult.get3DOffered());
-        paymentInfo.setAdyenThreeDAuthenticated(paymentResult.get3DAuthenticated());
+        paymentInfo.setAdyenAuthCode(paymentsResponse.getAuthCode());
+        paymentInfo.setAdyenAvsResult(paymentsResponse.getAvsResult());
+        paymentInfo.setAdyenCardBin(paymentsResponse.getCardBin());
+        paymentInfo.setAdyenCardHolder(paymentsResponse.getCardHolderName());
+        paymentInfo.setAdyenCardSummary(paymentsResponse.getCardSummary());
+        paymentInfo.setAdyenCardExpiry(paymentsResponse.getExpiryDate());
+        paymentInfo.setAdyenThreeDOffered(paymentsResponse.get3DOffered());
+        paymentInfo.setAdyenThreeDAuthenticated(paymentsResponse.get3DAuthenticated());
 
         //Boleto data
-        paymentInfo.setAdyenBoletoUrl(paymentResult.getBoletoUrl());
+        paymentInfo.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
 
         modelService.save(paymentInfo);
 
-        storeFraudReportFromPaymentResult(order, paymentResult);
+        storeFraudReportFromPaymentsResponse(order, paymentsResponse);
+    }
+
+    @Override
+    public void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
+        PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
+        updateOrderFromPaymentsResponse(order, paymentsResponse);
     }
 
     public ModelService getModelService() {
@@ -134,5 +156,13 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
     public void setModelService(ModelService modelService) {
         this.modelService = modelService;
+    }
+
+    public PaymentsResponseConverter getPaymentsResponseConverter() {
+        return paymentsResponseConverter;
+    }
+
+    public void setPaymentsResponseConverter(PaymentsResponseConverter paymentsResponseConverter) {
+        this.paymentsResponseConverter = paymentsResponseConverter;
     }
 }
