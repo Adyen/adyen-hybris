@@ -37,6 +37,14 @@ public class RequestInfo {
         this.shopperIp = request.getRemoteAddr();
     }
 
+    private RequestInfo() {
+
+    }
+
+    public static RequestInfo empty() {
+        return new RequestInfo();
+    }
+
     public String getUserAgent() {
         return userAgent;
     }

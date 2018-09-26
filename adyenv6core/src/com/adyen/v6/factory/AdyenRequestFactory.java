@@ -134,7 +134,7 @@ public class AdyenRequestFactory {
         }
 
         //Set Boleto parameters
-        if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+        if (cartData.getAdyenPaymentMethod() != null && cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
             setBoletoData(paymentRequest, cartData);
         }
 

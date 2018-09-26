@@ -17,14 +17,10 @@
 -->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
-
-	<!--
-		Example Data POJO
-
-	<bean class="yemptypackage.data.MyPojo">
-		<property name="id" type="String"/>
-		<property name="flag" type="boolean"/>
+	<bean class="de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO">
+		<property name="encryptedCardNumber" type="String" />
+		<property name="encryptedExpiryMonth" type="String" />
+		<property name="encryptedExpiryYear" type="String" />
+		<property name="encryptedSecurityCode" type="String" />
 	</bean>
-	-->
-
 </beans>
