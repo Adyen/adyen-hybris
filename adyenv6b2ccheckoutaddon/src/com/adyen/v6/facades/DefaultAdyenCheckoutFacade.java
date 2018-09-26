@@ -44,9 +44,11 @@ import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -60,6 +62,7 @@ import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.webservicescommons.mapping.DataMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -96,6 +99,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private ModelService modelService;
     private CommonI18NService commonI18NService;
     private KeyGenerator keyGenerator;
+    private UserFacade userFacade;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -262,6 +266,44 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Deprecated
     public OrderData authoriseCardPayment(final RequestInfo requestInfo, final CartData cartData) throws Exception {
         return authorisePayment(requestInfo, cartData);
+    }
+
+    @Override
+    public OrderData authorisePayment(final CartData cartData) throws Exception {
+        CustomerModel customer = null;
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, RequestInfo.empty(), customer);
+
+        //In case of Authorized: create order and authorize it
+        if (paymentResult.isAuthorised()) {
+            return createAuthorizedOrder(paymentResult);
+        }
+
+        //In case of Received: create order
+        if (paymentResult.isReceived()) {
+            return createOrderFromPaymentResult(paymentResult);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentResult);
+    }
+
+    @Override
+    public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper) {
+        CartModel cartModel = cartService.getSessionCart();
+
+        AddressData addressData = dataMapper.map(paymentDetails.getBillingAddress(), AddressData.class);
+        userFacade.addAddress(addressData);
+
+        checkoutFacade.setDeliveryAddress(addressData);
+
+        PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, paymentDetails);
+        cartModel.setPaymentInfo(paymentInfo);
+        modelService.save(cartModel);
+
+        return paymentDetails;
     }
 
     @Override
@@ -595,6 +637,31 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentInfo;
     }
 
+    public PaymentInfoModel createPaymentInfo(final CartModel cartModel, PaymentDetailsWsDTO paymentDetails) {
+        final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
+        paymentInfo.setUser(cartModel.getUser());
+        paymentInfo.setSaved(false);
+        paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
+
+        // Clone DeliveryAdress to BillingAddress
+        final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
+        clonedAddress.setBillingAddress(true);
+        clonedAddress.setOwner(paymentInfo);
+        paymentInfo.setBillingAddress(clonedAddress);
+
+        paymentInfo.setAdyenIssuerId(paymentDetails.getIssueNumber());
+
+        paymentInfo.setAdyenCardHolder(paymentDetails.getAccountHolderName());
+        paymentInfo.setEncryptedCardNumber(paymentDetails.getEncryptedCardNumber());
+        paymentInfo.setEncryptedExpiryMonth(paymentDetails.getEncryptedExpiryMonth());
+        paymentInfo.setEncryptedExpiryYear(paymentDetails.getEncryptedExpiryYear());
+        paymentInfo.setEncryptedSecurityCode(paymentDetails.getEncryptedSecurityCode());
+
+        modelService.save(paymentInfo);
+
+        return paymentInfo;
+    }
+
     @Override
     public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult) {
         //Validate form
@@ -791,5 +858,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setKeyGenerator(KeyGenerator keyGenerator) {
         this.keyGenerator = keyGenerator;
+    }
+
+    public void setUserFacade(UserFacade userFacade) {
+        this.userFacade = userFacade;
     }
 }
