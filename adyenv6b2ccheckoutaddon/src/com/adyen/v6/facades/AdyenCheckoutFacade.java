@@ -20,18 +20,23 @@
  */
 package com.adyen.v6.facades;
 
-import java.security.SignatureException;
-import java.util.Map;
-import java.util.SortedMap;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import com.adyen.v6.forms.AdyenPaymentForm;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.webservicescommons.mapping.DataMapper;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
+import java.security.SignatureException;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -98,12 +103,30 @@ public interface AdyenCheckoutFacade {
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
-     * @param request  HTTP Request object
+     * @param requestInfo  HTTP Request info
      * @param cartData cartData object
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
+    OrderData authorisePayment(RequestInfo requestInfo, CartData cartData) throws Exception;
+
+    /**
+     * Authorizes a payment using Adyen API
+     * In case of authorized, it places an order from cart
+     * No session handling
+     *
+     * @param cartData cartData object
+     * @return OrderData
+     * @throws Exception In case order failed to be created
+     */
+    OrderData authorisePayment(CartData cartData) throws Exception;
+
+    /**
+     * Add payment details to cart
+     * @param paymentDetails
+     * @return
+     */
+    PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper);
 
     /**
      * Handles an 3D response

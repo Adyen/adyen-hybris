@@ -43,6 +43,7 @@ import com.adyen.model.checkout.Redirect;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenTransactionService;
@@ -77,9 +78,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
@@ -288,11 +287,11 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         when(checkoutCustomerStrategyMock.isAnonymousCheckout()).thenReturn(true);
         when(checkoutCustomerStrategyMock.getCurrentUserForCheckout()).thenReturn(null);
-        when(adyenPaymentServiceMock.authorisePayment(cartDataMock, requestMock, null)).thenReturn(paymentsResponse);
+        when(adyenPaymentServiceMock.authorise(cartDataMock, new RequestInfo(requestMock), null)).thenReturn(paymentResultMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
-        adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
+        adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
 
         verifyAuthorized(orderModelMock);
 
@@ -300,7 +299,7 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER);
 
         try {
-            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
+            adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
@@ -318,7 +317,7 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.REFUSED);
 
         try {
-            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
+            adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
@@ -340,7 +339,7 @@ public class AdyenCheckoutFacadeTest {
         when(sessionServiceMock.getAttribute(SESSION_MD)).thenReturn("md");
         when(sessionServiceMock.getAttribute(SESSION_PAYMENT_DATA)).thenReturn("This is test payment data");
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
-        when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
+        when(adyenPaymentServiceMock.authorise3D(new RequestInfo(requestMock), "PaRes", "md")).thenReturn(paymentResultMock);
         when(adyenPaymentServiceMock.authorise3DPayment("This is test payment data", "PaRes", "md")).thenReturn(paymentsResponseMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
 
