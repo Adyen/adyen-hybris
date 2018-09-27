@@ -143,12 +143,8 @@
             <description>Extending BaseStore type with Adyen configurations.</description>
 
             <attributes>
-                <attribute qualifier="adyenUsername" type="java.lang.String">
-                    <description>System User username</description>
-                    <persistence type="property"/>
-                </attribute>
-                <attribute qualifier="adyenPassword" type="java.lang.String">
-                    <description>System User password</description>
+                <attribute qualifier="adyenAPIKey" type="java.lang.String">
+                    <description>System User API Key</description>
                     <persistence type="property"/>
                     <modifiers encrypted="true"/>
                 </attribute>
@@ -172,10 +168,6 @@
                             <value>HYBRIS.LONG_STRING</value>
                         </columntype>
                     </persistence>
-                </attribute>
-                <attribute qualifier="adyenCSEID" type="java.lang.String">
-                    <description>Client Side Encryption Library token (deprecated)</description>
-                    <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenSkinCode" type="java.lang.String">
                     <description>HPP skin code</description>

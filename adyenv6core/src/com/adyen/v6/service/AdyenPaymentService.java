@@ -22,6 +22,7 @@ package com.adyen.v6.service;
 
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
@@ -42,10 +43,13 @@ public interface AdyenPaymentService {
      */
     PaymentResult authorise(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
+    PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+
     /**
      * Performs 3D secure authorization request via Adyen API
      */
     PaymentResult authorise3D(RequestInfo requestInfo, String paRes, String md) throws Exception;
+    PaymentsResponse authorise3DPayment(String paymentData, String paRes, String md) throws Exception;
 
     /**
      * Performs Capture request via Adyen API
