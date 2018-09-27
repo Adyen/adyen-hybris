@@ -109,6 +109,7 @@
 		<property name="modelService" ref="modelService"/>
 		<property name="commonI18NService" ref="commonI18NService"/>
 		<property name="keyGenerator" ref="orderCodeGenerator"/>
+		<property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
 		<property name="userFacade" ref="userFacade"/>
 	</bean>
 

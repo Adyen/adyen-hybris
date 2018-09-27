@@ -60,11 +60,6 @@ public interface AdyenCheckoutFacade {
     void validateHPPResponse(HttpServletRequest request) throws SignatureException;
 
     /**
-     * Retrieve the CSE JS Url
-     */
-    String getCSEUrl();
-
-    /**
      * Retrieve the WS User Origin Key
      */
     String getOriginKey();
@@ -103,9 +98,6 @@ public interface AdyenCheckoutFacade {
      * @throws SignatureException if signature doesn't match
      */
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
-
-    @Deprecated
-    OrderData authoriseCardPayment(RequestInfo requestInfo, CartData cartData) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
