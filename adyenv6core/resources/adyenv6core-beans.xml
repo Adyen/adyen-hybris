@@ -34,6 +34,9 @@
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
         <property name="adyenBoletoUrl" type="java.lang.String"/>
+        <property name="adyenBoletoData" type="java.lang.String"/>
+        <property name="adyenBoletoExpirationDate" type="java.util.Date"/>
+        <property name="adyenBoletoDueDate" type="java.util.Date"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
