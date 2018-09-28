@@ -748,7 +748,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         paymentDetailsWsDTO.setAccountHolderName(card.getHolderName());
-        paymentDetailsWsDTO.setCardNumber(card.getNumber());
+        paymentDetailsWsDTO.setCardNumber("**** **** **** " + card.getNumber());
         paymentDetailsWsDTO.setExpiryMonth(card.getExpiryMonth());
         paymentDetailsWsDTO.setExpiryYear(card.getExpiryYear());
         paymentDetailsWsDTO.setSubscriptionId(recurringDetail.getRecurringDetailReference());
