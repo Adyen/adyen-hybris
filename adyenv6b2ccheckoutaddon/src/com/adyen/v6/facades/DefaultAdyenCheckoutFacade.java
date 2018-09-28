@@ -678,7 +678,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenRememberTheseDetails(paymentDetails.getSaveCardData());
         paymentInfo.setAdyenPaymentMethod(paymentDetails.getAdyenPaymentMethod());
         paymentInfo.setAdyenSelectedReference(paymentDetails.getAdyenSelectedReference());
-
+        paymentInfo.setAdyenSocialSecurityNumber(paymentDetails.getAdyenSocialSecurityNumber());
 
         modelService.save(paymentInfo);
 
