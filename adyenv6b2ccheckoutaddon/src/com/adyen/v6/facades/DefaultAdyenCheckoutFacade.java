@@ -724,7 +724,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException {
-        List<RecurringDetail> recurringDetails = getAdyenPaymentService().getStoredCards(userId);
+        CustomerModel customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+
+        List<RecurringDetail> recurringDetails = getAdyenPaymentService().getStoredCards(customer.getCustomerID());
 
         PaymentDetailsListWsDTO paymentDetailsListWsDTO = new PaymentDetailsListWsDTO();
         paymentDetailsListWsDTO.setPayments(toPaymentDetails(recurringDetails));
