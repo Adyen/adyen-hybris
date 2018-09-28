@@ -25,5 +25,6 @@
 		<property name="saveCardData" type="Boolean" />
 		<property name="adyenPaymentMethod" type="String" />
 		<property name="adyenSelectedReference" type="String" />
+		<property name="adyenSocialSecurityNumber" type="String" />
 	</bean>
 </beans>
