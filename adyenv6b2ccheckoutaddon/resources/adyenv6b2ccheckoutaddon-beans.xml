@@ -22,5 +22,6 @@
 		<property name="encryptedExpiryMonth" type="String" />
 		<property name="encryptedExpiryYear" type="String" />
 		<property name="encryptedSecurityCode" type="String" />
+		<property name="saveCardData" type="Boolean" />
 	</bean>
 </beans>
