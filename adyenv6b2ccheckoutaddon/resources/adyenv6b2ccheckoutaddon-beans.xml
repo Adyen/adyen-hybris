@@ -23,5 +23,7 @@
 		<property name="encryptedExpiryYear" type="String" />
 		<property name="encryptedSecurityCode" type="String" />
 		<property name="saveCardData" type="Boolean" />
+		<property name="adyenPaymentMethod" type="String" />
+		<property name="adyenSelectedReference" type="String" />
 	</bean>
 </beans>
