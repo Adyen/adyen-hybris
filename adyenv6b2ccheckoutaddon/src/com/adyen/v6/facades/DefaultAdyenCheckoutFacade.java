@@ -25,6 +25,7 @@ import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.Amount;
+import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.hpp.PaymentMethod;
@@ -50,6 +51,7 @@ import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -718,6 +720,38 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
         cartModel.setPaymentInfo(paymentInfo);
         modelService.save(cartModel);
+    }
+
+    @Override
+    public PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException {
+        List<RecurringDetail> recurringDetails = getAdyenPaymentService().getStoredCards(userId);
+
+        PaymentDetailsListWsDTO paymentDetailsListWsDTO = new PaymentDetailsListWsDTO();
+        paymentDetailsListWsDTO.setPayments(toPaymentDetails(recurringDetails));
+
+        return paymentDetailsListWsDTO;
+    }
+
+    private List<PaymentDetailsWsDTO> toPaymentDetails(List<RecurringDetail> recurringDetails) {
+        return recurringDetails.stream().map(r -> toPaymentDetail(r)).collect(Collectors.toList());
+    }
+
+    private PaymentDetailsWsDTO toPaymentDetail(RecurringDetail recurringDetail) {
+        PaymentDetailsWsDTO paymentDetailsWsDTO = new PaymentDetailsWsDTO();
+
+        Card card = recurringDetail.getCard();
+
+        if (card == null) {
+            throw new RuntimeException("Card information not found");
+        }
+
+        paymentDetailsWsDTO.setAccountHolderName(card.getHolderName());
+        paymentDetailsWsDTO.setCardNumber(card.getNumber());
+        paymentDetailsWsDTO.setExpiryMonth(card.getExpiryMonth());
+        paymentDetailsWsDTO.setExpiryYear(card.getExpiryYear());
+        paymentDetailsWsDTO.setSubscriptionId(recurringDetail.getRecurringDetailReference());
+
+        return paymentDetailsWsDTO;
     }
 
     private String getShopperLocale() {
