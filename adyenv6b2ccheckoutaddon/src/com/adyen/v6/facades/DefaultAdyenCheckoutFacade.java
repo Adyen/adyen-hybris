@@ -673,6 +673,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setEncryptedExpiryMonth(paymentDetails.getEncryptedExpiryMonth());
         paymentInfo.setEncryptedExpiryYear(paymentDetails.getEncryptedExpiryYear());
         paymentInfo.setEncryptedSecurityCode(paymentDetails.getEncryptedSecurityCode());
+        paymentInfo.setAdyenRememberTheseDetails(paymentDetails.getSaveCardData());
 
         modelService.save(paymentInfo);
 
