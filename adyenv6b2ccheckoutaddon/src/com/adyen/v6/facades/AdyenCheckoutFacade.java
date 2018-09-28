@@ -20,10 +20,12 @@
  */
 package com.adyen.v6.facades;
 
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -34,6 +36,7 @@ import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.crypto.Data;
+import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Map;
 import java.util.SortedMap;
@@ -183,4 +186,6 @@ public interface AdyenCheckoutFacade {
      * Updates BindingResult
      */
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+
+    PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 }
