@@ -34,7 +34,6 @@ import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
-import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -42,6 +41,7 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -54,14 +54,14 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 public class AdyenRequestFactory {
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
-    public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final RequestInfo requestInfo, final String md, final String paRes) {
-        return createBasePaymentRequest(new PaymentRequest3d(), requestInfo, merchantAccount).set3DRequestData(md, paRes);
+    public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
+        return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
     }
 
     @Deprecated
     public PaymentRequest createAuthorizationRequest(final String merchantAccount,
                                                      final CartData cartData,
-                                                     final RequestInfo requestInfo,
+                                                     final HttpServletRequest request,
                                                      final CustomerModel customerModel,
                                                      final RecurringContractMode recurringContractMode) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
@@ -69,7 +69,7 @@ public class AdyenRequestFactory {
         String reference = cartData.getCode();
         String selectedReference = cartData.getAdyenSelectedReference();
 
-        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), requestInfo, merchantAccount).reference(reference).setAmountData(amount, currency);
+        PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
 
         if (! StringUtils.isEmpty(cartData.getAdyenEncryptedCardNumber())) {
             paymentRequest.setEncryptedCardNumber(cartData.getAdyenEncryptedCardNumber());
@@ -155,7 +155,7 @@ public class AdyenRequestFactory {
 
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
                                                  final CartData cartData,
-                                                 final RequestInfo requestInfo,
+                                                 final HttpServletRequest request,
                                                  final CustomerModel customerModel,
                                                  final RecurringContractMode recurringContractMode) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
@@ -164,9 +164,9 @@ public class AdyenRequestFactory {
         String selectedReference = cartData.getAdyenSelectedReference();
 
         PaymentsRequest paymentsRequest = new PaymentsRequest();
-        String userAgent = requestInfo.getUserAgent();
-        String acceptHeader = requestInfo.getAcceptHeader();
-        String shopperIP = requestInfo.getShopperIp();
+        String userAgent = request.getHeader("User-Agent");
+        String acceptHeader = request.getHeader("Accept");
+        String shopperIP = request.getRemoteAddr();
 
         paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
 
@@ -275,8 +275,11 @@ public class AdyenRequestFactory {
         return new DisableRequest().merchantAccount(merchantAccount).shopperReference(customerId).recurringDetailReference(recurringReference);
     }
 
-    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, RequestInfo requestInfo, final String merchantAccount) {
-        abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(requestInfo.getUserAgent(), requestInfo.getAcceptHeader()).shopperIP(requestInfo.getShopperIp());
+    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, javax.servlet.http.HttpServletRequest request, final String merchantAccount) {
+        String userAgent = request.getHeader("User-Agent");
+        String acceptHeader = request.getHeader("Accept");
+        String shopperIP = request.getRemoteAddr();
+        abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
 
         return abstractPaymentRequest;
     }

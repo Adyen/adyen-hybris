@@ -22,7 +22,6 @@ package com.adyen.v6.facades;
 
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
-import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
@@ -35,7 +34,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Map;
@@ -106,12 +104,12 @@ public interface AdyenCheckoutFacade {
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
-     * @param requestInfo  HTTP Request info
+     * @param request  HTTP Request info
      * @param cartData cartData object
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authorisePayment(RequestInfo requestInfo, CartData cartData) throws Exception;
+    OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -122,7 +120,7 @@ public interface AdyenCheckoutFacade {
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authorisePayment(CartData cartData) throws Exception;
+    OrderData authorisePaymentAPI(HttpServletRequest request, CartData cartData) throws Exception;
 
     /**
      * Add payment details to cart

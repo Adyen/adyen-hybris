@@ -20,21 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import javax.servlet.http.HttpServletRequest;
-import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import com.adyen.Util.HMACValidator;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
@@ -43,7 +28,6 @@ import com.adyen.model.checkout.Redirect;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenTransactionService;
@@ -60,6 +44,7 @@ import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.core.model.c2l.LanguageModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
@@ -67,6 +52,21 @@ import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
 import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
@@ -227,7 +227,7 @@ public class AdyenCheckoutFacadeTest {
         //Case no Cart in session
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(null);
 
-        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        javax.servlet.http.HttpServletRequest requestMock = mock(javax.servlet.http.HttpServletRequest.class);
         when(requestMock.getParameter(HPPConstants.Response.AUTH_RESULT)).thenReturn(HPPConstants.Response.AUTH_RESULT_AUTHORISED);
         when(requestMock.getParameter(HPPConstants.Response.MERCHANT_REFERENCE)).thenReturn("code");
         when(requestMock.getParameter(HPPConstants.Response.PAYMENT_METHOD)).thenReturn("paymentMethod");
@@ -279,7 +279,7 @@ public class AdyenCheckoutFacadeTest {
 
     @Test
     public void testAuthorizeCardPayment() throws Exception {
-        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        javax.servlet.http.HttpServletRequest requestMock = mock(javax.servlet.http.HttpServletRequest.class);
         CartData cartDataMock = mock(CartData.class);
         OrderModel orderModelMock = mock(OrderModel.class);
 
@@ -287,11 +287,11 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         when(checkoutCustomerStrategyMock.isAnonymousCheckout()).thenReturn(true);
         when(checkoutCustomerStrategyMock.getCurrentUserForCheckout()).thenReturn(null);
-        when(adyenPaymentServiceMock.authorise(cartDataMock, new RequestInfo(requestMock), null)).thenReturn(paymentResultMock);
+        when(adyenPaymentServiceMock.authorise(cartDataMock, requestMock, null)).thenReturn(paymentResultMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
-        adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
+        adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
 
         verifyAuthorized(orderModelMock);
 
@@ -299,7 +299,7 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER);
 
         try {
-            adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
+            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
@@ -317,7 +317,7 @@ public class AdyenCheckoutFacadeTest {
         paymentsResponse.setResultCode(PaymentsResponse.ResultCodeEnum.REFUSED);
 
         try {
-            adyenCheckoutFacade.authorisePayment(new RequestInfo(requestMock), cartDataMock);
+            adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
         } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
@@ -327,7 +327,7 @@ public class AdyenCheckoutFacadeTest {
 
     @Test
     public void testHandle3DResponse() throws Exception {
-        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        javax.servlet.http.HttpServletRequest requestMock = mock(javax.servlet.http.HttpServletRequest.class);
         OrderModel orderModelMock = mock(OrderModel.class);
         PaymentInfoModel paymentInfoModelMock = mock(PaymentInfoModel.class);
 
@@ -339,7 +339,7 @@ public class AdyenCheckoutFacadeTest {
         when(sessionServiceMock.getAttribute(SESSION_MD)).thenReturn("md");
         when(sessionServiceMock.getAttribute(SESSION_PAYMENT_DATA)).thenReturn("This is test payment data");
         when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
-        when(adyenPaymentServiceMock.authorise3D(new RequestInfo(requestMock), "PaRes", "md")).thenReturn(paymentResultMock);
+        when(adyenPaymentServiceMock.authorise3D(requestMock, "PaRes", "md")).thenReturn(paymentResultMock);
         when(adyenPaymentServiceMock.authorise3DPayment("This is test payment data", "PaRes", "md")).thenReturn(paymentsResponseMock);
         when(orderRepositoryMock.getOrderModel("code")).thenReturn(orderModelMock);
 
