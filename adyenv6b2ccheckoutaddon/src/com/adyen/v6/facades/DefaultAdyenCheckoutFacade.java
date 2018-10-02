@@ -38,7 +38,6 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
-import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -271,13 +270,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public OrderData authorisePayment(final CartData cartData) throws Exception {
+    public OrderData authorisePaymentAPI(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, RequestInfo.empty(), customer);
+        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
 
         //In case of Authorized: create order and authorize it
         if (paymentResult.isAuthorised()) {
@@ -309,7 +308,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public OrderData authorisePayment(final RequestInfo requestInfo, final CartData cartData) throws Exception {
+    public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
@@ -318,7 +317,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
 
         if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
             if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
             }
@@ -334,7 +333,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         }
         else {
-            PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, requestInfo, customer);
+            PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
             if(PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
                 return createAuthorizedOrder(paymentResult);
             }

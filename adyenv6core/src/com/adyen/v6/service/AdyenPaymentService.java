@@ -27,7 +27,7 @@ import com.adyen.model.hpp.PaymentMethod;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.service.exception.ApiException;
-import com.adyen.v6.model.RequestInfo;
+import javax.servlet.http.HttpServletRequest;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 
@@ -41,14 +41,14 @@ public interface AdyenPaymentService {
     /**
      * Performs authorization request via Adyen API
      */
-    PaymentResult authorise(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+    PaymentResult authorise(CartData cartData, javax.servlet.http.HttpServletRequest request, CustomerModel customerModel) throws Exception;
 
-    PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+    PaymentsResponse authorisePayment(CartData cartData, HttpServletRequest requestInfo, CustomerModel customerModel) throws Exception;
 
     /**
      * Performs 3D secure authorization request via Adyen API
      */
-    PaymentResult authorise3D(RequestInfo requestInfo, String paRes, String md) throws Exception;
+    PaymentResult authorise3D(javax.servlet.http.HttpServletRequest request, String paRes, String md) throws Exception;
     PaymentsResponse authorise3DPayment(String paymentData, String paRes, String md) throws Exception;
 
     /**

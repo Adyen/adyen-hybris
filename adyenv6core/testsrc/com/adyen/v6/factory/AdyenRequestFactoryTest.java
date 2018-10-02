@@ -23,7 +23,6 @@ package com.adyen.v6.factory;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.v6.enums.RecurringContractMode;
-import com.adyen.v6.model.RequestInfo;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -54,7 +53,7 @@ public class AdyenRequestFactoryTest {
     CartData cartDataMock;
 
     @Mock
-    HttpServletRequest requestMock;
+    javax.servlet.http.HttpServletRequest requestMock;
 
     @Mock
     CustomerModel customerModelMock;
@@ -108,7 +107,7 @@ public class AdyenRequestFactoryTest {
         PaymentRequest paymentRequest;
 
         //Test anonymous
-        paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE);
+        paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, requestMock, null, RecurringContractMode.NONE);
 
         //use delivery/billing address from cart
         assertEquals("deliveryTown", paymentRequest.getDeliveryAddress().getCity());
@@ -142,7 +141,7 @@ public class AdyenRequestFactoryTest {
         //When a store card is selected, send the reference and include the recurring contract
         when(cartDataMock.getAdyenSelectedReference()).thenReturn("recurring_reference");
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
-        paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+        paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, requestMock, customerModelMock, null);
 
         assertEquals("recurring_reference", paymentRequest.getSelectedRecurringDetailReference());
         assertEquals(Recurring.ContractEnum.ONECLICK, paymentRequest.getRecurring().getContract());
@@ -150,7 +149,7 @@ public class AdyenRequestFactoryTest {
 
     private void testRecurringOption(final RecurringContractMode recurringContractModeSetting, final Recurring.ContractEnum expectedRecurringContractMode) {
 
-        PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, new RequestInfo(requestMock), customerModelMock, recurringContractModeSetting);
+        PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, requestMock, customerModelMock, recurringContractModeSetting);
 
         if (expectedRecurringContractMode == null) {
             assertNull(paymentRequest.getRecurring());
