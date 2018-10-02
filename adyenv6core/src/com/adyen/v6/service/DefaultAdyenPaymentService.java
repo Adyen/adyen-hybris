@@ -64,7 +64,7 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
-import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE_SUFFIX;
 import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
 import static com.adyen.Client.ENDPOINT_LIVE;
 import static com.adyen.Client.ENDPOINT_TEST;
@@ -92,7 +92,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String merchantAccount = baseStore.getAdyenMerchantAccount();
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
-        String apiEndpoint = baseStore.getAdyenAPIEndpoint();
+        String apiEndpoint = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
 
         Assert.notNull(merchantAccount);
@@ -111,7 +111,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         } else {
             config.setEndpoint(ENDPOINT_LIVE);
             config.setHppEndpoint(HPP_LIVE);
-            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE);
+            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE_SUFFIX);
         }
 
         //Use custom endpoint if set
