@@ -92,7 +92,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String merchantAccount = baseStore.getAdyenMerchantAccount();
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
-        String apiEndpoint = baseStore.getAdyenAPIEndpointPrefix();
+        String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
 
         Assert.notNull(merchantAccount);
@@ -111,14 +111,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         } else {
             config.setEndpoint(ENDPOINT_LIVE);
             config.setHppEndpoint(HPP_LIVE);
-            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE_SUFFIX);
+            if (! StringUtils.isEmpty(apiEndpointPrefix)) {
+                config.setCheckoutEndpoint("https://" + apiEndpointPrefix + CHECKOUT_ENDPOINT_LIVE_SUFFIX);
+            }
         }
-
-        //Use custom endpoint if set
-        if (! StringUtils.isEmpty(apiEndpoint)) {
-            config.setEndpoint(apiEndpoint);
-        }
-
         client = new Client(config);
     }
 
