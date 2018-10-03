@@ -484,6 +484,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         updateOrder(orderModel, paymentsResponse);
 
+        orderData.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
+        orderData.setAdyenBoletoData(paymentsResponse.getBoletoData());
+        orderData.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
+        orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
+
         return orderData;
     }
 
@@ -681,7 +686,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenRememberTheseDetails(paymentDetails.getSaveCardData());
         paymentInfo.setAdyenPaymentMethod(paymentDetails.getAdyenPaymentMethod());
         paymentInfo.setAdyenSelectedReference(paymentDetails.getAdyenSelectedReference());
-
+        paymentInfo.setAdyenSocialSecurityNumber(paymentDetails.getAdyenSocialSecurityNumber());
+        paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
+        paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
 
         modelService.save(paymentInfo);
 
