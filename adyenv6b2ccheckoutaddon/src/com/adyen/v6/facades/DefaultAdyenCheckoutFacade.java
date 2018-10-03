@@ -38,6 +38,7 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
+import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -57,27 +58,16 @@ import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
-import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.constants.HPPConstants.Fields.RES_URL;
-import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
-import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
-import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import de.hybris.platform.webservicescommons.mapping.DataMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -92,12 +82,10 @@ import java.security.SignatureException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
+import static com.adyen.constants.HPPConstants.Fields.*;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -120,6 +108,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private KeyGenerator keyGenerator;
     private UserFacade userFacade;
     private PaymentsResponseConverter paymentsResponseConverter;
+    private FlexibleSearchService flexibleSearchService;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -270,35 +259,50 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public OrderData authorisePaymentAPI(final HttpServletRequest request, final CartData cartData) throws Exception {
+    public OrderData authorisePayment(final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, RequestInfo.empty(), customer);
 
         //In case of Authorized: create order and authorize it
-        if (paymentResult.isAuthorised()) {
-            return createAuthorizedOrder(paymentResult);
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            return createAuthorizedOrder(paymentsResponse);
         }
 
         //In case of Received: create order
-        if (paymentResult.isReceived()) {
-            return createOrderFromPaymentResult(paymentResult);
+        if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            return createOrderFromPaymentsResponse(paymentsResponse);
         }
 
-        throw new AdyenNonAuthorizedPaymentException(paymentResult);
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
     public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper) {
         CartModel cartModel = cartService.getSessionCart();
 
-        AddressData addressData = dataMapper.map(paymentDetails.getBillingAddress(), AddressData.class);
-        userFacade.addAddress(addressData);
+        String titleCode = paymentDetails.getBillingAddress().getTitleCode();
+        final AddressModel billingAddress = getModelService().create(AddressModel.class);
+        if (StringUtils.isNotBlank(titleCode))
+        {
+            final TitleModel title = new TitleModel();
+            title.setCode(titleCode);
+            billingAddress.setTitle(getFlexibleSearchService().getModelByExample(title));
+        }
+        billingAddress.setFirstname(paymentDetails.getBillingAddress().getFirstName());
+        billingAddress.setLastname(paymentDetails.getBillingAddress().getLastName());
+        billingAddress.setLine1(paymentDetails.getBillingAddress().getLine1());
+        billingAddress.setLine2(paymentDetails.getBillingAddress().getLine2());
+        billingAddress.setTown(paymentDetails.getBillingAddress().getTown());
+        billingAddress.setPostalcode(paymentDetails.getBillingAddress().getPostalCode());
+        billingAddress.setCountry(getCommonI18NService().getCountry(paymentDetails.getBillingAddress().getCountry().getIsocode()));
 
-        checkoutFacade.setDeliveryAddress(addressData);
+        billingAddress.setOwner(cartModel.getOwner());
+
+        modelService.save(cartModel);
 
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, paymentDetails);
         cartModel.setPaymentInfo(paymentInfo);
@@ -317,7 +321,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
 
         if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, new RequestInfo(request), customer);
             if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
             }
@@ -926,5 +930,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setPaymentsResponseConverter(PaymentsResponseConverter paymentsResponseConverter) {
         this.paymentsResponseConverter = paymentsResponseConverter;
+    }
+
+    public FlexibleSearchService getFlexibleSearchService() {
+        return flexibleSearchService;
+    }
+
+    public void setFlexibleSearchService(FlexibleSearchService flexibleSearchService) {
+        this.flexibleSearchService = flexibleSearchService;
     }
 }

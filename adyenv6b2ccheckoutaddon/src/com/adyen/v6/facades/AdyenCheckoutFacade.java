@@ -120,7 +120,7 @@ public interface AdyenCheckoutFacade {
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
-    OrderData authorisePaymentAPI(HttpServletRequest request, CartData cartData) throws Exception;
+    OrderData authorisePayment(CartData cartData) throws Exception;
 
     /**
      * Add payment details to cart
