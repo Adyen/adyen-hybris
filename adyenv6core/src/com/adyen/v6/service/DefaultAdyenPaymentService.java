@@ -67,6 +67,7 @@ import de.hybris.platform.store.BaseStoreModel;
 import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE_SUFFIX;
 import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
 import static com.adyen.Client.ENDPOINT_LIVE;
+import static com.adyen.Client.ENDPOINT_PROTOCOL;
 import static com.adyen.Client.ENDPOINT_TEST;
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
@@ -112,8 +113,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
             config.setEndpoint(ENDPOINT_LIVE);
             config.setHppEndpoint(HPP_LIVE);
             if (! StringUtils.isEmpty(apiEndpointPrefix)) {
-                config.setCheckoutEndpoint("https://" + apiEndpointPrefix + CHECKOUT_ENDPOINT_LIVE_SUFFIX);
+                config.setCheckoutEndpoint(ENDPOINT_PROTOCOL + apiEndpointPrefix + CHECKOUT_ENDPOINT_LIVE_SUFFIX);
             }
+
         }
         client = new Client(config);
     }
