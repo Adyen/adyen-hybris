@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import javax.servlet.http.HttpServletRequest;
+
+import com.adyen.v6.model.RequestInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -142,12 +144,12 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse authorisePayment(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                                                                                               cartData,
-                                                                                              request,
+                                                                                              requestInfo,
                                                                                               customerModel,
                                                                                               baseStore.getAdyenRecurringContractMode());
 

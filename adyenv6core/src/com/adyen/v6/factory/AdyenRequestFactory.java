@@ -34,6 +34,7 @@ import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.RecurringContractMode;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -155,7 +156,7 @@ public class AdyenRequestFactory {
 
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
                                                  final CartData cartData,
-                                                 final HttpServletRequest request,
+                                                 final RequestInfo requestInfo,
                                                  final CustomerModel customerModel,
                                                  final RecurringContractMode recurringContractMode) {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
@@ -164,9 +165,9 @@ public class AdyenRequestFactory {
         String selectedReference = cartData.getAdyenSelectedReference();
 
         PaymentsRequest paymentsRequest = new PaymentsRequest();
-        String userAgent = request.getHeader("User-Agent");
-        String acceptHeader = request.getHeader("Accept");
-        String shopperIP = request.getRemoteAddr();
+        String userAgent = requestInfo.getUserAgent();
+        String acceptHeader = requestInfo.getAcceptHeader();
+        String shopperIP = requestInfo.getShopperIp();
 
         paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
 

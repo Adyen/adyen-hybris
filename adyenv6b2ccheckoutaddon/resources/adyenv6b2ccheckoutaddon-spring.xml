@@ -111,6 +111,7 @@
 		<property name="keyGenerator" ref="orderCodeGenerator"/>
 		<property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
 		<property name="userFacade" ref="userFacade"/>
+		<property name="flexibleSearchService" ref="flexibleSearchService"/>
 	</bean>
 
 	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
