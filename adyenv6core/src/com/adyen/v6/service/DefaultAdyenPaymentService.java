@@ -32,8 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import com.adyen.enums.Environment;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import com.adyen.Client;
@@ -64,13 +64,6 @@ import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
-import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE_SUFFIX;
-import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
-import static com.adyen.Client.ENDPOINT_LIVE;
-import static com.adyen.Client.ENDPOINT_PROTOCOL;
-import static com.adyen.Client.ENDPOINT_TEST;
-import static com.adyen.Client.HPP_LIVE;
-import static com.adyen.Client.HPP_TEST;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
@@ -104,20 +97,13 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
         config.setApplicationName("Adyen Hybris v3.4.0");
+        client = new Client(config);
 
         if (isTestMode) {
-            config.setEndpoint(ENDPOINT_TEST);
-            config.setHppEndpoint(HPP_TEST);
-            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_TEST);
+            client.setEnvironment(Environment.TEST, null);
         } else {
-            config.setEndpoint(ENDPOINT_LIVE);
-            config.setHppEndpoint(HPP_LIVE);
-            if (! StringUtils.isEmpty(apiEndpointPrefix)) {
-                config.setCheckoutEndpoint(ENDPOINT_PROTOCOL + apiEndpointPrefix + CHECKOUT_ENDPOINT_LIVE_SUFFIX);
-            }
-
+            client.setEnvironment(Environment.LIVE, apiEndpointPrefix);
         }
-        client = new Client(config);
     }
 
     @Override
