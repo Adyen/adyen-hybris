@@ -29,7 +29,7 @@
 					<editorArea:attribute qualifier="adyenTestMode"/>
                 </editorArea:section>
 				<editorArea:section name="hmc.adyen.api">
-					<editorArea:attribute qualifier="adyenAPIEndpoint"/>
+					<editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
 					<editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 					<editorArea:attribute qualifier="adyenOriginKey"/>
 				</editorArea:section>
