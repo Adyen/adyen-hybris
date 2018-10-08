@@ -43,7 +43,7 @@ public class NotificationItemRepository extends AbstractRepository {
         );
         selectNonProcessedNotificationsQuery.setCount(1000);
         LOG.debug("Querying notification items");
-        final List<NotificationItemModel> nonProcessedNotifications = flexibleSearchService
+        List<NotificationItemModel> nonProcessedNotifications = flexibleSearchService
                 .search(selectNonProcessedNotificationsQuery)
                 .getResult()
                 .stream()

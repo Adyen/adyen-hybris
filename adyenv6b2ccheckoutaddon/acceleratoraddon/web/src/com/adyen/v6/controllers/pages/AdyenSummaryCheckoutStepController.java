@@ -158,6 +158,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (ApiException e) {
                 LOGGER.error("API exception " + e.getError());
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug(e);
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRedirectShopper()) {
                     final String termUrl = getTermUrl();
@@ -209,7 +210,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
-            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
+            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult, e);
 
             if (paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());

@@ -66,6 +66,9 @@ public interface AdyenPaymentService {
      */
     List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale) throws HTTPClientException, SignatureException, IOException;
 
+    /**
+     * @deprecated use getPaymentMethods including shopperLocale instead
+     */
     @Deprecated
     List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode) throws HTTPClientException, SignatureException, IOException;
 

@@ -276,6 +276,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
+    /**
+     * @deprecated use authorisePayment instead
+     */
     @Override
     @Deprecated
     public OrderData authoriseCardPayment(final HttpServletRequest request, final CartData cartData) throws Exception {

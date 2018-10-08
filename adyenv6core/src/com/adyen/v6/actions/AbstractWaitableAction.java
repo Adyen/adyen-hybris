@@ -35,7 +35,7 @@ abstract public class AbstractWaitableAction<T extends BusinessProcessModel> ext
         OK, NOK, WAIT;
 
         public static Set<String> getStringValues() {
-            final Set<String> res = new HashSet<>();
+            Set<String> res = new HashSet<>();
             for (final Transition transitions : Transition.values()) {
                 res.add(transitions.toString());
             }
