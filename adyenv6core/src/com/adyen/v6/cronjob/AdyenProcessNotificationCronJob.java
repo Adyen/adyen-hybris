@@ -47,7 +47,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     public PerformResult perform(final CronJobModel cronJob) {
         LOG.debug("Start processing..");
 
-        final List<NotificationItemModel> nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
+        List<NotificationItemModel> nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
 
         for (final NotificationItemModel notificationItemModel : nonProcessedNotifications) {
             notificationItemModel.setProcessedAt(new Date());

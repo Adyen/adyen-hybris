@@ -37,7 +37,7 @@ abstract public class AbstractRepository {
         try {
             result = flexibleSearchService.searchUnique(selectOrderQuery);
         } catch (ModelNotFoundException e) {
-            //Do nothing
+            LOG.debug(e);
         } catch (Exception e) {
             LOG.error(e);
         }
