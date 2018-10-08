@@ -126,7 +126,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentResult authorise(final CartData cartData, final javax.servlet.http.HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(client.getConfig().getMerchantAccount(),
@@ -175,10 +175,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentResult authorise3D(final HttpServletRequest requestInfo, final String paRes, final String md) throws Exception {
+    public PaymentResult authorise3D(final HttpServletRequest request, final String paRes, final String md) throws Exception {
         Payment payment = new Payment(client);
 
-        PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(client.getConfig().getMerchantAccount(), requestInfo, md, paRes);
+        PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(client.getConfig().getMerchantAccount(), request, md, paRes);
 
         LOG.debug(paymentRequest3d);
         PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
