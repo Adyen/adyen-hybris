@@ -126,7 +126,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
      * Returns a list with CC expiry years
      */
     public List<String> getExpiryYears() {
-        final List<String> expiryYears = new ArrayList<>();
+        List<String> expiryYears = new ArrayList<>();
         final Calendar calender = new GregorianCalendar();
 
         for (int i = calender.get(Calendar.YEAR); i < calender.get(Calendar.YEAR) + 11; i++) {
