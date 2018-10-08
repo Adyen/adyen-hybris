@@ -68,25 +68,8 @@ public class AdyenRequestFactory {
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
-        String selectedReference = cartData.getAdyenSelectedReference();
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
-
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedCardNumber())) {
-            paymentRequest.setEncryptedCardNumber(cartData.getAdyenEncryptedCardNumber());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenCardHolder())) {
-            paymentRequest.setCardHolder(cartData.getAdyenCardHolder());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryMonth())) {
-            paymentRequest.setEncryptedExpiryMonth(cartData.getAdyenEncryptedExpiryMonth());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedExpiryYear())) {
-            paymentRequest.setEncryptedExpiryYear(cartData.getAdyenEncryptedExpiryYear());
-        }
-        if (! StringUtils.isEmpty(cartData.getAdyenEncryptedSecurityCode())) {
-            paymentRequest.setEncryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode());
-        }
 
         // set shopper details
         if (customerModel != null) {
@@ -116,16 +99,6 @@ public class AdyenRequestFactory {
             paymentRequest.setBillingAddress(billingAddress);
         }
 
-        //OneClick
-        if (selectedReference != null && ! selectedReference.isEmpty()) {
-            paymentRequest.setSelectedRecurringDetailReference(selectedReference);
-            paymentRequest.setShopperInteraction(AbstractPaymentRequest.ShopperInteractionEnum.ECOMMERCE);
-
-            //set oneclick
-            Recurring recurring = getRecurringContractType(RecurringContractMode.ONECLICK);
-            paymentRequest.setRecurring(recurring);
-        }
-
         // OpenInvoice add required additional data
         if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
             paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
@@ -135,7 +108,7 @@ public class AdyenRequestFactory {
         }
 
         //Set Boleto parameters
-        if (cartData.getAdyenPaymentMethod() != null && cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+        if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
             setBoletoData(paymentRequest, cartData);
         }
 
@@ -276,7 +249,7 @@ public class AdyenRequestFactory {
         return new DisableRequest().merchantAccount(merchantAccount).shopperReference(customerId).recurringDetailReference(recurringReference);
     }
 
-    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, javax.servlet.http.HttpServletRequest request, final String merchantAccount) {
+    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, HttpServletRequest request, final String merchantAccount) {
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
         String shopperIP = request.getRemoteAddr();
