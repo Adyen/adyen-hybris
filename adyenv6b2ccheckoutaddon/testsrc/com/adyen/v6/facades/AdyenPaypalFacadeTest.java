@@ -123,24 +123,18 @@ public class AdyenPaypalFacadeTest {
         assertFalse(success);
     }
 
-    @Test
+    @Test(expected = SignatureException.class)
     public void testHandlePaypalEcsResponseSignatureException() throws SignatureException, InvalidCartException {
         doThrow(new SignatureException("")).when(adyenCheckoutFacadeMock).validateHPPResponse(requestMock);
-        try {
-            adyenPaypalFacade.handlePaypalECSResponse(requestMock);
-            fail("Expected exception");
-        } catch (SignatureException e) {
-        }
+        adyenPaypalFacade.handlePaypalECSResponse(requestMock);
+        fail("Expected exception");
     }
 
-    @Test
+    @Test(expected = InvalidCartException.class)
     public void testHandlePaypalEcsResponseRestoreCartException() throws SignatureException, InvalidCartException {
         doThrow(new InvalidCartException("")).when(adyenCheckoutFacadeMock).restoreSessionCart();
-        try {
             adyenPaypalFacade.handlePaypalECSResponse(requestMock);
             fail("Expected exception");
-        } catch (InvalidCartException e) {
-        }
     }
 
     @Test
