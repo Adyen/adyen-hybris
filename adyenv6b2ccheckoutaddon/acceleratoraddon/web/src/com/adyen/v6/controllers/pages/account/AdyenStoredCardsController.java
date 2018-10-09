@@ -107,9 +107,9 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
 
                     return REDIRECT_MY_ACCOUNT_STOREDCARDS;
                 } catch (IOException e) {
-                    LOG.error(e);
+                    LOG.error("IO Exception", e);
                 } catch (ApiException e) {
-                    LOG.error(e.getError());
+                    LOG.error("Api Exception ", e);
                 }
             }
         }
