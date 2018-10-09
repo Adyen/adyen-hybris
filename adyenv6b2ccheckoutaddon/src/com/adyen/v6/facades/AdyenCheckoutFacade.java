@@ -101,6 +101,7 @@ public interface AdyenCheckoutFacade {
 
     /**
      * @deprecated use authorisePayment instead
+     *  * {@link #authorisePayment(HttpServletRequest request, CartData cartData)
      */
     @Deprecated
     OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;

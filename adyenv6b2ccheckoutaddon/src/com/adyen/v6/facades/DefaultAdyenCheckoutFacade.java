@@ -268,7 +268,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 orderData = getCheckoutFacade().placeOrder();
             }
         } catch (InvalidCartException e) {
-            LOGGER.warn("InvalidCartException ", e);
+            LOGGER.warn("InvalidCartException", e);
             //Cart does not exist, retrieve order
             orderData = getOrderFacade().getOrderDetailsForCode(merchantReference);
         }
@@ -353,7 +353,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         } catch (ApiException e) {
-            LOGGER.error("API Exception " ,e);
+            LOGGER.error("API Exception", e);
             throw e;
         }
     }
@@ -491,7 +491,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             try {
                 storedCards = adyenPaymentService.getStoredCards(customerModel.getCustomerID());
             } catch (ApiException e) {
-                LOGGER.error("API Exception " ,e);
+                LOGGER.error("API Exception", e);
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
