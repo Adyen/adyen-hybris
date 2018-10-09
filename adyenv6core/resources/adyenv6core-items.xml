@@ -65,7 +65,7 @@
         </itemtype>
 
         <itemtype code="NotificationItem" generate="true" autocreate="true">
-            <deployment table="AdyenNotificationItem" typecode="23936"/>
+            <deployment table="AdyenNotificationItem" typecode="22936"/>
             <attributes>
                 <attribute qualifier="uuid" type="java.lang.String">
                     <persistence type="property"/>
