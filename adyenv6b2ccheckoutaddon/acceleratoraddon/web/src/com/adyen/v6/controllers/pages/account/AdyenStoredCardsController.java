@@ -126,9 +126,9 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
             try {
                 storedCards = getAdyenPaymentService().getStoredCards(customer.getCustomerID());
             } catch (IOException e) {
-                LOG.error(e);
+                LOG.error("IOException", e);
             } catch (ApiException e) {
-                LOG.error(e.getError());
+                LOG.error("ApiException", e);
             }
         }
 
