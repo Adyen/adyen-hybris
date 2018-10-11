@@ -341,7 +341,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 }
                 throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         } catch (ApiException e) {
-            LOGGER.error("API Exception", e);
             throw e;
         }
     }
