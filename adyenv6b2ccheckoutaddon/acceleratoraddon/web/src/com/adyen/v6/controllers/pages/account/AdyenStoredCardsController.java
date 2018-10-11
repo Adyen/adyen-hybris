@@ -59,7 +59,7 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
     // CMS Pages
     private static final String STORED_CARDS_CMS_PAGE = "adyenStoredCards";
 
-    private static final Logger LOG = Logger.getLogger(AdyenStoredCardsController.class);
+    private static final Logger LOGGER = Logger.getLogger(AdyenStoredCardsController.class);
 
     @Resource(name = "userService")
     protected UserService userService;
@@ -107,9 +107,9 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
 
                     return REDIRECT_MY_ACCOUNT_STOREDCARDS;
                 } catch (IOException e) {
-                    LOG.error("IO Exception", e);
+                    LOGGER.error("IO Exception", e);
                 } catch (ApiException e) {
-                    LOG.error("Api Exception", e);
+                    LOGGER.error("Api Exception", e);
                 }
             }
         }
@@ -126,9 +126,9 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
             try {
                 storedCards = getAdyenPaymentService().getStoredCards(customer.getCustomerID());
             } catch (IOException e) {
-                LOG.error("IOException", e);
+                LOGGER.error("IOException", e);
             } catch (ApiException e) {
-                LOG.error("ApiException", e);
+                LOGGER.error("ApiException", e);
             }
         }
 
@@ -140,7 +140,7 @@ public class AdyenStoredCardsController extends AbstractSearchPageController {
             return (CustomerModel) getUserService().getCurrentUser();
         }
 
-        LOG.error("Customer not found");
+        LOGGER.error("Customer not found");
 
         return null;
     }
