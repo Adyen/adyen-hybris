@@ -99,6 +99,10 @@ public interface AdyenCheckoutFacade {
      */
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
 
+    /**
+     * @deprecated use authorisePayment instead
+     *  * {@link #authorisePayment(HttpServletRequest request, CartData cartData)
+     */
     @Deprecated
     OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
 

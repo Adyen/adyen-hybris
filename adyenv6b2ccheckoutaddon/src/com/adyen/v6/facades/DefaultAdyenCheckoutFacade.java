@@ -142,7 +142,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
 
-    public static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
+    protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                           HPPConstants.Response.SKIN_CODE,
                                                                                           HPPConstants.Response.SHOPPER_LOCALE,
                                                                                           HPPConstants.Response.PAYMENT_METHOD,
@@ -268,7 +268,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 orderData = getCheckoutFacade().placeOrder();
             }
         } catch (InvalidCartException e) {
-            LOGGER.warn(e);
+            LOGGER.warn("InvalidCartException", e);
             //Cart does not exist, retrieve order
             orderData = getOrderFacade().getOrderDetailsForCode(merchantReference);
         }
@@ -276,6 +276,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
+    /**
+     * @deprecated use authorisePayment instead
+     */
     @Override
     @Deprecated
     public OrderData authoriseCardPayment(final HttpServletRequest request, final CartData cartData) throws Exception {
@@ -350,7 +353,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         } catch (ApiException e) {
-            LOGGER.error("API Exception " + e.getError());
             throw e;
         }
     }
@@ -488,7 +490,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             try {
                 storedCards = adyenPaymentService.getStoredCards(customerModel.getCustomerID());
             } catch (ApiException e) {
-                LOGGER.error("API Exception " + e.getError());
+                LOGGER.error("API Exception", e);
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
