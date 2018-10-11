@@ -156,8 +156,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e.getError());
+                LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRedirectShopper()) {
                     final String termUrl = getTermUrl();
@@ -209,7 +210,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentResult paymentResult = e.getPaymentResult();
-            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult);
+            LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentResult: " + paymentResult, e);
 
             if (paymentResult.isRefused()) {
                 errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
@@ -307,7 +308,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     }
 
     private String getErrorMessageByRefusalReason(String refusalReason) {
-        String errorMessage = "checkout.error.authorization.payment.refused";
+        String errorMessage;
 
         switch (refusalReason) {
             case RefusalReason.TRANSACTION_NOT_PERMITTED:
@@ -322,6 +323,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             case RefusalReason.PAYMENT_DETAIL_NOT_FOUND:
                 errorMessage = "checkout.error.authorization.payment.detail.not.found";
                 break;
+            default:
+                errorMessage = "checkout.error.authorization.payment.refused";
         }
 
         return errorMessage;
