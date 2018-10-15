@@ -65,7 +65,7 @@
         </itemtype>
 
         <itemtype code="NotificationItem" generate="true" autocreate="true">
-            <deployment table="AdyenNotificationItem" typecode="23936"/>
+            <deployment table="AdyenNotificationItem" typecode="22936"/>
             <attributes>
                 <attribute qualifier="uuid" type="java.lang.String">
                     <persistence type="property"/>
@@ -190,10 +190,9 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.TRUE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenAPIEndpoint" type="java.lang.String">
-                    <description>API endpoint</description>
+                <attribute qualifier="adyenAPIEndpointPrefix" type="java.lang.String">
+                    <description>API endpoint URL Prefix for Live</description>
                     <persistence type="property"/>
-                    <defaultvalue>java.lang.String.valueOf("https://pal-test.adyen.com")</defaultvalue>
                 </attribute>
                 <attribute qualifier="adyenAllowedCards" type="AdyenCardTypeSet">
                     <persistence type="property"/>

@@ -31,11 +31,9 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.adyen.model.checkout.PaymentsDetailsRequest;
 import javax.servlet.http.HttpServletRequest;
-
-import com.adyen.v6.model.RequestInfo;
-import org.apache.commons.lang3.StringUtils;
+import com.adyen.enums.Environment;
+import com.adyen.model.checkout.PaymentsDetailsRequest;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import com.adyen.Client;
@@ -74,6 +72,7 @@ import static com.adyen.Client.ENDPOINT_TEST;
 import static com.adyen.Client.HPP_LIVE;
 import static com.adyen.Client.HPP_TEST;
 
+
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
@@ -95,7 +94,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String merchantAccount = baseStore.getAdyenMerchantAccount();
         String skinCode = baseStore.getAdyenSkinCode();
         String hmacKey = baseStore.getAdyenSkinHMAC();
-        String apiEndpoint = baseStore.getAdyenAPIEndpoint();
+        String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
 
         Assert.notNull(merchantAccount);
@@ -106,23 +105,13 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
         config.setApplicationName("Adyen Hybris v3.4.0");
+        client = new Client(config);
 
         if (isTestMode) {
-            config.setEndpoint(ENDPOINT_TEST);
-            config.setHppEndpoint(HPP_TEST);
-            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_TEST);
+            client.setEnvironment(Environment.TEST, null);
         } else {
-            config.setEndpoint(ENDPOINT_LIVE);
-            config.setHppEndpoint(HPP_LIVE);
-            config.setCheckoutEndpoint(CHECKOUT_ENDPOINT_LIVE);
+            client.setEnvironment(Environment.LIVE, apiEndpointPrefix);
         }
-
-        //Use custom endpoint if set
-        if (! StringUtils.isEmpty(apiEndpoint)) {
-            config.setEndpoint(apiEndpoint);
-        }
-
-        client = new Client(config);
     }
 
     @Override

@@ -99,8 +99,8 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
         BigDecimal zero = BigDecimal.ZERO;
 
         //Setting scale to 3, to avoid comparison issues on more than 3 decimal places
-        zero.setScale(3, BigDecimal.ROUND_FLOOR);
-        remainingAmount.setScale(3, BigDecimal.ROUND_FLOOR);
+        zero = zero.setScale(3, BigDecimal.ROUND_FLOOR);
+        remainingAmount = remainingAmount.setScale(3, BigDecimal.ROUND_FLOOR);
 
         //Return success if all transactions are captured
         if (remainingAmount.compareTo(zero) <= 0) {

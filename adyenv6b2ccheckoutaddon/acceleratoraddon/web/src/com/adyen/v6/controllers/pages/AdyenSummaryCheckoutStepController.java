@@ -156,8 +156,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e.getError());
+                LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                     final String termUrl = getTermUrl();
@@ -187,8 +188,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e.getError());
+                LOGGER.error("API exception " + e);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug(e);
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
@@ -231,7 +233,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         } catch (AdyenNonAuthorizedPaymentException e) {
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
-                    LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentsResponse: " + paymentsResponse);
+                    LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentsResponse: " + paymentsResponse, e);
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
         } catch (Exception e) {
@@ -327,7 +329,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     }
 
     private String getErrorMessageByRefusalReason(String refusalReason) {
-        String errorMessage = "checkout.error.authorization.payment.refused";
+        String errorMessage;
 
         switch (refusalReason) {
             case RefusalReason.TRANSACTION_NOT_PERMITTED:
@@ -342,6 +344,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             case RefusalReason.PAYMENT_DETAIL_NOT_FOUND:
                 errorMessage = "checkout.error.authorization.payment.detail.not.found";
                 break;
+            default:
+                errorMessage = "checkout.error.authorization.payment.refused";
         }
 
         return errorMessage;
