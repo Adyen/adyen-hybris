@@ -67,7 +67,7 @@ public class DefaultAdyenAddressDataFactory implements AdyenAddressDataFactory {
                 regionData.setIsocode(regionModel.getIsocode());
                 addressData.setRegion(regionData);
             } catch (final UnknownIdentifierException e) {
-                LOG.info("No region with the code " + isocode + " found.");
+                LOG.info("No region with the code " + isocode + " found.", e);
             }
         }
 
