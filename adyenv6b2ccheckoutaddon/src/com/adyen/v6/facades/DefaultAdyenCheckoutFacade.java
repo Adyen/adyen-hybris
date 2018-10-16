@@ -956,7 +956,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return addressReverseConverter;
     }
 
+    public void setAddressReverseConverter(Converter<AddressData, AddressModel> addressReverseConverter) {
+        this.addressReverseConverter = addressReverseConverter;
+    }
+
     public I18NFacade getI18NFacade() {
         return i18NFacade;
+    }
+
+    public void setI18NFacade(I18NFacade i18NFacade) {
+        this.i18NFacade = i18NFacade;
     }
 }
