@@ -301,6 +301,38 @@
                     <description>Paypal ECS payer ID</description>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="encryptedCardNumber" type="java.lang.String">
+                    <description>Adyen Encrypted Card Number</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="encryptedExpiryMonth" type="java.lang.String">
+                    <description>Adyen Encrypted Expiry Month</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="encryptedExpiryYear" type="java.lang.String">
+                    <description>Adyen Encrypted Expiry Year</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="encryptedSecurityCode" type="java.lang.String">
+                    <description>Adyen Encrypted Security Code</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
             </attributes>
         </itemtype>
     </itemtypes>

@@ -36,7 +36,7 @@ public class CartPopulator implements Populator<CartModel, CartData> {
         target.setAdyenDfValue(source.getAdyenDfValue());
 
         final PaymentInfoModel paymentInfo = source.getPaymentInfo();
-        if (paymentInfo != null && isNotCreditCard(paymentInfo)) {
+        if (paymentInfo != null && isAdyenPaymentInfo(paymentInfo)) {
             target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
             target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
             target.setAdyenRememberTheseDetails(paymentInfo.getAdyenRememberTheseDetails());
@@ -47,10 +47,15 @@ public class CartPopulator implements Populator<CartModel, CartData> {
             target.setAdyenLastName(paymentInfo.getAdyenLastName());
             target.setAdyenPaymentToken(paymentInfo.getAdyenPaypalEcsToken());
             target.setAdyenCardHolder(paymentInfo.getAdyenCardHolder());
+
+            target.setAdyenEncryptedCardNumber(paymentInfo.getEncryptedCardNumber());
+            target.setAdyenEncryptedExpiryMonth(paymentInfo.getEncryptedExpiryMonth());
+            target.setAdyenEncryptedExpiryYear(paymentInfo.getEncryptedExpiryYear());
+            target.setAdyenEncryptedSecurityCode(paymentInfo.getEncryptedSecurityCode());
         }
     }
 
-    protected boolean isNotCreditCard(final PaymentInfoModel paymentInfo) {
+    protected boolean isAdyenPaymentInfo(final PaymentInfoModel paymentInfo) {
         return ! (paymentInfo instanceof CreditCardPaymentInfoModel);
     }
 }

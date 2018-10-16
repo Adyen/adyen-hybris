@@ -65,6 +65,14 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
 
+import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE;
+import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
+import static com.adyen.Client.ENDPOINT_LIVE;
+import static com.adyen.Client.ENDPOINT_TEST;
+import static com.adyen.Client.HPP_LIVE;
+import static com.adyen.Client.HPP_TEST;
+
+
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
@@ -125,12 +133,12 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse authorisePayment(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                                                                                               cartData,
-                                                                                              request,
+                                                                                              requestInfo,
                                                                                               customerModel,
                                                                                               baseStore.getAdyenRecurringContractMode());
 

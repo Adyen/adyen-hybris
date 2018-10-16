@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -221,7 +222,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequireHardLogIn
     public String authorise3DSecurePayment(final Model model,
                                            final RedirectAttributes redirectModel,
-                                           final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
+                                           final javax.servlet.http.HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
         String errorMessage = "checkout.error.authorization.failed";
 
         try {
@@ -246,7 +247,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
-    public String handleHPPResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
+    public String handleHPPResponse(final javax.servlet.http.HttpServletRequest request, final RedirectAttributes redirectModel) {
         //Compose HPP response data map
         String authResult = request.getParameter(HPPConstants.Response.AUTH_RESULT);
 
