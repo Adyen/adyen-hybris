@@ -110,6 +110,8 @@
 		<property name="commonI18NService" ref="commonI18NService"/>
 		<property name="keyGenerator" ref="orderCodeGenerator"/>
 		<property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
+		<property name="flexibleSearchService" ref="flexibleSearchService"/>
+		<property name="addressReverseConverter" ref="addressReverseConverter"/>
 	</bean>
 
 	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />

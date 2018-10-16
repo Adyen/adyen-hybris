@@ -1,49 +1,11 @@
-/*
- *                        ######
- *                        ######
- *  ############    ####( ######  #####. ######  ############   ############
- *  #############  #####( ######  #####. ######  #############  #############
- *         ######  #####( ######  #####. ######  #####  ######  #####  ######
- *  ###### ######  #####( ######  #####. ######  #####  #####   #####  ######
- *  ###### ######  #####( ######  #####. ######  #####          #####  ######
- *  #############  #############  #############  #############  #####  ######
- *   ############   ############  #############   ############  #####  ######
- *                                       ######
- *                                #############
- *                                ############
- *
- *  Adyen Hybris Extension
- *
- *  Copyright (c) 2017 Adyen B.V.
- *  This file is open source and available under the MIT license.
- *  See the LICENSE file for more info.
- */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.Amount;
+import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.hpp.PaymentMethod;
@@ -53,52 +15,61 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.factory.AdyenAddressDataFactory;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
+import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commercefacades.user.data.RegionData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.webservicescommons.mapping.DataMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
-import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.constants.HPPConstants.Fields.RES_URL;
-import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
-import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
-import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
+import static com.adyen.constants.HPPConstants.Fields.*;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -120,6 +91,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private CommonI18NService commonI18NService;
     private KeyGenerator keyGenerator;
     private PaymentsResponseConverter paymentsResponseConverter;
+    private FlexibleSearchService flexibleSearchService;
+    private Converter<AddressData, AddressModel> addressReverseConverter;
+
+    @Resource(name = "i18NFacade")
+    private I18NFacade i18NFacade;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -270,6 +246,89 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
+    public OrderData authorisePayment(final CartData cartData) throws Exception {
+        CustomerModel customer = null;
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, RequestInfo.empty(), customer);
+
+        //In case of Authorized: create order and authorize it
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            return createAuthorizedOrder(paymentsResponse);
+        }
+
+        //In case of Received: create order
+        if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            return createOrderFromPaymentsResponse(paymentsResponse);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+    }
+
+    @Override
+    public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper) {
+        CartModel cartModel = cartService.getSessionCart();
+
+        final AddressModel billingAddress = createBillingAddress(paymentDetails);
+
+        PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, paymentDetails);
+        paymentInfo.setBillingAddress(billingAddress);
+        billingAddress.setOwner(paymentInfo);
+
+        modelService.save(paymentInfo);
+
+        cartModel.setPaymentInfo(paymentInfo);
+        modelService.save(cartModel);
+
+        return paymentDetails;
+    }
+
+    private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
+        String titleCode = paymentDetails.getBillingAddress().getTitleCode();
+        final AddressModel billingAddress = getModelService().create(AddressModel.class);
+        if (StringUtils.isNotBlank(titleCode))
+        {
+            final TitleModel title = new TitleModel();
+            title.setCode(titleCode);
+            billingAddress.setTitle(getFlexibleSearchService().getModelByExample(title));
+        }
+        billingAddress.setFirstname(paymentDetails.getBillingAddress().getFirstName());
+        billingAddress.setLastname(paymentDetails.getBillingAddress().getLastName());
+        billingAddress.setLine1(paymentDetails.getBillingAddress().getLine1());
+        billingAddress.setLine2(paymentDetails.getBillingAddress().getLine2());
+        billingAddress.setTown(paymentDetails.getBillingAddress().getTown());
+        billingAddress.setPostalcode(paymentDetails.getBillingAddress().getPostalCode());
+        billingAddress.setCountry(getCommonI18NService().getCountry(paymentDetails.getBillingAddress().getCountry().getIsocode()));
+
+        final AddressData addressData = new AddressData();
+        addressData.setTitleCode(paymentDetails.getBillingAddress().getTitleCode());
+        addressData.setFirstName(billingAddress.getFirstname());
+        addressData.setLastName(billingAddress.getLastname());
+        addressData.setLine1(billingAddress.getLine1());
+        addressData.setLine2(billingAddress.getLine2());
+        addressData.setTown(billingAddress.getTown());
+        addressData.setPostalCode(billingAddress.getPostalcode());
+        addressData.setBillingAddress(true);
+
+        if (paymentDetails.getBillingAddress().getCountry() != null)
+        {
+            final CountryData countryData = getI18NFacade().getCountryForIsocode(paymentDetails.getBillingAddress().getCountry().getIsocode());
+            addressData.setCountry(countryData);
+        }
+        if (paymentDetails.getBillingAddress().getRegion().getIsocode() != null )
+        {
+            final RegionData regionData = getI18NFacade().getRegion(paymentDetails.getBillingAddress().getCountry().getIsocode(), paymentDetails.getBillingAddress().getRegion().getIsocode());
+            addressData.setRegion(regionData);
+        }
+
+        getAddressReverseConverter().convert(addressData, billingAddress);
+
+        return billingAddress;
+    }
+
+    @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
         if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
@@ -279,7 +338,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
 
         if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, request, customer);
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, new RequestInfo(request), customer);
             if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
             }
@@ -440,6 +499,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         OrderData orderData = getCheckoutFacade().placeOrder();
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         updateOrder(orderModel, paymentsResponse);
+
+        orderData.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
+        orderData.setAdyenBoletoData(paymentsResponse.getBoletoData());
+        orderData.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
+        orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
 
         return orderData;
     }
@@ -616,6 +680,30 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentInfo;
     }
 
+    public PaymentInfoModel createPaymentInfo(final CartModel cartModel, PaymentDetailsWsDTO paymentDetails) {
+        final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
+        paymentInfo.setUser(cartModel.getUser());
+        paymentInfo.setSaved(false);
+        paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
+
+        paymentInfo.setAdyenIssuerId(paymentDetails.getIssueNumber());
+
+        paymentInfo.setAdyenCardHolder(paymentDetails.getAccountHolderName());
+        paymentInfo.setEncryptedCardNumber(paymentDetails.getEncryptedCardNumber());
+        paymentInfo.setEncryptedExpiryMonth(paymentDetails.getEncryptedExpiryMonth());
+        paymentInfo.setEncryptedExpiryYear(paymentDetails.getEncryptedExpiryYear());
+        paymentInfo.setEncryptedSecurityCode(paymentDetails.getEncryptedSecurityCode());
+        paymentInfo.setAdyenRememberTheseDetails(paymentDetails.getSaveCardData());
+        paymentInfo.setAdyenPaymentMethod(paymentDetails.getAdyenPaymentMethod());
+        paymentInfo.setAdyenSelectedReference(paymentDetails.getAdyenSelectedReference());
+        paymentInfo.setAdyenSocialSecurityNumber(paymentDetails.getAdyenSocialSecurityNumber());
+        paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
+        paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
+        paymentInfo.setOwner(cartModel.getOwner());
+
+        return paymentInfo;
+    }
+
     @Override
     public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult) {
         //Validate form
@@ -654,6 +742,40 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
         cartModel.setPaymentInfo(paymentInfo);
         modelService.save(cartModel);
+    }
+
+    @Override
+    public PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException {
+        CustomerModel customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+
+        List<RecurringDetail> recurringDetails = getAdyenPaymentService().getStoredCards(customer.getCustomerID());
+
+        PaymentDetailsListWsDTO paymentDetailsListWsDTO = new PaymentDetailsListWsDTO();
+        paymentDetailsListWsDTO.setPayments(toPaymentDetails(recurringDetails));
+
+        return paymentDetailsListWsDTO;
+    }
+
+    private List<PaymentDetailsWsDTO> toPaymentDetails(List<RecurringDetail> recurringDetails) {
+        return recurringDetails.stream().map(r -> toPaymentDetail(r)).collect(Collectors.toList());
+    }
+
+    private PaymentDetailsWsDTO toPaymentDetail(RecurringDetail recurringDetail) {
+        PaymentDetailsWsDTO paymentDetailsWsDTO = new PaymentDetailsWsDTO();
+
+        Card card = recurringDetail.getCard();
+
+        if (card == null) {
+            throw new RuntimeException("Card information not found");
+        }
+
+        paymentDetailsWsDTO.setAccountHolderName(card.getHolderName());
+        paymentDetailsWsDTO.setCardNumber("**** **** **** " + card.getNumber());
+        paymentDetailsWsDTO.setExpiryMonth(card.getExpiryMonth());
+        paymentDetailsWsDTO.setExpiryYear(card.getExpiryYear());
+        paymentDetailsWsDTO.setSubscriptionId(recurringDetail.getRecurringDetailReference());
+
+        return paymentDetailsWsDTO;
     }
 
     private String getShopperLocale() {
@@ -820,5 +942,29 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setPaymentsResponseConverter(PaymentsResponseConverter paymentsResponseConverter) {
         this.paymentsResponseConverter = paymentsResponseConverter;
+    }
+
+    public FlexibleSearchService getFlexibleSearchService() {
+        return flexibleSearchService;
+    }
+
+    public void setFlexibleSearchService(FlexibleSearchService flexibleSearchService) {
+        this.flexibleSearchService = flexibleSearchService;
+    }
+
+    public Converter<AddressData, AddressModel> getAddressReverseConverter() {
+        return addressReverseConverter;
+    }
+
+    public void setAddressReverseConverter(Converter<AddressData, AddressModel> addressReverseConverter) {
+        this.addressReverseConverter = addressReverseConverter;
+    }
+
+    public I18NFacade getI18NFacade() {
+        return i18NFacade;
+    }
+
+    public void setI18NFacade(I18NFacade i18NFacade) {
+        this.i18NFacade = i18NFacade;
     }
 }
