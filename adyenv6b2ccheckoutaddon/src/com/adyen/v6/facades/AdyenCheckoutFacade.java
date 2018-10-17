@@ -20,6 +20,13 @@
  */
 package com.adyen.v6.facades;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.Map;
+import java.util.SortedMap;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -29,15 +36,6 @@ import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsD
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
-import de.hybris.platform.webservicescommons.mapping.DataMapper;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -124,10 +122,8 @@ public interface AdyenCheckoutFacade {
 
     /**
      * Add payment details to cart
-     * @param paymentDetails
-     * @return
      */
-    PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper);
+    PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails);
 
     /**
      * Handles an 3D response
@@ -146,7 +142,7 @@ public interface AdyenCheckoutFacade {
      * @param cartData    Shopper's cart
      * @param redirectUrl HPP result url
      * @return HPP data
-     * @throws SignatureException In case signature cannot be generated
+     * @throws SignatureException   In case signature cannot be generated
      * @throws InvalidCartException In case there is an existing locked cart
      */
     Map<String, String> initializeHostedPayment(CartData cartData, String redirectUrl) throws SignatureException, InvalidCartException;
