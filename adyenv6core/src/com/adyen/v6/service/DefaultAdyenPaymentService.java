@@ -20,28 +20,14 @@
  */
 package com.adyen.v6.service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import com.adyen.enums.Environment;
-import com.adyen.model.checkout.PaymentsDetailsRequest;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
+import com.adyen.enums.Environment;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.hpp.DirectoryLookupRequest;
@@ -50,27 +36,28 @@ import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
-import com.adyen.model.recurring.DisableRequest;
-import com.adyen.model.recurring.DisableResult;
-import com.adyen.model.recurring.RecurringDetail;
-import com.adyen.model.recurring.RecurringDetailsRequest;
-import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.recurring.*;
 import com.adyen.service.Checkout;
 import com.adyen.service.HostedPaymentPages;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.factory.AdyenRequestFactory;
+import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
-import static com.adyen.Client.CHECKOUT_ENDPOINT_LIVE;
-import static com.adyen.Client.CHECKOUT_ENDPOINT_TEST;
-import static com.adyen.Client.ENDPOINT_LIVE;
-import static com.adyen.Client.ENDPOINT_TEST;
-import static com.adyen.Client.HPP_LIVE;
-import static com.adyen.Client.HPP_TEST;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
