@@ -1,5 +1,25 @@
 package com.adyen.v6.facades;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -15,7 +35,6 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
-import com.adyen.v6.factory.AdyenAddressDataFactory;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
@@ -51,25 +70,25 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import de.hybris.platform.webservicescommons.mapping.DataMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.HPPConstants.Fields.*;
+import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
+import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
+import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
+import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
+import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
+import static com.adyen.constants.HPPConstants.Fields.RES_URL;
+import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
+import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
+import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.v6.constants.Adyenv6coreConstants.*;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
@@ -125,12 +144,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
-                                                                                          HPPConstants.Response.SKIN_CODE,
-                                                                                          HPPConstants.Response.SHOPPER_LOCALE,
-                                                                                          HPPConstants.Response.PAYMENT_METHOD,
-                                                                                          HPPConstants.Response.AUTH_RESULT,
-                                                                                          HPPConstants.Response.PSP_REFERENCE,
-                                                                                          HPPConstants.Response.MERCHANT_RETURN_DATA));
+                                                                                             HPPConstants.Response.SKIN_CODE,
+                                                                                             HPPConstants.Response.SHOPPER_LOCALE,
+                                                                                             HPPConstants.Response.PAYMENT_METHOD,
+                                                                                             HPPConstants.Response.AUTH_RESULT,
+                                                                                             HPPConstants.Response.PSP_REFERENCE,
+                                                                                             HPPConstants.Response.MERCHANT_RETURN_DATA));
 
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -268,7 +287,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails, DataMapper dataMapper) {
+    public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails) {
         CartModel cartModel = cartService.getSessionCart();
 
         final AddressModel billingAddress = createBillingAddress(paymentDetails);
@@ -288,8 +307,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
         String titleCode = paymentDetails.getBillingAddress().getTitleCode();
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
-        if (StringUtils.isNotBlank(titleCode))
-        {
+        if (StringUtils.isNotBlank(titleCode)) {
             final TitleModel title = new TitleModel();
             title.setCode(titleCode);
             billingAddress.setTitle(getFlexibleSearchService().getModelByExample(title));
@@ -312,13 +330,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setPostalCode(billingAddress.getPostalcode());
         addressData.setBillingAddress(true);
 
-        if (paymentDetails.getBillingAddress().getCountry() != null)
-        {
+        if (paymentDetails.getBillingAddress().getCountry() != null) {
             final CountryData countryData = getI18NFacade().getCountryForIsocode(paymentDetails.getBillingAddress().getCountry().getIsocode());
             addressData.setCountry(countryData);
         }
-        if (paymentDetails.getBillingAddress().getRegion().getIsocode() != null )
-        {
+        if (paymentDetails.getBillingAddress().getRegion().getIsocode() != null) {
             final RegionData regionData = getI18NFacade().getRegion(paymentDetails.getBillingAddress().getCountry().getIsocode(), paymentDetails.getBillingAddress().getRegion().getIsocode());
             addressData.setRegion(regionData);
         }
@@ -331,34 +347,33 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CustomerModel customer = null;
-        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
         updateCartWithSessionData(cartData);
 
-        if(PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())|| cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+        if (PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod()) || cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, new RequestInfo(request), customer);
-            if(PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
                 return createAuthorizedOrder(paymentsResponse);
             }
-            if(PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
                 return createOrderFromPaymentsResponse(paymentsResponse);
             }
-            if(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
+            if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
                 lockSessionCart();
             }
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-        }
-        else {
+        } else {
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
-            if(PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
+            if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
                 return createAuthorizedOrder(paymentResult);
             }
-            if(PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
+            if (PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
                 return createOrderFromPaymentResult(paymentResult);
             }
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
@@ -389,16 +404,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         try {
             //Check if MD matches in order to avoid authorizing wrong order
-            if (sessionMd != null && !sessionMd.equals(md)) {
+            if (sessionMd != null && ! sessionMd.equals(md)) {
                 throw new SignatureException("MD does not match!");
             }
 
             restoreSessionCart();
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
-                if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-                    return createAuthorizedOrder(paymentsResponse);
-                }
-                throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                return createAuthorizedOrder(paymentsResponse);
+            }
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         } catch (ApiException e) {
             throw e;
         }
