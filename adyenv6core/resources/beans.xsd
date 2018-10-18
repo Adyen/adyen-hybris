@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<xs:element name="beans" type="abstractPojos" />
+
+	<xs:complexType name="abstractPojos">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="bean" type="bean" />
+			<xs:element name="enum" type="enum" />
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="abstractPojo" abstract="true">
+		<xs:attribute name="class" type="xs:string" use="required" />
+		<xs:attribute name="template" type="xs:string" use="optional" />
+	</xs:complexType>
+
+
+
+	<xs:complexType name="bean">
+		<xs:complexContent>
+			<xs:extension base="abstractPojo">
+				<xs:sequence>
+					<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="hints" type="hints" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="import" type="import" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="annotations" type="annotations" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="property" type="property" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="extends" type="xs:string" use="optional" />
+				<xs:attribute name="type" type="xs:string" use="optional">
+					<xs:annotation>
+						<xs:documentation>Defines the type of bean. Allowed are 'bean' or 'event'.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+                <xs:attribute name="deprecated" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>Marks bean as deprecated. Allows defining a message.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+				<xs:attribute name="abstract" type="xs:boolean" use="optional" />
+				<xs:attribute name="superEquals" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="hints">
+		<xs:sequence>
+			<xs:element name="hint" type="hint" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="hint">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<xs:complexType name="annotations">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="scope" use="optional" default="all">
+		           <xs:simpleType>
+		               <xs:restriction base="xs:NMTOKEN">
+		                   <xs:enumeration value="all"/>
+		                   <xs:enumeration value="getter"/>
+		                   <xs:enumeration value="setter"/>
+		                   <xs:enumeration value="member"/>
+		               </xs:restriction>
+		           </xs:simpleType>
+		       </xs:attribute>        
+		   </xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="import">
+		<xs:attribute name="type" type="xs:string" use="required" />
+		<xs:attribute name="static" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+
+	<xs:complexType name="property">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="hints" type="hints" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="annotations" type="annotations" minOccurs="0" maxOccurs="3"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+		<xs:attribute name="equals" type="xs:boolean" use="optional" />
+		<xs:attribute name="deprecated" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Marks property as deprecated. Allows defining a message.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="enum">
+		<xs:complexContent>
+			<xs:extension base="abstractPojo">
+				<xs:sequence>
+					<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+                <xs:attribute name="deprecated" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>Marks bean as deprecated. Allows defining a message.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+</xs:schema>

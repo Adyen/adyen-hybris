@@ -1,12 +1,12 @@
 var AdyenCheckout = (function () {
     'use strict';
-
     return {
         oneClickForms: [],
         dobDateFormat: "yy-mm-dd",
         securedFieldsData: {},
         allowedCards: [],
         cseEncryptedForm: null,
+        checkout: null,
 
         updateCardType: function ( cardType, friendlyName ) {
             $( ".cse-cardtype" ).removeClass( "cse-cardtype-style-active" );
@@ -118,12 +118,6 @@ var AdyenCheckout = (function () {
          */
         setCustomPaymentMethodValues: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
-
-            // set issuer if payment method has it
-            var issuer = $( '#p_method_adyen_hpp_' + paymentMethod + '_issuer' );
-            if ( issuer ) {
-                $( "#issuerId" ).val( issuer.val() );
-            }
 
             var dob = $( '#p_method_adyen_hpp_' + paymentMethod + '_dob' );
             if ( dob ) {
@@ -257,10 +251,37 @@ var AdyenCheckout = (function () {
                             break;
                         }
                     }
-                } catch ( e ) {
+                } catch (e) {
                     //not json data
                 }
             };
+        },
+        initiateCheckout: function (locale) {
+            var configuration = {
+                locale: 'nl_NL' // shopper's locale
+            };
+            this.checkout = new Adyen.Checkout(configuration);
+        },
+
+        initiateIdeal: function (idealItems) {
+            var idealNode = document.getElementById('adyen_hpp_ideal_container');
+            var ideal = this.checkout.create('ideal', {
+                items: idealItems, // The array of issuers coming from the /paymentMethods api call
+                showImage: true, // Optional, defaults to true
+                onChange: handleChange // Gets triggered whenever a user selects a bank// Gets triggered once the state is valid
+            });
+
+            function handleChange(event) {
+                var issuerIdField = document.getElementById('issuerId');
+                var issuerId = event.data.issuer;
+                issuerIdField.value = issuerId;
+            }
+
+            try {
+                ideal.mount(idealNode);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the iDEAL component: ${e}');
+            }
         }
     };
 })();

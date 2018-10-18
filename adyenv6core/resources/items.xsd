@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<xs:simpleType name="positiveshort">
+ 		<xs:restriction base="xs:short">
+ 			<xs:minInclusive value="0"/>
+ 			<xs:maxInclusive value="32767"/>
+ 		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="atomictypeType">
+		<xs:annotation>
+			<xs:documentation>An AtomicType represents a simple java object. (The name 'atomic' just means 'non-composed' objects.)</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="class" type="classType" use="required">
+			<xs:annotation>
+				<xs:documentation>Corresponding Java class in the hybris Suite; will also be used as the code of the atomic type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the AtomicType will be created during initialization.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect for atomic types. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extends" type="classType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines the class which will be extended. Default is 'java.lang.Object'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="atomictypesType">
+		<xs:annotation>
+			<xs:documentation>
+				Defines a list of atomic types.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="atomictype" type="atomictypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>An AtomicType represents a simple java object. (The name 'atomic' just means 'non-composed' objects.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="collectiontypeType">
+		<xs:annotation>
+			<xs:documentation>A CollectionType defines a collection of typed elements. Attention: If using a collection type for persistent attributes (not jalo) you can not search on that attribute and you are limited in size of collection. Consider to use a relation instead.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The code (that is, qualifier) of the CollectionType.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="elementtype" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The type of elements of this CollectionType.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the CollectionType will be created during initialization.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect for collection types. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" use="optional" default="collection">
+			<xs:annotation>
+				<xs:documentation>Configures the type of this collection: 'set', 'list', 'collection'. The getter / setter methods will use corresponding Java collection interfaces. Default is 'collection'.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="set">
+						<xs:annotation>
+							<xs:documentation>A collection that contains no duplicate elements.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="list">
+						<xs:annotation>
+							<xs:documentation>An ordered collection.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="collection">
+						<xs:annotation>
+							<xs:documentation>A collection.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="collectiontypesType">
+		<xs:annotation>
+			<xs:documentation>
+				Defines a list of collection types.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="collectiontype" type="collectiontypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>A CollectionType defines a collection of typed elements.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="deploymentType">
+		<xs:annotation>
+			<xs:documentation>A deployment defines how a (generic) item or relation is mapped onto the database.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="table" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The mapped database table. Must be globally unique.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typecode" type="positiveshort" use="required">
+			<xs:annotation>
+				<xs:documentation>The mapped item type code. Must be globally unique</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="propertytable" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The mapped dump property database table to be used for this item. Default is 'props'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+
+	<xs:complexType name="relationType" mixed="true">
+		<xs:annotation>
+			<xs:documentation>A RelationType defines a n-m or 1-n relation between types.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+		<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Provides possibility to add meaningfull description phrase for a generated model class.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="deployment" type="deploymentType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures deployment information for this relation (table name and typecode).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sourceElement" type="relationElementType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures the generated attribute at source relation end</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="targetElement" type="relationElementType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures the generated attribute at target relation end</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The typecode.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="localized" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>A localized n-m relation can have a link between two items for each language.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deployment" type="deploymentRefType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated, please use separate deployment sub tag. All instances of this type will be stored in a separated database table. The value of this attribute represents a reference to the specified deployment in the corresponding 'advanced-deployment.xml'. Default is empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the item will be created during initialization.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Will have no effect for relations.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="relationsType">
+		<xs:annotation>
+			<xs:documentation>
+				Defines a list of relation types.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="relation" type="relationType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>A RelationType defines a n-m or 1-n relation between types.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="relationElementType">
+		<xs:annotation>
+			<xs:documentation>Configures the generated attribute at one relation end.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Documents this relation attribute. Will be cited at javadoc of generated getters/setters.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="modifiers" type="modifiersType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Defines properties for the attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="model" type="attributeModelType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows to configure model generation for this relation attribute used at servicelayer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="custom-properties" type="customPropertiesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows to configure custom properties for the relation attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="type" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>Type of attribute which will be generated at type configured for opposite relation end.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="qualifier" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Qualifier of attribute which will be generated at type configured for opposite relation end. If navigable is not set to false the qualifier is mandatory. Default is empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="metatype" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The (meta)type which describes the attributes type. Must be type extending RelationDescriptor. Default is 'RelationDescriptor'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="cardinality" use="optional">
+			<xs:annotation>
+				<xs:documentation>The cardinality of this relation end. Choose 'one' for 'one' part of a 1:n relation or 'many' when part of a n:m relation. A 1:1 relation is not supported. Default is 'many'.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="one">
+						<xs:annotation>
+							<xs:documentation>The element is the 'one' part of a 1:n relation</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="many">
+						<xs:annotation>
+							<xs:documentation>The element is part of a n:m relation</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="navigable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Is the relation navigable from this side. Can only be disabled for one side of many to many relation. If disabled, no qualifier as well as modifiers can be defined. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="collectiontype" use="optional">
+			<xs:annotation>
+				<xs:documentation>Configures the type of this collection if element has cardinality 'many'. Related attribute getter / setter will use corresponding java collection interfaces. Default is 'Collection'.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="set">
+						<xs:annotation>
+							<xs:documentation>A collection that contains no duplicate elements.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="list">
+						<xs:annotation>
+							<xs:documentation>An ordered collection.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="collection">
+						<xs:annotation>
+							<xs:documentation>A collection.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="ordered" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true' an additional ordering attribute will be generated for maintaining ordering. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="enumtypeType">
+		<xs:annotation>
+			<xs:documentation>An EnumerationType defines fixed value types. (The typesystem provides item enumeration only)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Provides possibility to add meaningfull description phrase for a generated model class.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="model" type="enumModelType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows changing enum model settings.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="value" type="enumValueType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures one value of this Enumeration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The unique code of this Enumeration.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the item will be created during initialization.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'false' no constants will be generated at constant class of extension as well as at corresponding servicelayer enum class. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="jaloclass" type="classType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Specifies the name of the associated jalo class. The specified class must extend de.hybris.platform.jalo.enumeration.EnumerationValue and will not be generated. By specifying a jalo class you can change the implementation to use for the values of this enumeration. By default EnumerationValue class is used.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="dynamic" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Whether it is possible to add new values by runtime. Also results in different types of enums: 'true' results in 'classic' hybris enums, 'false' results in Java enums. Default is false. Both kinds of enums are API compatible, and switching between enum types is possible by running a system update. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="enumtypesType">
+		<xs:annotation>
+			<xs:documentation>
+				Defines a list of enumeration types.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="enumtype" type="enumtypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>An EnumerationType defines fixed value types. (The typesystem provides item enumeration only)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="indexType">
+		<xs:annotation>
+			<xs:documentation>Configures a database index for enclosing type.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" type="indexKeyType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures a single index key.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The name prefix of the index.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="remove" type="xs:boolean" use="optional"  default="false" >
+			<xs:annotation>
+				<xs:documentation>If 'true' this index will be ommitted while in initialization process even if there were precendent declarations.This attribute has effect only if replace = true.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="replace" type="xs:boolean" use="optional"  default="false" >
+			<xs:annotation>
+				<xs:documentation>If 'true' this index is a replacement/redeclaration for already existing index.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="unique" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true', the value of this attribute has to be unique within all instances of this index. Attributes with persistence type set to 'jalo' can not be unique. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+        <xs:attribute name="creationmode" use="optional" default="all">
+            <xs:annotation>
+                <xs:documentation>Determines index creation mode.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="all">
+                        <xs:annotation>
+                            <xs:documentation>Create index on all supported databases (default)</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="force">
+                        <xs:annotation>
+                            <xs:documentation>Force creation on Database which by default prevents index creation by external configuration</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="sap">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on SAP Hana database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="mysql">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on MySQL database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="oracle">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on Oracle database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="sqlserver">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on MSSQL Server database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="hsqldb">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on HSQL database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="postgresql">
+                        <xs:annotation>
+                            <xs:documentation>Create index only on PostgreSQL database</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="indexKeyType">
+		<xs:annotation>
+			<xs:documentation>Configures a single index key.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="attribute" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Type attribute to be indexed.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lower" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Elements will be indexed case-insensitive. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="attributeType">
+		<xs:annotation>
+			<xs:documentation>Defines an attribute of a type.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="defaultvalue" type="defaultValueType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures a default value for this attribute used if no value is provided. The default value is calculated by initialization and will not be re-calculated by runtime.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Gives a description for this attribute only used for the javadoc of generated attribute methods.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="persistence" type="persistenceType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Defines how the values of the attribute will be stored. Possible values: 'cmp' (deprecated), 'jalo' (not persistent, deprecated), 'property' (persistent), 'dynamic' (not persisted).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="modifiers" type="modifiersType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures advanced settings for this attribute definition.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="custom-properties" type="customPropertiesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows to configure custom properties for this attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="model" type="attributeModelType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows to configure model generation settings for this attribute. Models are used by the hybris ServiceLayer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="redeclare" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Lets you re-define the attribute definition from an inherited type. In essence, you can use a different type of attribute as well as different modifier combinations than on the supertype. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="qualifier" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Qualifier of this attribute. Attribute qualifiers	must be unique across a single type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The type of the attribute, such as 'Product', 'int' or 'java.lang.String'. Primitive java types will be mapped to the corresponding atomic type. For example: 'int' will be mapped to the atomic type	'java.lang.Integer' with implicit default value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="metatype" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Advanced setting. Specifies the metatype for the attributes definition. Must be a type extending AttributeDescriptor. Default is 'AttributeDescriptor'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the attribute descriptor will be created during initialization. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', getter and setter methods for this	attribute will be generated during a hybris Suite build. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isSelectionOf" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>References an attribute of the same type. Only values of the referenced attribute can be selected	as values for this attribute. Typical example: the default delivery address of a customer must be one of the addresses set for the customer. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="attributeModelType">
+		<xs:annotation>
+			<xs:documentation>Allows to configure model generation for this attribute used at servicelayer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="getter" type="modelMethodType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Allows to configure alternative getter methods at generated model.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="setter" type="modelMethodType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Allows to configure alternative setter methods at generated model.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="generate" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>Whether getter and setter methods for the model representation of the attribute will be generated. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="itemModelType">
+		<xs:annotation>
+			<xs:documentation>Allows to configure model generation for this item used at servicelayer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="constructor" type="modelConstructorType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Allows to configure model constructor signatures.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="generate" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>Whether a model for the type and models for subtypes will be generated. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="modelConstructorType">
+		<xs:annotation>
+			<xs:documentation>Allows to configure model constructor signatures.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="signature" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Add here, as comma separated list, the attribute qualifiers for the constructor signature in the model.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="modelMethodType">
+		<xs:annotation>
+			<xs:documentation>Allows to configure alternative methods at generated model.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence minOccurs="0" maxOccurs="1">
+			<xs:element name="nullDecorator" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the alternative getter method.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deprecated" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Will the method be marked deprecated? Default is
+					false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deprecatedSince" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Version since when this method is marked as deprecated.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="default" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Will this method be the default method and replace the original one instead of adding it additional? Default is false.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="customPropertiesType">
+		<xs:annotation>
+			<xs:documentation>Defines custom properties.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="property" type="customPropertyType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Defines a custom property.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="customPropertyType">
+		<xs:annotation>
+			<xs:documentation>Defines a custom property.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="value" type="defaultValueType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The value of the custom property.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The name of the custom property.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="attributesType">
+		<xs:annotation>
+			<xs:documentation>Configures a list of attributes.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="attribute" type="attributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Defines a single attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="indexesType">
+		<xs:annotation>
+			<xs:documentation>Configures a list of indexes.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="index" type="indexType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures a single index.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="itemtypeType" mixed="true">
+		<xs:annotation>
+			<xs:documentation>Specifies a specific ComposedType.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Provides possibility to add meaningfull description phrase for a generated model class.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="deployment" type="deploymentType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>A deployment defines how a (generic) item or relation is mapped onto the database.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="custom-properties" type="customPropertiesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					 <xs:documentation>Defines a list of custom properties for this type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="attributes" type="attributesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Defines the list of item attributes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="indexes" type="indexesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Defines the database indexes for this type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="model" type="itemModelType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Allows to configure model generation for this item used at servicelayer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The unique code of this type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extends" type="classType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines the class, which will be extended. Default is 'GenericItem'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="jaloclass" type="classType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Specifies the name of the associated jalo class. Default is [extension-root-package].jalo.[type-code] which will be generated if not existent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deployment" type="deploymentRefType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated, please use separate deployment sub tag. All instances of this type will be stored in a separated database table. The value of this attribute represents a reference to the specified deployment in the corresponding 'advanced-deployment.xml'. Default is empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="singleton" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true', type gets marked as singleton which will be evaluated by some modules like hmc or impex, with that allowing only one instance per system. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="jaloonly" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>DEPRECATED. Use 'implements JaloOnlyItem' in your bean. If 'true', the item will only exists in the jalo layer and isn't backed by an entity bean. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the item will be created during initialization. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the sourcecode for this item will be created. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="abstract" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Marks type and jalo class as abstract. If 'true', the type can not be instantiated. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="metatype" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The (meta)type which describes the assigned type. Must be a type extensing ComposedType. Default is 'ComposedType'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="itemtypesType">
+		<xs:annotation>
+			<xs:documentation>Defines a grouping of item types.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="itemtype" type="itemtypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Specifies a specific ComposedType.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typegroup" type="typeGroupType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Specifies a group of ComposedTypes to allow better structuring within the items.xml file.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="typeGroupType">
+		<xs:sequence>
+			<xs:element name="itemtype" type="itemtypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Specifies a specific ComposedType.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines the name of this group. Only for structural purpose, will have no effect on runtime. Default is empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:element name="items">
+		<xs:annotation>
+			<xs:documentation>Defines the types of your extension.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="atomictypes" type="atomictypesType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of AtomicType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="collectiontypes" type="collectiontypesType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of CollectionType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="enumtypes" type="enumtypesType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of EnumerationType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="maptypes" type="maptypesType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of MapType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="relations" type="relationsType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of RelationType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="itemtypes" type="itemtypesType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Defines the list of ComposedType's for your extension.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="maptypeType">
+		<xs:annotation>
+			<xs:documentation>Like the java collection framework, a type, which defines map objects. Attention: When used as type for an attribute, the attribute will not be searchable and the access performance is not effective. Consider to use a relation.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The unique code of the map.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="argumenttype" type="classType" use="required">
+			<xs:annotation>
+				<xs:documentation>The type of the key attributes.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="returntype" type="classType" use="required">
+			<xs:annotation>
+				<xs:documentation>The type of the value attributes.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="autocreate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>If 'true', the item will be created during initialization. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generate" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect for map types. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="redeclare" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect for map types. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="maptypesType">
+		<xs:annotation>
+			<xs:documentation>Specifies a list of map types.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="maptype" type="maptypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Like the java collection framework, a type, which defines map objects. Attention: When used as type for an attribute, the attribute will not be searchable and the access performance is not effective. Consider to use a relation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="modifiersType">
+		<xs:annotation>
+			<xs:documentation>Specifies further properties of an attribute which can be redeclared at other extensions.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="read" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines if this attribute is readable (that is, if a getter method will be generated). Default is 'true'.	The visibility of the getter depends on the value of the private attribute.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="write" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines if this attribute is writable (that is, if a setter method will be generated). Default is 'true'.	The visibility of the setter depends on the value of the private attribute.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="search" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines if this attribute is searchable by a FlexibleSearch. Default is 'true'. Attributes with persistence type set to 'jalo' can not be searchable.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="optional" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines if this attribute is mandatory or optional. Default is 'true' for optional. Set to 'false' for mandatory.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="private" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines the Java visibility of the generated getter and setter methods for this attribute. If 'true', the visibility modifier of generated methods is set to 'protected'; if 'false', the visibility modifier is 'public'. Default is 'false' for 'public' generated methods. Also, you will have no generated methods in the ServiceLayer if 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="initial" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>If 'true', the attribute will only be writable during the item creation. Setting this to 'true' is only useful in combination with write='false'.	Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="removable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines if this attribute is removable. Default is 'true'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="partof" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines if the assigned attribute value only belongs to the current instance of this type. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="unique" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true', the value of this attribute has to be unique within all instances of this type. If there are multiple attributes marked as unique, then their combined values must be unique. Will not be evaluated at jalo layer, if you want to manage the attribute directly using jalo layer you have to ensure uniqueness manually. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="dontOptimize" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true' the attribute value will be stored in the 'global' property table, otherwise a separate column (inside the table of the associated type)will be created for storing its values. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="encrypted" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true', the attribute value will be stored in an encrypted way. Default is 'false'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="persistenceType">
+		<xs:annotation>
+			<xs:documentation>Defines how the values of the attribute will be stored. Possible values: 'cmp' (deprecated), 'jalo' (not persistent), and 'property' (persistent).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="columntype" type="columntypeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures a persistence definition for a specific database used at create statement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation>Defines how the values of the attribute will be stored. Possible values: 'cmp' (deprecated), 'jalo' (not persistent, deprecated), 'property' (persistent), 'dynamic' (not persisted).</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="property">
+						<xs:annotation>
+							<xs:documentation>Attribte will be stored persistent.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="jalo">
+						<xs:annotation>
+							<xs:documentation>Attribte will be stored non-persistent (deprecated, please use dynamic instead).</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="cmp">
+						<xs:annotation>
+							<xs:documentation>Deprecated.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="dynamic">
+						<xs:annotation>
+							<xs:documentation>Defines that attribute dynamic.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="qualifier" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Only usable in relation with 'cmp' and 'property'(compatibility reasons) persistence type. Default is empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="attributeHandler" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Spring bean id that handles dynamic attributes implementation.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="columntypeType">
+		<xs:annotation>
+			<xs:documentation>Configures a persistence definition for a specific database.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="value" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The attribute type used in the create statement of the database table, such as 'varchar2(4000)'.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string" />
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="database" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The database the given definition will be used for. One of 'oracle', 'mysql', 'sqlserver' or 'hsql'. Default is empty which configures fallback for non specified databases.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:simpleType name="defaultValueType">
+		<xs:annotation>
+			<xs:documentation>Defines a default value text.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:complexType name="valueType">
+		<xs:annotation>
+			<xs:documentation>Configures a single element.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="code" type="codeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The unique code of this element.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="enumModelType">
+		<xs:annotation>
+			<xs:documentation>Configures a single enum model pojo.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="package" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defines the package for the actual enum model pojo.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="enumValueType">
+		<xs:annotation>
+			<xs:documentation>Configures a single enum value.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Provides possibility to add meaningfull description phrase for a generated model class.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="code" type="enumCodeType" use="required">
+			<xs:annotation>
+				<xs:documentation>The unique code of this element.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:simpleType name="enumCodeType">
+		<xs:annotation>
+			<xs:documentation>Configures the code of an enumeration value element. Must start with a letter or underscore.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString" >
+			<xs:pattern value="([a-zA-Z_])+([a-z_A-Z$0-9])*"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="codeType">
+		<xs:annotation>
+			<xs:documentation>Configures the code of an element.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString" />
+	</xs:simpleType>
+
+	<xs:simpleType name="deploymentRefType">
+		<xs:annotation>
+			<xs:documentation>Deprecated. Defines a reference to a deployment definition.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString" />
+	</xs:simpleType>
+
+	<xs:simpleType name="classType">
+		<xs:annotation>
+			<xs:documentation>Configures the class to use for enclosing element.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString" />
+	</xs:simpleType>
+</xs:schema>
