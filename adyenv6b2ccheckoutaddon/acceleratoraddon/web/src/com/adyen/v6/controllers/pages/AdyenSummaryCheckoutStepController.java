@@ -167,6 +167,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
+
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
