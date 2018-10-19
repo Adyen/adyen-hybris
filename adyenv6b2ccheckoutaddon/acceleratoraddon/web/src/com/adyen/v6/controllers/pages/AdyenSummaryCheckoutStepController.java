@@ -71,6 +71,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_AP
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static de.hybris.platform.addonsupport.controllers.AbstractAddOnController.REDIRECT_PREFIX;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -148,7 +149,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         String errorMessage = "checkout.error.authorization.failed";
 
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+
+        if (canUseAPI(adyenPaymentMethod)) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
 
@@ -160,24 +162,25 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e);
+                LOGGER.error("API exception ", e);
             } catch (AdyenNonAuthorizedPaymentException e) {
                 LOGGER.debug(e);
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                 }
-
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
-        } else {
+        }
+        else
+         {
             try {
                 cartData.setAdyenReturnUrl(getReturnUrl());
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e.getError(), e);
+                LOGGER.error("API exception ", e);
             } catch (AdyenNonAuthorizedPaymentException e) {
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
