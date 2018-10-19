@@ -58,7 +58,7 @@
 
             AdyenCheckout.createDobDatePicker("p_method_adyen_hpp_dob");
             AdyenCheckout.createDfValue();
-            AdyenCheckout.initiateCheckout(${shopperLocale});
+            AdyenCheckout.initiateCheckout("${shopperLocale}");
 
             <c:if test="${not empty iDealissuerList}">
                 AdyenCheckout.initiateIdeal(${iDealissuerList});
