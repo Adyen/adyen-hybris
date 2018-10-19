@@ -27,6 +27,7 @@ import java.util.SortedMap;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -97,6 +98,15 @@ public interface AdyenCheckoutFacade {
      * @throws SignatureException if signature doesn't match
      */
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
+
+    /**
+     * Handles Adyen Redirect Response
+     * In case of authorized, it places an order from cart
+     *
+     * @param payload included in querystring of response
+     * @return PaymentsResponse
+     */
+    PaymentsResponse handleRedirectPayload(String payload);
 
     /**
      * Authorizes a payment using Adyen API
