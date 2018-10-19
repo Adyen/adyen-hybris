@@ -606,8 +606,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                     .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
                             &&  PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())).findFirst().orElse(null);
 
-            Gson gson = new Gson();
             if(idealPaymentMethod!=null) {
+                Gson gson = new Gson();
                 iDealissuerList = gson.toJson(idealPaymentMethod.getDetails().get(0).getItems());
             }
 
