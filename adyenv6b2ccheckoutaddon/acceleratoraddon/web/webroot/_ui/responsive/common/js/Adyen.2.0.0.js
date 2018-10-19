@@ -1,92 +1,37 @@
 var Adyen = function (e) {
-    function t(t) {
-        for (var n, o, i = t[0], a = t[1], s = 0, u = []; s < i.length; s++) o = i[s], r[o] && u.push(r[o][0]), r[o] = 0;
-        for (n in a) Object.prototype.hasOwnProperty.call(a, n) && (e[n] = a[n]);
-        for (c && c(t); u.length;) u.shift()()
+    var t = {};
+
+    function n(r) {
+        if (t[r]) return t[r].exports;
+        var o = t[r] = {i: r, l: !1, exports: {}};
+        return e[r].call(o.exports, o, o.exports, n), o.l = !0, o.exports
     }
 
-    var n = {}, r = {0: 0};
-
-    function o(t) {
-        if (n[t]) return n[t].exports;
-        var r = n[t] = {i: t, l: !1, exports: {}};
-        return e[t].call(r.exports, r, r.exports, o), r.l = !0, r.exports
-    }
-
-    o.e = function (e) {
-        var t = [], n = r[e];
-        if (0 !== n) if (n) t.push(n[2]); else {
-            var i = new Promise(function (t, o) {
-                n = r[e] = [t, o]
-            });
-            t.push(n[2] = i);
-            var a, s = document.getElementsByTagName("head")[0], c = document.createElement("script");
-            c.charset = "utf-8", c.timeout = 120, o.nc && c.setAttribute("nonce", o.nc), c.src = function (e) {
-                return o.p + "" + ({
-                    1: "i18n/da-DK-json",
-                    2: "i18n/de-DE-json",
-                    3: "i18n/es-ES-json",
-                    4: "i18n/fr-FR-json",
-                    5: "i18n/it-IT-json",
-                    6: "i18n/nl-NL-json",
-                    7: "i18n/no-NO-json",
-                    8: "i18n/pl-PL-json",
-                    9: "i18n/pt-BR-json",
-                    10: "i18n/ru-RU-json",
-                    11: "i18n/sv-SE-json",
-                    12: "i18n/zh-CN-json",
-                    13: "i18n/zh-TW-json"
-                }[e] || e) + ".2.0.0.js"
-            }(e), a = function (t) {
-                c.onerror = c.onload = null, clearTimeout(u);
-                var n = r[e];
-                if (0 !== n) {
-                    if (n) {
-                        var o = t && ("load" === t.type ? "missing" : t.type), i = t && t.target && t.target.src,
-                            a = new Error("Loading chunk " + e + " failed.\n(" + o + ": " + i + ")");
-                        a.type = o, a.request = i, n[1](a)
-                    }
-                    r[e] = void 0
-                }
-            };
-            var u = setTimeout(function () {
-                a({type: "timeout", target: c})
-            }, 12e4);
-            c.onerror = c.onload = a, s.appendChild(c)
-        }
-        return Promise.all(t)
-    }, o.m = e, o.c = n, o.d = function (e, t, n) {
-        o.o(e, t) || Object.defineProperty(e, t, {enumerable: !0, get: n})
-    }, o.r = function (e) {
+    return n.m = e, n.c = t, n.d = function (e, t, r) {
+        n.o(e, t) || Object.defineProperty(e, t, {enumerable: !0, get: r})
+    }, n.r = function (e) {
         "undefined" !== typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {value: "Module"}), Object.defineProperty(e, "__esModule", {value: !0})
-    }, o.t = function (e, t) {
-        if (1 & t && (e = o(e)), 8 & t) return e;
+    }, n.t = function (e, t) {
+        if (1 & t && (e = n(e)), 8 & t) return e;
         if (4 & t && "object" === typeof e && e && e.__esModule) return e;
-        var n = Object.create(null);
-        if (o.r(n), Object.defineProperty(n, "default", {
+        var r = Object.create(null);
+        if (n.r(r), Object.defineProperty(r, "default", {
             enumerable: !0,
             value: e
-        }), 2 & t && "string" != typeof e) for (var r in e) o.d(n, r, function (t) {
+        }), 2 & t && "string" != typeof e) for (var o in e) n.d(r, o, function (t) {
             return e[t]
-        }.bind(null, r));
-        return n
-    }, o.n = function (e) {
+        }.bind(null, o));
+        return r
+    }, n.n = function (e) {
         var t = e && e.__esModule ? function () {
             return e.default
         } : function () {
             return e
         };
-        return o.d(t, "a", t), t
-    }, o.o = function (e, t) {
+        return n.d(t, "a", t), t
+    }, n.o = function (e, t) {
         return Object.prototype.hasOwnProperty.call(e, t)
-    }, o.p = "", o.oe = function (e) {
-        throw console.error(e), e
-    };
-    var i = window.webpackJsonp_name_ = window.webpackJsonp_name_ || [], a = i.push.bind(i);
-    i.push = t, i = i.slice();
-    for (var s = 0; s < i.length; s++) t(i[s]);
-    var c = a;
-    return o(o.s = 100)
+    }, n.p = "", n(n.s = 34)
 }([function (e, t, n) {
     "use strict";
     n.r(t), n.d(t, "h", function () {
@@ -94,13 +39,13 @@ var Adyen = function (e) {
     }), n.d(t, "createElement", function () {
         return s
     }), n.d(t, "cloneElement", function () {
-        return l
+        return u
     }), n.d(t, "Component", function () {
-        return D
-    }), n.d(t, "render", function () {
         return I
+    }), n.d(t, "render", function () {
+        return M
     }), n.d(t, "rerender", function () {
-        return d
+        return h
     }), n.d(t, "options", function () {
         return o
     });
@@ -108,11 +53,11 @@ var Adyen = function (e) {
     }, o = {}, i = [], a = [];
 
     function s(e, t) {
-        var n, s, c, u, l = a;
-        for (u = arguments.length; u-- > 2;) i.push(arguments[u]);
-        for (t && null != t.children && (i.length || i.push(t.children), delete t.children); i.length;) if ((s = i.pop()) && void 0 !== s.pop) for (u = s.length; u--;) i.push(s[u]); else "boolean" === typeof s && (s = null), (c = "function" !== typeof e) && (null == s ? s = "" : "number" === typeof s ? s = String(s) : "string" !== typeof s && (c = !1)), c && n ? l[l.length - 1] += s : l === a ? l = [s] : l.push(s), n = c;
-        var p = new r;
-        return p.nodeName = e, p.children = l, p.attributes = null == t ? void 0 : t, p.key = null == t ? void 0 : t.key, void 0 !== o.vnode && o.vnode(p), p
+        var n, s, c, l, u = a;
+        for (l = arguments.length; l-- > 2;) i.push(arguments[l]);
+        for (t && null != t.children && (i.length || i.push(t.children), delete t.children); i.length;) if ((s = i.pop()) && void 0 !== s.pop) for (l = s.length; l--;) i.push(s[l]); else "boolean" === typeof s && (s = null), (c = "function" !== typeof e) && (null == s ? s = "" : "number" === typeof s ? s = String(s) : "string" !== typeof s && (c = !1)), c && n ? u[u.length - 1] += s : u === a ? u = [s] : u.push(s), n = c;
+        var d = new r;
+        return d.nodeName = e, d.children = u, d.attributes = null == t ? void 0 : t, d.key = null == t ? void 0 : t.key, void 0 !== o.vnode && o.vnode(d), d
     }
 
     function c(e, t) {
@@ -120,21 +65,21 @@ var Adyen = function (e) {
         return e
     }
 
-    var u = "function" == typeof Promise ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
+    var l = "function" == typeof Promise ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
 
-    function l(e, t) {
+    function u(e, t) {
         return s(e.nodeName, c(c({}, e.attributes), t), arguments.length > 2 ? [].slice.call(arguments, 2) : e.children)
     }
 
-    var p = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i, f = [];
+    var d = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i, p = [];
 
-    function h(e) {
-        !e._dirty && (e._dirty = !0) && 1 == f.push(e) && (o.debounceRendering || u)(d)
+    function f(e) {
+        !e._dirty && (e._dirty = !0) && 1 == p.push(e) && (o.debounceRendering || l)(h)
     }
 
-    function d() {
-        var e, t = f;
-        for (f = []; e = t.pop();) e._dirty && T(e)
+    function h() {
+        var e, t = p;
+        for (p = []; e = t.pop();) e._dirty && R(e)
     }
 
     function y(e, t) {
@@ -158,7 +103,7 @@ var Adyen = function (e) {
         if ("className" === t && (t = "class"), "key" === t) ; else if ("ref" === t) n && n(null), r && r(e); else if ("class" !== t || o) if ("style" === t) {
             if (r && "string" !== typeof r && "string" !== typeof n || (e.style.cssText = r || ""), r && "object" === typeof r) {
                 if ("string" !== typeof n) for (var i in n) i in r || (e.style[i] = "");
-                for (var i in r) e.style[i] = "number" === typeof r[i] && !1 === p.test(i) ? r[i] + "px" : r[i]
+                for (var i in r) e.style[i] = "number" === typeof r[i] && !1 === d.test(i) ? r[i] + "px" : r[i]
             }
         } else if ("dangerouslySetInnerHTML" === t) r && (e.innerHTML = r.__html || ""); else if ("o" == t[0] && "n" == t[1]) {
             var a = t !== (t = t.replace(/Capture$/, ""));
@@ -179,113 +124,113 @@ var Adyen = function (e) {
         return this._listeners[e.type](o.event && o.event(e) || e)
     }
 
-    var w = [], _ = 0, O = !1, C = !1;
+    var w = [], C = 0, _ = !1, O = !1;
 
-    function S() {
+    function k() {
         for (var e; e = w.pop();) o.afterMount && o.afterMount(e), e.componentDidMount && e.componentDidMount()
     }
 
-    function j(e, t, n, r, o, i) {
-        _++ || (O = null != o && void 0 !== o.ownerSVGElement, C = null != e && !("__preactattr_" in e));
-        var a = k(e, t, n, r, i);
-        return o && a.parentNode !== o && o.appendChild(a), --_ || (C = !1, i || S()), a
+    function S(e, t, n, r, o, i) {
+        C++ || (_ = null != o && void 0 !== o.ownerSVGElement, O = null != e && !("__preactattr_" in e));
+        var a = F(e, t, n, r, i);
+        return o && a.parentNode !== o && o.appendChild(a), --C || (O = !1, i || k()), a
     }
 
-    function k(e, t, n, r, o) {
-        var i = e, a = O;
-        if (null != t && "boolean" !== typeof t || (t = ""), "string" === typeof t || "number" === typeof t) return e && void 0 !== e.splitText && e.parentNode && (!e._component || o) ? e.nodeValue != t && (e.nodeValue = t) : (i = document.createTextNode(t), e && (e.parentNode && e.parentNode.replaceChild(i, e), x(e, !0))), i.__preactattr_ = !0, i;
-        var s, c, u = t.nodeName;
-        if ("function" === typeof u) return function (e, t, n, r) {
-            var o = e && e._component, i = o, a = e, s = o && e._componentConstructor === t.nodeName, c = s, u = m(t);
+    function F(e, t, n, r, o) {
+        var i = e, a = _;
+        if (null != t && "boolean" !== typeof t || (t = ""), "string" === typeof t || "number" === typeof t) return e && void 0 !== e.splitText && e.parentNode && (!e._component || o) ? e.nodeValue != t && (e.nodeValue = t) : (i = document.createTextNode(t), e && (e.parentNode && e.parentNode.replaceChild(i, e), N(e, !0))), i.__preactattr_ = !0, i;
+        var s, c, l = t.nodeName;
+        if ("function" === typeof l) return function (e, t, n, r) {
+            var o = e && e._component, i = o, a = e, s = o && e._componentConstructor === t.nodeName, c = s, l = m(t);
             for (; o && !c && (o = o._parentComponent);) c = o.constructor === t.nodeName;
-            o && c && (!r || o._component) ? (F(o, u, 3, n, r), e = o.base) : (i && !s && (A(i), e = a = null), o = R(t.nodeName, u, n), e && !o.nextBase && (o.nextBase = e, a = null), F(o, u, 1, n, r), e = o.base, a && e !== a && (a._component = null, x(a, !1)));
+            o && c && (!r || o._component) ? (E(o, l, 3, n, r), e = o.base) : (i && !s && (A(i), e = a = null), o = P(t.nodeName, l, n), e && !o.nextBase && (o.nextBase = e, a = null), E(o, l, 1, n, r), e = o.base, a && e !== a && (a._component = null, N(a, !1)));
             return e
         }(e, t, n, r);
-        if (O = "svg" === u || "foreignObject" !== u && O, u = String(u), (!e || !y(e, u)) && (s = u, (c = O ? document.createElementNS("http://www.w3.org/2000/svg", s) : document.createElement(s)).normalizedNodeName = s, i = c, e)) {
+        if (_ = "svg" === l || "foreignObject" !== l && _, l = String(l), (!e || !y(e, l)) && (s = l, (c = _ ? document.createElementNS("http://www.w3.org/2000/svg", s) : document.createElement(s)).normalizedNodeName = s, i = c, e)) {
             for (; e.firstChild;) i.appendChild(e.firstChild);
-            e.parentNode && e.parentNode.replaceChild(i, e), x(e, !0)
+            e.parentNode && e.parentNode.replaceChild(i, e), N(e, !0)
         }
-        var l = i.firstChild, p = i.__preactattr_, f = t.children;
-        if (null == p) {
-            p = i.__preactattr_ = {};
-            for (var h = i.attributes, d = h.length; d--;) p[h[d].name] = h[d].value
+        var u = i.firstChild, d = i.__preactattr_, p = t.children;
+        if (null == d) {
+            d = i.__preactattr_ = {};
+            for (var f = i.attributes, h = f.length; h--;) d[f[h].name] = f[h].value
         }
-        return !C && f && 1 === f.length && "string" === typeof f[0] && null != l && void 0 !== l.splitText && null == l.nextSibling ? l.nodeValue != f[0] && (l.nodeValue = f[0]) : (f && f.length || null != l) && function (e, t, n, r, o) {
-            var i, a, s, c, u, l = e.childNodes, p = [], f = {}, h = 0, d = 0, m = l.length, g = 0,
+        return !O && p && 1 === p.length && "string" === typeof p[0] && null != u && void 0 !== u.splitText && null == u.nextSibling ? u.nodeValue != p[0] && (u.nodeValue = p[0]) : (p && p.length || null != u) && function (e, t, n, r, o) {
+            var i, a, s, c, l, u = e.childNodes, d = [], p = {}, f = 0, h = 0, m = u.length, g = 0,
                 v = t ? t.length : 0;
             if (0 !== m) for (var w = 0; w < m; w++) {
-                var _ = l[w], O = _.__preactattr_, C = v && O ? _._component ? _._component.__key : O.key : null;
-                null != C ? (h++, f[C] = _) : (O || (void 0 !== _.splitText ? !o || _.nodeValue.trim() : o)) && (p[g++] = _)
+                var C = u[w], _ = C.__preactattr_, O = v && _ ? C._component ? C._component.__key : _.key : null;
+                null != O ? (f++, p[O] = C) : (_ || (void 0 !== C.splitText ? !o || C.nodeValue.trim() : o)) && (d[g++] = C)
             }
             if (0 !== v) for (var w = 0; w < v; w++) {
-                c = t[w], u = null;
-                var C = c.key;
-                if (null != C) h && void 0 !== f[C] && (u = f[C], f[C] = void 0, h--); else if (d < g) for (i = d; i < g; i++) if (void 0 !== p[i] && (S = a = p[i], P = o, "string" === typeof(j = c) || "number" === typeof j ? void 0 !== S.splitText : "string" === typeof j.nodeName ? !S._componentConstructor && y(S, j.nodeName) : P || S._componentConstructor === j.nodeName)) {
-                    u = a, p[i] = void 0, i === g - 1 && g--, i === d && d++;
+                c = t[w], l = null;
+                var O = c.key;
+                if (null != O) f && void 0 !== p[O] && (l = p[O], p[O] = void 0, f--); else if (h < g) for (i = h; i < g; i++) if (void 0 !== d[i] && (k = a = d[i], j = o, "string" === typeof(S = c) || "number" === typeof S ? void 0 !== k.splitText : "string" === typeof S.nodeName ? !k._componentConstructor && y(k, S.nodeName) : j || k._componentConstructor === S.nodeName)) {
+                    l = a, d[i] = void 0, i === g - 1 && g--, i === h && h++;
                     break
                 }
-                u = k(u, c, n, r), s = l[w], u && u !== e && u !== s && (null == s ? e.appendChild(u) : u === s.nextSibling ? b(s) : e.insertBefore(u, s))
+                l = F(l, c, n, r), s = u[w], l && l !== e && l !== s && (null == s ? e.appendChild(l) : l === s.nextSibling ? b(s) : e.insertBefore(l, s))
             }
-            var S, j, P;
-            if (h) for (var w in f) void 0 !== f[w] && x(f[w], !1);
-            for (; d <= g;) void 0 !== (u = p[g--]) && x(u, !1)
-        }(i, f, n, r, C || null != p.dangerouslySetInnerHTML), function (e, t, n) {
+            var k, S, j;
+            if (f) for (var w in p) void 0 !== p[w] && N(p[w], !1);
+            for (; h <= g;) void 0 !== (l = d[g--]) && N(l, !1)
+        }(i, p, n, r, O || null != d.dangerouslySetInnerHTML), function (e, t, n) {
             var r;
-            for (r in n) t && null != t[r] || null == n[r] || g(e, r, n[r], n[r] = void 0, O);
-            for (r in t) "children" === r || "innerHTML" === r || r in n && t[r] === ("value" === r || "checked" === r ? e[r] : n[r]) || g(e, r, n[r], n[r] = t[r], O)
-        }(i, t.attributes, p), O = a, i
+            for (r in n) t && null != t[r] || null == n[r] || g(e, r, n[r], n[r] = void 0, _);
+            for (r in t) "children" === r || "innerHTML" === r || r in n && t[r] === ("value" === r || "checked" === r ? e[r] : n[r]) || g(e, r, n[r], n[r] = t[r], _)
+        }(i, t.attributes, d), _ = a, i
     }
 
-    function x(e, t) {
+    function N(e, t) {
         var n = e._component;
-        n ? A(n) : (null != e.__preactattr_ && e.__preactattr_.ref && e.__preactattr_.ref(null), !1 !== t && null != e.__preactattr_ || b(e), P(e))
+        n ? A(n) : (null != e.__preactattr_ && e.__preactattr_.ref && e.__preactattr_.ref(null), !1 !== t && null != e.__preactattr_ || b(e), j(e))
     }
 
-    function P(e) {
+    function j(e) {
         for (e = e.lastChild; e;) {
             var t = e.previousSibling;
-            x(e, !0), e = t
+            N(e, !0), e = t
         }
     }
 
-    var E = [];
+    var x = [];
 
-    function R(e, t, n) {
-        var r, o = E.length;
-        for (e.prototype && e.prototype.render ? (r = new e(t, n), D.call(r, t, n)) : ((r = new D(t, n)).constructor = e, r.render = N); o--;) if (E[o].constructor === e) return r.nextBase = E[o].nextBase, E.splice(o, 1), r;
+    function P(e, t, n) {
+        var r, o = x.length;
+        for (e.prototype && e.prototype.render ? (r = new e(t, n), I.call(r, t, n)) : ((r = new I(t, n)).constructor = e, r.render = D); o--;) if (x[o].constructor === e) return r.nextBase = x[o].nextBase, x.splice(o, 1), r;
         return r
     }
 
-    function N(e, t, n) {
+    function D(e, t, n) {
         return this.constructor(e, n)
     }
 
-    function F(e, t, n, r, i) {
-        e._disable || (e._disable = !0, e.__ref = t.ref, e.__key = t.key, delete t.ref, delete t.key, "undefined" === typeof e.constructor.getDerivedStateFromProps && (!e.base || i ? e.componentWillMount && e.componentWillMount() : e.componentWillReceiveProps && e.componentWillReceiveProps(t, r)), r && r !== e.context && (e.prevContext || (e.prevContext = e.context), e.context = r), e.prevProps || (e.prevProps = e.props), e.props = t, e._disable = !1, 0 !== n && (1 !== n && !1 === o.syncComponentUpdates && e.base ? h(e) : T(e, 1, i)), e.__ref && e.__ref(e))
+    function E(e, t, n, r, i) {
+        e._disable || (e._disable = !0, e.__ref = t.ref, e.__key = t.key, delete t.ref, delete t.key, "undefined" === typeof e.constructor.getDerivedStateFromProps && (!e.base || i ? e.componentWillMount && e.componentWillMount() : e.componentWillReceiveProps && e.componentWillReceiveProps(t, r)), r && r !== e.context && (e.prevContext || (e.prevContext = e.context), e.context = r), e.prevProps || (e.prevProps = e.props), e.props = t, e._disable = !1, 0 !== n && (1 !== n && !1 === o.syncComponentUpdates && e.base ? f(e) : R(e, 1, i)), e.__ref && e.__ref(e))
     }
 
-    function T(e, t, n, r) {
+    function R(e, t, n, r) {
         if (!e._disable) {
-            var i, a, s, u = e.props, l = e.state, p = e.context, f = e.prevProps || u, h = e.prevState || l,
-                d = e.prevContext || p, y = e.base, b = e.nextBase, g = y || b, v = e._component, O = !1, C = d;
-            if (e.constructor.getDerivedStateFromProps && (l = c(c({}, l), e.constructor.getDerivedStateFromProps(u, l)), e.state = l), y && (e.props = f, e.state = h, e.context = d, 2 !== t && e.shouldComponentUpdate && !1 === e.shouldComponentUpdate(u, l, p) ? O = !0 : e.componentWillUpdate && e.componentWillUpdate(u, l, p), e.props = u, e.state = l, e.context = p), e.prevProps = e.prevState = e.prevContext = e.nextBase = null, e._dirty = !1, !O) {
-                i = e.render(u, l, p), e.getChildContext && (p = c(c({}, p), e.getChildContext())), y && e.getSnapshotBeforeUpdate && (C = e.getSnapshotBeforeUpdate(f, h));
-                var k, P, E = i && i.nodeName;
-                if ("function" === typeof E) {
-                    var N = m(i);
-                    (a = v) && a.constructor === E && N.key == a.__key ? F(a, N, 1, p, !1) : (k = a, e._component = a = R(E, N, p), a.nextBase = a.nextBase || b, a._parentComponent = e, F(a, N, 0, p, !1), T(a, 1, n, !0)), P = a.base
-                } else s = g, (k = v) && (s = e._component = null), (g || 1 === t) && (s && (s._component = null), P = j(s, i, p, n || !y, g && g.parentNode, !0));
-                if (g && P !== g && a !== v) {
-                    var D = g.parentNode;
-                    D && P !== D && (D.replaceChild(P, g), k || (g._component = null, x(g, !1)))
+            var i, a, s, l = e.props, u = e.state, d = e.context, p = e.prevProps || l, f = e.prevState || u,
+                h = e.prevContext || d, y = e.base, b = e.nextBase, g = y || b, v = e._component, _ = !1, O = h;
+            if (e.constructor.getDerivedStateFromProps && (u = c(c({}, u), e.constructor.getDerivedStateFromProps(l, u)), e.state = u), y && (e.props = p, e.state = f, e.context = h, 2 !== t && e.shouldComponentUpdate && !1 === e.shouldComponentUpdate(l, u, d) ? _ = !0 : e.componentWillUpdate && e.componentWillUpdate(l, u, d), e.props = l, e.state = u, e.context = d), e.prevProps = e.prevState = e.prevContext = e.nextBase = null, e._dirty = !1, !_) {
+                i = e.render(l, u, d), e.getChildContext && (d = c(c({}, d), e.getChildContext())), y && e.getSnapshotBeforeUpdate && (O = e.getSnapshotBeforeUpdate(p, f));
+                var F, j, x = i && i.nodeName;
+                if ("function" === typeof x) {
+                    var D = m(i);
+                    (a = v) && a.constructor === x && D.key == a.__key ? E(a, D, 1, d, !1) : (F = a, e._component = a = P(x, D, d), a.nextBase = a.nextBase || b, a._parentComponent = e, E(a, D, 0, d, !1), R(a, 1, n, !0)), j = a.base
+                } else s = g, (F = v) && (s = e._component = null), (g || 1 === t) && (s && (s._component = null), j = S(s, i, d, n || !y, g && g.parentNode, !0));
+                if (g && j !== g && a !== v) {
+                    var I = g.parentNode;
+                    I && j !== I && (I.replaceChild(j, g), F || (g._component = null, N(g, !1)))
                 }
-                if (k && A(k), e.base = P, P && !r) {
-                    for (var I = e, M = e; M = M._parentComponent;) (I = M).base = P;
-                    P._component = I, P._componentConstructor = I.constructor
+                if (F && A(F), e.base = j, j && !r) {
+                    for (var M = e, T = e; T = T._parentComponent;) (M = T).base = j;
+                    j._component = M, j._componentConstructor = M.constructor
                 }
             }
-            for (!y || n ? w.unshift(e) : O || (e.componentDidUpdate && e.componentDidUpdate(f, h, C), o.afterUpdate && o.afterUpdate(e)); e._renderCallbacks.length;) e._renderCallbacks.pop().call(e);
-            _ || r || S()
+            for (!y || n ? w.unshift(e) : _ || (e.componentDidUpdate && e.componentDidUpdate(p, f, O), o.afterUpdate && o.afterUpdate(e)); e._renderCallbacks.length;) e._renderCallbacks.pop().call(e);
+            C || r || k()
         }
     }
 
@@ -294,35 +239,35 @@ var Adyen = function (e) {
         var t = e.base;
         e._disable = !0, e.componentWillUnmount && e.componentWillUnmount(), e.base = null;
         var n = e._component;
-        n ? A(n) : t && (t.__preactattr_ && t.__preactattr_.ref && t.__preactattr_.ref(null), e.nextBase = t, b(t), E.push(e), P(t)), e.__ref && e.__ref(null)
+        n ? A(n) : t && (t.__preactattr_ && t.__preactattr_.ref && t.__preactattr_.ref(null), e.nextBase = t, b(t), x.push(e), j(t)), e.__ref && e.__ref(null)
     }
 
-    function D(e, t) {
+    function I(e, t) {
         this._dirty = !0, this.context = t, this.props = e, this.state = this.state || {}, this._renderCallbacks = []
     }
 
-    function I(e, t, n) {
-        return j(n, e, {}, !1, t, !1)
+    function M(e, t, n) {
+        return S(n, e, {}, !1, t, !1)
     }
 
-    c(D.prototype, {
+    c(I.prototype, {
         setState: function (e, t) {
-            this.prevState || (this.prevState = this.state), this.state = c(c({}, this.state), "function" === typeof e ? e(this.state, this.props) : e), t && this._renderCallbacks.push(t), h(this)
+            this.prevState || (this.prevState = this.state), this.state = c(c({}, this.state), "function" === typeof e ? e(this.state, this.props) : e), t && this._renderCallbacks.push(t), f(this)
         }, forceUpdate: function (e) {
-            e && this._renderCallbacks.push(e), T(this, 2)
+            e && this._renderCallbacks.push(e), R(this, 2)
         }, render: function () {
         }
     });
-    var M = {h: s, createElement: s, cloneElement: l, Component: D, render: I, rerender: d, options: o};
-    t.default = M
+    var T = {h: s, createElement: s, cloneElement: u, Component: I, render: M, rerender: h, options: o};
+    t.default = T
 }, function (e, t, n) {
-    var r = n(52);
+    var r = n(54);
     "string" === typeof r && (r = [[e.i, r, ""]]);
     var o = {singleton: !0, hmr: !0, transform: void 0, insertInto: void 0};
     n(10)(r, o);
     r.locals && (e.exports = r.locals)
 }, function (e, t, n) {
-    var r = n(77);
+    var r = n(92);
     "string" === typeof r && (r = [[e.i, r, ""]]);
     var o = {singleton: !0, hmr: !0, transform: void 0, insertInto: void 0};
     n(10)(r, o);
@@ -418,7 +363,7 @@ var Adyen = function (e) {
         privacyPolicy: "Privacy policy"
     }
 }, function (e, t, n) {
-    var r = n(38);
+    var r = n(42);
     "string" === typeof r && (r = [[e.i, r, ""]]);
     var o = {singleton: !0, hmr: !0, transform: void 0, insertInto: void 0};
     n(10)(r, o);
@@ -449,22 +394,22 @@ var Adyen = function (e) {
             return t
         }), function (n) {
             function i(i, a) {
-                var s = this, c = a.store, u = e(c ? c.getState() : {}, i), l = t ? function (e, t) {
+                var s = this, c = a.store, l = e(c ? c.getState() : {}, i), u = t ? function (e, t) {
                     "function" == typeof e && (e = e(t));
                     var n = {};
                     for (var r in e) n[r] = t.action(e[r]);
                     return n
-                }(t, c) : {store: c}, p = function () {
+                }(t, c) : {store: c}, d = function () {
                     var t = e(c ? c.getState() : {}, s.props);
-                    for (var n in t) if (t[n] !== u[n]) return u = t, s.setState(null);
-                    for (var r in u) if (!(r in t)) return u = t, s.setState(null)
+                    for (var n in t) if (t[n] !== l[n]) return l = t, s.setState(null);
+                    for (var r in l) if (!(r in t)) return l = t, s.setState(null)
                 };
                 this.componentDidMount = function () {
-                    p(), c.subscribe(p)
+                    d(), c.subscribe(d)
                 }, this.componentWillUnmount = function () {
-                    c.unsubscribe(p)
+                    c.unsubscribe(d)
                 }, this.render = function (e) {
-                    return r.h(n, o(o(o({}, l), e), u))
+                    return r.h(n, o(o(o({}, u), e), l))
                 }
             }
 
@@ -525,9 +470,9 @@ var Adyen = function (e) {
             }
             return t[e]
         }
-    }(), c = null, u = 0, l = [], p = n(39);
+    }(), c = null, l = 0, u = [], d = n(43);
 
-    function f(e, t) {
+    function p(e, t) {
         for (var n = 0; n < e.length; n++) {
             var r = e[n], o = i[r.id];
             if (o) {
@@ -542,7 +487,7 @@ var Adyen = function (e) {
         }
     }
 
-    function h(e, t) {
+    function f(e, t) {
         for (var n = [], r = {}, o = 0; o < e.length; o++) {
             var i = e[o], a = t.base ? i[0] + t.base : i[0], s = {css: i[1], media: i[2], sourceMap: i[3]};
             r[a] ? r[a].parts.push(s) : n.push(r[a] = {id: a, parts: [s]})
@@ -550,11 +495,11 @@ var Adyen = function (e) {
         return n
     }
 
-    function d(e, t) {
+    function h(e, t) {
         var n = s(e.insertInto);
         if (!n) throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-        var r = l[l.length - 1];
-        if ("top" === e.insertAt) r ? r.nextSibling ? n.insertBefore(t, r.nextSibling) : n.appendChild(t) : n.insertBefore(t, n.firstChild), l.push(t); else if ("bottom" === e.insertAt) n.appendChild(t); else {
+        var r = u[u.length - 1];
+        if ("top" === e.insertAt) r ? r.nextSibling ? n.insertBefore(t, r.nextSibling) : n.appendChild(t) : n.insertBefore(t, n.firstChild), u.push(t); else if ("bottom" === e.insertAt) n.appendChild(t); else {
             if ("object" !== typeof e.insertAt || !e.insertAt.before) throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
             var o = s(e.insertInto + " " + e.insertAt.before);
             n.insertBefore(t, o)
@@ -564,13 +509,13 @@ var Adyen = function (e) {
     function y(e) {
         if (null === e.parentNode) return !1;
         e.parentNode.removeChild(e);
-        var t = l.indexOf(e);
-        t >= 0 && l.splice(t, 1)
+        var t = u.indexOf(e);
+        t >= 0 && u.splice(t, 1)
     }
 
     function m(e) {
         var t = document.createElement("style");
-        return void 0 === e.attrs.type && (e.attrs.type = "text/css"), b(t, e.attrs), d(e, t), t
+        return void 0 === e.attrs.type && (e.attrs.type = "text/css"), b(t, e.attrs), h(e, t), t
     }
 
     function b(e, t) {
@@ -587,14 +532,14 @@ var Adyen = function (e) {
             e.css = i
         }
         if (t.singleton) {
-            var a = u++;
-            n = c || (c = m(t)), r = _.bind(null, n, a, !1), o = _.bind(null, n, a, !0)
+            var a = l++;
+            n = c || (c = m(t)), r = C.bind(null, n, a, !1), o = C.bind(null, n, a, !0)
         } else e.sourceMap && "function" === typeof URL && "function" === typeof URL.createObjectURL && "function" === typeof URL.revokeObjectURL && "function" === typeof Blob && "function" === typeof btoa ? (n = function (e) {
             var t = document.createElement("link");
-            return void 0 === e.attrs.type && (e.attrs.type = "text/css"), e.attrs.rel = "stylesheet", b(t, e.attrs), d(e, t), t
+            return void 0 === e.attrs.type && (e.attrs.type = "text/css"), e.attrs.rel = "stylesheet", b(t, e.attrs), h(e, t), t
         }(t), r = function (e, t, n) {
             var r = n.css, o = n.sourceMap, i = void 0 === t.convertToAbsoluteUrls && o;
-            (t.convertToAbsoluteUrls || i) && (r = p(r));
+            (t.convertToAbsoluteUrls || i) && (r = d(r));
             o && (r += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(o)))) + " */");
             var a = new Blob([r], {type: "text/css"}), s = e.href;
             e.href = URL.createObjectURL(a), s && URL.revokeObjectURL(s)
@@ -621,13 +566,13 @@ var Adyen = function (e) {
     e.exports = function (e, t) {
         if ("undefined" !== typeof DEBUG && DEBUG && "object" !== typeof document) throw new Error("The style-loader cannot be used in a non-browser environment");
         (t = t || {}).attrs = "object" === typeof t.attrs ? t.attrs : {}, t.singleton || "boolean" === typeof t.singleton || (t.singleton = a()), t.insertInto || (t.insertInto = "head"), t.insertAt || (t.insertAt = "bottom");
-        var n = h(e, t);
-        return f(n, t), function (e) {
+        var n = f(e, t);
+        return p(n, t), function (e) {
             for (var r = [], o = 0; o < n.length; o++) {
                 var a = n[o];
                 (s = i[a.id]).refs--, r.push(s)
             }
-            e && f(h(e, t), t);
+            e && p(f(e, t), t);
             for (o = 0; o < r.length; o++) {
                 var s;
                 if (0 === (s = r[o]).refs) {
@@ -641,7 +586,7 @@ var Adyen = function (e) {
         return v[e] = t, v.filter(Boolean).join("\n")
     });
 
-    function _(e, t, n, r) {
+    function C(e, t, n, r) {
         var o = n ? "" : r.css;
         if (e.styleSheet) e.styleSheet.cssText = w(t, o); else {
             var i = document.createTextNode(o), a = e.childNodes;
@@ -684,91 +629,91 @@ var Adyen = function (e) {
     }
 }, function (e, t, n) {
     "use strict";
-    var r = n(3), o = n(7), i = n(18), a = n(19), s = n(21), c = n(13), u = n(20), l = n(24), p = n(56), f = n(14),
-        h = n(4), d = n(57), y = n(58), m = n(59), b = n(27), g = n(60), v = n(15), w = n(22), _ = r.getDesc,
-        O = r.setDesc, C = r.create, S = y.get, j = o.Symbol, k = o.JSON, x = k && k.stringify, P = !1,
-        E = h("_hidden"), R = r.isEnum, N = l("symbol-registry"), F = l("symbols"), T = "function" == typeof j,
-        A = Object.prototype, D = a && u(function () {
-            return 7 != C(O({}, "a", {
+    var r = n(3), o = n(7), i = n(18), a = n(19), s = n(21), c = n(13), l = n(20), u = n(24), d = n(58), p = n(14),
+        f = n(4), h = n(59), y = n(60), m = n(61), b = n(27), g = n(62), v = n(15), w = n(22), C = r.getDesc,
+        _ = r.setDesc, O = r.create, k = y.get, S = o.Symbol, F = o.JSON, N = F && F.stringify, j = !1,
+        x = f("_hidden"), P = r.isEnum, D = u("symbol-registry"), E = u("symbols"), R = "function" == typeof S,
+        A = Object.prototype, I = a && l(function () {
+            return 7 != O(_({}, "a", {
                 get: function () {
-                    return O(this, "a", {value: 7}).a
+                    return _(this, "a", {value: 7}).a
                 }
             })).a
         }) ? function (e, t, n) {
-            var r = _(A, t);
-            r && delete A[t], O(e, t, n), r && e !== A && O(A, t, r)
-        } : O, I = function (e) {
-            var t = F[e] = C(j.prototype);
-            return t._k = e, a && P && D(A, e, {
+            var r = C(A, t);
+            r && delete A[t], _(e, t, n), r && e !== A && _(A, t, r)
+        } : _, M = function (e) {
+            var t = E[e] = O(S.prototype);
+            return t._k = e, a && j && I(A, e, {
                 configurable: !0, set: function (t) {
-                    i(this, E) && i(this[E], e) && (this[E][e] = !1), D(this, e, w(1, t))
+                    i(this, x) && i(this[x], e) && (this[x][e] = !1), I(this, e, w(1, t))
                 }
             }), t
-        }, M = function (e) {
+        }, T = function (e) {
             return "symbol" == typeof e
-        }, V = function (e, t, n) {
-            return n && i(F, t) ? (n.enumerable ? (i(e, E) && e[E][t] && (e[E][t] = !1), n = C(n, {enumerable: w(0, !1)})) : (i(e, E) || O(e, E, w(1, {})), e[E][t] = !0), D(e, t, n)) : O(e, t, n)
-        }, L = function (e, t) {
+        }, B = function (e, t, n) {
+            return n && i(E, t) ? (n.enumerable ? (i(e, x) && e[x][t] && (e[x][t] = !1), n = O(n, {enumerable: w(0, !1)})) : (i(e, x) || _(e, x, w(1, {})), e[x][t] = !0), I(e, t, n)) : _(e, t, n)
+        }, V = function (e, t) {
             g(e);
-            for (var n, r = m(t = v(t)), o = 0, i = r.length; i > o;) V(e, n = r[o++], t[n]);
+            for (var n, r = m(t = v(t)), o = 0, i = r.length; i > o;) B(e, n = r[o++], t[n]);
             return e
-        }, B = function (e, t) {
-            return void 0 === t ? C(e) : L(C(e), t)
+        }, L = function (e, t) {
+            return void 0 === t ? O(e) : V(O(e), t)
         }, U = function (e) {
-            var t = R.call(this, e);
-            return !(t || !i(this, e) || !i(F, e) || i(this, E) && this[E][e]) || t
+            var t = P.call(this, e);
+            return !(t || !i(this, e) || !i(E, e) || i(this, x) && this[x][e]) || t
         }, K = function (e, t) {
-            var n = _(e = v(e), t);
-            return !n || !i(F, t) || i(e, E) && e[E][t] || (n.enumerable = !0), n
-        }, $ = function (e) {
-            for (var t, n = S(v(e)), r = [], o = 0; n.length > o;) i(F, t = n[o++]) || t == E || r.push(t);
+            var n = C(e = v(e), t);
+            return !n || !i(E, t) || i(e, x) && e[x][t] || (n.enumerable = !0), n
+        }, z = function (e) {
+            for (var t, n = k(v(e)), r = [], o = 0; n.length > o;) i(E, t = n[o++]) || t == x || r.push(t);
             return r
         }, G = function (e) {
-            for (var t, n = S(v(e)), r = [], o = 0; n.length > o;) i(F, t = n[o++]) && r.push(F[t]);
+            for (var t, n = k(v(e)), r = [], o = 0; n.length > o;) i(E, t = n[o++]) && r.push(E[t]);
             return r
-        }, W = u(function () {
-            var e = j();
-            return "[null]" != x([e]) || "{}" != x({a: e}) || "{}" != x(Object(e))
+        }, $ = l(function () {
+            var e = S();
+            return "[null]" != N([e]) || "{}" != N({a: e}) || "{}" != N(Object(e))
         });
-    T || (c((j = function () {
-        if (M(this)) throw TypeError("Symbol is not a constructor");
-        return I(f(arguments.length > 0 ? arguments[0] : void 0))
+    R || (c((S = function () {
+        if (T(this)) throw TypeError("Symbol is not a constructor");
+        return M(p(arguments.length > 0 ? arguments[0] : void 0))
     }).prototype, "toString", function () {
         return this._k
-    }), M = function (e) {
-        return e instanceof j
-    }, r.create = B, r.isEnum = U, r.getDesc = K, r.setDesc = V, r.setDescs = L, r.getNames = y.get = $, r.getSymbols = G, a && !n(61) && c(A, "propertyIsEnumerable", U, !0));
-    var Y = {
+    }), T = function (e) {
+        return e instanceof S
+    }, r.create = L, r.isEnum = U, r.getDesc = K, r.setDesc = B, r.setDescs = V, r.getNames = y.get = z, r.getSymbols = G, a && !n(63) && c(A, "propertyIsEnumerable", U, !0));
+    var q = {
         for: function (e) {
-            return i(N, e += "") ? N[e] : N[e] = j(e)
+            return i(D, e += "") ? D[e] : D[e] = S(e)
         }, keyFor: function (e) {
-            return d(N, e)
+            return h(D, e)
         }, useSetter: function () {
-            P = !0
+            j = !0
         }, useSimple: function () {
-            P = !1
+            j = !1
         }
     };
     r.each.call("hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","), function (e) {
-        var t = h(e);
-        Y[e] = T ? t : I(t)
-    }), P = !0, s(s.G + s.W, {Symbol: j}), s(s.S, "Symbol", Y), s(s.S + s.F * !T, "Object", {
-        create: B,
-        defineProperty: V,
-        defineProperties: L,
+        var t = f(e);
+        q[e] = R ? t : M(t)
+    }), j = !0, s(s.G + s.W, {Symbol: S}), s(s.S, "Symbol", q), s(s.S + s.F * !R, "Object", {
+        create: L,
+        defineProperty: B,
+        defineProperties: V,
         getOwnPropertyDescriptor: K,
-        getOwnPropertyNames: $,
+        getOwnPropertyNames: z,
         getOwnPropertySymbols: G
-    }), k && s(s.S + s.F * (!T || W), "JSON", {
+    }), F && s(s.S + s.F * (!R || $), "JSON", {
         stringify: function (e) {
-            if (void 0 !== e && !M(e)) {
+            if (void 0 !== e && !T(e)) {
                 for (var t, n, r = [e], o = 1, i = arguments; i.length > o;) r.push(i[o++]);
                 return "function" == typeof(t = r[1]) && (n = t), !n && b(t) || (t = function (e, t) {
-                    if (n && (t = n.call(this, e, t)), !M(t)) return t
-                }), r[1] = t, x.apply(k, r)
+                    if (n && (t = n.call(this, e, t)), !T(t)) return t
+                }), r[1] = t, N.apply(F, r)
             }
         }
-    }), p(j, "Symbol"), p(Math, "Math", !0), p(o.JSON, "JSON", !0)
+    }), d(S, "Symbol"), d(Math, "Math", !0), d(o.JSON, "JSON", !0)
 }, function (e, t) {
     var n = {}.hasOwnProperty;
     e.exports = function (e, t) {
@@ -792,10 +737,10 @@ var Adyen = function (e) {
     }
 }, function (e, t, n) {
     var r = n(7), o = n(11), i = n(12), a = n(13), s = n(23), c = function (e, t, n) {
-        var u, l, p, f, h = e & c.F, d = e & c.G, y = e & c.S, m = e & c.P, b = e & c.B,
-            g = d ? r : y ? r[t] || (r[t] = {}) : (r[t] || {}).prototype, v = d ? o : o[t] || (o[t] = {}),
+        var l, u, d, p, f = e & c.F, h = e & c.G, y = e & c.S, m = e & c.P, b = e & c.B,
+            g = h ? r : y ? r[t] || (r[t] = {}) : (r[t] || {}).prototype, v = h ? o : o[t] || (o[t] = {}),
             w = v.prototype || (v.prototype = {});
-        for (u in d && (n = t), n) p = ((l = !h && g && u in g) ? g : n)[u], f = b && l ? s(p, r) : m && "function" == typeof p ? s(Function.call, p) : p, g && !l && a(g, u, p), v[u] != p && i(v, u, f), m && w[u] != p && (w[u] = p)
+        for (l in h && (n = t), n) d = ((u = !f && g && l in g) ? g : n)[l], p = b && u ? s(d, r) : m && "function" == typeof d ? s(Function.call, d) : d, g && !u && a(g, l, d), v[l] != d && i(v, l, p), m && w[l] != d && (w[l] = d)
     };
     r.core = o, c.F = 1, c.G = 2, c.S = 4, c.P = 8, c.B = 16, c.W = 32, e.exports = c
 }, function (e, t) {
@@ -803,7 +748,7 @@ var Adyen = function (e) {
         return {enumerable: !(1 & e), configurable: !(2 & e), writable: !(4 & e), value: t}
     }
 }, function (e, t, n) {
-    var r = n(55);
+    var r = n(57);
     e.exports = function (e, t, n) {
         if (r(e), void 0 === t) return e;
         switch (n) {
@@ -854,7 +799,7 @@ var Adyen = function (e) {
         return null != e && ("object" == t || "function" == t)
     }
 }, function (e, t, n) {
-    var r = n(63), o = "object" == typeof self && self && self.Object === Object && self,
+    var r = n(65), o = "object" == typeof self && self && self.Object === Object && self,
         i = r || o || Function("return this")();
     e.exports = i
 }, function (e, t) {
@@ -872,52 +817,57 @@ var Adyen = function (e) {
     var r = n(30).Symbol;
     e.exports = r
 }, function (e, t, n) {
-    var r = n(29), o = n(62), i = n(64), a = "Expected a function", s = Math.max, c = Math.min;
+    var r = n(29), o = n(64), i = n(66), a = "Expected a function", s = Math.max, c = Math.min;
     e.exports = function (e, t, n) {
-        var u, l, p, f, h, d, y = 0, m = !1, b = !1, g = !0;
+        var l, u, d, p, f, h, y = 0, m = !1, b = !1, g = !0;
         if ("function" != typeof e) throw new TypeError(a);
 
         function v(t) {
-            var n = u, r = l;
-            return u = l = void 0, y = t, f = e.apply(r, n)
+            var n = l, r = u;
+            return l = u = void 0, y = t, p = e.apply(r, n)
         }
 
         function w(e) {
-            var n = e - d;
-            return void 0 === d || n >= t || n < 0 || b && e - y >= p
-        }
-
-        function _() {
-            var e = o();
-            if (w(e)) return O(e);
-            h = setTimeout(_, function (e) {
-                var n = t - (e - d);
-                return b ? c(n, p - (e - y)) : n
-            }(e))
-        }
-
-        function O(e) {
-            return h = void 0, g && u ? v(e) : (u = l = void 0, f)
+            var n = e - h;
+            return void 0 === h || n >= t || n < 0 || b && e - y >= d
         }
 
         function C() {
-            var e = o(), n = w(e);
-            if (u = arguments, l = this, d = e, n) {
-                if (void 0 === h) return function (e) {
-                    return y = e, h = setTimeout(_, t), m ? v(e) : f
-                }(d);
-                if (b) return h = setTimeout(_, t), v(d)
-            }
-            return void 0 === h && (h = setTimeout(_, t)), f
+            var e = o();
+            if (w(e)) return _(e);
+            f = setTimeout(C, function (e) {
+                var n = t - (e - h);
+                return b ? c(n, d - (e - y)) : n
+            }(e))
         }
 
-        return t = i(t) || 0, r(n) && (m = !!n.leading, p = (b = "maxWait" in n) ? s(i(n.maxWait) || 0, t) : p, g = "trailing" in n ? !!n.trailing : g), C.cancel = function () {
-            void 0 !== h && clearTimeout(h), y = 0, u = d = l = h = void 0
-        }, C.flush = function () {
-            return void 0 === h ? f : O(o())
-        }, C
+        function _(e) {
+            return f = void 0, g && l ? v(e) : (l = u = void 0, p)
+        }
+
+        function O() {
+            var e = o(), n = w(e);
+            if (l = arguments, u = this, h = e, n) {
+                if (void 0 === f) return function (e) {
+                    return y = e, f = setTimeout(C, t), m ? v(e) : p
+                }(h);
+                if (b) return f = setTimeout(C, t), v(h)
+            }
+            return void 0 === f && (f = setTimeout(C, t)), p
+        }
+
+        return t = i(t) || 0, r(n) && (m = !!n.leading, d = (b = "maxWait" in n) ? s(i(n.maxWait) || 0, t) : d, g = "trailing" in n ? !!n.trailing : g), O.cancel = function () {
+            void 0 !== f && clearTimeout(f), y = 0, l = h = u = f = void 0
+        }, O.flush = function () {
+            return void 0 === f ? p : _(o())
+        }, O
     }
 }, function (e, t, n) {
+    n(35), e.exports = n(115)
+}, function (e, t, n) {
+    n.p = window._a$checkoutShopperUrl || "/"
+}, function (e, t, n) {
+}, , function (e, t, n) {
 }, , function (e, t, n) {
 }, , function (e, t, n) {
     (t = e.exports = n(9)(!1)).push([e.i, "._3t5sgy-D81fr1MW4BTt13r {\n    position: relative;\n}\n\n._3fFCGN5vtV4TG86BQPXR9- {\n    display: flex;\n    align-items: center;\n    cursor: pointer;\n}\n\n._3fFCGN5vtV4TG86BQPXR9-:after {\n    position: absolute;\n    content: '';\n    right: 12px;\n    width: 0;\n    height: 0;\n    border-left: 6px solid transparent;\n    border-right: 6px solid transparent;\n    border-top: 6px solid #4c5f6b;\n    border-radius: 3px;\n    top: 50%;\n    transform: translateY(-50%);\n}\n\n._1o25dm63nT1aHmfOs7eP90 {\n    position: absolute;\n    width: 100%;\n    background: #fff;\n    list-style: none;\n    padding: 0;\n    margin: 0;\n    z-index: 1;\n    margin-bottom: 50px;\n\n    transform: scale3d(1, 0, 1);\n    transform-origin: 50% 0%;\n}\n\n._1o25dm63nT1aHmfOs7eP90._1MVYcUQhz35sZhJ-achF82 {\n    transform: scale3d(1, 1, 1);\n}\n\n._3toq3h3cn2PeRh_5-IFKrK {\n    display: flex;\n    align-items: center;\n}\n", ""]), t.locals = {
@@ -943,7 +893,6 @@ var Adyen = function (e) {
         })
     }
 }, function (e, t, n) {
-}, , function (e, t, n) {
 }, , function (e, t, n) {
 }, , function (e, t, n) {
 }, , function (e, t, n) {
@@ -1012,8 +961,8 @@ var Adyen = function (e) {
         e.exports = n
     }).call(this, n(31))
 }, function (e, t, n) {
-    var r = n(29), o = n(65), i = NaN, a = /^\s+|\s+$/g, s = /^[-+]0x[0-9a-f]+$/i, c = /^0b[01]+$/i, u = /^0o[0-7]+$/i,
-        l = parseInt;
+    var r = n(29), o = n(67), i = NaN, a = /^\s+|\s+$/g, s = /^[-+]0x[0-9a-f]+$/i, c = /^0b[01]+$/i, l = /^0o[0-7]+$/i,
+        u = parseInt;
     e.exports = function (e) {
         if ("number" == typeof e) return e;
         if (o(e)) return i;
@@ -1024,15 +973,15 @@ var Adyen = function (e) {
         if ("string" != typeof e) return 0 === e ? e : +e;
         e = e.replace(a, "");
         var n = c.test(e);
-        return n || u.test(e) ? l(e.slice(2), n ? 2 : 8) : s.test(e) ? i : +e
+        return n || l.test(e) ? u(e.slice(2), n ? 2 : 8) : s.test(e) ? i : +e
     }
 }, function (e, t, n) {
-    var r = n(66), o = n(69), i = "[object Symbol]";
+    var r = n(68), o = n(71), i = "[object Symbol]";
     e.exports = function (e) {
         return "symbol" == typeof e || o(e) && r(e) == i
     }
 }, function (e, t, n) {
-    var r = n(32), o = n(67), i = n(68), a = "[object Null]", s = "[object Undefined]", c = r ? r.toStringTag : void 0;
+    var r = n(32), o = n(69), i = n(70), a = "[object Null]", s = "[object Undefined]", c = r ? r.toStringTag : void 0;
     e.exports = function (e) {
         return null == e ? void 0 === e ? s : a : c && c in Object(e) ? o(e) : i(e)
     }
@@ -1062,44 +1011,973 @@ var Adyen = function (e) {
 }, , function (e, t, n) {
 }, , function (e, t, n) {
     var r = {
-        "./da-DK.json": [101, 1],
-        "./de-DE.json": [102, 2],
-        "./en-US.json": [5],
-        "./es-ES.json": [103, 3],
-        "./fr-FR.json": [104, 4],
-        "./it-IT.json": [105, 5],
-        "./nl-NL.json": [106, 6],
-        "./no-NO.json": [107, 7],
-        "./pl-PL.json": [108, 8],
-        "./pt-BR.json": [109, 9],
-        "./ru-RU.json": [110, 10],
-        "./sv-SE.json": [111, 11],
-        "./zh-CN.json": [112, 12],
-        "./zh-TW.json": [113, 13]
+        "./da-DK.json": 79,
+        "./de-DE.json": 80,
+        "./en-US.json": 5,
+        "./es-ES.json": 81,
+        "./fr-FR.json": 82,
+        "./it-IT.json": 83,
+        "./nl-NL.json": 84,
+        "./no-NO.json": 85,
+        "./pl-PL.json": 86,
+        "./pt-BR.json": 87,
+        "./ru-RU.json": 88,
+        "./sv-SE.json": 89,
+        "./zh-CN.json": 90,
+        "./zh-TW.json": 91
     };
 
     function o(e) {
-        var t = r[e];
-        return t ? Promise.all(t.slice(1).map(n.e)).then(function () {
-            var e = t[0];
+        return i(e).then(function (e) {
             return n.t(e, 3)
-        }) : Promise.resolve().then(function () {
-            var t = new Error("Cannot find module '" + e + "'");
-            throw t.code = "MODULE_NOT_FOUND", t
+        })
+    }
+
+    function i(e) {
+        return Promise.resolve().then(function () {
+            var t = r[e];
+            if (!(t + 1)) {
+                var n = new Error("Cannot find module '" + e + "'");
+                throw n.code = "MODULE_NOT_FOUND", n
+            }
+            return t
         })
     }
 
     o.keys = function () {
         return Object.keys(r)
-    }, o.id = 76, e.exports = o
+    }, o.resolve = i, o.id = 78, e.exports = o
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Flere betalingsm\xe5der",
+        payButton: "Betal",
+        storeDetails: "Gem til min n\xe6ste betaling",
+        "payment.redirecting": "Du omstilles\u2026",
+        "payment.processing": "Din betaling behandles",
+        "creditCard.holderName.placeholder": "J. Hansen",
+        "creditCard.numberField.title": "Kortnummer",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Ugyldigt kortnummer",
+        "creditCard.expiryDateField.title": "Udl\xf8bsdato",
+        "creditCard.expiryDateField.placeholder": "MM/\xc5\xc5",
+        "creditCard.expiryDateField.invalid": "Ugyldig udl\xf8bsdato",
+        "creditCard.expiryDateField.month": "M\xe5ned",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "\xc5\xc5",
+        "creditCard.expiryDateField.year": "\xc5r",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Husk til n\xe6ste gang",
+        "creditCard.oneClickVerification.invalidInput.title": "Ugyldig CVC",
+        installments: "Antal rater",
+        "sepaDirectDebit.ibanField.invalid": "Ugyldigt kontonummer",
+        "sepaDirectDebit.nameField.placeholder": "J. Smith",
+        "sepa.ownerName": "Kontohavernavn",
+        "sepa.ibanNumber": "Kontonummer (IBAN)",
+        "giropay.searchField.placeholder": "Banknavn / BIC / Bankleitzahl",
+        "giropay.minimumLength": "Min. 3 tegn",
+        "giropay.noResults": "Ingen s\xf8geresultater",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "Fejl",
+        "error.subtitle.redirect": "Omdirigering fejlede",
+        "error.subtitle.payment": "Betaling fejlede",
+        "error.subtitle.refused": "Betaling afvist",
+        "error.message.unknown": "Der opstod en ukendt fejl",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "V\xe6lg din bank",
+        "creditCard.success": "Betaling gennemf\xf8rt",
+        holderName: "Kortholdernavn",
+        loading: "Indl\xe6ser\u2026",
+        "wechatpay.timetopay": "Du har %@ at betale",
+        "wechatpay.scanqrcode": "Scan QR-koden",
+        personalDetails: "Personlige oplysninger",
+        socialSecurityNumber: "CPR-nummer",
+        firstName: "Fornavn",
+        infix: "Pr\xe6fiks",
+        lastName: "Efternavn",
+        mobileNumber: "Mobilnummer",
+        city: "By",
+        postalCode: "Postnummer",
+        countryCode: "Landekode",
+        telephoneNumber: "Telefonnummer",
+        dateOfBirth: "F\xf8dselsdato",
+        shopperEmail: "E-mailadresse",
+        gender: "K\xf8n",
+        male: "Mand",
+        female: "Kvinde",
+        billingAddress: "Faktureringsadresse",
+        street: "Gade",
+        stateOrProvince: "Region eller kommune",
+        country: "Land",
+        houseNumberOrName: "Husnummer",
+        separateDeliveryAddress: "Angiv en separat leveringsadresse",
+        deliveryAddress: "Leveringsadresse",
+        moreInformation: "Mere information",
+        "klarna.consentCheckbox": '"Jeg giver mit samtykke til',
+        "klarna.consent": "samtykke",
+        "socialSecurityNumberLookUp.error": '"Dine adresseoplysninger kunne ikke hentes. Kontroll\xe9r din f\xf8dselsdato og/eller CPR-nummer',
+        privacyPolicy: "Politik om privatlivets fred"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Weitere Zahlungsmethoden",
+        payButton: "Zahlen",
+        storeDetails: "F\xfcr zuk\xfcnftige Zahlvorg\xe4nge speichern",
+        "payment.redirecting": "Sie werden weitergeleitet\u2026",
+        "payment.processing": "Ihre Zahlung wird verarbeitet",
+        "creditCard.holderName.placeholder": "A. M\xfcller",
+        "creditCard.numberField.title": "Kartennummer",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Ung\xfcltige Kartennummer",
+        "creditCard.expiryDateField.title": "Verfallsdatum",
+        "creditCard.expiryDateField.placeholder": "MM/JJ",
+        "creditCard.expiryDateField.invalid": "Ung\xfcltiges Verfallsdatum",
+        "creditCard.expiryDateField.month": "Monat",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "JJ",
+        "creditCard.expiryDateField.year": "Jahr",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "F\xfcr das n\xe4chste Mal speichern",
+        "creditCard.oneClickVerification.invalidInput.title": "Ung\xfcltiger CVC-Code",
+        installments: "Anzahl der Raten",
+        "sepaDirectDebit.ibanField.invalid": "Ung\xfcltige Kontonummer",
+        "sepaDirectDebit.nameField.placeholder": "L. Schmidt",
+        "sepa.ownerName": "Name des Kontoinhabers",
+        "sepa.ibanNumber": "Kontonummer (IBAN)",
+        "giropay.searchField.placeholder": "Bankname / BIC / Bankleitzahl",
+        "giropay.minimumLength": "Min. drei Zeichen",
+        "giropay.noResults": "Keine Suchergebnisse",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "Fehler",
+        "error.subtitle.redirect": "Weiterleitung fehlgeschlagen",
+        "error.subtitle.payment": "Zahlung fehlgeschlagen",
+        "error.subtitle.refused": "Zahlvorgang verweigert",
+        "error.message.unknown": "Es ist ein unbekannter Fehler aufgetreten.",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "W\xe4hlen Sie Ihre Bank",
+        "creditCard.success": "Zahlung erfolgreich",
+        holderName: "Name des Karteninhabers",
+        loading: "Laden \u2026",
+        "wechatpay.timetopay": "Sie haben noch %@ um zu zahlen",
+        "wechatpay.scanqrcode": "QR-Code scannen",
+        personalDetails: "Pers\xf6nliche Angaben",
+        socialSecurityNumber: "Sozialversicherungsnummer",
+        firstName: "Vorname",
+        infix: "Vorwahl",
+        lastName: "Nachname",
+        mobileNumber: "Handynummer",
+        city: "Stadt",
+        postalCode: "Postleitzahl",
+        countryCode: "Landesvorwahl",
+        telephoneNumber: "Telefonnummer",
+        dateOfBirth: "Geburtsdatum",
+        shopperEmail: "E-Mail-Adresse",
+        gender: "Geschlecht",
+        male: "M\xe4nnlich",
+        female: "Weiblich",
+        billingAddress: "Rechnungsadresse",
+        street: "Stra\xdfe",
+        stateOrProvince: "Bundesland",
+        country: "Land",
+        houseNumberOrName: "Hausnummer",
+        separateDeliveryAddress: "Abweichende Lieferadresse angeben",
+        deliveryAddress: "Lieferadresse",
+        moreInformation: "Weitere Informationen",
+        "klarna.consentCheckbox": " at Klarna kan behandle mine data med henblik p\xe5 bekr\xe6ftelse af min identitet og kreditvurdering samt afregning af mit k\xf8b. Jeg kan tilbagekalde mit %@ til behandling af data og til form\xe5l",
+        "klarna.consent": "Einwilligung",
+        "socialSecurityNumberLookUp.error": ' og pr\xf8v igen."',
+        privacyPolicy: "Datenschutz"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "M\xe1s m\xe9todos de pago",
+        payButton: "Pagar",
+        storeDetails: "Recordar para mi pr\xf3ximo pago",
+        "payment.redirecting": "Se le redireccionar\xe1\u2026",
+        "payment.processing": "Se est\xe1 procesando su pago",
+        "creditCard.holderName.placeholder": "Juan P\xe9rez",
+        "creditCard.numberField.title": "N\xfamero de tarjeta",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "N\xfamero de tarjeta no v\xe1lido",
+        "creditCard.expiryDateField.title": "Fecha de expiraci\xf3n",
+        "creditCard.expiryDateField.placeholder": "MM/AA",
+        "creditCard.expiryDateField.invalid": "Fecha de caducidad no v\xe1lida",
+        "creditCard.expiryDateField.month": "Mes",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "AA",
+        "creditCard.expiryDateField.year": "A\xf1o",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Recordar para la pr\xf3xima vez",
+        "creditCard.oneClickVerification.invalidInput.title": "C\xf3digo de verificaci\xf3n invalido",
+        installments: "N\xfamero de plazos",
+        "sepaDirectDebit.ibanField.invalid": "N\xfamero de cuenta no v\xe1lido",
+        "sepaDirectDebit.nameField.placeholder": "J. Smith",
+        "sepa.ownerName": "Nombre del titular de cuenta",
+        "sepa.ibanNumber": "N\xfamero de cuenta (IBAN)",
+        "giropay.searchField.placeholder": "Nombre del banco / BIC / Bankleitzahl",
+        "giropay.minimumLength": "M\xednimo 4 caracteres",
+        "giropay.noResults": "No hay resultados de b\xfasqueda",
+        "giropay.details.bic": "BIC (c\xf3digo de identificaci\xf3n bancaria)",
+        "error.title": "Error",
+        "error.subtitle.redirect": "Redirecci\xf3n fallida",
+        "error.subtitle.payment": "Pago fallido",
+        "error.subtitle.refused": "Pago rechazado",
+        "error.message.unknown": "Se ha producido un error desconocido",
+        "idealIssuer.selectField.title": "Banco",
+        "idealIssuer.selectField.placeholder": "Seleccione su banco",
+        "creditCard.success": "Pago realizado correctamente",
+        holderName: "Titular de la tarjeta",
+        loading: "Cargando...",
+        "wechatpay.timetopay": "Tiene %@ para pagar",
+        "wechatpay.scanqrcode": "Escanee el c\xf3digo QR",
+        personalDetails: "Datos personales",
+        socialSecurityNumber: "N\xfamero de seguridad social",
+        firstName: "Nombre",
+        infix: "Prefijo",
+        lastName: "Apellidos",
+        mobileNumber: "Tel\xe9fono m\xf3vil",
+        city: "Ciudad",
+        postalCode: "C\xf3digo postal",
+        countryCode: "Prefijo internacional",
+        telephoneNumber: "N\xfamero de tel\xe9fono",
+        dateOfBirth: "Fecha de nacimiento",
+        shopperEmail: "Direcci\xf3n de correo electr\xf3nico",
+        gender: "G\xe9nero",
+        male: "Masculino",
+        female: "Femenino",
+        billingAddress: "Direcci\xf3n de facturaci\xf3n",
+        street: "Calle",
+        stateOrProvince: "Provincia o estado",
+        country: "Pa\xeds",
+        houseNumberOrName: "N\xfamero de vivienda",
+        separateDeliveryAddress: "Especificar otra direcci\xf3n de env\xedo",
+        deliveryAddress: "Direcci\xf3n de env\xedo",
+        moreInformation: "M\xe1s informaci\xf3n",
+        "klarna.consentCheckbox": ' hvor dette er muligt i henhold til g\xe6ldende lov. S\xe6lgers generelle vilk\xe5r og betingelser g\xe6lder."',
+        "klarna.consent": "consentimiento",
+        "socialSecurityNumberLookUp.error": "Ihre Adressdaten konnten nicht abgerufen werden. Bitte \xfcberpr\xfcfen Sie Ihr Geburtsdatum und/oder Ihre Sozialversicherungsnummer und versuchen Sie es erneut.",
+        privacyPolicy: "Pol\xedtica de privacidad"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Plus de m\xe9thodes de paiement",
+        payButton: "Payer",
+        storeDetails: "Sauvegarder pour mon prochain paiement",
+        "payment.redirecting": "Vous allez \xeatre redirig\xe9\u2026",
+        "payment.processing": "Votre paiement est en cours de traitement",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "Num\xe9ro de carte",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Num\xe9ro de carte non valide",
+        "creditCard.expiryDateField.title": "Date d'expiration",
+        "creditCard.expiryDateField.placeholder": "MM/AA",
+        "creditCard.expiryDateField.invalid": "Date d'expiration non valide",
+        "creditCard.expiryDateField.month": "Mois",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "AA",
+        "creditCard.expiryDateField.year": "Ann\xe9e",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Enregistrer pour la prochaine fois",
+        "creditCard.oneClickVerification.invalidInput.title": "Code de v\xe9rification invalide",
+        installments: "Nombre de versements",
+        "sepaDirectDebit.ibanField.invalid": "Num\xe9ro de compte non valide",
+        "sepaDirectDebit.nameField.placeholder": "N. Bernard",
+        "sepa.ownerName": "Au nom de",
+        "sepa.ibanNumber": "Num\xe9ro de compte (IBAN)",
+        "giropay.searchField.placeholder": "Nom de la banque / BIC / Bankleitzahl",
+        "giropay.minimumLength": "3 caract\xe8res minimum",
+        "giropay.noResults": "Aucun r\xe9sultat",
+        "giropay.details.bic": "Code BIC (Bank Identifier Code)",
+        "error.title": "Erreur",
+        "error.subtitle.redirect": "\xc9chec de la redirection",
+        "error.subtitle.payment": "\xc9chec du paiement",
+        "error.subtitle.refused": "Paiement refus\xe9",
+        "error.message.unknown": "Une erreur inconnue s'est produite",
+        "idealIssuer.selectField.title": "Banque",
+        "idealIssuer.selectField.placeholder": "S\xe9lectionnez votre banque",
+        "creditCard.success": "Paiement r\xe9ussi",
+        holderName: "Nom du titulaire de la carte",
+        loading: "Chargement en cours...",
+        "wechatpay.timetopay": "Vous avez %@ pour payer cette somme",
+        "wechatpay.scanqrcode": "Scanner le code QR",
+        personalDetails: "Informations personnelles",
+        socialSecurityNumber: "Num\xe9ro de s\xe9curit\xe9 sociale",
+        firstName: "Pr\xe9nom",
+        infix: "Pr\xe9fixe",
+        lastName: "Nom de famille",
+        mobileNumber: "Num\xe9ro de portable",
+        city: "Ville",
+        postalCode: "Code postal",
+        countryCode: "Code pays",
+        telephoneNumber: "Num\xe9ro de t\xe9l\xe9phone",
+        dateOfBirth: "Date de naissance",
+        shopperEmail: "Adresse e-mail",
+        gender: "Sexe",
+        male: "Homme",
+        female: "Femme",
+        billingAddress: "Adresse de facturation",
+        street: "Rue",
+        stateOrProvince: "\xc9tat ou province",
+        country: "Pays",
+        houseNumberOrName: "Num\xe9ro de rue",
+        separateDeliveryAddress: "Indiquer une adresse de livraison distincte",
+        deliveryAddress: "Adresse de livraison",
+        moreInformation: "Plus d'informations",
+        "klarna.consentCheckbox": "Mit der \xdcbermittlung der f\xfcr die Abwicklung des Rechnungskaufes und einer Identit\xe4ts- und Bonit\xe4tspr\xfcfung erforderlichen Daten an Klarna bin ich einverstanden. Meine %@ kann ich jederzeit mit Wirkung f\xfcr die Zukunft widerrufen.",
+        "klarna.consent": "accord",
+        "socialSecurityNumberLookUp.error": "No se han podido cargar los detalles de su direcci\xf3n. Por favor verifique su fecha de nacimiento y/o n\xfamero de seguridad social e int\xe9ntelo nuevamente.",
+        privacyPolicy: "Politique de confidentialit\xe9"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Altri metodi di pagamento",
+        payButton: "Paga",
+        storeDetails: "Salva per il prossimo pagamento",
+        "payment.redirecting": "Verrai reindirizzato\u2026",
+        "payment.processing": "Il tuo pagamento \xe8 in fase di elaborazione",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "Numero di Carta",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Numero carta non valido",
+        "creditCard.expiryDateField.title": "Data di Scadenza",
+        "creditCard.expiryDateField.placeholder": "MM/AA",
+        "creditCard.expiryDateField.invalid": "Data di scadenza non valida",
+        "creditCard.expiryDateField.month": "Mese",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "AA",
+        "creditCard.expiryDateField.year": "Anno",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Ricorda per la prossima volta",
+        "creditCard.oneClickVerification.invalidInput.title": "Codice di verifica non valido.",
+        installments: "Numero di rate",
+        "sepaDirectDebit.ibanField.invalid": "Numero di conto non valido",
+        "sepaDirectDebit.nameField.placeholder": "A. Bianchi",
+        "sepa.ownerName": "Nome Intestatario Conto",
+        "sepa.ibanNumber": "Numero di conto (IBAN)N\xfamero de conta (NIB)",
+        "giropay.searchField.placeholder": "Nome della banca / BIC / codice bancario",
+        "giropay.minimumLength": "M\xednimo 3 caracteres",
+        "giropay.noResults": "Nessun risultato di ricerca",
+        "giropay.details.bic": "BIC (codice di identificazione bancario)",
+        "error.title": "Errore",
+        "error.subtitle.redirect": "Reindirizzamento non riuscito",
+        "error.subtitle.payment": "Pagamento non riuscito",
+        "error.subtitle.refused": "Pagamento respinto",
+        "error.message.unknown": "Si \xe8 verificato un errore sconosciuto",
+        "idealIssuer.selectField.title": "Banca",
+        "idealIssuer.selectField.placeholder": "Seleziona la banca",
+        "creditCard.success": "Pagamento riuscito",
+        holderName: "Nome del titolare della carta",
+        loading: "Caricamento in corso...",
+        "wechatpay.timetopay": "Devi pagare %@",
+        "wechatpay.scanqrcode": "Scansiona il codice QR",
+        personalDetails: "Dati personali",
+        socialSecurityNumber: "Numero di previdenza sociale",
+        firstName: "Nome",
+        infix: "Prefisso",
+        lastName: "Cognome",
+        mobileNumber: "Numero di cellulare",
+        city: "Citt\xe0",
+        postalCode: "Codice postale",
+        countryCode: "Codice nazionale",
+        telephoneNumber: "Numero di telefono",
+        dateOfBirth: "Data di nascita",
+        shopperEmail: "Indirizzo e-mail",
+        gender: "Sesso",
+        male: "Uomo",
+        female: "Donna",
+        billingAddress: "Indirizzo di fatturazione",
+        street: "Via",
+        stateOrProvince: "Stato o provincia",
+        country: "Paese",
+        houseNumberOrName: "Numero civico",
+        separateDeliveryAddress: "Specifica un indirizzo di consegna alternativo",
+        deliveryAddress: "Indirizzo di consegna",
+        moreInformation: "Maggiori informazioni",
+        "klarna.consentCheckbox": "Doy mi consentimiento al procesamiento de mis datos por parte de Klarna a los efectos de la evaluaci\xf3n de identidad y cr\xe9dito y la liquidaci\xf3n de la compra. Puedo revocar mi %@ para el procesamiento de datos y para los fines para los que esto sea posible de acuerdo con la ley. Se aplican los t\xe9rminos y condiciones generales del vendedor.",
+        "klarna.consent": "consenso",
+        "socialSecurityNumberLookUp.error": "Impossible de r\xe9cup\xe9rer les d\xe9tails de votre adresse. Veuillez v\xe9rifier votre date de naissance et/ou num\xe9ro de s\xe9curit\xe9 sociale avant de r\xe9essayer.",
+        privacyPolicy: "Informativa sulla privacy"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Meer betaalmethodes",
+        payButton: "Betaal",
+        storeDetails: "Bewaar voor mijn volgende betaling",
+        "payment.redirecting": "U wordt doorgestuurd\u2026",
+        "payment.processing": "Uw betaling wordt verwerkt",
+        "creditCard.holderName.placeholder": "J. Janssen",
+        "creditCard.numberField.title": "Kaartnummer",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Ongeldig kaartnummer",
+        "creditCard.expiryDateField.title": "Vervaldatum",
+        "creditCard.expiryDateField.placeholder": "MM/JJ",
+        "creditCard.expiryDateField.invalid": "Ongeldige vervaldatum",
+        "creditCard.expiryDateField.month": "Maand",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "JJ",
+        "creditCard.expiryDateField.year": "Jaar",
+        "creditCard.cvcField.title": "Verificatiecode",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Onthouden voor de volgende keer",
+        "creditCard.oneClickVerification.invalidInput.title": "Ongeldige verificatiecode",
+        installments: "Aantal termijnen",
+        "sepaDirectDebit.ibanField.invalid": "Ongeldig rekeningnummer",
+        "sepaDirectDebit.nameField.placeholder": "P. de Ridder",
+        "sepa.ownerName": "Ten name van",
+        "sepa.ibanNumber": "Rekeningnummer (IBAN)",
+        "giropay.searchField.placeholder": "Banknaam / BIC / Bankleitzahl",
+        "giropay.minimumLength": "Min. 3 karakters",
+        "giropay.noResults": "Geen zoekresultaten",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "Fout",
+        "error.subtitle.redirect": "Doorsturen niet gelukt",
+        "error.subtitle.payment": "Betaling is niet geslaagd",
+        "error.subtitle.refused": "Betaling geweigerd",
+        "error.message.unknown": "Er is een onbekende fout opgetreden",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "Selecteer uw bank",
+        "creditCard.success": "Betaling geslaagd",
+        holderName: "Naam kaarthouder",
+        loading: "Laden....",
+        "wechatpay.timetopay": "U heeft %@ om te betalen",
+        "wechatpay.scanqrcode": "Scan de QR-code",
+        personalDetails: "Persoonlijke gegevens",
+        socialSecurityNumber: "Burgerservicenummer",
+        firstName: "Voornaam",
+        infix: "Voorvoegsel",
+        lastName: "Achternaam",
+        mobileNumber: "Telefoonnummer mobiel",
+        city: "Stad",
+        postalCode: "Postcode",
+        countryCode: "Landcode",
+        telephoneNumber: "Telefoonnummer",
+        dateOfBirth: "Geboortedatum",
+        shopperEmail: "E-mailadres",
+        gender: "Geslacht",
+        male: "Man",
+        female: "Vrouw",
+        billingAddress: "Factuuradres",
+        street: "Straatnaam",
+        stateOrProvince: "Staat of provincie",
+        country: "Land",
+        houseNumberOrName: "Huisnummer",
+        separateDeliveryAddress: "Een afwijkend bezorgadres opgeven",
+        deliveryAddress: "Bezorgadres",
+        moreInformation: "Meer informatie",
+        "klarna.consentCheckbox": "\"J'accepte que Klarna traite mes donn\xe9es pour v\xe9rifier mon identit\xe9",
+        "klarna.consent": "toestemming",
+        "socialSecurityNumberLookUp.error": "Non \xe8 stato possibile recuperare i dati di spedizione. Controlla la tua data di nascita e/o il tuo numero di previdenza sociale e riprova.",
+        privacyPolicy: "Privacybeleid"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Flere betalingsmetoder",
+        payButton: "Betal",
+        storeDetails: "Lagre til min neste betaling",
+        "payment.redirecting": "Du vil bli videresendt...",
+        "payment.processing": "Betalingen din behandles",
+        "creditCard.holderName.placeholder": "O. Nordmann",
+        "creditCard.numberField.title": "Kortnummer",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Ugyldig kortnummer",
+        "creditCard.expiryDateField.title": "Utl\xf8psdato",
+        "creditCard.expiryDateField.placeholder": "MM/\xc5\xc5",
+        "creditCard.expiryDateField.invalid": "Ugyldig utl\xf8psdato",
+        "creditCard.expiryDateField.month": "M\xe5ned",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "\xc5\xc5",
+        "creditCard.expiryDateField.year": "\xc5r",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Husk til neste gang",
+        "creditCard.oneClickVerification.invalidInput.title": "Ugyldig CVC",
+        installments: "Antall avdrag",
+        "sepaDirectDebit.ibanField.invalid": "Ugyldig kontonummer",
+        "sepaDirectDebit.nameField.placeholder": "O. Nordmann",
+        "sepa.ownerName": "Kortholders navn",
+        "sepa.ibanNumber": "Kontonummer (IBAN)",
+        "giropay.searchField.placeholder": "Bank navn / BIC / Bankleitzahl",
+        "giropay.minimumLength": "Min. 3 tegn",
+        "giropay.noResults": "Ingen s\xf8keresultater",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "Feil",
+        "error.subtitle.redirect": "Videresending feilet",
+        "error.subtitle.payment": "Betaling feilet",
+        "error.subtitle.refused": "Betaling avvist",
+        "error.message.unknown": "En ukjent feil oppstod",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "Velg din bank",
+        "creditCard.success": "Betalingen var vellykket",
+        holderName: "Kortholders navn",
+        loading: "Laster...",
+        "wechatpay.timetopay": "Du har %@ igjen til \xe5 betale",
+        "wechatpay.scanqrcode": "Scan QR-koden",
+        personalDetails: "Personopplysninger",
+        socialSecurityNumber: "Personnummer",
+        firstName: "Fornavn",
+        infix: "Prefiks",
+        lastName: "Etternavn",
+        mobileNumber: "Mobilnummer",
+        city: "Poststed",
+        postalCode: "Postnummer",
+        countryCode: "Landkode",
+        telephoneNumber: "Telefonnummer",
+        dateOfBirth: "F\xf8dselsdato",
+        shopperEmail: "E-postadresse",
+        gender: "Kj\xf8nn",
+        male: "Mann",
+        female: "Kvinne",
+        billingAddress: "Faktureringsadresse",
+        street: "Gate",
+        stateOrProvince: "Fylke",
+        country: "Land",
+        houseNumberOrName: "Husnummer",
+        separateDeliveryAddress: "Spesifiser en separat leveringsadresse",
+        deliveryAddress: "Leveringsadresse",
+        moreInformation: "Mer informasjon",
+        "klarna.consentCheckbox": " conna\xeetre ma solvabilit\xe9 et r\xe9gler l'achat. J'ai le droit de retirer mon %@ concernant le traitement des donn\xe9es aux fins admises par la l\xe9gislation en vigueur. Les conditions g\xe9n\xe9rales du marchand s'appliquent.\"",
+        "klarna.consent": "samtykke",
+        "socialSecurityNumberLookUp.error": "Uw adresgegevens konden niet worden achterhaald. Controleer uw geboortedatum en/of uw burgerservicenummer en probeer het opnieuw.",
+        privacyPolicy: "Retningslinjer for personvern"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Wi\u0119cej metod p\u0142atno\u015bci",
+        payButton: "Zap\u0142a\u0107",
+        storeDetails: "Zapisz na potrzeby nast\u0119pnej p\u0142atno\u015bci",
+        "payment.redirecting": "U\u017cytkownik zostanie przekierowany\u2026",
+        "payment.processing": "P\u0142atno\u015b\u0107 jest przetwarzana",
+        "creditCard.holderName.placeholder": "J. Kowalski",
+        "creditCard.numberField.title": "Numer karty ",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Nieprawid\u0142owy numer karty",
+        "creditCard.expiryDateField.title": "Data wa\u017cno\u015bci",
+        "creditCard.expiryDateField.placeholder": "MM/RR",
+        "creditCard.expiryDateField.invalid": "Nieprawid\u0142owa data wyga\u015bni\u0119cia karty",
+        "creditCard.expiryDateField.month": "Miesi\u0105c",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "RR",
+        "creditCard.expiryDateField.year": "Rok",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Zapami\u0119taj na przysz\u0142o\u015b\u0107",
+        "creditCard.oneClickVerification.invalidInput.title": "Nieprawid\u0142owy kod CVC",
+        installments: "Liczba rat",
+        "sepaDirectDebit.ibanField.invalid": "Nieprawid\u0142owy numer rachunku",
+        "sepaDirectDebit.nameField.placeholder": "J. Kowalski",
+        "sepa.ownerName": "Imi\u0119 i nazwisko posiadacza karty",
+        "sepa.ibanNumber": "Numer rachunku (IBAN)",
+        "giropay.searchField.placeholder": "Nazwa banku",
+        "giropay.minimumLength": "Min. 3 znaki",
+        "giropay.noResults": "Brak wynik\xf3w wyszukiwania",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "B\u0142\u0105d",
+        "error.subtitle.redirect": "Przekierowanie nie powiod\u0142o si\u0119",
+        "error.subtitle.payment": "P\u0142atno\u015b\u0107 nie powiod\u0142a si\u0119",
+        "error.subtitle.refused": "P\u0142atno\u015b\u0107 zosta\u0142a odrzucona",
+        "error.message.unknown": "Wyst\u0105pi\u0142 nieoczekiwany b\u0142\u0105d",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "Wybierz sw\xf3j bank",
+        "creditCard.success": "P\u0142atno\u015b\u0107 zako\u0144czona sukcesem",
+        holderName: "Imi\u0119 i nazwisko posiadacza karty",
+        loading: "\u0141adowanie...",
+        "wechatpay.timetopay": "Masz do zap\u0142acenia %@",
+        "wechatpay.scanqrcode": "Zeskanuj kod QR",
+        personalDetails: "Dane osobowe",
+        socialSecurityNumber: "Numer dowodu osobistego",
+        firstName: "Imi\u0119",
+        infix: "Prefiks",
+        lastName: "Nazwisko",
+        mobileNumber: "Numer telefonu kom\xf3rkowego",
+        city: "Miasto",
+        postalCode: "Kod pocztowy",
+        countryCode: "Kod kraju",
+        telephoneNumber: "Numer telefonu",
+        dateOfBirth: "Data urodzenia",
+        shopperEmail: "Adres e-mail",
+        gender: "P\u0142e\u0107",
+        male: "M\u0119\u017cczyzna",
+        female: "Kobieta",
+        billingAddress: "Adres rozliczeniowy",
+        street: "Ulica",
+        stateOrProvince: "Wojew\xf3dztwo",
+        country: "Kraj",
+        houseNumberOrName: "Numer domu i mieszkania",
+        separateDeliveryAddress: "Podaj osobny adres dostawy",
+        deliveryAddress: "Adres dostawy",
+        moreInformation: "Wi\u0119cej informacji",
+        "klarna.consentCheckbox": "\"Autorizzo Klarna a elaborare i miei dati per effettuare verifiche relative a identit\xe0 e affidabilit\xe0 finanziaria e alla liquidazione dell'acquisto. Sono autorizzato a revocare il mio %@ per l'elaborazione dei dati",
+        "klarna.consent": "zgoda",
+        "socialSecurityNumberLookUp.error": "Dine adressedetaljer kunne ikke hentes. Vennligst sjekk f\xf8dselsdato og/eller personnummer og pr\xf8v igjen.",
+        privacyPolicy: "Polityka prywatno\u015bci."
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Mais m\xe9todos de pagamento",
+        payButton: "Pagar",
+        storeDetails: "Salvar para meu pr\xf3ximo pagamento",
+        "payment.redirecting": "Voc\xea ser\xe1 redirecionado\u2026",
+        "payment.processing": "Seu pagamento est\xe1 sendo processado",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "N\xfamero do Cart\xe3o",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "N\xfamero de cart\xe3o inv\xe1lido",
+        "creditCard.expiryDateField.title": "Data de Vencimento",
+        "creditCard.expiryDateField.placeholder": "MM/AA",
+        "creditCard.expiryDateField.invalid": "Data de validade inv\xe1lida",
+        "creditCard.expiryDateField.month": "M\xeas",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "AA",
+        "creditCard.expiryDateField.year": "Ano",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Lembrar para a pr\xf3xima vez",
+        "creditCard.oneClickVerification.invalidInput.title": "C\xf3digo de verifica\xe7\xe3o inv\xe1lido.",
+        installments: "Op\xe7\xf5es de Parcelamento",
+        "sepaDirectDebit.ibanField.invalid": "N\xfamero de conta inv\xe1lido",
+        "sepaDirectDebit.nameField.placeholder": "J. Silva",
+        "sepa.ownerName": "Nome do titular da conta banc\xe1ria",
+        "sepa.ibanNumber": "Kontonummer (IBAN)",
+        "giropay.searchField.placeholder": "Nome do banco / BIC / Bankleitzahl",
+        "giropay.minimumLength": "M\xednimo de 3 caracteres",
+        "giropay.noResults": "N\xe3o h\xe1 resultados de pesquisa",
+        "giropay.details.bic": "BIC (C\xf3digo de identifica\xe7\xe3o do banco)",
+        "error.title": "Erro",
+        "error.subtitle.redirect": "Falha no redirecionamento",
+        "error.subtitle.payment": "Falha no pagamento",
+        "error.subtitle.refused": "Pagamento recusado",
+        "error.message.unknown": "Ocorreu um erro desconhecido",
+        "idealIssuer.selectField.title": "Banco",
+        "idealIssuer.selectField.placeholder": "Selecione seu banco",
+        "creditCard.success": "Pagamento bem-sucedido",
+        holderName: "Nome do titular do cart\xe3o",
+        loading: "Carregando...",
+        "wechatpay.timetopay": "Voc\xea tem %@ para pagar",
+        "wechatpay.scanqrcode": "Escanear QR code",
+        personalDetails: "Informa\xe7\xf5es pessoais",
+        socialSecurityNumber: "CPF",
+        firstName: "Nome",
+        infix: "Prefixo",
+        lastName: "Sobrenome",
+        mobileNumber: "Celular",
+        city: "Cidade",
+        postalCode: "CEP",
+        countryCode: "C\xf3digo do pa\xeds",
+        telephoneNumber: "N\xfamero de telefone",
+        dateOfBirth: "Data de nascimento",
+        shopperEmail: "Endere\xe7o de e-mail",
+        gender: "G\xeanero",
+        male: "Masculino",
+        female: "Feminino",
+        billingAddress: "Endere\xe7o de cobran\xe7a",
+        street: "Rua",
+        stateOrProvince: "Estado ou prov\xedncia",
+        country: "Pa\xeds",
+        houseNumberOrName: "N\xfamero da casa",
+        separateDeliveryAddress: "Especificar um endere\xe7o de entrega separado",
+        deliveryAddress: "Endere\xe7o de entrega",
+        moreInformation: "Mais informa\xe7\xf5es",
+        "klarna.consentCheckbox": " ai sensi di quanto stabilito dalla legge. Vengono applicati i termini e le condizioni dell'esercente.\"",
+        "klarna.consent": "consentimento",
+        "socialSecurityNumberLookUp.error": '"Nie mo\u017cna odzyska\u0107 Twoich danych adresowych. Sprawd\u017a dat\u0119 urodzenia i numer dowodu osobistego',
+        privacyPolicy: "Pol\xedtica de Privacidade"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "\u0414\u0440\u0443\u0433\u0438\u0435 \u0441\u043f\u043e\u0441\u043e\u0431\u044b \u043e\u043f\u043b\u0430\u0442\u044b",
+        payButton: "\u0417\u0430\u043f\u043b\u0430\u0442\u0438\u0442\u044c",
+        storeDetails: "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0434\u043b\u044f \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0433\u043e \u043f\u043b\u0430\u0442\u0435\u0436\u0430",
+        "payment.redirecting": "\u0412\u044b \u0431\u0443\u0434\u0435\u0442\u0435 \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u044b\u2026",
+        "payment.processing": "\u0412\u0430\u0448 \u043f\u043b\u0430\u0442\u0435\u0436 \u043e\u0431\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430\u0435\u0442\u0441\u044f",
+        "creditCard.holderName.placeholder": "\u0418. \u041f\u0435\u0442\u0440\u043e\u0432",
+        "creditCard.numberField.title": "\u041d\u043e\u043c\u0435\u0440 \u043a\u0430\u0440\u0442\u044b",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "\u041d\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u043d\u043e\u043c\u0435\u0440 \u043a\u0430\u0440\u0442\u044b",
+        "creditCard.expiryDateField.title": "\u0421\u0440\u043e\u043a \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f",
+        "creditCard.expiryDateField.placeholder": "\u041c\u041c/\u0413\u0413",
+        "creditCard.expiryDateField.invalid": "\u041d\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0441\u0440\u043e\u043a \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f",
+        "creditCard.expiryDateField.month": "\u041c\u0435\u0441\u044f\u0446",
+        "creditCard.expiryDateField.month.placeholder": "\u041c\u041c",
+        "creditCard.expiryDateField.year.placeholder": "\u0413\u0413",
+        "creditCard.expiryDateField.year": "\u0413\u043e\u0434",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "\u0417\u0430\u043f\u043e\u043c\u043d\u0438\u0442\u044c \u043d\u0430 \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439 \u0440\u0430\u0437",
+        "creditCard.oneClickVerification.invalidInput.title": "\u041d\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 CVC",
+        installments: "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u043b\u0430\u0442\u0435\u0436\u0435\u0439",
+        "sepaDirectDebit.ibanField.invalid": "\u041d\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u043d\u043e\u043c\u0435\u0440 \u0441\u0447\u0435\u0442\u0430",
+        "sepaDirectDebit.nameField.placeholder": "\u0418. \u041f\u0435\u0442\u0440\u043e\u0432",
+        "sepa.ownerName": "\u0418\u043c\u044f \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430",
+        "sepa.ibanNumber": "\u041d\u043e\u043c\u0435\u0440 \u0441\u0447\u0435\u0442\u0430 (IBAN)",
+        "giropay.searchField.placeholder": "Bankname / BIC / Bankleitzahl",
+        "giropay.minimumLength": "\u041c\u0438\u043d. 3 \u0437\u043d\u0430\u043a\u0430",
+        "giropay.noResults": "\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e",
+        "giropay.details.bic": "\u0411\u0418\u041a (\u0431\u0430\u043d\u043a\u043e\u0432\u0441\u043a\u0438\u0439 \u0438\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u043a\u043e\u0434)",
+        "error.title": "\u041e\u0448\u0438\u0431\u043a\u0430",
+        "error.subtitle.redirect": "\u0421\u0431\u043e\u0439 \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
+        "error.subtitle.payment": "\u0421\u0431\u043e\u0439 \u043e\u043f\u043b\u0430\u0442\u044b",
+        "error.subtitle.refused": "\u041e\u043f\u043b\u0430\u0442\u0430 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0430",
+        "error.message.unknown": "\u0412\u043e\u0437\u043d\u0438\u043a\u043b\u0430 \u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u0430\u044f \u043e\u0448\u0438\u0431\u043a\u0430",
+        "idealIssuer.selectField.title": "\u0411\u0430\u043d\u043a",
+        "idealIssuer.selectField.placeholder": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0431\u0430\u043d\u043a",
+        "creditCard.success": "\u041f\u043b\u0430\u0442\u0435\u0436 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d",
+        holderName: "\u0418\u043c\u044f \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430 \u043a\u0430\u0440\u0442\u044b",
+        loading: "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430\u2026",
+        "wechatpay.timetopay": "\u0423 \u0432\u0430\u0441 %@ \u043d\u0430 \u043e\u043f\u043b\u0430\u0442\u0443",
+        "wechatpay.scanqrcode": "\u0421\u043a\u0430\u043d\u0438\u0440\u043e\u0432\u0430\u0442\u044c QR-\u043a\u043e\u0434",
+        personalDetails: "\u041b\u0438\u0447\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435",
+        socialSecurityNumber: "\u041d\u043e\u043c\u0435\u0440 \u0441\u043e\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0441\u0442\u0440\u0430\u0445\u043e\u0432\u0430\u043d\u0438\u044f \u0438\u043b\u0438 \u0418\u041d\u041d",
+        firstName: "\u0418\u043c\u044f",
+        infix: "\u041f\u0440\u0438\u0441\u0442\u0430\u0432\u043a\u0430",
+        lastName: "\u0424\u0430\u043c\u0438\u043b\u0438\u044f",
+        mobileNumber: "\u041c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0439 \u0442\u0435\u043b\u0435\u0444\u043e\u043d",
+        city: "\u0413\u043e\u0440\u043e\u0434",
+        postalCode: "\u041f\u043e\u0447\u0442\u043e\u0432\u044b\u0439 \u0438\u043d\u0434\u0435\u043a\u0441",
+        countryCode: "\u041a\u043e\u0434 \u0441\u0442\u0440\u0430\u043d\u044b",
+        telephoneNumber: "\u041d\u043e\u043c\u0435\u0440 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u0430",
+        dateOfBirth: "\u0414\u0430\u0442\u0430 \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f",
+        shopperEmail: "\u0410\u0434\u0440\u0435\u0441 \u044d\u043b. \u043f\u043e\u0447\u0442\u044b",
+        gender: "\u041f\u043e\u043b",
+        male: "\u041c\u0443\u0436\u0447\u0438\u043d\u0430",
+        female: "\u0416\u0435\u043d\u0449\u0438\u043d\u0430",
+        billingAddress: "\u041f\u043b\u0430\u0442\u0435\u0436\u043d\u044b\u0439 \u0430\u0434\u0440\u0435\u0441",
+        street: "\u0423\u043b\u0438\u0446\u0430",
+        stateOrProvince: "\u0420\u0435\u0433\u0438\u043e\u043d",
+        country: "\u0421\u0442\u0440\u0430\u043d\u0430",
+        houseNumberOrName: "\u041d\u043e\u043c\u0435\u0440 \u0434\u043e\u043c\u0430",
+        separateDeliveryAddress: "\u0423\u043a\u0430\u0436\u0438\u0442\u0435 \u043e\u0442\u0434\u0435\u043b\u044c\u043d\u044b\u0439 \u0430\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438",
+        deliveryAddress: "\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438",
+        moreInformation: "\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f",
+        "klarna.consentCheckbox": '"Ik geef Klarna toestemming om mijn gegevens te verwerken voor het vaststellen van mijn identiteit',
+        "klarna.consent": "\u0441\u043e\u0433\u043b\u0430\u0441\u0438\u0435",
+        "socialSecurityNumberLookUp.error": ' i spr\xf3buj ponownie."',
+        privacyPolicy: "\u041f\u043e\u043b\u0438\u0442\u0438\u043a\u0430 \u043a\u043e\u043d\u0444\u0438\u0434\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u0438"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "Fler betalningss\xe4tt",
+        payButton: "Betala",
+        storeDetails: "Spara f\xf6r min n\xe4sta betalning",
+        "payment.redirecting": "Du kommer att omdirigeras\u2026",
+        "payment.processing": "Din betalning bearbetas",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "Kortnummer",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "Ogiltigt kortnummer",
+        "creditCard.expiryDateField.title": "F\xf6rfallodatum",
+        "creditCard.expiryDateField.placeholder": "MM/AA",
+        "creditCard.expiryDateField.invalid": "Ogiltig utg\xe5ngsdatum",
+        "creditCard.expiryDateField.month": "M\xe5nad",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "\xc5\xc5",
+        "creditCard.expiryDateField.year": "\xc5r",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "Kom ih\xe5g till n\xe4sta g\xe5ng",
+        "creditCard.oneClickVerification.invalidInput.title": "Ogiltig verifieringskod.",
+        installments: "Number of installments",
+        "sepaDirectDebit.ibanField.invalid": "Ogiltigt kontonummer",
+        "sepaDirectDebit.nameField.placeholder": "J. Johansson",
+        "sepa.ownerName": "K\xe4nt av kontoinnehavaren",
+        "sepa.ibanNumber": "Kontonummer (IBAN)",
+        "giropay.searchField.placeholder": "Bankname / BIC / Bankleitzahl",
+        "giropay.minimumLength": "Minst 3 tecken",
+        "giropay.noResults": "Inga s\xf6kresultat",
+        "giropay.details.bic": "BIC (Bank Identifier Code)",
+        "error.title": "Fel",
+        "error.subtitle.redirect": "Omdirigering misslyckades",
+        "error.subtitle.payment": "Betalning misslyckades",
+        "error.subtitle.refused": "Betalning avvisades",
+        "error.message.unknown": "Ett ok\xe4nt fel uppstod",
+        "idealIssuer.selectField.title": "Bank",
+        "idealIssuer.selectField.placeholder": "V\xe4lj din bank",
+        "creditCard.success": "Betalning lyckades",
+        holderName: "Kortinnehavarens namn",
+        loading: "Laddar\u2026",
+        "wechatpay.timetopay": "Du har %@ att betala",
+        "wechatpay.scanqrcode": "Skanna QR-koden",
+        personalDetails: "Personuppgifter",
+        socialSecurityNumber: "Personnummer",
+        firstName: "F\xf6rnamn",
+        infix: "Prefix",
+        lastName: "Efternamn",
+        mobileNumber: "Mobilnummer",
+        city: "Stad",
+        postalCode: "Postnummer",
+        countryCode: "Landskod",
+        telephoneNumber: "Telefonnummer",
+        dateOfBirth: "F\xf6delsedatum",
+        shopperEmail: "E-postadress",
+        gender: "K\xf6n",
+        male: "Man",
+        female: "Kvinna",
+        billingAddress: "Faktureringsadress",
+        street: "Gatuadress",
+        stateOrProvince: "Delstat eller region",
+        country: "Land",
+        houseNumberOrName: "Husnummer",
+        separateDeliveryAddress: "Ange en separat leveransadress",
+        deliveryAddress: "Leveransadress",
+        moreInformation: "Mer information",
+        "klarna.consentCheckbox": ' het beoordelen van mijn kredietwaardigheid en het afwikkelen van de aankoop. Ik heb de mogelijkheid om mijn %@ in te trekken voor het verwerken van mijn gegevens en voor de doeleinden waarvoor dit wettelijk is toegestaan. De algemene voorwaarden van de winkelier zijn van toepassing."',
+        "klarna.consent": "samtycke",
+        "socialSecurityNumberLookUp.error": "N\xe3o foi poss\xedvel recuperar os dados do seu endere\xe7o. Verifique a sua data de nascimento e/ou n\xfamero da previd\xeancia e tente novamente.",
+        privacyPolicy: "Integritetspolicy"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "\u66f4\u591a\u652f\u4ed8\u65b9\u5f0f",
+        payButton: "\u652f\u4ed8",
+        storeDetails: "\u4fdd\u5b58\u4ee5\u4fbf\u4e0b\u6b21\u652f\u4ed8\u4f7f\u7528",
+        "payment.redirecting": "\u60a8\u5c06\u88ab\u91cd\u5b9a\u5411\u2026",
+        "payment.processing": "\u6b63\u5728\u5904\u7406\u60a8\u7684\u652f\u4ed8",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "\u5361\u53f7",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "\u65e0\u6548\u7684\u5361\u53f7",
+        "creditCard.expiryDateField.title": "\u6709\u6548\u671f",
+        "creditCard.expiryDateField.placeholder": "\u6708\u6708/\u5e74\u5e74",
+        "creditCard.expiryDateField.invalid": "\u65e0\u6548\u7684\u5230\u671f\u65e5\u671f",
+        "creditCard.expiryDateField.month": "\u6708",
+        "creditCard.expiryDateField.month.placeholder": "\u6708\u6708",
+        "creditCard.expiryDateField.year.placeholder": "\u5e74\u5e74",
+        "creditCard.expiryDateField.year": "\u5e74",
+        "creditCard.cvcField.title": "CVC / CVV",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "\u8bb0\u4f4f\u4ee5\u4fbf\u4e0b\u6b21\u4f7f\u7528",
+        "creditCard.oneClickVerification.invalidInput.title": "\u65e0\u6548\u7684 CVC",
+        installments: "\u5206\u671f\u4ed8\u6b3e\u671f\u6570",
+        "sepaDirectDebit.ibanField.invalid": "\u65e0\u6548\u7684\u8d26\u53f7",
+        "sepaDirectDebit.nameField.placeholder": "J. Smith",
+        "sepa.ownerName": "\u6301\u5361\u4eba\u59d3\u540d",
+        "sepa.ibanNumber": "\u8d26\u53f7 (IBAN)",
+        "giropay.searchField.placeholder": "\u94f6\u884c\u540d\u79f0 / BIC\uff08\u94f6\u884c\u8bc6\u522b\u7801\uff09 / \u94f6\u884c\u4ee3\u7801",
+        "giropay.minimumLength": "\u6700\u5c11 3 \u4e2a\u5b57\u7b26",
+        "giropay.noResults": "\u65e0\u641c\u7d22\u7ed3\u679c",
+        "giropay.details.bic": "BIC\uff08\u94f6\u884c\u6807\u8bc6\u4ee3\u7801\uff09",
+        "error.title": "\u9519\u8bef",
+        "error.subtitle.redirect": "\u91cd\u5b9a\u5411\u5931\u8d25",
+        "error.subtitle.payment": "\u652f\u4ed8\u5931\u8d25",
+        "error.subtitle.refused": "\u652f\u4ed8\u88ab\u62d2",
+        "error.message.unknown": "\u53d1\u751f\u672a\u77e5\u9519\u8bef",
+        "idealIssuer.selectField.title": "\u94f6\u884c",
+        "idealIssuer.selectField.placeholder": "\u9009\u62e9\u60a8\u7684\u94f6\u884c",
+        "creditCard.success": "\u652f\u4ed8\u6210\u529f",
+        holderName: "\u6301\u5361\u4eba\u59d3\u540d",
+        loading: "\u6b63\u5728\u52a0\u8f7d...",
+        "wechatpay.timetopay": "\u60a8\u9700\u8981\u652f\u4ed8 %@",
+        "wechatpay.scanqrcode": "\u626b\u63cf QR \u7801",
+        personalDetails: "\u4e2a\u4eba\u8be6\u7ec6\u4fe1\u606f",
+        socialSecurityNumber: "\u793e\u4f1a\u4fdd\u9669\u53f7\u7801",
+        firstName: "\u540d\u5b57",
+        infix: "\u524d\u7f00",
+        lastName: "\u59d3\u6c0f",
+        mobileNumber: "\u624b\u673a\u53f7",
+        city: "\u57ce\u5e02",
+        postalCode: "\u90ae\u653f\u7f16\u7801",
+        countryCode: "\u56fd\u5bb6\u4ee3\u7801",
+        telephoneNumber: "\u7535\u8bdd\u53f7\u7801",
+        dateOfBirth: "\u51fa\u751f\u65e5\u671f",
+        shopperEmail: "\u7535\u5b50\u90ae\u4ef6\u5730\u5740",
+        gender: "\u6027\u522b",
+        male: "\u7537",
+        female: "\u5973",
+        billingAddress: "\u8d26\u5355\u5730\u5740",
+        street: "\u8857\u9053",
+        stateOrProvince: "\u5dde\u6216\u7701",
+        country: "\u56fd\u5bb6/\u5730\u533a",
+        houseNumberOrName: "\u95e8\u724c\u53f7",
+        separateDeliveryAddress: "\u6307\u5b9a\u4e00\u4e2a\u5355\u72ec\u7684\u5bc4\u9001\u5730\u5740",
+        deliveryAddress: "\u5bc4\u9001\u5730\u5740",
+        moreInformation: "\u66f4\u591a\u4fe1\u606f",
+        "klarna.consentCheckbox": '"Jeg samtykker til Klarnas behandling av mine data for form\xe5lene med identitets- og kredittvurdering',
+        "klarna.consent": "\u540c\u610f",
+        "socialSecurityNumberLookUp.error": "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0430\u0434\u0440\u0435\u0441\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435. \u041f\u0440\u043e\u0432\u0435\u0440\u044c\u0442\u0435 \u0434\u0430\u0442\u0443 \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f \u0438/\u0438\u043b\u0438 \u043d\u043e\u043c\u0435\u0440 \u0441\u043e\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0441\u0442\u0440\u0430\u0445\u043e\u0432\u0430\u043d\u0438\u044f \u0438 \u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0435 \u043f\u043e\u043f\u044b\u0442\u043a\u0443.",
+        privacyPolicy: "\u9690\u79c1\u653f\u7b56"
+    }
+}, function (e) {
+    e.exports = {
+        "paymentMethods.moreMethodsButton": "\u66f4\u591a\u4ed8\u6b3e\u65b9\u5f0f",
+        payButton: "\u652f\u4ed8",
+        storeDetails: "\u5132\u5b58\u4ee5\u4f9b\u4e0b\u6b21\u4ed8\u6b3e\u4f7f\u7528",
+        "payment.redirecting": "\u5c07\u91cd\u65b0\u5c0e\u5411\u81f3\u2026",
+        "payment.processing": "\u6b63\u5728\u8655\u7406\u60a8\u7684\u4ed8\u6b3e",
+        "creditCard.holderName.placeholder": "J. Smith",
+        "creditCard.numberField.title": "\u4fe1\u7528\u5361\u865f\u78bc",
+        "creditCard.numberField.placeholder": "1234 5678 9012 3456",
+        "creditCard.numberField.invalid": "\u4fe1\u7528\u5361\u865f\u78bc\u7121\u6548",
+        "creditCard.expiryDateField.title": "\u5230\u671f\u65e5\u671f",
+        "creditCard.expiryDateField.placeholder": "MM/YY",
+        "creditCard.expiryDateField.invalid": "\u5230\u671f\u65e5\u671f\u7121\u6548",
+        "creditCard.expiryDateField.month": "\u6708\u4efd",
+        "creditCard.expiryDateField.month.placeholder": "MM",
+        "creditCard.expiryDateField.year.placeholder": "YY",
+        "creditCard.expiryDateField.year": "\u5e74\u4efd",
+        "creditCard.cvcField.title": "\u4fe1\u7528\u5361\u9a57\u8b49\u78bc / \u4fe1\u7528\u5361\u5b89\u5168\u78bc",
+        "creditCard.cvcField.placeholder": "123",
+        "creditCard.storeDetailsButton": "\u8a18\u4f4f\u4f9b\u4e0b\u6b21\u4f7f\u7528",
+        "creditCard.oneClickVerification.invalidInput.title": "\u4fe1\u7528\u5361\u9a57\u8b49\u78bc\u7121\u6548",
+        installments: "\u5206\u671f\u4ed8\u6b3e\u7684\u671f\u6578",
+        "sepaDirectDebit.ibanField.invalid": "\u5e33\u6236\u865f\u78bc\u7121\u6548",
+        "sepaDirectDebit.nameField.placeholder": "J. Smith",
+        "sepa.ownerName": "\u6301\u5361\u4eba\u59d3\u540d",
+        "sepa.ibanNumber": "\u5e33\u6236\u865f\u78bc (IBAN)",
+        "giropay.searchField.placeholder": "\u9280\u884c\u540d\u7a31 / BIC (\u9280\u884c\u8b58\u5225\u78bc) / \u9280\u884c\u4ee3\u78bc",
+        "giropay.minimumLength": "\u81f3\u5c11 4 \u500b\u5b57\u7b26",
+        "giropay.noResults": "\u6c92\u6709\u641c\u5c0b\u7d50\u679c",
+        "giropay.details.bic": "BIC (\u9280\u884c\u8b58\u5225\u78bc)",
+        "error.title": "\u932f\u8aa4",
+        "error.subtitle.redirect": "\u7121\u6cd5\u91cd\u65b0\u5c0e\u5411",
+        "error.subtitle.payment": "\u4ed8\u6b3e\u5931\u6557",
+        "error.subtitle.refused": "\u4ed8\u6b3e\u906d\u62d2\u7d55",
+        "error.message.unknown": "\u767c\u751f\u672a\u77e5\u932f\u8aa4",
+        "idealIssuer.selectField.title": "\u9280\u884c",
+        "idealIssuer.selectField.placeholder": "\u9078\u53d6\u60a8\u7684\u9280\u884c",
+        "creditCard.success": "\u4ed8\u6b3e\u6210\u529f",
+        holderName: "\u6301\u5361\u4eba\u59d3\u540d",
+        loading: "\u6b63\u5728\u8f09\u5165...",
+        "wechatpay.timetopay": "\u60a8\u6709 %@ \u53ef\u4ee5\u652f\u4ed8",
+        "wechatpay.scanqrcode": "\u6383\u63cf QR \u4ee3\u78bc",
+        personalDetails: "\u500b\u4eba\u8a73\u7d30\u8cc7\u6599",
+        socialSecurityNumber: "\u793e\u6703\u5b89\u5168\u78bc",
+        firstName: "\u540d\u5b57",
+        infix: "\u524d\u7db4",
+        lastName: "\u59d3\u6c0f",
+        mobileNumber: "\u884c\u52d5\u96fb\u8a71\u865f\u78bc",
+        city: "\u57ce\u5e02",
+        postalCode: "\u90f5\u905e\u5340\u865f",
+        countryCode: "\u570b\u5bb6\u4ee3\u78bc",
+        telephoneNumber: "\u96fb\u8a71\u865f\u78bc",
+        dateOfBirth: "\u51fa\u751f\u65e5\u671f",
+        shopperEmail: "\u96fb\u5b50\u90f5\u4ef6\u5730\u5740",
+        gender: "\u6027\u5225",
+        male: "\u7537",
+        female: "\u5973",
+        billingAddress: "\u5e33\u55ae\u5730\u5740",
+        street: "\u8857\u9053",
+        stateOrProvince: "\u5dde/\u7e23/\u5e02",
+        country: "\u570b\u5bb6/\u5730\u5340",
+        houseNumberOrName: "\u9580\u724c\u865f",
+        separateDeliveryAddress: "\u6307\u5b9a\u53e6\u4e00\u500b\u6d3e\u9001\u5730\u5740",
+        deliveryAddress: "\u6d3e\u9001\u5730\u5740",
+        moreInformation: "\u66f4\u591a\u8cc7\u8a0a",
+        "klarna.consentCheckbox": ' samt oppgj\xf8r av kj\xf8pet. Jeg kan oppheve mitt %@ for behandling av data for de form\xe5lene det er mulig if\xf8lge loven. Forhandlerens generelle vilk\xe5r og betingelser gjelder."',
+        "klarna.consent": "\u540c\u610f",
+        "socialSecurityNumberLookUp.error": "Din adressinformation kunde inte h\xe4mtas. Kontrollera ditt f\xf6delsedatum och/eller personnummer och f\xf6rs\xf6k igen.",
+        privacyPolicy: "\u96b1\u79c1\u6b0a\u653f\u7b56"
+    }
 }, function (e, t, n) {
-    (t = e.exports = n(9)(!1)).push([e.i, "._1r7Mf94VtADWsWYqLISuxi {\n    list-style: none;\n    margin: 0 0 16px;\n    padding: 0;\n}\n._3dY5shaXsF93N_Q7r7Yh67 {\n    display: none;\n}\n\n._2fCOiApTMfYWMs1EW3aid3 ._3dY5shaXsF93N_Q7r7Yh67 {\n    display: block;\n}\n\n._1sjSRTsGIivvauRNDVrol8 {\n    margin-right: 16px;\n}\n\n._2MPlcb3tNaiV7eanCRR0AX {\n    width: 40px;\n    height: 26px;\n}\n\n.kgFE5Y3j_C0KpUemlBibg {\n    display: block;\n    max-height: 60px;\n}\n\n._2fCOiApTMfYWMs1EW3aid3 {\n    max-height: 100%;\n}\n", ""]), t.locals = {
-        "payment-methods-list": "_1r7Mf94VtADWsWYqLISuxi",
-        "payment-method__details": "_3dY5shaXsF93N_Q7r7Yh67",
-        "payment-method--selected": "_2fCOiApTMfYWMs1EW3aid3",
-        "payment-method__image__wrapper": "_1sjSRTsGIivvauRNDVrol8",
-        "payment-method__image": "_2MPlcb3tNaiV7eanCRR0AX",
-        "payment-method": "kgFE5Y3j_C0KpUemlBibg"
+    (t = e.exports = n(9)(!1)).push([e.i, "._2CL88OlMAA8bGTMtUMqdxD {\n    list-style: none;\n    margin: 0 0 16px;\n    padding: 0;\n}\n._20ikbiyXQbqDa_VS387Seu {\n    display: none;\n}\n\n._3TiyM6ZnNy_RiwyJ0iAsgw ._20ikbiyXQbqDa_VS387Seu {\n    display: block;\n}\n\n._1FijFUKp8IMa-OTQEi4wPq {\n    margin-right: 16px;\n}\n\n._M4g41xcnNL18lU8CHRP2 {\n    width: 40px;\n    height: 26px;\n}\n\n.e9gtfEFlUscn6wCrxlRaR {\n    display: block;\n    max-height: 60px;\n}\n\n._3TiyM6ZnNy_RiwyJ0iAsgw {\n    max-height: 100%;\n}\n", ""]), t.locals = {
+        "adyen-checkout__payment-methods-list": "_2CL88OlMAA8bGTMtUMqdxD",
+        "adyen-checkout__payment-method__details": "_20ikbiyXQbqDa_VS387Seu",
+        "adyen-checkout__payment-method--selected": "_3TiyM6ZnNy_RiwyJ0iAsgw",
+        "adyen-checkout__payment-method__image__wrapper": "_1FijFUKp8IMa-OTQEi4wPq",
+        "adyen-checkout__payment-method__image": "_M4g41xcnNL18lU8CHRP2",
+        "adyen-checkout__payment-method": "e9gtfEFlUscn6wCrxlRaR"
     }
 }, function (e, t, n) {
 }, , function (e, t, n) {
@@ -1128,36 +2006,36 @@ var Adyen = function (e) {
                 }, o = ArrayBuffer.isView || function (e) {
                     return e && n.indexOf(Object.prototype.toString.call(e)) > -1
                 };
-            l.prototype.append = function (e, t) {
+            u.prototype.append = function (e, t) {
                 e = s(e), t = c(t);
                 var n = this.map[e];
                 this.map[e] = n ? n + "," + t : t
-            }, l.prototype.delete = function (e) {
+            }, u.prototype.delete = function (e) {
                 delete this.map[s(e)]
-            }, l.prototype.get = function (e) {
+            }, u.prototype.get = function (e) {
                 return e = s(e), this.has(e) ? this.map[e] : null
-            }, l.prototype.has = function (e) {
+            }, u.prototype.has = function (e) {
                 return this.map.hasOwnProperty(s(e))
-            }, l.prototype.set = function (e, t) {
+            }, u.prototype.set = function (e, t) {
                 this.map[s(e)] = c(t)
-            }, l.prototype.forEach = function (e, t) {
+            }, u.prototype.forEach = function (e, t) {
                 for (var n in this.map) this.map.hasOwnProperty(n) && e.call(t, this.map[n], n, this)
-            }, l.prototype.keys = function () {
+            }, u.prototype.keys = function () {
                 var e = [];
                 return this.forEach(function (t, n) {
                     e.push(n)
-                }), u(e)
-            }, l.prototype.values = function () {
+                }), l(e)
+            }, u.prototype.values = function () {
                 var e = [];
                 return this.forEach(function (t) {
                     e.push(t)
-                }), u(e)
-            }, l.prototype.entries = function () {
+                }), l(e)
+            }, u.prototype.entries = function () {
                 var e = [];
                 return this.forEach(function (t, n) {
                     e.push([n, t])
-                }), u(e)
-            }, t.iterable && (l.prototype[Symbol.iterator] = l.prototype.entries);
+                }), l(e)
+            }, t.iterable && (u.prototype[Symbol.iterator] = u.prototype.entries);
             var i = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
             m.prototype.clone = function () {
                 return new m(this, {body: this._bodyInit})
@@ -1165,7 +2043,7 @@ var Adyen = function (e) {
                 return new g(this._bodyInit, {
                     status: this.status,
                     statusText: this.statusText,
-                    headers: new l(this.headers),
+                    headers: new u(this.headers),
                     url: this.url
                 })
             }, g.error = function () {
@@ -1176,14 +2054,14 @@ var Adyen = function (e) {
             g.redirect = function (e, t) {
                 if (-1 === a.indexOf(t)) throw new RangeError("Invalid status code");
                 return new g(null, {status: t, headers: {location: e}})
-            }, e.Headers = l, e.Request = m, e.Response = g, e.fetch = function (e, n) {
+            }, e.Headers = u, e.Request = m, e.Response = g, e.fetch = function (e, n) {
                 return new Promise(function (r, o) {
                     var i = new m(e, n), a = new XMLHttpRequest;
                     a.onload = function () {
                         var e, t, n = {
                             status: a.status,
                             statusText: a.statusText,
-                            headers: (e = a.getAllResponseHeaders() || "", t = new l, e.replace(/\r?\n[\t ]+/g, " ").split(/\r?\n/).forEach(function (e) {
+                            headers: (e = a.getAllResponseHeaders() || "", t = new u, e.replace(/\r?\n[\t ]+/g, " ").split(/\r?\n/).forEach(function (e) {
                                 var n = e.split(":"), r = n.shift().trim();
                                 if (r) {
                                     var o = n.join(":").trim();
@@ -1214,7 +2092,7 @@ var Adyen = function (e) {
             return "string" !== typeof e && (e = String(e)), e
         }
 
-        function u(e) {
+        function l(e) {
             var n = {
                 next: function () {
                     var t = e.shift();
@@ -1226,8 +2104,8 @@ var Adyen = function (e) {
             }), n
         }
 
-        function l(e) {
-            this.map = {}, e instanceof l ? e.forEach(function (e, t) {
+        function u(e) {
+            this.map = {}, e instanceof u ? e.forEach(function (e, t) {
                 this.append(t, e)
             }, this) : Array.isArray(e) ? e.forEach(function (e) {
                 this.append(e[0], e[1])
@@ -1236,12 +2114,12 @@ var Adyen = function (e) {
             }, this)
         }
 
-        function p(e) {
+        function d(e) {
             if (e.bodyUsed) return Promise.reject(new TypeError("Already read"));
             e.bodyUsed = !0
         }
 
-        function f(e) {
+        function p(e) {
             return new Promise(function (t, n) {
                 e.onload = function () {
                     t(e.result)
@@ -1251,12 +2129,12 @@ var Adyen = function (e) {
             })
         }
 
-        function h(e) {
-            var t = new FileReader, n = f(t);
+        function f(e) {
+            var t = new FileReader, n = p(t);
             return t.readAsArrayBuffer(e), n
         }
 
-        function d(e) {
+        function h(e) {
             if (e.slice) return e.slice(0);
             var t = new Uint8Array(e.byteLength);
             return t.set(new Uint8Array(e)), t.buffer
@@ -1264,24 +2142,24 @@ var Adyen = function (e) {
 
         function y() {
             return this.bodyUsed = !1, this._initBody = function (e) {
-                if (this._bodyInit = e, e) if ("string" === typeof e) this._bodyText = e; else if (t.blob && Blob.prototype.isPrototypeOf(e)) this._bodyBlob = e; else if (t.formData && FormData.prototype.isPrototypeOf(e)) this._bodyFormData = e; else if (t.searchParams && URLSearchParams.prototype.isPrototypeOf(e)) this._bodyText = e.toString(); else if (t.arrayBuffer && t.blob && r(e)) this._bodyArrayBuffer = d(e.buffer), this._bodyInit = new Blob([this._bodyArrayBuffer]); else {
+                if (this._bodyInit = e, e) if ("string" === typeof e) this._bodyText = e; else if (t.blob && Blob.prototype.isPrototypeOf(e)) this._bodyBlob = e; else if (t.formData && FormData.prototype.isPrototypeOf(e)) this._bodyFormData = e; else if (t.searchParams && URLSearchParams.prototype.isPrototypeOf(e)) this._bodyText = e.toString(); else if (t.arrayBuffer && t.blob && r(e)) this._bodyArrayBuffer = h(e.buffer), this._bodyInit = new Blob([this._bodyArrayBuffer]); else {
                     if (!t.arrayBuffer || !ArrayBuffer.prototype.isPrototypeOf(e) && !o(e)) throw new Error("unsupported BodyInit type");
-                    this._bodyArrayBuffer = d(e)
+                    this._bodyArrayBuffer = h(e)
                 } else this._bodyText = "";
                 this.headers.get("content-type") || ("string" === typeof e ? this.headers.set("content-type", "text/plain;charset=UTF-8") : this._bodyBlob && this._bodyBlob.type ? this.headers.set("content-type", this._bodyBlob.type) : t.searchParams && URLSearchParams.prototype.isPrototypeOf(e) && this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8"))
             }, t.blob && (this.blob = function () {
-                var e = p(this);
+                var e = d(this);
                 if (e) return e;
                 if (this._bodyBlob) return Promise.resolve(this._bodyBlob);
                 if (this._bodyArrayBuffer) return Promise.resolve(new Blob([this._bodyArrayBuffer]));
                 if (this._bodyFormData) throw new Error("could not read FormData body as blob");
                 return Promise.resolve(new Blob([this._bodyText]))
             }, this.arrayBuffer = function () {
-                return this._bodyArrayBuffer ? p(this) || Promise.resolve(this._bodyArrayBuffer) : this.blob().then(h)
+                return this._bodyArrayBuffer ? d(this) || Promise.resolve(this._bodyArrayBuffer) : this.blob().then(f)
             }), this.text = function () {
-                var e, t, n, r = p(this);
+                var e, t, n, r = d(this);
                 if (r) return r;
-                if (this._bodyBlob) return e = this._bodyBlob, t = new FileReader, n = f(t), t.readAsText(e), n;
+                if (this._bodyBlob) return e = this._bodyBlob, t = new FileReader, n = p(t), t.readAsText(e), n;
                 if (this._bodyArrayBuffer) return Promise.resolve(function (e) {
                     for (var t = new Uint8Array(e), n = new Array(t.length), r = 0; r < t.length; r++) n[r] = String.fromCharCode(t[r]);
                     return n.join("")
@@ -1299,9 +2177,9 @@ var Adyen = function (e) {
             var n, r, o = (t = t || {}).body;
             if (e instanceof m) {
                 if (e.bodyUsed) throw new TypeError("Already read");
-                this.url = e.url, this.credentials = e.credentials, t.headers || (this.headers = new l(e.headers)), this.method = e.method, this.mode = e.mode, o || null == e._bodyInit || (o = e._bodyInit, e.bodyUsed = !0)
+                this.url = e.url, this.credentials = e.credentials, t.headers || (this.headers = new u(e.headers)), this.method = e.method, this.mode = e.mode, o || null == e._bodyInit || (o = e._bodyInit, e.bodyUsed = !0)
             } else this.url = String(e);
-            if (this.credentials = t.credentials || this.credentials || "omit", !t.headers && this.headers || (this.headers = new l(t.headers)), this.method = (n = t.method || this.method || "GET", r = n.toUpperCase(), i.indexOf(r) > -1 ? r : n), this.mode = t.mode || this.mode || null, this.referrer = null, ("GET" === this.method || "HEAD" === this.method) && o) throw new TypeError("Body not allowed for GET or HEAD requests");
+            if (this.credentials = t.credentials || this.credentials || "omit", !t.headers && this.headers || (this.headers = new u(t.headers)), this.method = (n = t.method || this.method || "GET", r = n.toUpperCase(), i.indexOf(r) > -1 ? r : n), this.mode = t.mode || this.mode || null, this.referrer = null, ("GET" === this.method || "HEAD" === this.method) && o) throw new TypeError("Body not allowed for GET or HEAD requests");
             this._initBody(o)
         }
 
@@ -1316,14 +2194,14 @@ var Adyen = function (e) {
         }
 
         function g(e, t) {
-            t || (t = {}), this.type = "default", this.status = void 0 === t.status ? 200 : t.status, this.ok = this.status >= 200 && this.status < 300, this.statusText = "statusText" in t ? t.statusText : "OK", this.headers = new l(t.headers), this.url = t.url || "", this._initBody(e)
+            t || (t = {}), this.type = "default", this.status = void 0 === t.status ? 200 : t.status, this.ok = this.status >= 200 && this.status < 300, this.statusText = "statusText" in t ? t.statusText : "OK", this.headers = new u(t.headers), this.url = t.url || "", this._initBody(e)
         }
     }("undefined" !== typeof self ? self : this)
 }, function (e, t, n) {
-    n(17), n(88), e.exports = n(11).Symbol
+    n(17), n(103), e.exports = n(11).Symbol
 }, function (e, t, n) {
     "use strict";
-    var r = n(89), o = {};
+    var r = n(104), o = {};
     o[n(4)("toStringTag")] = "z", o + "" != "[object z]" && n(13)(Object.prototype, "toString", function () {
         return "[object " + r(this) + "]"
     }, !0)
@@ -1337,30 +2215,30 @@ var Adyen = function (e) {
     }
 }, function (e, t, n) {
     "use strict";
-    var r = n(21), o = n(91)(5), i = !0;
+    var r = n(21), o = n(106)(5), i = !0;
     "find" in [] && Array(1).find(function () {
         i = !1
     }), r(r.P + r.F * i, "Array", {
         find: function (e) {
             return o(this, e, arguments.length > 1 ? arguments[1] : void 0)
         }
-    }), n(96)("find")
+    }), n(111)("find")
 }, function (e, t, n) {
-    var r = n(23), o = n(25), i = n(92), a = n(93), s = n(95);
+    var r = n(23), o = n(25), i = n(107), a = n(108), s = n(110);
     e.exports = function (e) {
-        var t = 1 == e, n = 2 == e, c = 3 == e, u = 4 == e, l = 6 == e, p = 5 == e || l;
-        return function (f, h, d) {
-            for (var y, m, b = i(f), g = o(b), v = r(h, d, 3), w = a(g.length), _ = 0, O = t ? s(f, w) : n ? s(f, 0) : void 0; w > _; _++) if ((p || _ in g) && (m = v(y = g[_], _, b), e)) if (t) O[_] = m; else if (m) switch (e) {
+        var t = 1 == e, n = 2 == e, c = 3 == e, l = 4 == e, u = 6 == e, d = 5 == e || u;
+        return function (p, f, h) {
+            for (var y, m, b = i(p), g = o(b), v = r(f, h, 3), w = a(g.length), C = 0, _ = t ? s(p, w) : n ? s(p, 0) : void 0; w > C; C++) if ((d || C in g) && (m = v(y = g[C], C, b), e)) if (t) _[C] = m; else if (m) switch (e) {
                 case 3:
                     return !0;
                 case 5:
                     return y;
                 case 6:
-                    return _;
+                    return C;
                 case 2:
-                    O.push(y)
-            } else if (u) return !1;
-            return l ? -1 : c || u ? u : O
+                    _.push(y)
+            } else if (l) return !1;
+            return u ? -1 : c || l ? l : _
         }
     }
 }, function (e, t, n) {
@@ -1369,7 +2247,7 @@ var Adyen = function (e) {
         return Object(r(e))
     }
 }, function (e, t, n) {
-    var r = n(94), o = Math.min;
+    var r = n(109), o = Math.min;
     e.exports = function (e) {
         return e > 0 ? o(r(e), 9007199254740991) : 0
     }
@@ -1391,11 +2269,11 @@ var Adyen = function (e) {
     }
 }, function (e, t, n) {
     "use strict";
-    var r = n(98);
+    var r = n(113);
     e.exports = r;
-    var o = l(!0), i = l(!1), a = l(null), s = l(void 0), c = l(0), u = l("");
+    var o = u(!0), i = u(!1), a = u(null), s = u(void 0), c = u(0), l = u("");
 
-    function l(e) {
+    function u(e) {
         var t = new r(r._61);
         return t._65 = 1, t._55 = e, t
     }
@@ -1407,7 +2285,7 @@ var Adyen = function (e) {
         if (!0 === e) return o;
         if (!1 === e) return i;
         if (0 === e) return c;
-        if ("" === e) return u;
+        if ("" === e) return l;
         if ("object" === typeof e || "function" === typeof e) try {
             var t = e.then;
             if ("function" === typeof t) return new r(t.bind(e))
@@ -1416,7 +2294,7 @@ var Adyen = function (e) {
                 n(e)
             })
         }
-        return l(e)
+        return u(e)
     }, r.all = function (e) {
         var t = Array.prototype.slice.call(e);
         return new r(function (e, n) {
@@ -1456,7 +2334,7 @@ var Adyen = function (e) {
     }
 }, function (e, t, n) {
     "use strict";
-    var r = n(99);
+    var r = n(114);
 
     function o() {
     }
@@ -1466,7 +2344,7 @@ var Adyen = function (e) {
     function s(e) {
         if ("object" !== typeof this) throw new TypeError("Promises must be constructed via new");
         if ("function" !== typeof e) throw new TypeError("Promise constructor's argument is not a function");
-        this._40 = 0, this._65 = 0, this._55 = null, this._72 = null, e !== o && h(e, this)
+        this._40 = 0, this._65 = 0, this._55 = null, this._72 = null, e !== o && f(e, this)
     }
 
     function c(e, t) {
@@ -1483,14 +2361,14 @@ var Adyen = function (e) {
                             return i = e, a
                         }
                     }(n, e._55);
-                    r === a ? l(t.promise, i) : u(t.promise, r)
-                } else 1 === e._65 ? u(t.promise, e._55) : l(t.promise, e._55)
+                    r === a ? u(t.promise, i) : l(t.promise, r)
+                } else 1 === e._65 ? l(t.promise, e._55) : u(t.promise, e._55)
             })
         }(e, t)
     }
 
-    function u(e, t) {
-        if (t === e) return l(e, new TypeError("A promise cannot be resolved with itself."));
+    function l(e, t) {
+        if (t === e) return u(e, new TypeError("A promise cannot be resolved with itself."));
         if (t && ("object" === typeof t || "function" === typeof t)) {
             var n = function (e) {
                 try {
@@ -1499,29 +2377,29 @@ var Adyen = function (e) {
                     return i = e, a
                 }
             }(t);
-            if (n === a) return l(e, i);
-            if (n === e.then && t instanceof s) return e._65 = 3, e._55 = t, void p(e);
-            if ("function" === typeof n) return void h(n.bind(t), e)
+            if (n === a) return u(e, i);
+            if (n === e.then && t instanceof s) return e._65 = 3, e._55 = t, void d(e);
+            if ("function" === typeof n) return void f(n.bind(t), e)
         }
-        e._65 = 1, e._55 = t, p(e)
+        e._65 = 1, e._55 = t, d(e)
     }
 
-    function l(e, t) {
-        e._65 = 2, e._55 = t, s._87 && s._87(e, t), p(e)
+    function u(e, t) {
+        e._65 = 2, e._55 = t, s._87 && s._87(e, t), d(e)
     }
 
-    function p(e) {
+    function d(e) {
         if (1 === e._40 && (c(e, e._72), e._72 = null), 2 === e._40) {
             for (var t = 0; t < e._72.length; t++) c(e, e._72[t]);
             e._72 = null
         }
     }
 
-    function f(e, t, n) {
+    function p(e, t, n) {
         this.onFulfilled = "function" === typeof e ? e : null, this.onRejected = "function" === typeof t ? t : null, this.promise = n
     }
 
-    function h(e, t) {
+    function f(e, t) {
         var n = !1, r = function (e, t, n) {
             try {
                 e(t, n)
@@ -1529,22 +2407,22 @@ var Adyen = function (e) {
                 return i = e, a
             }
         }(e, function (e) {
-            n || (n = !0, u(t, e))
-        }, function (e) {
             n || (n = !0, l(t, e))
+        }, function (e) {
+            n || (n = !0, u(t, e))
         });
-        n || r !== a || (n = !0, l(t, i))
+        n || r !== a || (n = !0, u(t, i))
     }
 
     e.exports = s, s._37 = null, s._87 = null, s._61 = o, s.prototype.then = function (e, t) {
         if (this.constructor !== s) return function (e, t, n) {
             return new e.constructor(function (r, i) {
                 var a = new s(o);
-                a.then(r, i), c(e, new f(t, n, a))
+                a.then(r, i), c(e, new p(t, n, a))
             })
         }(this, e, t);
         var n = new s(o);
-        return c(this, new f(e, t, n)), n
+        return c(this, new p(e, t, n)), n
     }
 }, function (e, t, n) {
     "use strict";
@@ -1567,9 +2445,9 @@ var Adyen = function (e) {
             o.length = 0, i = 0, !1
         }
 
-        var c, u, l, p = "undefined" !== typeof t ? t : self, f = p.MutationObserver || p.WebKitMutationObserver;
+        var c, l, u, d = "undefined" !== typeof t ? t : self, p = d.MutationObserver || d.WebKitMutationObserver;
 
-        function h(e) {
+        function f(e) {
             return function () {
                 var t = setTimeout(r, 0), n = setInterval(r, 50);
 
@@ -1579,9 +2457,9 @@ var Adyen = function (e) {
             }
         }
 
-        "function" === typeof f ? (c = 1, u = new f(s), l = document.createTextNode(""), u.observe(l, {characterData: !0}), r = function () {
-            c = -c, l.data = c
-        }) : r = h(s), n.requestFlush = r, n.makeRequestCallFromTimer = h
+        "function" === typeof p ? (c = 1, l = new p(s), u = document.createTextNode(""), l.observe(u, {characterData: !0}), r = function () {
+            c = -c, u.data = c
+        }) : r = f(s), n.requestFlush = r, n.makeRequestCallFromTimer = f
     }).call(this, n(31))
 }, function (e, t, n) {
     "use strict";
@@ -1650,22 +2528,61 @@ var Adyen = function (e) {
         return e
     }, c = function (e, t) {
         return e[t.name || t.key] = {valid: !!t.value || !!t.optional, value: t.value}, e
-    }, u = function (e, t) {
+    }, l = function (e, t) {
         return t.details ? s(e, t.details.reduce(c, {})) : (e[t.key] = {
             valid: !!t.value || !!t.optional,
             value: t.value
         }, e)
-    }, l = function (e) {
+    }, u = function (e) {
         return e.details.map(function (t) {
             return t.name = e.key + "__" + t.key, t.parentKey = e.key, t.key = t.key, t
         })
-    }, p = function (e) {
-        var t = "true" === String(e.separateDeliveryAddress.value), n = Object.keys(e).every(function (n) {
-            var r = "separateDeliveryAddress" === n, o = n.indexOf("deliveryAddress") > -1, i = e[n].valid;
-            return !!r || (!(!o || t) || i)
-        });
+    }, d = function (e) {
+        var t = e.separateDeliveryAddress && !0 === e.separateDeliveryAddress.value,
+            n = Object.keys(e).every(function (n) {
+                var r = "separateDeliveryAddress" === n, o = n.indexOf("deliveryAddress") > -1, i = e[n].valid;
+                return !!r || (!(!o || t) || i)
+            });
         return n
-    }, f = Object.assign || function (e) {
+    };
+    n(36);
+    var p = function (e) {
+        function t(n) {
+            !function (e, t) {
+                if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
+            }(this, t);
+            var r = function (e, t) {
+                if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+                return !t || "object" !== typeof t && "function" !== typeof t ? e : t
+            }(this, e.call(this, n));
+            return r.setState({focused: !1}), r.onFocus = r.onFocus.bind(r), r.onBlur = r.onBlur.bind(r), r
+        }
+
+        return function (e, t) {
+            if ("function" !== typeof t && null !== t) throw new TypeError("Super expression must either be null or a function, not " + typeof t);
+            e.prototype = Object.create(t && t.prototype, {
+                constructor: {
+                    value: e,
+                    enumerable: !1,
+                    writable: !0,
+                    configurable: !0
+                }
+            }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
+        }(t, e), t.prototype.onFocus = function () {
+            this.setState({focused: !0})
+        }, t.prototype.onBlur = function () {
+            this.setState({focused: !1})
+        }, t.prototype.render = function (e, t) {
+            var n = this, o = e.label, i = e.helper, a = e.onFocusField, s = e.children, c = e.className,
+                l = void 0 === c ? "" : c, u = t.focused;
+            return Object(r.h)("div", {className: "adyen-checkout__field " + l}, Object(r.h)("label", {
+                onClick: a,
+                className: "adyen-checkout__label " + (u ? "adyen-checkout__label--focused" : "")
+            }, Object(r.h)("span", {className: "adyen-checkout__label__text"}, o), i && Object(r.h)("span", {className: "adyen-checkout__helper-text"}, i), s.map(function (e) {
+                return Object(r.cloneElement)(e, {onFocus: n.onFocus, onBlur: n.onBlur})
+            })))
+        }, t
+    }(r.Component), f = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
@@ -1709,14 +2626,14 @@ var Adyen = function (e) {
         }, t
     }(r.Component);
     h.defaultProps = {type: "text", configuration: {}, className: "", validation: {}};
-    var d = h, y = Object.assign || function (e) {
+    var y = h, m = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var m = function (e) {
+    var b = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -1739,11 +2656,11 @@ var Adyen = function (e) {
         }(t, e), t.prototype.render = function (e) {
             return function (e) {
                 if (null == e) throw new TypeError("Cannot destructure undefined")
-            }(e), Object(r.h)(d, y({className: "adyen-checkout__input--large"}, this.props, {type: "text"}))
+            }(e), Object(r.h)(y, m({className: "adyen-checkout__input--large"}, this.props, {type: "text"}))
         }, t
     }(r.Component);
-    m.defaultProps = {};
-    var b = m, g = {
+    b.defaultProps = {};
+    var g = b, v = {
         city: "address-level2",
         country: "country",
         dateOfBirth: "bday",
@@ -1758,15 +2675,15 @@ var Adyen = function (e) {
         stateOrProvince: "address-level1",
         street: "address-line1",
         telephoneNumber: "tel"
-    }, v = Object.assign || function (e) {
+    }, w = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var w, _, O = (w = "date", (_ = document.createElement("input")).setAttribute("type", w), _.type === w),
-        C = function (e) {
+    var C, _, O = (C = "date", (_ = document.createElement("input")).setAttribute("type", C), _.type === C),
+        k = function (e) {
             if (!e) return !1;
             var t = O ? /^[1-2]{1}[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/g : /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[1-2]{1}[0-9]{3}$/g,
                 n = e.replace(/ /g, "");
@@ -1792,16 +2709,16 @@ var Adyen = function (e) {
                     }
                 }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
             }(t, e), t.prototype.render = function () {
-                return Object(r.h)(d, v({}, this.props, {type: "date", isValid: C}))
+                return Object(r.h)(y, w({}, this.props, {type: "date", isValid: k}))
             }, t
-        }(r.Component), j = Object.assign || function (e) {
+        }(r.Component), F = Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
             }
             return e
         };
-    var k = function (e) {
+    var N = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -1822,19 +2739,19 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.render = function () {
-            return Object(r.h)(d, j({}, this.props, {type: "tel"}))
+            return Object(r.h)(y, F({}, this.props, {type: "tel"}))
         }, t
-    }(r.Component), x = Object.assign || function (e) {
+    }(r.Component), j = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var P = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        E = function (e) {
-            return P.test(e)
-        }, R = function (e) {
+    var x = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        P = function (e) {
+            return x.test(e)
+        }, D = function (e) {
             function t() {
                 return function (e, t) {
                     if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -1855,16 +2772,16 @@ var Adyen = function (e) {
                     }
                 }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
             }(t, e), t.prototype.render = function () {
-                return Object(r.h)(d, x({}, this.props, {type: "email", isValid: E}))
+                return Object(r.h)(y, j({}, this.props, {type: "email", isValid: P}))
             }, t
-        }(r.Component), N = (n(34), Object.assign || function (e) {
+        }(r.Component), E = (n(38), Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
             }
             return e
         });
-    var F = function (e) {
+    var R = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -1892,30 +2809,30 @@ var Adyen = function (e) {
                     return n
                 }(e, ["items", "configuration", "i18n", "name", "onChange", "value"]);
             return Object(r.h)("div", {className: "adyen-checkout__radio_group"}, t.map(function (e) {
-                return Object(r.h)("label", null, Object(r.h)("input", N({}, s, {
+                return Object(r.h)("label", null, Object(r.h)("input", E({}, s, {
                     type: "radio",
+                    checked: a === e.id,
                     className: "adyen-checkout__radio_group__input",
                     name: o,
-                    value: e.id,
                     onChange: i,
                     onClick: i,
-                    checked: a === e.id
+                    value: e.id
                 })), Object(r.h)("span", {className: "adyen-checkout-label__text adyen-checkout-label__text--dark adyen-checkout__radio_group__label"}, n.get(e.name)))
             }))
         }, t
     }(r.Component);
-    F.defaultProps = {
+    R.defaultProps = {
         onChange: function () {
         }, items: []
     };
-    var T = F, A = (n(36), Object.assign || function (e) {
+    var A = R, I = (n(40), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     });
-    var D = function (e) {
+    var M = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -1941,7 +2858,7 @@ var Adyen = function (e) {
                 for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
                 return n
             }(e, ["name", "label", "value", "onChange"]);
-            return Object(r.h)("label", {className: "adyen-checkout__checkbox"}, Object(r.h)("input", A({}, a, {
+            return Object(r.h)("label", {className: "adyen-checkout__checkbox"}, Object(r.h)("input", I({}, a, {
                 className: "adyen-checkout__checkbox__input",
                 type: "checkbox",
                 name: t,
@@ -1950,12 +2867,12 @@ var Adyen = function (e) {
             })), Object(r.h)("span", {className: "adyen-checkout__checkbox__label"}, n))
         }, t
     }(r.Component);
-    D.defaultProps = {
+    M.defaultProps = {
         onChange: function () {
         }
     };
-    var I = D, M = n(6), V = n.n(M);
-    n(40);
+    var T = M, B = n(6), V = n.n(B);
+    n(44);
     var L = function (e) {
         function t(n) {
             !function (e, t) {
@@ -2020,7 +2937,7 @@ var Adyen = function (e) {
             e.target.style = "display: none"
         }, t.prototype.render = function (e, t) {
             var n = this, o = e.items, i = void 0 === o ? [] : o, a = e.className, s = e.placeholder, c = e.selected,
-                u = t.toggleDropdown, l = i.find(function (e) {
+                l = t.toggleDropdown, u = i.find(function (e) {
                     return e.id === c
                 }) || {};
             return Object(r.h)("div", {
@@ -2029,23 +2946,23 @@ var Adyen = function (e) {
                     n.selectContainer = e
                 }
             }, Object(r.h)("a", {
-                className: "adyen-checkout__dropdown__button " + V.a["adyen-checkout__dropdown__button"] + "\n                                " + (u ? "adyen-checkout__dropdown__button--active" : ""),
+                className: "adyen-checkout__dropdown__button " + V.a["adyen-checkout__dropdown__button"] + "\n                                " + (l ? "adyen-checkout__dropdown__button--active" : ""),
                 onClick: this.toggle,
                 onKeyDown: this.handleButtonKeyDown,
                 tabindex: "0",
                 "aria-haspopup": "listbox",
-                "aria-expanded": u,
+                "aria-expanded": l,
                 ref: function (e) {
                     n.toggleButton = e
                 }
-            }, l.icon && Object(r.h)("img", {
+            }, u.icon && Object(r.h)("img", {
                 className: "adyen-checkout__dropdown__button__icon",
-                src: l.icon,
-                alt: l.name,
+                src: u.icon,
+                alt: u.name,
                 onError: this.handleOnError
-            }), l.name || s), Object(r.h)("ul", {
+            }), u.name || s), Object(r.h)("ul", {
                 role: "listbox",
-                className: "adyen-checkout__dropdown__list " + V.a["adyen-checkout__dropdown__list"] + "\n                        " + (u ? "adyen-checkout__dropdown__list--active " + V.a["adyen-checkout__dropdown__list--active"] : ""),
+                className: "adyen-checkout__dropdown__list " + V.a["adyen-checkout__dropdown__list"] + "\n                        " + (l ? "adyen-checkout__dropdown__list--active " + V.a["adyen-checkout__dropdown__list--active"] : ""),
                 ref: function (e) {
                     n.dropdownList = e
                 }
@@ -2053,7 +2970,7 @@ var Adyen = function (e) {
                 return Object(r.h)("li", {
                     role: "option",
                     tabindex: "-1",
-                    "aria-selected": e.id === l.id,
+                    "aria-selected": e.id === u.id,
                     className: "adyen-checkout__dropdown__element " + V.a["adyen-checkout__dropdown__element"],
                     "data-value": e.id,
                     onClick: n.select,
@@ -2071,7 +2988,7 @@ var Adyen = function (e) {
         items: [], onChange: function () {
         }
     };
-    var B = L, U = (n(42), Object.assign || function (e) {
+    var U = L, K = (n(46), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
@@ -2079,16 +2996,16 @@ var Adyen = function (e) {
         return e
     });
 
-    function K(e, t) {
+    function z(e, t) {
         if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
     }
 
-    function $(e, t) {
+    function G(e, t) {
         if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
         return !t || "object" !== typeof t && "function" !== typeof t ? e : t
     }
 
-    function G(e, t) {
+    function $(e, t) {
         if ("function" !== typeof t && null !== t) throw new TypeError("Super expression must either be null or a function, not " + typeof t);
         e.prototype = Object.create(t && t.prototype, {
             constructor: {
@@ -2100,28 +3017,28 @@ var Adyen = function (e) {
         }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
     }
 
-    var W = function (e) {
+    var q = function (e) {
         function t(n) {
-            K(this, t);
-            var r = $(this, e.call(this, n));
+            z(this, t);
+            var r = G(this, e.call(this, n));
             return r.handleClick = r.handleClick.bind(r), r
         }
 
-        return G(t, e), t.prototype.handleClick = function () {
+        return $(t, e), t.prototype.handleClick = function () {
             (0, this.props.onChange)(this.props.item)
         }, t.prototype.render = function (e) {
             var t = e.item,
                 n = "adyen-checkout__select-list__item " + (e.selected ? "adyen-checkout__select-list__item--selected" : "");
             return Object(r.h)("li", {className: n, onClick: this.handleClick}, t.displayableName)
         }, t
-    }(r.Component), Y = function (e) {
+    }(r.Component), W = function (e) {
         function t(n) {
-            K(this, t);
-            var r = $(this, e.call(this, n));
+            z(this, t);
+            var r = G(this, e.call(this, n));
             return r.setState({selected: {}}), r.handleSelect = r.handleSelect.bind(r), r
         }
 
-        return G(t, e), t.prototype.handleSelect = function (e) {
+        return $(t, e), t.prototype.handleSelect = function (e) {
             this.setState({selected: e}), this.props.onChange(e)
         }, t.prototype.render = function (e) {
             var t = this, n = e.items, o = void 0 === n ? [] : n, i = (e.configuration, e.optional),
@@ -2130,8 +3047,8 @@ var Adyen = function (e) {
                     for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
                     return n
                 }(e, ["items", "configuration", "optional"]);
-            return Object(r.h)("ul", U({className: "adyen-checkout__select-list"}, s, {required: !a}), o.map(function (e) {
-                return Object(r.h)(W, {
+            return Object(r.h)("ul", K({className: "adyen-checkout__select-list"}, s, {required: !a}), o.map(function (e) {
+                return Object(r.h)(q, {
                     item: e,
                     selected: t.state.selected.id === e.id,
                     onChange: t.handleSelect,
@@ -2146,7 +3063,9 @@ var Adyen = function (e) {
         }
         return e
     };
-    var q = function (e) {
+    var J = function (e) {
+        return e.replace(/ /g, "")
+    }, Z = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -2174,146 +3093,128 @@ var Adyen = function (e) {
                     configurable: !0
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
-        }(t, e), t.prototype.onChange = function (e) {
-            console.log("changeee")
-        }, t.prototype.onInput = function (e) {
-            var t = e.target.value, n = (t.replace(/ /g, ""), function (e) {
+        }(t, e), t.prototype.onInput = function (e) {
+            var t = e.target.value, n = J(t), r = function (e) {
                 if (!e) return "";
                 var t = e.replace(/[^\d]/g, ""), n = t.substr(0, 2), r = t.substr(2, 2), o = t.substr(4, 2),
                     i = t.substr(6, 4);
                 return n + (r.length ? " " : "") + r + (o.length ? " " : "") + o + (i.length ? "-" : "") + i
-            }(t));
-            this.setState({value: n, isValid: !0})
+            }(t), o = this.props.shopperInfoSSNLookupUrl;
+            o && n && 13 === r.length && this.props.onLookUp(J(r), o), this.setState({value: r, isValid: !0})
         }, t.prototype.render = function (e, t) {
-            var n = t.isValid, o = (t.key, t.value), i = t.showError, a = e.optional, s = void 0 !== a && a, c = e.type,
-                u = e.i18n, l = function (e, t) {
+            var n = t.isValid, o = (t.key, t.value), i = t.showError, a = e.optional, s = void 0 !== a && a,
+                c = (e.type, e.i18n), l = function (e, t) {
                     var n = {};
                     for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
                     return n
                 }(e, ["optional", "type", "i18n"]);
             return Object(r.h)("div", null, Object(r.h)("input", H({}, l, {
                 type: "text",
-                className: "adyen-checkout-input-field adyen-checkout-input-field--" + c + " " + (i ? "adyen-checkout-input-field--error" : ""),
+                className: "adyen-checkout__input adyen-checkout__input--text adyen-checkout__input--large " + (i ? "adyen-checkout__input--error" : ""),
                 isValid: n,
                 onInput: this.onInput,
                 value: o,
                 required: !s,
                 maxlength: "13",
                 placeholder: "YY MM DD-NNNNN"
-            })), i && Object(r.h)("div", {className: "adyen-checkout-label__error-text"}, u.get("socialSecurityNumberLookUp.error")))
+            })), i && Object(r.h)("div", {className: "adyen-checkout__label__error-text"}, c.get("socialSecurityNumberLookUp.error")))
         }, t
-    }(r.Component), z = (n(44), function (e, t) {
+    }(r.Component), Y = (n(48), function (e, t) {
         var n = {
-            boolean: I,
+            boolean: T,
             date: S,
-            emailAddress: R,
-            radio: T,
-            select: B,
-            selectList: Y,
-            ssnLookup: q,
-            tel: k,
-            text: b,
-            default: b
+            emailAddress: D,
+            radio: A,
+            select: U,
+            selectList: W,
+            ssnLookup: Z,
+            tel: N,
+            text: g,
+            default: g
         }, o = n[e] || n.default;
         return Object(r.h)(o, t)
-    });
-    n(46);
-    var Z = function (e) {
-        function t(n) {
-            !function (e, t) {
-                if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-            }(this, t);
-            var r = function (e, t) {
-                if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-                return !t || "object" !== typeof t && "function" !== typeof t ? e : t
-            }(this, e.call(this, n));
-            return r.setState({focused: !1}), r.onFocus = r.onFocus.bind(r), r.onBlur = r.onBlur.bind(r), r
-        }
-
-        return function (e, t) {
-            if ("function" !== typeof t && null !== t) throw new TypeError("Super expression must either be null or a function, not " + typeof t);
-            e.prototype = Object.create(t && t.prototype, {
-                constructor: {
-                    value: e,
-                    enumerable: !1,
-                    writable: !0,
-                    configurable: !0
-                }
-            }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
-        }(t, e), t.prototype.onFocus = function () {
-            this.setState({focused: !0})
-        }, t.prototype.onBlur = function () {
-            this.setState({focused: !1})
-        }, t.prototype.render = function (e, t) {
-            var n = this, o = e.label, i = e.helper, a = e.children, s = e.className, c = void 0 === s ? "" : s,
-                u = t.focused;
-            return Object(r.h)("div", {className: "adyen-checkout__field " + c}, Object(r.h)("label", {className: "adyen-checkout__label " + (u ? "adyen-checkout__label--focused" : "")}, Object(r.h)("span", {className: "adyen-checkout__label__text"}, o), i && Object(r.h)("span", {className: "adyen-checkout__helper-text"}, i), a.map(function (e) {
-                return Object(r.cloneElement)(e, {onFocus: n.onFocus, onBlur: n.onBlur})
-            })))
-        }, t
-    }(r.Component), X = Object.assign || function (e) {
+    }), X = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var J = function (e) {
-            var t = e.parentKey, n = e.configuration, o = e.onChange, i = e.i18n, a = e.showDeliveryAddress,
-                s = void 0 !== a && a, c = function (e, t) {
+    var Q = function (e) {
+            var t, n = e.field, o = e.onChange, i = e.onLookUp, a = e.fieldVisibility, s = e.shopperInfoSSNLookupUrl,
+                c = e.i18n, l = function (e, t) {
                     var n = {};
                     for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
                     return n
-                }(e, ["parentKey", "configuration", "onChange", "i18n", "showDeliveryAddress"]), u = n.fieldVisibility;
-            return "hidden" === u || "deliveryAddress" === t && !s ? null : Object(r.h)("div", {className: "adyen-checkout__fieldset adyen-checkout__fieldset--" + t}, t && Object(r.h)("div", {class: "adyen-checkout__fieldset__title"}, i.get(t)), c.details.map(function (e) {
-                var n, a = t + "__" + e.key, s = c.configuration, l = c.fieldsState[a], p = l.valid, f = l.value,
-                    h = l.showError, d = e.autocomplete || (n = e.key, g[n] || "on"),
-                    y = h && !p ? "adyen-checkout-input-field--error" : "",
-                    m = !("tel" === e.type || "emailAddress" === e.type || !e.readonly && "readOnly" !== u) || null,
-                    b = e.placeholder || function (e) {
-                        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
-                        return e || "readOnly" === t ? "-" : null
-                    }(e.readOnly, u), v = e.required || "hidden" === !u, w = m ? "text" : e.type;
-                return "country" === e.key && (e.type = "text", e.value = "NL"), Object(r.h)(Z, {
-                    label: i.get(e.key),
-                    classNames: y
-                }, z(w, X({}, e, {
-                    autocomplete: d,
-                    configuration: s,
-                    i18n: i,
-                    name: a,
-                    onChange: o,
-                    placeholder: b,
-                    readonly: m,
-                    required: v,
-                    value: f
-                })))
-            }))
+                }(e, ["field", "onChange", "onLookUp", "fieldVisibility", "shopperInfoSSNLookupUrl", "i18n"]),
+                u = (n.parentKey || l.parentKey) + "__" + n.key, d = l.configuration, f = l.fieldsState[u], h = f.valid,
+                y = f.value, m = f.showError, b = n.autocomplete || (t = n.key, v[t] || "on"),
+                g = m && !h ? "adyen-checkout__field--error" : "", w = !(!n.readonly && "readOnly" !== a) || null,
+                C = n.placeholder || (w ? "-" : null), _ = !0 !== n.optional || "hidden" === !a, O = w ? "text" : n.type;
+            return "country" === n.key && (n.type = "text"), Object(r.h)(p, {
+                label: c.get(n.key),
+                classNames: g
+            }, Y(O, X({}, n, {
+                autocomplete: b,
+                configuration: d,
+                i18n: c,
+                name: u,
+                onChange: o,
+                onLookUp: i,
+                placeholder: C,
+                readonly: w,
+                required: _,
+                shopperInfoSSNLookupUrl: s,
+                value: y
+            })))
+        }, ee = function (e, t) {
+            var n = e.reduce(function (e, t) {
+                var n = t.key, r = t.value;
+                return e[n] = {value: r}, e
+            }, {}), o = "address" === t;
+            return Object(r.h)("div", {class: "adyen-checkout__fieldset--readonly"}, o ? function (e) {
+                return Object(r.h)("div", null, e.street.value + ", " + e.houseNumberOrName.value, Object(r.h)("br", null), e.city.value + ", " + e.postalCode.value + ", " + e.country.value)
+            }(n) : function (e) {
+                return Object(r.h)("div", null, e.firstName.value + " " + e.lastName.value, Object(r.h)("br", null), e.shopperEmail.value, Object(r.h)("br", null), e.telephoneNumber.value)
+            }(n))
+        }, te = Object.assign || function (e) {
+            for (var t = 1; t < arguments.length; t++) {
+                var n = arguments[t];
+                for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
+            }
+            return e
+        }, ne = function (e) {
+            var t = e.parentKey, n = e.configuration, o = void 0 === n ? {} : n, i = e.onChange, a = e.onLookUp, s = e.i18n,
+                c = e.shopperInfoSSNLookupUrl, l = e.showDeliveryAddress, u = void 0 !== l && l,
+                d = "hidden" !== o.fieldVisibility && ("deliveryAddress" !== t || u), p = "readOnly" === o.fieldVisibility;
+            return d ? Object(r.h)("div", {className: "adyen-checkout__fieldset adyen-checkout__fieldset--" + t}, t && Object(r.h)("div", {class: "adyen-checkout__fieldset__title"}, s.get(t)), p && ee(e.details, e.parentType), !p && e.details.map(function (t) {
+                return Object(r.h)(Q, te({field: t, i18n: s, shopperInfoSSNLookupUrl: c, onChange: i, onLookUp: a}, e))
+            })) : null
         },
-        Q = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        ee = /^[1-2]{1}[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/,
-        te = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s./0-9]*$/, ne = {
+        re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        oe = /^[1-2]{1}[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/,
+        ie = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s./0-9]*$/, ae = {
             date: function (e) {
-                return ee.test(e)
+                return oe.test(e)
             }, email: function (e) {
-                return Q.test(e)
+                return re.test(e)
             }, radio: function () {
                 return !0
             }, tel: function (e) {
-                return e.length > 5 && te.test(e)
+                return e.length > 5 && ie.test(e)
             }, text: function (e) {
                 return !!e.replace(/ /g, "").length
             }
-        }, re = function (e) {
-            return !e.value.length && !e.required || ne[e.type](e.value)
-        }, oe = (n(48), Object.assign || function (e) {
+        }, se = function (e) {
+            return !e.value.length && !e.required || ae[e.type](e.value)
+        }, ce = (n(50), Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
             }
             return e
         });
-    var ie = function (e) {
+    var le = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -2323,8 +3224,8 @@ var Adyen = function (e) {
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
             }(this, e.call(this, n));
             return n.details.map(function (e) {
-                return e.details ? l(e) : e
-            }), r.setState({fieldsState: n.details.reduce(u, {})}), r.props.onChange({isValid: p(r.state.fieldsState)}), r.onChange = r.onChange.bind(r), r.onLookUp = r.onLookUp.bind(r), r
+                return e.details ? u(e) : e
+            }), r.setState({fieldsState: n.details.reduce(l, {})}), r.onChange = r.onChange.bind(r), r.onLookUp = r.onLookUp.bind(r), r
         }
 
         return function (e, t) {
@@ -2338,12 +3239,12 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.isValid = function () {
-            return p(this.state.fieldsState)
+            return d(this.state.fieldsState)
         }, t.prototype.onChange = function (e) {
-            var t, n, r = e.target, o = "separateDeliveryAddress" === r.name, i = !!o || re(r),
+            var t, n, r = e.target || e, o = "separateDeliveryAddress" === r.name, i = !(!r.valid && !o) || se(r),
                 a = o ? r.checked : r.value;
             this.setState({
-                fieldsState: oe({}, this.state.fieldsState, (t = {}, t[r.name] = {
+                fieldsState: ce({}, this.state.fieldsState, (t = {}, t[r.name] = {
                     valid: i,
                     value: a,
                     showError: !i
@@ -2352,32 +3253,62 @@ var Adyen = function (e) {
                 data: (n = this.state.fieldsState, Object.keys(n).reduce(function (e, t) {
                     var r = t.split("__"), o = r[0], i = r[1];
                     return e[o] = e[o] || {}, i ? e[o][i] = n[t].value : e[o] = n[t].value, "country" === i && (e[o][i] = "NL"), e
-                }, {})), isValid: p(this.state.fieldsState)
+                }, {})), isValid: d(this.state.fieldsState)
             })
-        }, t.prototype.onLookUp = function () {
+        }, t.prototype.onLookUp = function (e, t) {
+            var n = this, r = this.props.paymentMethodData, o = this.props.paymentSession, i = o.originKey;
+            (function (e, t) {
+                return fetch(t, {
+                    method: "POST",
+                    headers: {Accept: "application/json, text/plain, */*", "Content-Type": "application/json"},
+                    body: JSON.stringify(e)
+                })
+            })({
+                socialSecurityNumber: e,
+                paymentMethodData: r,
+                paymentData: o.paymentData
+            }, t + "?token=" + i).then(function (e) {
+                return e.json()
+            }).then(function (e) {
+                var t = e.addressNames && e.addressNames[0] && e.addressNames[0].AddressName ? e.addressNames[0].AddressName : null;
+                t ? Object.keys(t).forEach(function (e) {
+                    var r = t[e], o = "name" === e ? "personalDetails" : "billingAddress";
+                    Object.keys(r).forEach(function (e) {
+                        var t = {name: o + "__" + e, value: r[e], valid: !0};
+                        n.onChange(t)
+                    })
+                }) : console.warn("No shopper data was found")
+            }).catch(function (e) {
+                console.error(e)
+            })
+        }, t.prototype.componentDidMount = function () {
+            this.props.onChange({isValid: d(this.state.fieldsState)})
         }, t.prototype.render = function (e, t) {
-            var n = this, o = e.details, i = e.i18n, a = t.fieldsState;
-            return Object(r.h)("div", {className: "adyen_checkout_openinvoice"}, o.map(function (e) {
-                return e.details ? function (e) {
-                    return Object(r.h)(J, oe({
-                        onChange: n.onChange,
-                        onLookUp: n.onLookUp,
-                        i18n: i,
-                        parentKey: e.key,
-                        showDeliveryAddress: "true" === String(a.separateDeliveryAddress.value),
-                        fieldsState: a
-                    }, e))
-                }(e) : function (e) {
-                    return Object(r.h)(I, oe({onChange: n.onChange, name: e.key, label: i.get(e.key)}, e))
-                }(e)
+            var n = this, o = e.configuration, i = void 0 === o ? {} : o, a = e.details, s = e.i18n, c = t.fieldsState,
+                l = c.separateDeliveryAddress && !0 === c.separateDeliveryAddress.value;
+            return Object(r.h)("div", {className: "adyen-checkout_openinvoice"}, a.length && a.map(function (e) {
+                return e.details ? Object(r.h)("div", {key: e.key}, (t = e, Object(r.h)(ne, ce({
+                    onChange: n.onChange,
+                    onLookUp: n.onLookUp,
+                    i18n: s,
+                    parentKey: t.key,
+                    parentType: t.type,
+                    parentConfig: t.configuration,
+                    shopperInfoSSNLookupUrl: i.shopperInfoSSNLookupUrl,
+                    showDeliveryAddress: l,
+                    fieldsState: c
+                }, t)))) : Object(r.h)("div", {key: e.key}, function (e) {
+                    return Object(r.h)(T, ce({onChange: n.onChange, name: e.key, label: s.get(e.key)}, e))
+                }(e));
+                var t
             }))
         }, t
     }(r.Component);
-    ie.defaultProps = {
+    le.defaultProps = {
         onChange: function () {
         }, details: []
     };
-    var ae = ie, se = function (e, t) {
+    var ue = le, de = function (e, t) {
         var n = {
             method: "POST",
             headers: {Accept: "application/json, text/plain, */*", "Content-Type": "application/json"},
@@ -2391,30 +3322,32 @@ var Adyen = function (e) {
         }).catch(function (e) {
             throw e
         })
-    }, ce = function (e) {
+    }, pe = function (e) {
         var t = e.paymentSession, n = e.paymentMethodData, r = e.data, o = t.initiationUrl, i = t.paymentData,
             a = t.originKey;
         if (!t || !n) throw new Error("Could not submit the payment");
-        return se(o, {paymentData: i, paymentMethodData: n, token: a, paymentDetails: r})
-    }, ue = Object.assign || function (e) {
+        return de(o, {paymentData: i, paymentMethodData: n, token: a, paymentDetails: r})
+    }, fe = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, le = function (e) {
+    }, he = function (e) {
         switch (e.type) {
             case"redirect":
                 return e.url ? {type: "redirect", props: {url: e.url}} : {type: "error", props: e};
+            case"details":
+                return e;
             case"complete":
                 return function (e) {
                     switch (e.resultCode) {
                         case"refused":
                         case"error":
                         case"cancelled":
-                            return {type: "error", props: ue({}, e, {message: "error.subtitle.refused"})};
+                            return {type: "error", props: fe({}, e, {message: "error.subtitle.refused"})};
                         case"unknown":
-                            return {type: "error", props: ue({}, e, {message: "error.message.unknown"})};
+                            return {type: "error", props: fe({}, e, {message: "error.message.unknown"})};
                         default:
                             return {type: "success"}
                     }
@@ -2423,13 +3356,13 @@ var Adyen = function (e) {
             default:
                 return {type: "error", props: e}
         }
-    }, pe = le;
-    var fe = function (e, t) {
+    }, ye = he;
+    var me = function (e, t) {
         return e.paymentMethods.find(function (e) {
             return e.type === t
         })
     };
-    var he = function (e) {
+    var be = function (e) {
         return function (e) {
             function t() {
                 return function (e, t) {
@@ -2457,17 +3390,17 @@ var Adyen = function (e) {
                         return e
                     } : r;
                 if (!t) throw new Error("Invalid PaymentSession");
-                var i = n || fe(t, this.paymentData.type).paymentMethodData;
+                var i = n || me(t, this.paymentData.type).paymentMethodData;
                 if (!i) throw new Error("Invalid PaymentSession - PaymentMethodData");
-                return o({type: "loading"}), ce({
+                return o({type: "loading"}), pe({
                     data: this.state.data,
                     paymentSession: t,
                     paymentMethodData: i
-                }).then(pe).then(o).catch(o)
+                }).then(ye).then(o).catch(o)
             }, t
         }(e)
     };
-    var de = function (e) {
+    var ge = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -2500,7 +3433,7 @@ var Adyen = function (e) {
             var n = e.children;
             return "ready" !== t.status ? null : n.length > 1 ? Object(r.h)("div", null, n) : n[0]
         }, t
-    }(r.Component), ye = function () {
+    }(r.Component), ve = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -2511,14 +3444,14 @@ var Adyen = function (e) {
         return function (t, n, r) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
-    }(), me = Object.assign || function (e) {
+    }(), we = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var be = function (e) {
+    var Ce = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -2544,24 +3477,24 @@ var Adyen = function (e) {
                     var t = e.details.filter(function (e) {
                         return "infix" !== e.key
                     });
-                    return me({}, e, {details: t})
+                    return we({}, e, {details: t})
                 }(e) : e
             });
-            return me({}, e, {details: t})
+            return we({}, e, {details: t})
         }, t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.render = function () {
-            return Object(r.h)(de, {i18n: this.props.i18n}, Object(r.h)(ae, me({}, this.props, this.state, {onChange: this.setState})))
-        }, ye(t, [{
+            return Object(r.h)(ge, {i18n: this.props.i18n}, Object(r.h)(ue, we({}, this.props, this.state, {onChange: this.setState})))
+        }, ve(t, [{
             key: "paymentData", get: function () {
-                return me({type: t.type}, this.state.data)
+                return we({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    be.type = "afterpay";
-    var ge = he(be), ve = (n(17), window.console && window.console.error && window.console.error.bind(window.console)),
-        we = (window.console && window.console.info && window.console.info.bind(window.console), window.console && window.console.log && window.console.log.bind(window.console)),
-        _e = window.console && window.console.warn && window.console.warn.bind(window.console), Oe = function () {
+    Ce.type = "afterpay";
+    var _e = be(Ce), Oe = (n(17), window.console && window.console.error && window.console.error.bind(window.console)),
+        ke = (window.console && window.console.info && window.console.info.bind(window.console), window.console && window.console.log && window.console.log.bind(window.console)),
+        Se = window.console && window.console.warn && window.console.warn.bind(window.console), Fe = function () {
             function e(e, t) {
                 for (var n = 0; n < t.length; n++) {
                     var r = t[n];
@@ -2573,85 +3506,85 @@ var Adyen = function (e) {
                 return n && e(t.prototype, n), r && e(t, r), t
             }
         }();
-    var Ce = Symbol("type"), Se = Symbol("brand"), je = Symbol("actualValidStates"), ke = Symbol("currentValidStates"),
-        xe = Symbol("allValid"), Pe = Symbol("fieldNames"), Ee = Symbol("cvcIsOptional"), Re = Symbol("numIframes"),
-        Ne = Symbol("iframeCount"), Fe = Symbol("iframeConfigCount"), Te = Symbol("currentFocusObject"),
-        Ae = Symbol("isConfigured"), De = function () {
+    var Ne = Symbol("type"), je = Symbol("brand"), xe = Symbol("actualValidStates"), Pe = Symbol("currentValidStates"),
+        De = Symbol("allValid"), Ee = Symbol("fieldNames"), Re = Symbol("cvcIsOptional"), Ae = Symbol("numIframes"),
+        Ie = Symbol("iframeCount"), Me = Symbol("iframeConfigCount"), Te = Symbol("currentFocusObject"),
+        Be = Symbol("isConfigured"), Ve = function () {
             function e(t) {
                 !function (e, t) {
                     if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-                }(this, e), window._b$dl && we("\n### StateCls::constructor:: type=", t.type), this.type = t.type, this.init(t)
+                }(this, e), window._b$dl && ke("\n### StateCls::constructor:: type=", t.type), this.type = t.type, this.init(t)
             }
 
-            return Oe(e, [{
+            return Fe(e, [{
                 key: "init", value: function (e) {
                     this.brand = "card" !== e.type ? e.type : null, this.actualValidStates = {}, this.currentValidStates = {}, this.allValid = !1, this.fieldNames = [], this.cvcIsOptional = !1, this.numIframes = 0, this.iframeCount = 0, this.iframeConfigCount = 0, this.isConfigured = !1, this.currentFocusObject = null
                 }
             }, {
                 key: "type", get: function () {
-                    return this[Ce]
-                }, set: function (e) {
-                    this[Ce] = e
-                }
-            }, {
-                key: "brand", get: function () {
-                    return this[Se]
-                }, set: function (e) {
-                    this[Se] = e
-                }
-            }, {
-                key: "actualValidStates", get: function () {
-                    return this[je]
-                }, set: function (e) {
-                    this[je] = e
-                }
-            }, {
-                key: "currentValidStates", get: function () {
-                    return this[ke]
-                }, set: function (e) {
-                    this[ke] = e
-                }
-            }, {
-                key: "allValid", get: function () {
-                    return this[xe]
-                }, set: function (e) {
-                    this[xe] = e
-                }
-            }, {
-                key: "fieldNames", get: function () {
-                    return this[Pe]
-                }, set: function (e) {
-                    this[Pe] = e
-                }
-            }, {
-                key: "cvcIsOptional", get: function () {
-                    return this[Ee]
-                }, set: function (e) {
-                    this[Ee] = e
-                }
-            }, {
-                key: "numIframes", get: function () {
-                    return this[Re]
-                }, set: function (e) {
-                    this[Re] = e
-                }
-            }, {
-                key: "iframeCount", get: function () {
                     return this[Ne]
                 }, set: function (e) {
                     this[Ne] = e
                 }
             }, {
-                key: "iframeConfigCount", get: function () {
-                    return this[Fe]
+                key: "brand", get: function () {
+                    return this[je]
                 }, set: function (e) {
-                    this[Fe] = e
+                    this[je] = e
                 }
             }, {
-                key: "isConfigured", get: function () {
+                key: "actualValidStates", get: function () {
+                    return this[xe]
+                }, set: function (e) {
+                    this[xe] = e
+                }
+            }, {
+                key: "currentValidStates", get: function () {
+                    return this[Pe]
+                }, set: function (e) {
+                    this[Pe] = e
+                }
+            }, {
+                key: "allValid", get: function () {
+                    return this[De]
+                }, set: function (e) {
+                    this[De] = e
+                }
+            }, {
+                key: "fieldNames", get: function () {
+                    return this[Ee]
+                }, set: function (e) {
+                    this[Ee] = e
+                }
+            }, {
+                key: "cvcIsOptional", get: function () {
+                    return this[Re]
+                }, set: function (e) {
+                    this[Re] = e
+                }
+            }, {
+                key: "numIframes", get: function () {
                     return this[Ae]
                 }, set: function (e) {
                     this[Ae] = e
+                }
+            }, {
+                key: "iframeCount", get: function () {
+                    return this[Ie]
+                }, set: function (e) {
+                    this[Ie] = e
+                }
+            }, {
+                key: "iframeConfigCount", get: function () {
+                    return this[Me]
+                }, set: function (e) {
+                    this[Me] = e
+                }
+            }, {
+                key: "isConfigured", get: function () {
+                    return this[Be]
+                }, set: function (e) {
+                    this[Be] = e
                 }
             }, {
                 key: "currentFocusObject", get: function () {
@@ -2660,18 +3593,18 @@ var Adyen = function (e) {
                     this[Te] = e
                 }
             }]), e
-        }(), Ie = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
+        }(), Le = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
             return typeof e
         } : function (e) {
             return e && "function" === typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e
         };
 
-    function Me(e) {
-        return "object" === ("undefined" === typeof e ? "undefined" : Ie(e)) && null !== e && "[object Array]" === Object.prototype.toString.call(e)
+    function Ue(e) {
+        return "object" === ("undefined" === typeof e ? "undefined" : Le(e)) && null !== e && "[object Array]" === Object.prototype.toString.call(e)
     }
 
-    var Ve = "encryptedSecurityCode", Le = Object({__LOCAL_BUILD__: !1}).__SF_VERSION__ || "1.4.0",
-        Be = ["amex", "mc", "visa"], Ue = function () {
+    var Ke = "encryptedSecurityCode", ze = Object({__LOCAL_BUILD__: !1}).__SF_VERSION__ || "1.4.0",
+        Ge = ["amex", "mc", "visa"], $e = function () {
             function e(e, t) {
                 for (var n = 0; n < t.length; n++) {
                     var r = t[n];
@@ -2683,107 +3616,125 @@ var Adyen = function (e) {
                 return n && e(t.prototype, n), r && e(t, r), t
             }
         }();
-    var Ke = Symbol("type"), $e = Symbol("rootNode"), Ge = Symbol("cardGroupTypes"), We = Symbol("loadingContext"),
-        Ye = Symbol("allowedDOMAccess"), He = Symbol("showWarnings"), qe = Symbol("recurringCardIndicator"),
-        ze = Symbol("iframeSrc"), Ze = Symbol("sfStylingObject"), Xe = Symbol("sfLogAtStart"),
-        Je = Symbol("csfReturnObject"), Qe = function () {
+    var qe = Symbol("type"), We = Symbol("rootNode"), He = Symbol("cardGroupTypes"), Je = Symbol("loadingContext"),
+        Ze = Symbol("allowedDOMAccess"), Ye = Symbol("showWarnings"), Xe = Symbol("recurringCardIndicator"),
+        Qe = Symbol("iframeSrc"), et = Symbol("sfStylingObject"), tt = Symbol("sfLogAtStart"),
+        nt = Symbol("csfReturnObject"), rt = Symbol("additionalFieldElements"), ot = function () {
             function e(t) {
                 !function (e, t) {
                     if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-                }(this, e), this.recurringCardIndicator = "_r", this.loadingContext = window._a$checkoutShopperUrl, this.type = t.type, window._b$dl && we("### StoreCls::constructor:: this.type=", this.type), this.init(t)
+                }(this, e), this.recurringCardIndicator = "_r", this.loadingContext = window._a$checkoutShopperUrl, this.type = t.type, window._b$dl && ke("### StoreCls::constructor:: this.type=", this.type), this.init(t)
             }
 
-            return Ue(e, [{
+            return $e(e, [{
                 key: "init", value: function (e) {
                     var t, n;
-                    this.rootNode = e.rootNode, this.cardGroupTypes = (t = e.cardGroupTypes, window.chckt && window.chckt.cardGroupTypes ? Me(n = window.chckt.cardGroupTypes) && n.length ? n : Be : function (e) {
-                        return Me(e) && e.length ? e : Be
-                    }(t)), window._b$dl && we("### StoreCls::init:: this.cardGroupTypes=", this.cardGroupTypes), e.loadingContext && (this.loadingContext = e.loadingContext), this.sfStylingObject = e.securedFieldStyling, this.allowedDOMAccess = !1 !== e.allowedDOMAccess && "false" !== e.allowedDOMAccess, this.showWarnings = !0 === e.showWarnings || "true" === e.showWarnings, e.recurringCardIndicator && (this.recurringCardIndicator = e.recurringCardIndicator), this.sfLogAtStart = !0 === e._b$dl, this.iframeSrc = this.loadingContext + "assets/html/" + e.originKey + "/securedFields." + Le + ".html"
+                    this.rootNode = e.rootNode, this.cardGroupTypes = (t = e.cardGroupTypes, window.chckt && window.chckt.cardGroupTypes ? Ue(n = window.chckt.cardGroupTypes) && n.length ? n : Ge : function (e) {
+                        return Ue(e) && e.length ? e : Ge
+                    }(t)), window._b$dl && ke("### StoreCls::init:: this.cardGroupTypes=", this.cardGroupTypes), e.loadingContext && (this.loadingContext = e.loadingContext), this.sfStylingObject = e.securedFieldStyling, this.allowedDOMAccess = !1 !== e.allowedDOMAccess && "false" !== e.allowedDOMAccess, this.showWarnings = !0 === e.showWarnings || "true" === e.showWarnings, e.recurringCardIndicator && (this.recurringCardIndicator = e.recurringCardIndicator), this.sfLogAtStart = !0 === e._b$dl, this.iframeSrc = this.loadingContext + "assets/html/" + e.originKey + "/securedFields." + ze + ".html"
                 }
             }, {
                 key: "type", get: function () {
-                    return this[Ke]
-                }, set: function (e) {
-                    this[Ke] = e
-                }
-            }, {
-                key: "rootNode", get: function () {
-                    return this[$e]
-                }, set: function (e) {
-                    this[$e] = e
-                }
-            }, {
-                key: "cardGroupTypes", get: function () {
-                    return this[Ge]
-                }, set: function (e) {
-                    this[Ge] = e
-                }
-            }, {
-                key: "loadingContext", get: function () {
-                    return this[We]
-                }, set: function (e) {
-                    this[We] = e
-                }
-            }, {
-                key: "allowedDOMAccess", get: function () {
-                    return this[Ye]
-                }, set: function (e) {
-                    this[Ye] = e
-                }
-            }, {
-                key: "showWarnings", get: function () {
-                    return this[He]
-                }, set: function (e) {
-                    this[He] = e
-                }
-            }, {
-                key: "recurringCardIndicator", get: function () {
                     return this[qe]
                 }, set: function (e) {
                     this[qe] = e
                 }
             }, {
-                key: "iframeSrc", get: function () {
-                    return this[ze]
+                key: "rootNode", get: function () {
+                    return this[We]
                 }, set: function (e) {
-                    this[ze] = e
+                    this[We] = e
                 }
             }, {
-                key: "sfStylingObject", get: function () {
+                key: "cardGroupTypes", get: function () {
+                    return this[He]
+                }, set: function (e) {
+                    this[He] = e
+                }
+            }, {
+                key: "loadingContext", get: function () {
+                    return this[Je]
+                }, set: function (e) {
+                    this[Je] = e
+                }
+            }, {
+                key: "allowedDOMAccess", get: function () {
                     return this[Ze]
                 }, set: function (e) {
                     this[Ze] = e
                 }
             }, {
-                key: "sfLogAtStart", get: function () {
+                key: "showWarnings", get: function () {
+                    return this[Ye]
+                }, set: function (e) {
+                    this[Ye] = e
+                }
+            }, {
+                key: "recurringCardIndicator", get: function () {
                     return this[Xe]
                 }, set: function (e) {
                     this[Xe] = e
                 }
             }, {
-                key: "csfReturnObject", get: function () {
-                    return this[Je]
+                key: "iframeSrc", get: function () {
+                    return this[Qe]
                 }, set: function (e) {
-                    this[Je] = e
+                    this[Qe] = e
+                }
+            }, {
+                key: "sfStylingObject", get: function () {
+                    return this[et]
+                }, set: function (e) {
+                    this[et] = e
+                }
+            }, {
+                key: "sfLogAtStart", get: function () {
+                    return this[tt]
+                }, set: function (e) {
+                    this[tt] = e
+                }
+            }, {
+                key: "csfReturnObject", get: function () {
+                    return this[nt]
+                }, set: function (e) {
+                    this[nt] = e
+                }
+            }, {
+                key: "additionalFieldElements", get: function () {
+                    return this[rt]
+                }, set: function (e) {
+                    this[rt] = e
                 }
             }]), e
-        }(), et = function (e, t) {
+        }(), it = function (e, t) {
             var n = [];
             return e && "function" === typeof e.querySelectorAll && (n = [].slice.call(e.querySelectorAll(t))), n
-        }, tt = function (e, t) {
+        }, at = function (e, t) {
             if (e) return e.querySelector(t)
-        }, nt = function (e, t) {
+        }, st = function (e, t) {
             if (e) return e.getAttribute(t)
-        }, rt = function (e, t, n, r) {
+        }, ct = function (e, t, n, r) {
             if ("function" !== typeof e.addEventListener) {
                 if (!e.attachEvent) throw new Error(": Unable to bind " + t + "-event");
                 e.attachEvent("on" + t, n)
             } else e.addEventListener(t, n, r)
-        }, ot = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
+        }, lt = function (e, t, n) {
+            if (!e) return !1;
+            for (var r = (e.className || "").split(/\s+/), o = []; r.length > 0;) {
+                var i = r.shift();
+                i !== t && (i !== n && o.push(i))
+            }
+            n && o.push(n);
+            var a = o.join(" ");
+            try {
+                e.className !== a && (e.className = a)
+            } catch (e) {
+            }
+        }, ut = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
             return typeof e
         } : function (e) {
             return e && "function" === typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e
-        }, it = function () {
+        }, dt = function () {
             function e(e, t) {
                 for (var n = 0; n < t.length; n++) {
                     var r = t[n];
@@ -2795,24 +3746,24 @@ var Adyen = function (e) {
                 return n && e(t.prototype, n), r && e(t, r), t
             }
         }();
-    var at = function () {
+    var pt = function () {
         function e(t, n) {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-            }(this, e), t.rootNode ? t.originKey ? (window._b$dl && we("### ConfigCls::constructor:: type=", t.type), this.stateRef = n.state, this.configRef = n.config, this.callbacksRef = n.callbacks, this.createSfRef = n.createSf, this.iframeManagerRef = n.iframeManager, void this.init(t)) : (ve("ERROR: SecuredFields configuration object does not have a configObject property"), !1) : (ve("ERROR: SecuredFields configuration object does not have a rootNode property"), !1)
+            }(this, e), t.rootNode ? t.originKey ? (window._b$dl && ke("### ConfigCls::constructor:: type=", t.type), this.stateRef = n.state, this.configRef = n.config, this.callbacksRef = n.callbacks, this.createSfRef = n.createSf, this.iframeManagerRef = n.iframeManager, void this.init(t)) : (Oe("ERROR: SecuredFields configuration object does not have a configObject property"), !1) : (Oe("ERROR: SecuredFields configuration object does not have a rootNode property"), !1)
         }
 
-        return it(e, [{
+        return dt(e, [{
             key: "init", value: function (e) {
                 var t = function (e) {
                     var t = void 0;
-                    return "object" === ("undefined" === typeof e ? "undefined" : ot(e)) && (t = e), !("string" === typeof e && !(t = tt(document, e))) && t
+                    return "object" === ("undefined" === typeof e ? "undefined" : ut(e)) && (t = e), !("string" === typeof e && !(t = at(document, e))) && t
                 }(e.rootNode);
                 if (!t) return window.console && window.console.error && window.console.error("ERROR: SecuredFields cannot find a valid rootNode element"), !1;
-                this.configRef.rootNode = t, window._b$dl && we("### ConfigCls::constructor:: this.configRef.rootNode.parentNode=", this.configRef.rootNode.parentNode), this.stateRef.numIframes = this.createSfRef.createSecuredFields(), this.stateRef.numIframes && this.iframeManagerRef.addMessageListener()
+                this.configRef.rootNode = t, window._b$dl && ke("### ConfigCls::constructor:: this.configRef.rootNode.parentNode=", this.configRef.rootNode.parentNode), this.stateRef.numIframes = this.createSfRef.createSecuredFields(), this.stateRef.numIframes && this.iframeManagerRef.addMessageListener()
             }
         }]), e
-    }(), st = function () {
+    }(), ft = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -2824,16 +3775,16 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var ct = function () {
-        function e(t, n) {
+    var ht = function () {
+        function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-            }(this, e), t || _e("### CallbacksCls::constructor:: No callbacks defined"), this.type = n, window._b$dl && we("### CallbacksCls::constructor:: type=", this.type), this.init(t)
+            }(this, e), this.init(t)
         }
 
-        return st(e, [{
+        return ft(e, [{
             key: "init", value: function (e) {
-                this.onLoad = e && e.onLoad ? e.onLoad : ut, this.onConfigSuccess = e && e.onConfigSuccess ? e.onConfigSuccess : ut, this.onFieldValid = e && e.onFieldValid ? e.onFieldValid : ut, this.onAllValid = e && e.onAllValid ? e.onAllValid : ut, this.onBrand = e && e.onBrand ? e.onBrand : ut, this.onError = e && e.onError ? e.onError : ut, this.onFocus = e && e.onFocus ? e.onFocus : ut, this.onBinValue = e && e.onBinValue ? e.onBinValue : ut
+                this.onLoad = e && e.onLoad ? e.onLoad : yt, this.onConfigSuccess = e && e.onConfigSuccess ? e.onConfigSuccess : yt, this.onFieldValid = e && e.onFieldValid ? e.onFieldValid : yt, this.onAllValid = e && e.onAllValid ? e.onAllValid : yt, this.onBrand = e && e.onBrand ? e.onBrand : yt, this.onError = e && e.onError ? e.onError : yt, this.onFocus = e && e.onFocus ? e.onFocus : yt, this.onBinValue = e && e.onBinValue ? e.onBinValue : yt
             }
         }, {
             key: "onLoad", get: function () {
@@ -2884,8 +3835,8 @@ var Adyen = function (e) {
                 this._onBinValue = e
             }
         }]), e
-    }(), ut = function () {
-    }, lt = ct, pt = function () {
+    }(), yt = function () {
+    }, mt = ht, bt = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -2897,56 +3848,54 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var ft = function () {
+    var gt = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this.stateRef = t.state
         }
 
-        return pt(e, [{
+        return bt(e, [{
             key: "populateStateObject", value: function (e, t) {
-                var n = ht();
-                return this.stateRef[e + "_numKey"] = n, this.stateRef.fieldNames.push(e), e === Ve && (this.stateRef.cvcIsOptional = t), this.setValidState(e, !1), window._b$dl && we("### ManageStateCls::populateStateObject:: pFieldType=", e, "numKey=", this.stateRef[e + "_numKey"]), this.stateRef
+                var n = vt();
+                return this.stateRef[e + "_numKey"] = n, this.stateRef.fieldNames.push(e), e === Ke && (this.stateRef.cvcIsOptional = t), this.setValidState(e, !1), window._b$dl && ke("### ManageStateCls::populateStateObject:: pFieldType=", e, "numKey=", this.stateRef[e + "_numKey"]), this.stateRef
             }
         }, {
             key: "setValidState", value: function (e, t, n) {
-                return this.stateRef.actualValidStates[e] = t, n || (this.stateRef.currentValidStates[e] = t), e === Ve && this.stateRef.cvcIsOptional && (this.stateRef.actualValidStates[e] = !0), this.stateRef
+                return this.stateRef.actualValidStates[e] = t, n || (this.stateRef.currentValidStates[e] = t), e === Ke && this.stateRef.cvcIsOptional && (this.stateRef.actualValidStates[e] = !0), this.stateRef
             }
         }, {
             key: "removeValidState", value: function (e) {
-                return this.stateRef.currentValidStates[e] ? (window._b$dl && we("### checkoutSecuredFields_handleSF:: __removeValidState:: REMOVE :: pFieldType=", e), this.setValidState(e, !1), this.stateRef) : (window._b$dl && we("### checkoutSecuredFields_handleSF::__removeValidState:: NOTHING TO REMOVE :: pFieldType=", e), null)
+                return this.stateRef.currentValidStates[e] ? (window._b$dl && ke("### checkoutSecuredFields_handleSF:: __removeValidState:: REMOVE :: pFieldType=", e), this.setValidState(e, !1), this.stateRef) : (window._b$dl && ke("### checkoutSecuredFields_handleSF::__removeValidState:: NOTHING TO REMOVE :: pFieldType=", e), null)
             }
         }]), e
-    }(), ht = function () {
+    }(), vt = function () {
         if (!window.crypto) return 4294967296 * Math.random() | 0;
         var e = new Uint32Array(1);
         return window.crypto.getRandomValues(e), e[0]
-    }, dt = ft, yt = function (e, t, n) {
+    }, wt = gt, Ct = function (e, t, n) {
         if (t) {
             var r = JSON.stringify(e);
             t.postMessage(r, n)
         }
-    }, mt = function (e, t, n) {
+    }, _t = function (e, t, n) {
         var r = Object.keys(e || {});
         if (r.length) for (var o = t.fieldNames, i = function (i, a) {
             var s = o[i], c = {txVariant: t.type, fieldType: s, numKey: t[s + "_numKey"]};
             r.forEach(function (t) {
                 c[t] = e[t]
-            }), yt(c, t[s + "_iframe"], n)
+            }), Ct(c, t[s + "_iframe"], n)
         }, a = 0, s = o.length; a < s; a++) i(a)
-    }, bt = function (e, t, n, r) {
-        window._b$dl && we("### handleFocus::handleFocus:: pStateRef.type=", t.type), delete e.numKey, e.markerNode = n;
-        var o = e.txVariant;
-        delete e.txVariant, e.type = o, r(e);
-        var i = o + "_" + e.fieldType;
-        e.focus ? t.currentFocusObject !== i && (t.currentFocusObject = i) : t.currentFocusObject === i && (t.currentFocusObject = null)
-    }, gt = function (e, t, n) {
-        window._b$dl && we("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.type=", e.type), e.iframeConfigCount++, window._b$dl && we("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.iframeConfigCount=", e.iframeConfigCount), window._b$dl && we("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.numIframes=", e.numIframes), e.iframeConfigCount === e.numIframes && (window._b$dl && we("### handleIframeConfigFeedback::handleIframeConfigFeedback:: ALL IFRAMES CONFIG DO CALLBACK"), e.isConfigured = !0, t({
+    }, Ot = function (e, t, n, r) {
+        window._b$dl && ke("### handleFocus::handleFocus:: pStateRef.type=", t.type), delete e.numKey, e.rootNode = n, e.type = t.type, r(e);
+        var o = t.type + "_" + e.fieldType;
+        e.focus ? t.currentFocusObject !== o && (t.currentFocusObject = o) : t.currentFocusObject === o && (t.currentFocusObject = null)
+    }, kt = function (e, t, n) {
+        window._b$dl && ke("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.type=", e.type), e.iframeConfigCount++, window._b$dl && ke("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.iframeConfigCount=", e.iframeConfigCount), window._b$dl && ke("### handleIframeConfigFeedback::handleIframeConfigFeedback:: pStateRef.numIframes=", e.numIframes), e.iframeConfigCount === e.numIframes && (window._b$dl && ke("### handleIframeConfigFeedback::handleIframeConfigFeedback:: ALL IFRAMES CONFIG DO CALLBACK"), e.isConfigured = !0, t({
             iframesConfigured: !0,
             type: e.type
         }, n))
-    }, vt = function () {
+    }, St = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -2958,19 +3907,19 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var wt = Symbol("iframePostMessageListener"), _t = Symbol("setB$DL"), Ot = function () {
+    var Ft = Symbol("iframePostMessageListener"), Nt = Symbol("setB$DL"), jt = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this._a$listenerRef = null, this.stateRef = t.state, this.configRef = t.config, this.callbacksRef = t.callbacks, this.handleValidationRef = t.handleValidation, this.handleEncryptionRef = t.handleEncryption
         }
 
-        return vt(e, [{
+        return St(e, [{
             key: "onIframeLoaded", value: function (e) {
-                window._b$dl && we("### IframeManagerCls::onIframeLoaded:: this.stateRef type=", this.stateRef.type, "pFieldType=", e);
+                window._b$dl && ke("### IframeManagerCls::onIframeLoaded:: this.stateRef type=", this.stateRef.type, "pFieldType=", e);
                 var t = this;
                 return function () {
-                    window._b$dl && we("\n############################"), window._b$dl && we("### IframeManagerCls:::: onIframeLoaded::return fn: _this.stateRef type=", t.stateRef.type);
+                    window._b$dl && ke("\n############################"), window._b$dl && ke("### IframeManagerCls:::: onIframeLoaded::return fn: _this.stateRef type=", t.stateRef.type);
                     var n = {
                         txVariant: t.stateRef.type,
                         fieldType: e,
@@ -2980,63 +3929,66 @@ var Adyen = function (e) {
                         sfLogAtStart: t.configRef.sfLogAtStart,
                         numKey: t.stateRef[e + "_numKey"]
                     };
-                    window._b$dl && (we("### IframeManagerCls:::: onIframeLoaded:: dataObj=", n), we("### IframeManagerCls:::: onIframeLoaded:: loadingContext=", t.configRef.loadingContext)), yt(n, t.stateRef[e + "_iframe"], t.configRef.loadingContext), t.stateRef.iframeCount++, window._b$dl && we("### IframeManagerCls:::: onIframeLoaded:: iframeCount=", t.stateRef.iframeCount), window._b$dl && we("### IframeManagerCls:::: onIframeLoaded:: this.stateRef.numIframes=", t.stateRef.numIframes), t.stateRef.iframeCount === t.stateRef.numIframes && (window._b$dl && we("### IframeManagerCls:::: onIframeLoaded:: ALL IFRAMES LOADED DO CALLBACK callbacksRef=", t.callbacksRef), t.callbacksRef.onLoad({iframesLoaded: !0}))
+                    window._b$dl && (ke("### IframeManagerCls:::: onIframeLoaded:: dataObj=", n), ke("### IframeManagerCls:::: onIframeLoaded:: loadingContext=", t.configRef.loadingContext)), Ct(n, t.stateRef[e + "_iframe"], t.configRef.loadingContext), t.stateRef.iframeCount++, window._b$dl && ke("### IframeManagerCls:::: onIframeLoaded:: iframeCount=", t.stateRef.iframeCount), window._b$dl && ke("### IframeManagerCls:::: onIframeLoaded:: this.stateRef.numIframes=", t.stateRef.numIframes), t.stateRef.iframeCount === t.stateRef.numIframes && (window._b$dl && ke("### IframeManagerCls:::: onIframeLoaded:: ALL IFRAMES LOADED DO CALLBACK callbacksRef=", t.callbacksRef), t.callbacksRef.onLoad({iframesLoaded: !0}))
                 }
             }
         }, {
             key: "addMessageListener", value: function () {
-                window._b$dl && we("### IframeManagerCls::addMessageListener:: this.stateRef.type=", this.stateRef.type), window._b$dl && we("### IframeManagerCls::addMessageListener:: this._a$listenerRef=", this._a$listenerRef), this._a$listenerRef && function (e, t, n, r) {
+                window._b$dl && ke("### IframeManagerCls::addMessageListener:: this.stateRef.type=", this.stateRef.type), window._b$dl && ke("### IframeManagerCls::addMessageListener:: this._a$listenerRef=", this._a$listenerRef), this._a$listenerRef && function (e, t, n, r) {
                     if ("function" === typeof e.addEventListener) e.removeEventListener(t, n, r); else {
                         if (!e.attachEvent) throw new Error(": Unable to unbind " + t + "-event");
                         e.detachEvent("on" + t, n)
                     }
-                }(window, "message", this._a$listenerRef, !1), this._a$listenerRef = this[wt](), rt(window, "message", this._a$listenerRef, !1)
+                }(window, "message", this._a$listenerRef, !1), this._a$listenerRef = this[Ft](), ct(window, "message", this._a$listenerRef, !1)
             }
         }, {
-            key: wt, value: function () {
+            key: Ft, value: function () {
                 var e = this;
-                return window._b$dl && we("### IframeManagerCls:: SET iframePostMessageListener:: this.stateRef.type=", this.stateRef.type), function (t) {
+                return window._b$dl && ke("### IframeManagerCls:: SET iframePostMessageListener:: this.stateRef.type=", this.stateRef.type), function (t) {
                     var n = t.origin || t.originalEvent.origin,
                         r = e.configRef.loadingContext.indexOf("/checkoutshopper/"),
                         o = r > -1 ? e.configRef.loadingContext.substring(0, r) : e.configRef.loadingContext,
                         i = o.length - 1;
-                    if ("/" === o.charAt(i) && (o = o.substring(0, i)), window._b$dl && (we("\n############################"), we("### IframeManagerCls::iframePostMessageListener:: this.configRef.loadingContext=", e.configRef.loadingContext), we("### IframeManagerCls::iframePostMessageListener:: event origin=", n), we("### IframeManagerCls::iframePostMessageListener:: page origin (adyenDomain)=", o)), "webpackOk" !== t.data.type) if ("[object Object]" !== t.data) if (n === o) {
-                        window._b$dl && we("### IframeManagerCls::iframePostMessageListener:: return fn this.stateRef.type=", e.stateRef.type);
+                    if ("/" === o.charAt(i) && (o = o.substring(0, i)), window._b$dl && (ke("\n############################"), ke("### IframeManagerCls::iframePostMessageListener:: this.configRef.loadingContext=", e.configRef.loadingContext), ke("### IframeManagerCls::iframePostMessageListener:: event origin=", n), ke("### IframeManagerCls::iframePostMessageListener:: page origin (adyenDomain)=", o)), "webpackOk" !== t.data.type) if ("[object Object]" !== t.data) if (n === o) {
+                        window._b$dl && ke("### IframeManagerCls::iframePostMessageListener:: return fn this.stateRef.type=", e.stateRef.type);
                         var a = JSON.parse(t.data);
-                        if (window._b$dl && we("### IframeManagerCls::iframePostMessageListener:: feedbackObj=", a), e.stateRef[a.fieldType + "_numKey"] === a.numKey) {
+                        if (window._b$dl && ke("### IframeManagerCls::iframePostMessageListener:: feedbackObj=", a), e.stateRef[a.fieldType + "_numKey"] === a.numKey) {
                             if ("undefined" !== typeof a.action) switch (a.action) {
                                 case"encryption":
                                     !0 === a.encryptionSuccess ? e.handleEncryptionRef.handleEncryption(a) : e.handleValidationRef.handleValidation(a);
                                     break;
                                 case"focus":
-                                    bt(a, e.stateRef, e.configRef.rootNode, e.callbacksRef.onFocus);
+                                    Ot(a, e.stateRef, e.configRef.rootNode, e.callbacksRef.onFocus);
                                     break;
                                 case"config":
-                                    gt(e.stateRef, e.callbacksRef.onConfigSuccess, e[_t]());
+                                    kt(e.stateRef, e.callbacksRef.onConfigSuccess, e[Nt]());
                                     break;
                                 case"binValue":
                                     e.callbacksRef.onBinValue({binValue: a.binValue, type: e.stateRef.type});
                                     break;
                                 case"click":
-                                    mt({fieldType: a.fieldType, click: !0}, e.stateRef, e.configRef.loadingContext);
+                                    e.configRef.additionalFieldElements && e.configRef.additionalFieldElements.forEach(function (e) {
+                                        var t = new Event("blur");
+                                        e.dispatchEvent(t)
+                                    }), _t({fieldType: a.fieldType, click: !0}, e.stateRef, e.configRef.loadingContext);
                                     break;
                                 default:
                                     e.handleValidationRef.handleValidation(a)
                             }
-                        } else e.configRef.showWarnings && _e("WARNING IframeManagerCls :: postMessage listener for iframe :: data mismatch! (Probably a message from an unrelated securedField)")
-                    } else e.configRef.showWarnings && (_e("####################################################################################"), _e("WARNING IframeManagerCls :: postMessage listener for iframe :: origin mismatch!\n Received message with origin:", n, "but the only allowed origin for messages to CSF is", o), _e("### event.data=", t.data), _e("####################################################################################")); else window._b$dl && we('### IframeManagerCls:: Weird IE9 bug:: unknown event with event.data="[object Object]"')
+                        } else e.configRef.showWarnings && Se("WARNING IframeManagerCls :: postMessage listener for iframe :: data mismatch! (Probably a message from an unrelated securedField)")
+                    } else e.configRef.showWarnings && (Se("####################################################################################"), Se("WARNING IframeManagerCls :: postMessage listener for iframe :: origin mismatch!\n Received message with origin:", n, "but the only allowed origin for messages to CSF is", o), Se("### event.data=", t.data), Se("####################################################################################")); else window._b$dl && ke('### IframeManagerCls:: Weird IE9 bug:: unknown event with event.data="[object Object]"')
                 }
             }
         }, {
-            key: _t, value: function () {
+            key: Nt, value: function () {
                 var e = this;
                 return function (t, n, r) {
                     var o = {txVariant: t, fieldType: n, _b$dl: r, numKey: e.stateRef[n + "_numKey"]};
-                    yt(o, e.stateRef[n + "_iframe"], e.configRef.loadingContext)
+                    Ct(o, e.stateRef[n + "_iframe"], e.configRef.loadingContext)
                 }
             }
         }]), e
-    }(), Ct = function () {
+    }(), xt = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3048,29 +4000,29 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var St = function () {
+    var Pt = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this.stateRef = t.state, this.configRef = t.config, this.iframeManagerRef = t.iframeManager, this.manageStateRef = t.manageState
         }
 
-        return Ct(e, [{
+        return xt(e, [{
             key: "createSecuredFields", value: function () {
-                window._b$dl && we("### CreateSfCls::createSecuredFields:: this.stateRef.type=", this.stateRef.type);
+                window._b$dl && ke("### CreateSfCls::createSecuredFields:: this.stateRef.type=", this.stateRef.type);
                 var e = '<iframe src="' + this.configRef.iframeSrc + '" class="js-iframe" frameborder="0" scrolling="no" allowtransparency="true" style="border: none; height: 100%; width: 100%;"><p>Your browser does not support iframes.</p></iframe>',
-                    t = "data-encrypted-field", n = et(this.configRef.rootNode, "[" + t + "]");
-                n.length || (t = "data-cse", n = et(this.configRef.rootNode, "[" + t + "]"));
+                    t = "data-encrypted-field", n = it(this.configRef.rootNode, "[" + t + "]");
+                n.length || (t = "data-cse", n = it(this.configRef.rootNode, "[" + t + "]"));
                 var r = this;
                 return n.forEach(function (n) {
-                    var o = nt(n, t), i = nt(n, "data-optional"), a = o === Ve && "true" === i;
+                    var o = st(n, t), i = st(n, "data-optional"), a = o === Ke && "true" === i;
                     r.manageStateRef.populateStateObject(o, a);
                     var s, c = void 0;
-                    n.innerHTML = e, (s = tt(n, ".js-iframe")) && (c = s.contentWindow, r.stateRef[o + "_iframe"] = c, rt(s, "load", r.iframeManagerRef.onIframeLoaded(o), !1))
+                    n.innerHTML = e, (s = at(n, ".js-iframe")) && (c = s.contentWindow, r.stateRef[o + "_iframe"] = c, ct(s, "load", r.iframeManagerRef.onIframeLoaded(o), !1))
                 }), n.length
             }
         }]), e
-    }(), jt = function () {
+    }(), Dt = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3082,30 +4034,30 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var kt = function () {
+    var Et = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this.stateRef = t.state, this.configRef = t.config, this.callbacksRef = t.callbacks
         }
 
-        return jt(e, [{
+        return Dt(e, [{
             key: "processBrand", value: function (e, t) {
-                var n = void 0, r = e.txVariant;
+                var n = void 0;
                 if ("encryptedCardNumber" === e.fieldType) {
-                    var o = "card" === r, i = this.checkForBrandChange(e.brand, r, this.stateRef);
-                    return o && i && (this.stateRef.brand = i, this.sendBrandToFrame(r, Ve, i)), (n = o ? this.setBrandRelatedInfo(e) : xt()) && (n.type = this.stateRef.type, n.markerNode = t, this.callbacksRef.onBrand(n)), n
+                    var r = "card" === this.stateRef.type, o = this.checkForBrandChange(e.brand);
+                    return r && o && (this.stateRef.brand = o, this.sendBrandToFrame(Ke, o)), (n = r ? this.setBrandRelatedInfo(e) : Rt()) && (n.type = this.stateRef.type, n.rootNode = t, this.callbacksRef.onBrand(n)), n
                 }
                 return null
             }
         }, {
-            key: "checkForBrandChange", value: function (e, t) {
+            key: "checkForBrandChange", value: function (e) {
                 return !(!e || e === this.stateRef.brand) && (window._b$dl && window.console && window.console.log && window.console.log("\n### checkoutSecuredFields_handleSF::__checkForBrandChange:: Brand Change! new brand=", e, "---- old brand=", this.stateRef.brand), e)
             }
         }, {
-            key: "sendBrandToFrame", value: function (e, t, n) {
-                var r = {txVariant: e, fieldType: t, brand: n, numKey: this.stateRef[t + "_numKey"]};
-                yt(r, this.stateRef[t + "_iframe"], this.configRef.loadingContext)
+            key: "sendBrandToFrame", value: function (e, t) {
+                var n = {txVariant: this.stateRef.type, fieldType: e, brand: t, numKey: this.stateRef[e + "_numKey"]};
+                Ct(n, this.stateRef[e + "_iframe"], this.configRef.loadingContext)
             }
         }, {
             key: "setBrandRelatedInfo", value: function (e) {
@@ -3113,33 +4065,33 @@ var Adyen = function (e) {
                 return "undefined" !== typeof e.brand && (t.brandImage = e.imageSrc, t.brand = e.brand, n = !0), "undefined" !== typeof e.cvcText && (t.brandText = e.cvcText, e.hasOwnProperty("cvcIsOptional") && (t.cvcIsOptional = e.cvcIsOptional), n = !0), n ? t : null
             }
         }]), e
-    }(), xt = function () {
+    }(), Rt = function () {
         return null
-    }, Pt = kt, Et = function (e, t, n, r, o, i, a) {
-        return {fieldType: e, encryptedFieldName: t, uid: n, valid: r, type: o, markerNode: i, encryptedType: a}
-    }, Rt = function (e, t, n, r) {
-        var o = tt(e, "#" + r);
+    }, At = Et, It = function (e, t, n, r, o, i, a) {
+        return {fieldType: e, encryptedFieldName: t, uid: n, valid: r, type: o, rootNode: i, encryptedType: a}
+    }, Mt = function (e, t, n, r) {
+        var o = at(e, "#" + r);
         o || ((o = document.createElement("input")).type = "hidden", o.name = t, o.id = r, e.appendChild(o)), o.setAttribute("value", n)
-    }, Nt = function (e, t, n, r, o) {
-        var i = {markerNode: t, fieldType: n}, a = e.hasOwnProperty("error") && "" !== e.error;
+    }, Tt = function (e, t, n, r, o) {
+        var i = {rootNode: t, fieldType: n}, a = e.hasOwnProperty("error") && "" !== e.error;
         return i.error = a ? e.error : "", i.type = o, r.onError(i), i
-    }, Ft = function (e, t, n) {
-        if ("card" === e.txVariant && e.hasOwnProperty("cvcIsOptional")) {
+    }, Bt = function (e, t, n) {
+        if ("card" === t.type && e.hasOwnProperty("cvcIsOptional")) {
             var r = e.cvcIsOptional !== t.cvcIsOptional;
-            t.cvcIsOptional = e.cvcIsOptional, r && (window._b$dl && window.console && window.console.log && window.console.log("### checkoutSecuredFields_handleSF::__handleValidation:: BASE VALUE OF cvcIsOptional HAS CHANGED feedbackObj.cvcIsOptional=", e.cvcIsOptional), n.setValidState(Ve, e.cvcIsOptional, !0))
+            t.cvcIsOptional = e.cvcIsOptional, r && (window._b$dl && window.console && window.console.log && window.console.log("### checkoutSecuredFields_handleSF::__handleValidation:: BASE VALUE OF cvcIsOptional HAS CHANGED feedbackObj.cvcIsOptional=", e.cvcIsOptional), n.setValidState(Ke, e.cvcIsOptional, !0))
         }
-    }, Tt = function (e, t, n) {
-        var r = At(e, t);
-        t.allValid = r, window._b$dl && window.console && window.console.log && window.console.log("\n### checkoutSecuredFields_handleSF::__assessFormValidity:: assessing valid states of the form as a whole isValid=", r);
-        var o = {allValid: r, type: e};
-        n.onAllValid(o)
-    }, At = function (e, t) {
-        for (var n = t.fieldNames, r = 0, o = n.length; r < o; r++) {
-            var i = n[r];
-            if (!t.actualValidStates[i]) return !1
+    }, Vt = function (e, t) {
+        var n = Lt(e);
+        e.allValid = n, window._b$dl && window.console && window.console.log && window.console.log("\n### checkoutSecuredFields_handleSF::__assessFormValidity:: assessing valid states of the form as a whole isValid=", n);
+        var r = {allValid: n, type: e.type};
+        t.onAllValid(r)
+    }, Lt = function (e) {
+        for (var t = e.fieldNames, n = 0, r = t.length; n < r; n++) {
+            var o = t[n];
+            if (!e.actualValidStates[o]) return !1
         }
         return !0
-    }, Dt = function () {
+    }, Ut = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3151,30 +4103,30 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var It = function () {
+    var Kt = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this.stateRef = t.state, this.configRef = t.config, this.callbacksRef = t.callbacks, this.manageStateRef = t.manageState, this.processBrandRef = t.processBrand
         }
 
-        return Dt(e, [{
+        return Ut(e, [{
             key: "handleValidation", value: function (e) {
-                var t, n, r, o = void 0, i = e.txVariant, a = e.fieldType;
-                if (Ft(e, this.stateRef, this.manageStateRef), Nt(e, this.configRef.rootNode, a, this.callbacksRef, this.stateRef.type), this.processBrandRef.processBrand(e, this.configRef.rootNode), this.manageStateRef.removeValidState(a)) {
+                var t, n, r, o = void 0, i = e.fieldType;
+                if (Bt(e, this.stateRef, this.manageStateRef), Tt(e, this.configRef.rootNode, i, this.callbacksRef, this.stateRef.type), this.processBrandRef.processBrand(e, this.configRef.rootNode), this.manageStateRef.removeValidState(i)) {
                     o = function (e, t, n) {
                         var r, o = "encryptedExpiryDate" === e, i = [], a = ["month", "year"], s = void 0, c = void 0,
-                            u = void 0, l = void 0, p = o ? 2 : 1;
-                        for (s = 0; s < p; s++) {
-                            c = t + "-encrypted-" + (u = o ? a[s] : e), l = o ? "encryptedExpiry" + ((r = a[s]).charAt(0).toUpperCase() + r.slice(1)) : e;
-                            var f = Et(e, l, c, !1, t, n, u);
-                            i.push(f)
+                            l = void 0, u = void 0, d = o ? 2 : 1;
+                        for (s = 0; s < d; s++) {
+                            c = t + "-encrypted-" + (l = o ? a[s] : e), u = o ? "encryptedExpiry" + ((r = a[s]).charAt(0).toUpperCase() + r.slice(1)) : e;
+                            var p = It(e, u, c, !1, t, n, l);
+                            i.push(p)
                         }
                         return i
-                    }(a, i, this.configRef.rootNode);
-                    for (var s = 0, c = o.length; s < c; s++) this.configRef.allowedDOMAccess && (t = this.configRef.rootNode, n = o[s].uid, void 0, (r = tt(t, "#" + n)) && t.removeChild(r)), this.callbacksRef.onFieldValid(o[s])
+                    }(i, this.stateRef.type, this.configRef.rootNode);
+                    for (var a = 0, s = o.length; a < s; a++) this.configRef.allowedDOMAccess && (t = this.configRef.rootNode, n = o[a].uid, void 0, (r = at(t, "#" + n)) && t.removeChild(r)), this.callbacksRef.onFieldValid(o[a])
                 }
-                Tt(i, this.stateRef, this.callbacksRef)
+                Vt(this.stateRef, this.callbacksRef)
             }
         }, {
             key: "processBrandRef", get: function () {
@@ -3183,13 +4135,10 @@ var Adyen = function (e) {
                 this._processBrandRef = e
             }
         }]), e
-    }(), Mt = function (e, t, n, r) {
-        if (n.type === e) {
-            var o = {txVariant: e, fieldType: t, focus: !0, numKey: n[t + "_numKey"]};
-            if (t === Ve && n.cvcIsOptional) return;
-            yt(o, n[t + "_iframe"], r)
-        }
-    }, Vt = function () {
+    }(), zt = function (e, t, n) {
+        var r = {txVariant: t.type, fieldType: e, focus: !0, numKey: t[e + "_numKey"]};
+        e === Ke && t.cvcIsOptional || Ct(r, t[e + "_iframe"], n)
+    }, Gt = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3201,51 +4150,61 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var Lt = function () {
+    var $t = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
             }(this, e), this.stateRef = t.state, this.configRef = t.config, this.callbacksRef = t.callbacks, this.manageStateRef = t.manageState, this.processBrandRef = t.processBrand
         }
 
-        return Vt(e, [{
+        return Gt(e, [{
             key: "handleEncryption", value: function (e) {
                 window._b$dl && window.console && window.console.log && window.console.log("\n### checkoutSecuredFields_handleSF::__handleSuccessfulEncryption:: pFeedbackObj=", e);
-                var t = e.txVariant, n = e.fieldType;
-                "year" === e.type || "encryptedExpiryYear" === n ? Mt(t, Ve, this.stateRef, this.configRef.loadingContext) : Bt(), "encryptedExpiryMonth" === n ? Mt(t, "encryptedExpiryYear", this.stateRef, this.configRef.loadingContext) : Bt();
-                var r, o = void 0, i = void 0, a = e[n];
+                var t = e.fieldType;
+                "year" === e.type || "encryptedExpiryYear" === t ? zt(Ke, this.stateRef, this.configRef.loadingContext) : qt(), "encryptedExpiryMonth" === t ? zt("encryptedExpiryYear", this.stateRef, this.configRef.loadingContext) : qt();
+                var n, r = void 0, o = void 0, i = e[t];
                 for (this.configRef.allowedDOMAccess && function (e, t, n) {
                     var r, o, i, a;
                     for (r = 0; r < e.length; r++) {
                         var s = e[r];
-                        o = t + "-encrypted-" + s.type, i = s.encryptedFieldName, a = s.blob, Rt(n, i, a, o)
+                        o = t + "-encrypted-" + s.type, i = s.encryptedFieldName, a = s.blob, Mt(n, i, a, o)
                     }
-                }(a, t, this.configRef.rootNode), Nt({error: ""}, this.configRef.rootNode, n, this.callbacksRef, this.stateRef.type), this.manageStateRef.setValidState(n, !0), o = function (e, t, n, r) {
-                    var o = void 0, i = void 0, a = void 0, s = void 0, c = void 0, u = void 0, l = [];
+                }(i, this.stateRef.type, this.configRef.rootNode), Tt({error: ""}, this.configRef.rootNode, t, this.callbacksRef, this.stateRef.type), this.manageStateRef.setValidState(t, !0), r = function (e, t, n, r) {
+                    var o = void 0, i = void 0, a = void 0, s = void 0, c = void 0, l = void 0, u = [];
                     for (o = 0; o < r.length; o++) {
-                        i = t + "-encrypted-" + (s = (a = r[o]).type), c = a.encryptedFieldName, u = a.blob;
-                        var p = Et(e, c, i, !0, t, n, s);
-                        p.blob = u, l.push(p)
+                        i = t + "-encrypted-" + (s = (a = r[o]).type), c = a.encryptedFieldName, l = a.blob;
+                        var d = It(e, c, i, !0, t, n, s);
+                        d.blob = l, u.push(d)
                     }
-                    return l
-                }(n, t, this.configRef.rootNode, a), e.bin && (o[0].bin = e.bin), i = 0, r = o.length; i < r; i++) this.callbacksRef.onFieldValid(o[i]);
+                    return u
+                }(t, this.stateRef.type, this.configRef.rootNode, i), e.bin && (r[0].bin = e.bin), o = 0, n = r.length; o < n; o++) this.callbacksRef.onFieldValid(r[o]);
                 if (e.hasBrandInfo) {
-                    var s = {
-                        fieldType: n,
-                        txVariant: t,
+                    var a = {
+                        fieldType: t,
                         imageSrc: e.imageSrc,
                         brand: e.brand,
                         cvcText: e.cvcText,
                         cvcIsOptional: e.cvcIsOptional
                     };
-                    Ft(s, this.stateRef, this.manageStateRef), this.processBrandRef.processBrand(s, this.configRef.rootNode)
+                    Bt(a, this.stateRef, this.manageStateRef), this.processBrandRef.processBrand(a, this.configRef.rootNode)
                 }
-                Tt(t, this.stateRef, this.callbacksRef)
+                Vt(this.stateRef, this.callbacksRef)
             }
         }]), e
-    }(), Bt = function () {
+    }(), qt = function () {
         return null
-    }, Ut = Lt, Kt = function () {
+    }, Wt = $t, Ht = function (e, t, n, r) {
+        /iphone|ipod|ipad/i.test(navigator.userAgent) && (r.additionalFieldElements || (r.additionalFieldElements = []), r.additionalFieldElements.push(e), ct(e, "blur", function (n) {
+            window.console && window.console.log && window.console.log("\n### iOSRegisterAdditionalField::additionalField BLUR:: "), lt(e, t, "")
+        }, !1), ct(e, "touchend", function (o) {
+            window.console && window.console.log && window.console.log("\n### index::holder name:: TOUCHEND - add FOCUS"), lt(e, "", t);
+            var i = e.value;
+            e.value = i, e.setSelectionRange && (e.focus(), e.setSelectionRange(0, 0)), _t({
+                fieldType: "additionalField",
+                click: !0
+            }, n, r.loadingContext)
+        }, !1))
+    }, Jt = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3257,99 +4216,119 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var $t = Symbol("state"), Gt = Symbol("config"), Wt = Symbol("callbacks"), Yt = Symbol("manageState"),
-        Ht = Symbol("handleValidation"), qt = Symbol("iframeManager"), zt = Symbol("processBrand"),
-        Zt = Symbol("handleEncryption"), Xt = Symbol("createSf"), Jt = Symbol("setupCsf"), Qt = function () {
+    var Zt = Symbol("state"), Yt = Symbol("config"), Xt = Symbol("callbacks"), Qt = Symbol("manageState"),
+        en = Symbol("handleValidation"), tn = Symbol("iframeManager"), nn = Symbol("processBrand"),
+        rn = Symbol("handleEncryption"), on = Symbol("createSf"), an = Symbol("setupCsf"), sn = function () {
             function e(t) {
                 var n = this;
                 if (function (e, t) {
                     if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
                 }(this, e), !t) throw new Error("No securedFields configuration object defined");
-                return t.type = t.type || "card", this.state = new De(t), this.config = new Qe(t), this.callbacks = new lt(t.callbacks, t.type), this.manageState = new dt(this), this.processBrand = new Pt(this), this.handleValidation = new It(this), this.handleEncryption = new Ut(this), this.iframeManager = new Ot(this), this.createSf = new St(this), this.setupCsf = new at(t, this), {
+                t.type = t.type || "card", this.state = new Ve(t), this.config = new ot(t), this.callbacks = new mt(t.callbacks), this.manageState = new wt(this), this.processBrand = new At(this), this.handleValidation = new Kt(this), this.handleEncryption = new Wt(this), this.iframeManager = new jt(this), this.createSf = new Pt(this), this.setupCsf = new pt(t, this);
+                var r = {
                     updateStyles: function (e, t) {
-                        n.state.isConfigured ? n.state.type === e && mt({styleObject: t}, n.state, n.config.loadingContext) : _e("You cannot update the secured fields styling - they are not yet configured. Use the 'onConfigSuccess' callback to catch this event.")
+                        return n.state.isConfigured ? n.state.type === e && _t({styleObject: t}, n.state, n.config.loadingContext) : Se("You cannot update the secured fields styling - they are not yet configured. Use the 'onConfigSuccess' callback to catch this event."), r
                     }, setFocusOnFrame: function (e, t) {
-                        n.state.isConfigured ? n.state.type === e && Mt(e, t, n.state, n.config.loadingContext) : _e("You cannot set focus on any secured field - they are not yet configured. Use the 'onConfigSuccess' callback to catch this event.")
+                        return n.state.isConfigured ? n.state.type === e && zt(t, n.state, n.config.loadingContext) : Se("You cannot set focus on any secured field - they are not yet configured. Use the 'onConfigSuccess' callback to catch this event."), r
+                    }, registerAdditionalElementForIOS: function (e, t) {
+                        return Ht(e, t, n.state, n.config), r
+                    }, onLoad: function (e) {
+                        return n.callbacks.onLoad = e, r
+                    }, onConfigSuccess: function (e) {
+                        return n.callbacks.onConfigSuccess = e, r
+                    }, onFieldValid: function (e) {
+                        return n.callbacks.onFieldValid = e, r
+                    }, onAllValid: function (e) {
+                        return n.callbacks.onAllValid = e, r
+                    }, onBrand: function (e) {
+                        return n.callbacks.onBrand = e, r
+                    }, onError: function (e) {
+                        return n.callbacks.onError = e, r
+                    }, onFocus: function (e) {
+                        return n.callbacks.onFocus = e, r
+                    }, onBinValue: function (e) {
+                        return n.callbacks.onBinValue = e, r
                     }
-                }
+                };
+                return r
             }
 
-            return Kt(e, [{
+            return Jt(e, [{
                 key: "state", get: function () {
-                    return this[$t]
-                }, set: function (e) {
-                    this[$t] = e
-                }
-            }, {
-                key: "config", get: function () {
-                    return this[Gt]
-                }, set: function (e) {
-                    this[Gt] = e
-                }
-            }, {
-                key: "callbacks", get: function () {
-                    return this[Wt]
-                }, set: function (e) {
-                    this[Wt] = e
-                }
-            }, {
-                key: "manageState", get: function () {
-                    return this[Yt]
-                }, set: function (e) {
-                    this[Yt] = e
-                }
-            }, {
-                key: "handleValidation", get: function () {
-                    return this[Ht]
-                }, set: function (e) {
-                    this[Ht] = e
-                }
-            }, {
-                key: "iframeManager", get: function () {
-                    return this[qt]
-                }, set: function (e) {
-                    this[qt] = e
-                }
-            }, {
-                key: "processBrand", get: function () {
-                    return this[zt]
-                }, set: function (e) {
-                    this[zt] = e
-                }
-            }, {
-                key: "handleEncryption", get: function () {
                     return this[Zt]
                 }, set: function (e) {
                     this[Zt] = e
                 }
             }, {
-                key: "createSf", get: function () {
+                key: "config", get: function () {
+                    return this[Yt]
+                }, set: function (e) {
+                    this[Yt] = e
+                }
+            }, {
+                key: "callbacks", get: function () {
                     return this[Xt]
                 }, set: function (e) {
                     this[Xt] = e
                 }
             }, {
+                key: "manageState", get: function () {
+                    return this[Qt]
+                }, set: function (e) {
+                    this[Qt] = e
+                }
+            }, {
+                key: "handleValidation", get: function () {
+                    return this[en]
+                }, set: function (e) {
+                    this[en] = e
+                }
+            }, {
+                key: "iframeManager", get: function () {
+                    return this[tn]
+                }, set: function (e) {
+                    this[tn] = e
+                }
+            }, {
+                key: "processBrand", get: function () {
+                    return this[nn]
+                }, set: function (e) {
+                    this[nn] = e
+                }
+            }, {
+                key: "handleEncryption", get: function () {
+                    return this[rn]
+                }, set: function (e) {
+                    this[rn] = e
+                }
+            }, {
+                key: "createSf", get: function () {
+                    return this[on]
+                }, set: function (e) {
+                    this[on] = e
+                }
+            }, {
                 key: "setupCsf", set: function (e) {
-                    this[Jt] = e
+                    this[an] = e
                 }
             }]), e
         }();
-    window.csf = Qt;
-    var en = Qt, tn = function (e) {
+    window.csf = sn;
+    var cn = sn, ln = function (e) {
         var t = e.isCardValid, n = e.holderName, r = !e.holderNameRequired || function (e) {
             return !!e && e.length > 0
         }(n);
         return t && r
-    }, nn = Object.assign || function (e) {
+    }, un = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var rn = {
+    var dn = {
             handleFocus: function (e) {
-                var t = e.markerNode.querySelector("[data-cse=" + e.fieldType + "]"), n = t.parentElement;
+                var t = e.rootNode.querySelector("[data-cse=" + e.fieldType + "]"), n = t.parentElement;
                 !0 === e.focus ? (n.classList.add("adyen-checkout__label--focused"), t.classList.add("adyen-checkout__input--active")) : (n.classList.remove("adyen-checkout__label--focused"), t.classList.remove("adyen-checkout__input--active"))
             }, handleOnAllValid: function (e) {
                 var t = this;
@@ -3359,7 +4338,7 @@ var Adyen = function (e) {
             }, handleOnFieldValid: function (e) {
                 this.setState(function (t) {
                     var n;
-                    return {data: nn({}, t.data, (n = {}, n[e.encryptedFieldName] = e.blob, n))}
+                    return {data: un({}, t.data, (n = {}, n[e.encryptedFieldName] = e.blob, n))}
                 }), this.props.onFieldValid(e), this.props.onChange(this.state)
             }, handleOnNoDataRequired: function () {
                 var e = this;
@@ -3369,44 +4348,53 @@ var Adyen = function (e) {
             }, handleOnStoreDetails: function (e) {
                 var t = e.data.storeDetails;
                 this.setState(function (e) {
-                    return {data: nn({}, e.data, {storeDetails: t})}
+                    return {data: un({}, e.data, {storeDetails: t})}
                 }), this.props.onChange(this.state)
             }, handleHolderName: function (e) {
                 var t = e.target.value;
                 this.setState(function (e) {
-                    return {data: nn({}, e.data, {holderName: t})}
+                    return {data: un({}, e.data, {holderName: t})}
                 }), this.validateCardInput()
             }, handleOnLoad: function (e) {
                 this.setState({status: "ready"}), this.props.onLoad(e)
             }, handleOnBrand: function (e) {
                 this.setState({brand: e.brand}), this.props.onChange(this.state), this.props.onBrand(e)
             }, validateCardInput: function () {
-                var e = tn({
+                var e = ln({
                     isCardValid: this.state.isCardValid,
                     holderNameRequired: this.state.holderNameRequired,
                     holderName: this.state.data.holderName
                 });
-                this.setState({isValid: e}), this.props.onChange(this.state)
+                this.setState({isValid: e}), this.props.onChange(this.state), e && this.props.onValid && this.props.onValid(this.state)
             }, handleOnError: function (e) {
                 this.props.onError(e)
             }
-        }, on = (n(50), function (e) {
+        }, pn = (n(52), function (e) {
             var t = e.inline, n = void 0 !== t && t, o = e.size, i = void 0 === o ? "large" : o;
             return Object(r.h)("div", {className: "adyen-checkout__spinner__wrapper " + (n ? "adyen-checkout__spinner__wrapper--inline" : "")}, Object(r.h)("div", {className: "adyen-checkout__spinner adyen-checkout__spinner--" + i}))
-        }), an = n(1), sn = n.n(an), cn = function (e) {
-            var t = e.label;
-            return Object(r.h)(Z, {label: t}, Object(r.h)("span", {
-                className: "adyen-checkout__input adyen-checkout__input--small\n                        adyen-checkout__card__cvc__input " + sn.a["adyen-checkout__input"],
+        }), fn = n(1), hn = n.n(fn), yn = function (e) {
+            var t = e.label, n = e.onFocusField, o = void 0 === n ? function () {
+            } : n;
+            return Object(r.h)(p, {
+                label: t, onFocusField: function () {
+                    return o("encryptedSecurityCode")
+                }
+            }, Object(r.h)("span", {
+                className: "adyen-checkout__input adyen-checkout__input--small\n                        adyen-checkout__card__cvc__input " + hn.a["adyen-checkout__input"],
                 "data-cse": "encryptedSecurityCode"
             }))
-        }, un = function (e) {
-            var t = e.label;
-            return Object(r.h)(Z, {label: t}, Object(r.h)("span", {
-                className: "adyen-checkout__input adyen-checkout__input--small adyen-checkout__card__exp-date__input " + sn.a["adyen-checkout__input"],
+        }, mn = function (e) {
+            var t = e.label, n = e.onFocusField;
+            return Object(r.h)(p, {
+                label: t, onFocusField: function () {
+                    return n("encryptedExpiryDate")
+                }
+            }, Object(r.h)("span", {
+                className: "adyen-checkout__input adyen-checkout__input--small adyen-checkout__card__exp-date__input " + hn.a["adyen-checkout__input"],
                 "data-cse": "encryptedExpiryDate"
             }))
-        }, ln = window._a$checkoutShopperUrl || "https://checkoutshopper-live.adyen.com/checkoutshopper/",
-        pn = Object.assign || function (e) {
+        }, bn = window._a$checkoutShopperUrl || "https://checkoutshopper-live.adyen.com/checkoutshopper/",
+        gn = Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
@@ -3414,21 +4402,21 @@ var Adyen = function (e) {
             return e
         };
 
-    function fn(e, t) {
+    function vn(e, t) {
         var n = {};
         for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
         return n
     }
 
-    var hn = function (e) {
+    var wn = function (e) {
         var t = e.type, n = e.loadingContext, r = e.parentFolder, o = void 0 === r ? "" : r, i = e.extension,
             a = e.size, s = void 0 === a ? "" : a, c = e.subFolder;
         return n + "images/logos/" + (void 0 === c ? "" : c) + o + t + s + "." + i
-    }, dn = function (e) {
-        var t = e.loadingContext, n = void 0 === t ? ln : t, r = e.extension, o = void 0 === r ? "svg" : r, i = e.size,
-            a = void 0 === i ? "3x" : i, s = fn(e, ["loadingContext", "extension", "size"]);
+    }, Cn = function (e) {
+        var t = e.loadingContext, n = void 0 === t ? bn : t, r = e.extension, o = void 0 === r ? "svg" : r, i = e.size,
+            a = void 0 === i ? "3x" : i, s = vn(e, ["loadingContext", "extension", "size"]);
         return function (e) {
-            var t = pn({
+            var t = gn({
                 extension: o,
                 loadingContext: n,
                 parentFolder: "",
@@ -3438,39 +4426,51 @@ var Adyen = function (e) {
             }, s);
             if ("svg" === o) {
                 t.size, t.subFolder;
-                var r = fn(t, ["size", "subFolder"]);
-                return hn(r)
+                var r = vn(t, ["size", "subFolder"]);
+                return wn(r)
             }
-            return hn(t)
+            return wn(t)
         }
-    }, yn = function (e) {
-        return dn({type: e || "card", extension: "svg"})(e)
-    }, mn = function (e) {
+    }, _n = function (e) {
+        return Cn({type: e || "card", extension: "svg"})(e)
+    }, On = function (e) {
         var t = e.brand;
         return Object(r.h)("img", {
-            className: sn.a["card-input__icon"], onError: function (e) {
+            className: hn.a["card-input__icon"], onError: function (e) {
                 e.target.style = "display: none"
-            }, alt: t, src: yn(t)
+            }, alt: t, src: _n(t)
         })
-    }, bn = function (e) {
-        var t = e.label, n = e.brand;
-        return Object(r.h)(Z, {label: t}, Object(r.h)("span", {
-            className: "adyen-checkout__input adyen-checkout__input--large\n                            adyen-checkout__card__cardNumber__input " + sn.a["adyen-checkout__input"],
+    }, kn = function (e) {
+        var t = e.label, n = e.brand, o = e.onFocusField, i = void 0 === o ? function () {
+        } : o;
+        return Object(r.h)(p, {
+            label: t, onFocusField: function () {
+                return i("encryptedCardNumber")
+            }
+        }, Object(r.h)("span", {
+            className: "adyen-checkout__input adyen-checkout__input--large\n                            adyen-checkout__card__cardNumber__input " + hn.a["adyen-checkout__input"],
             "data-cse": "encryptedCardNumber"
-        }, Object(r.h)(mn, {brand: n})))
-    }, gn = function (e, t) {
+        }, Object(r.h)(On, {brand: n})))
+    }, Sn = function (e, t) {
         e.details;
-        var n = e.brand, o = e.hasCVC, i = t.i18n;
-        return Object(r.h)("div", {className: "adyen-checkout-card__form"}, Object(r.h)(bn, {
+        var n = e.brand, o = e.hasCVC, i = e.onFocusField, a = t.i18n;
+        return Object(r.h)("div", {className: "adyen-checkout-card__form"}, Object(r.h)(kn, {
             brand: n,
-            label: i.get("creditCard.numberField.title")
-        }), Object(r.h)("div", {className: "adyen-checkout-card__exp-cvc"}, Object(r.h)(un, {label: i.get("creditCard.expiryDateField.title")}), o && Object(r.h)(cn, {label: i.get("creditCard.cvcField.title")})))
-    }, vn = function (e, t) {
+            onFocusField: i,
+            label: a.get("creditCard.numberField.title")
+        }), Object(r.h)("div", {className: "adyen-checkout-card__exp-cvc"}, Object(r.h)(mn, {
+            onFocusField: i,
+            label: a.get("creditCard.expiryDateField.title")
+        }), o && Object(r.h)(yn, {onFocusField: i, label: a.get("creditCard.cvcField.title")})))
+    }, Fn = function (e, t) {
         e.details;
-        var n = e.storedDetails, o = e.hasCVC, i = t.i18n;
-        return Object(r.h)("div", {className: "adyen-checkout-card__form adyen-checkout-card__form--oneClick"}, Object(r.h)("div", {className: "adyen-checkout-card__exp-cvc"}, Object(r.h)(Z, {label: i.get("creditCard.expiryDateField.title")}, Object(r.h)("div", {className: "adyen-checkout__card__exp-date__input--oneclick"}, n.card.expiryMonth, " / ", n.card.expiryYear)), o && Object(r.h)(cn, {label: i.get("creditCard.cvcField.title")})))
+        var n = e.storedDetails, o = e.hasCVC, i = e.onFocusField, a = t.i18n;
+        return Object(r.h)("div", {className: "adyen-checkout-card__form adyen-checkout-card__form--oneClick"}, Object(r.h)("div", {className: "adyen-checkout-card__exp-cvc"}, Object(r.h)(p, {label: a.get("creditCard.expiryDateField.title")}, Object(r.h)("div", {className: "adyen-checkout__card__exp-date__input--oneclick"}, n.card.expiryMonth, " / ", n.card.expiryYear)), o && Object(r.h)(yn, {
+            onFocusField: i,
+            label: a.get("creditCard.cvcField.title")
+        })))
     };
-    var wn = function (e) {
+    var Nn = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3497,20 +4497,20 @@ var Adyen = function (e) {
             this.setState({data: {storeDetails: t}, isValid: !0}), n(this.state)
         }, t.prototype.render = function (e) {
             var t = e.i18n;
-            return Object(r.h)("div", {className: "adyen-checkout__store-details"}, z("boolean", {
+            return Object(r.h)("div", {className: "adyen-checkout__store-details"}, Y("boolean", {
                 onChange: this.onChange,
                 label: t.get("storeDetails"),
                 name: "storeDetails"
             }))
         }, t
     }(r.Component);
-    wn.defaultProps = {
+    Nn.defaultProps = {
         onChange: function () {
         }, onValid: function () {
         }, storeDetails: !1
     };
-    var _n = wn;
-    var On = function (e) {
+    var jn = Nn;
+    var xn = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3537,35 +4537,35 @@ var Adyen = function (e) {
             this.setState({data: {installments: t}, isValid: !0}), this.props.onChange(this.state)
         }, t.prototype.render = function (e) {
             var t = e.i18n, n = e.items;
-            return Object(r.h)("div", {className: "adyen-checkout-installments"}, Object(r.h)("label", null, t.get("installments"), Object(r.h)("div", null, z("select", {
+            return Object(r.h)("div", {className: "adyen-checkout-installments"}, Object(r.h)("label", null, t.get("installments"), Object(r.h)("div", null, Y("select", {
                 items: n,
                 onChange: this.onChange,
                 name: "installments"
             }))))
         }, t
     }(r.Component);
-    On.defaultProps = {
+    xn.defaultProps = {
         onChange: function () {
         }, onValid: function () {
         }, installments: void 0
     };
-    var Cn = function (e, t) {
+    var Pn = function (e, t) {
         var n = e.onChange, o = e.value, i = e.required, a = t.i18n;
-        return Object(r.h)(Z, {label: a.get("holderName")}, z("text", {
-            className: "adyen-checkout__input adyen-checkout__input--large " + sn.a["adyen-checkout__input"],
+        return Object(r.h)(p, {label: a.get("holderName")}, Y("text", {
+            className: "adyen-checkout__input adyen-checkout__input--large " + hn.a["adyen-checkout__input"],
             placeholder: a.get("creditCard.holderName.placeholder"),
             value: o,
             required: i,
             onChange: n
         }))
-    }, Sn = (n(53), Object.assign || function (e) {
+    }, Dn = (n(55), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     });
-    var jn = function (e) {
+    var En = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3582,7 +4582,7 @@ var Adyen = function (e) {
                 status: "loading",
                 brand: "",
                 data: {}
-            }), r.handleOnStoreDetails = rn.handleOnStoreDetails.bind(r), r.handleOnLoad = rn.handleOnLoad.bind(r), r.handleOnFieldValid = rn.handleOnFieldValid.bind(r), r.handleOnAllValid = rn.handleOnAllValid.bind(r), r.handleOnBrand = rn.handleOnBrand.bind(r), r.handleHolderName = rn.handleHolderName.bind(r), r.handleFocus = rn.handleFocus.bind(r), r.hasCVC = r.hasCVC.bind(r), r.handleOnNoDataRequired = rn.handleOnNoDataRequired.bind(r), r.handleOnError = rn.handleOnError.bind(r), r.validateCardInput = rn.validateCardInput.bind(r), r.initializeCSF = r.initializeCSF.bind(r), r
+            }), r.handleOnStoreDetails = dn.handleOnStoreDetails.bind(r), r.handleOnLoad = dn.handleOnLoad.bind(r), r.handleOnFieldValid = dn.handleOnFieldValid.bind(r), r.handleOnAllValid = dn.handleOnAllValid.bind(r), r.handleOnBrand = dn.handleOnBrand.bind(r), r.handleHolderName = dn.handleHolderName.bind(r), r.handleFocus = dn.handleFocus.bind(r), r.hasCVC = r.hasCVC.bind(r), r.handleOnNoDataRequired = dn.handleOnNoDataRequired.bind(r), r.handleOnError = dn.handleOnError.bind(r), r.validateCardInput = dn.validateCardInput.bind(r), r.initializeCSF = r.initializeCSF.bind(r), r.setFocusOn = r.setFocusOn.bind(r), r
         }
 
         return function (e, t) {
@@ -3607,8 +4607,10 @@ var Adyen = function (e) {
             this.setState({hasHolderName: n, holderNameRequired: r, hasInstallments: e, hasStoreDetails: t})
         }, t.prototype.componentWillUnmount = function () {
             this.csf = null
+        }, t.prototype.setFocusOn = function (e) {
+            this.csf.setFocusOnFrame(this.props.type, e)
         }, t.prototype.initializeCSF = function () {
-            this.csf = new en({
+            this.csf = new cn({
                 rootNode: this.ref,
                 type: this.props.type,
                 originKey: this.props.originKey,
@@ -3632,29 +4634,31 @@ var Adyen = function (e) {
             return {i18n: this.props.i18n}
         }, t.prototype.render = function (e, t) {
             var n = this, o = (e.hideCVC, e.details, e.oneClick), i = e.i18n, a = t.status, s = t.brand,
-                c = t.hasHolderName, u = (t.hasInstallments, t.hasStoreDetails);
+                c = t.hasHolderName, l = (t.hasInstallments, t.hasStoreDetails);
             return o ? Object(r.h)("div", {
                 ref: function (e) {
                     return n.ref = e
-                }, className: "adyen-checkout__card-input " + sn.a["adyen-checkout-card-wrapper"]
-            }, Object(r.h)("div", {className: sn.a["card-input__spinner"] + " " + ("loading" === a ? sn.a["card-input__spinner--active"] : "")}, Object(r.h)(on, null)), Object(r.h)("div", {className: sn.a["card-input__form"] + " " + ("loading" === a ? sn.a["card-input__form--loading"] : "")}, Object(r.h)(vn, Sn({}, this.props, {
+                }, className: "adyen-checkout__card-input " + hn.a["adyen-checkout-card-wrapper"]
+            }, Object(r.h)("div", {className: hn.a["card-input__spinner"] + " " + ("loading" === a ? hn.a["card-input__spinner--active"] : "")}, Object(r.h)(pn, null)), Object(r.h)("div", {className: hn.a["card-input__form"] + " " + ("loading" === a ? hn.a["card-input__form--loading"] : "")}, Object(r.h)(Fn, Dn({}, this.props, {
                 hasCVC: this.hasCVC(),
+                onFocusField: this.setFocusOn,
                 status: a
             })))) : Object(r.h)("div", {
                 ref: function (e) {
                     return n.ref = e
-                }, className: "adyen-checkout__card-input " + sn.a["adyen-checkout-card-wrapper"]
-            }, Object(r.h)("div", {className: sn.a["card-input__spinner"] + " " + ("loading" === a ? sn.a["card-input__spinner--active"] : "")}, Object(r.h)(on, null)), Object(r.h)("div", {className: sn.a["card-input__form"] + " " + ("loading" === a ? sn.a["card-input__form--loading"] : "")}, c && Object(r.h)(Cn, {
+                }, className: "adyen-checkout__card-input " + hn.a["adyen-checkout-card-wrapper"]
+            }, Object(r.h)("div", {className: hn.a["card-input__spinner"] + " " + ("loading" === a ? hn.a["card-input__spinner--active"] : "")}, Object(r.h)(pn, null)), Object(r.h)("div", {className: hn.a["card-input__form"] + " " + ("loading" === a ? hn.a["card-input__form--loading"] : "")}, c && Object(r.h)(Pn, {
                 required: this.state.holderNameRequired,
                 value: this.state.data.holderName,
                 onChange: this.handleHolderName
-            }), Object(r.h)(gn, Sn({}, this.props, {brand: s, hasCVC: this.hasCVC()})), u && Object(r.h)(_n, {
-                i18n: i,
-                onChange: this.handleOnStoreDetails
-            })))
+            }), Object(r.h)(Sn, Dn({}, this.props, {
+                brand: s,
+                onFocusField: this.setFocusOn,
+                hasCVC: this.hasCVC()
+            })), l && Object(r.h)(jn, {i18n: i, onChange: this.handleOnStoreDetails})))
         }, t
     }(r.Component);
-    jn.defaultProps = {
+    En.defaultProps = {
         details: [],
         onLoad: function () {
         },
@@ -3681,13 +4685,13 @@ var Adyen = function (e) {
             placeholder: {color: "#90a2bd", fontWeight: "200"}
         }
     };
-    var kn = jn, xn = Object.assign || function (e) {
+    var Rn = En, An = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Pn = function () {
+    }, In = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3699,7 +4703,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var En = function (e) {
+    var Mn = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3720,7 +4724,7 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.formatProps = function (e) {
-            return xn({enableStoreDetails: !0}, e, {
+            return An({enableStoreDetails: !0}, e, {
                 loadingContext: e.paymentSession ? e.paymentSession.checkoutshopperBaseUrl : e.loadingContext,
                 originKey: e.paymentSession ? e.paymentSession.originKey : e.originKey,
                 name: e.title || e.name
@@ -3728,20 +4732,20 @@ var Adyen = function (e) {
         }, t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.render = function () {
-            return Object(r.h)(de, {i18n: this.props.i18n}, Object(r.h)(kn, xn({}, this.props, this.state, {
+            return Object(r.h)(ge, {i18n: this.props.i18n}, Object(r.h)(Rn, An({}, this.props, this.state, {
                 onChange: this.setState,
                 oneClick: this.props.oneClick
             })))
-        }, Pn(t, [{
+        }, In(t, [{
             key: "paymentData", get: function () {
-                return xn({type: t.type}, this.state.data)
+                return An({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    En.type = "card";
-    var Rn = he(En), Nn = n(33), Fn = n.n(Nn), Tn = function (e, t, n) {
+    Mn.type = "card";
+    var Tn = be(Mn), Bn = n(33), Vn = n.n(Bn), Ln = function (e, t, n) {
         if (!t || !n) throw new Error("Could not do issuer lookup");
-        return !(e.length < 3) && se(t + "?token=" + n, {searchString: e}).then(function (e) {
+        return !(e.length < 3) && de(t + "?token=" + n, {searchString: e}).then(function (e) {
             return function (e) {
                 return !(!e.giroPayIssuers || e.giroPayIssuers.length <= 0) && (e.giroPayIssuers.forEach(function (e) {
                     var t = e;
@@ -3749,18 +4753,18 @@ var Adyen = function (e) {
                 }), e.giroPayIssuers)
             }(e)
         }).catch(function (e) {
-            throw le(e)
+            throw he(e)
         })
-    }, An = function (e) {
+    }, Un = function (e) {
         return /^[a-z]{6}[2-9a-z][0-9a-np-z]([a-z0-9]{3}|x{3})?$/i.test(e)
-    }, Dn = (n(70), Object.assign || function (e) {
+    }, Kn = (n(72), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     });
-    var In = function (e) {
+    var zn = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3775,7 +4779,7 @@ var Adyen = function (e) {
                 isValid: !1,
                 giroPayIssuers: [],
                 status: "initial"
-            }), r.handleInput = r.handleInput.bind(r), r.getIssuers = Fn()(r.getIssuers.bind(r), 800), r.handleSelect = r.handleSelect.bind(r), r
+            }), r.handleInput = r.handleInput.bind(r), r.getIssuers = Vn()(r.getIssuers.bind(r), 800), r.handleSelect = r.handleSelect.bind(r), r
         }
 
         return function (e, t) {
@@ -3790,7 +4794,7 @@ var Adyen = function (e) {
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.getIssuers = function (e) {
             var t = this;
-            e.length < 4 || (this.setState({status: "loading"}), Tn(e, this.props.issuerURL, this.props.originKey).then(function (e) {
+            e.length < 4 || (this.setState({status: "loading"}), Ln(e, this.props.issuerURL, this.props.originKey).then(function (e) {
                 e.length > 0 ? t.setState({giroPayIssuers: e, status: "results"}) : t.setState({status: "noResults"})
             }).catch(function (e) {
                 throw t.setState({status: "error", error: e.props.message}), t.props.onError(e), new Error(e.props)
@@ -3801,23 +4805,23 @@ var Adyen = function (e) {
         }, t.prototype.handleSelect = function (e) {
             var t = e.bic;
             this.setState(function (e) {
-                return {isValid: An(t), data: Dn({}, e.data, {"giropay.bic": t})}
+                return {isValid: Un(t), data: Kn({}, e.data, {"giropay.bic": t})}
             }), this.props.onChange(this.state)
         }, t.prototype.render = function (e) {
             var t = e.i18n;
-            return Object(r.h)("div", {className: "adyen-checkout__giropay-input__field"}, Object(r.h)(Z, {
+            return Object(r.h)("div", {className: "adyen-checkout__giropay-input__field"}, Object(r.h)(p, {
                 label: t.get("giropay.details.bic"),
                 helper: t.get("giropay.minimumLength")
-            }, z("text", {
+            }, Y("text", {
                 name: "bic",
                 value: this.state.input,
                 className: "adyen-checkout__input adyen-checkout__input--large",
                 placeholder: t.get("giropay.searchField.placeholder"),
                 onInput: this.handleInput
-            })), "loading" === this.state.status && Object(r.h)("span", {className: "adyen-checkout__giropay__loading"}, Object(r.h)(on, {
+            })), "loading" === this.state.status && Object(r.h)("span", {className: "adyen-checkout__giropay__loading"}, Object(r.h)(pn, {
                 size: "small",
                 inline: !0
-            }), " ", Object(r.h)("span", {className: "adyen-checkout__giropay__loading-text"}, t.get("loading"))), "noResults" === this.state.status && Object(r.h)("span", {className: "adyen-checkout__giropay__no-results"}, t.get("giropay.noResults")), "error" === this.state.status && this.state.error, "results" === this.state.status && Object(r.h)(Z, {label: t.get("idealIssuer.selectField.placeholder")}, Object(r.h)("div", {className: "adyen-checkout__giropay__results " + ("loading" === this.state.status ? "adyen-checkout__giropay__results--loading" : "")}, z("selectList", {
+            }), " ", Object(r.h)("span", {className: "adyen-checkout__giropay__loading-text"}, t.get("loading"))), "noResults" === this.state.status && Object(r.h)("span", {className: "adyen-checkout__giropay__no-results"}, t.get("giropay.noResults")), "error" === this.state.status && Object(r.h)("span", {className: "adyen-checkout__giropay__error"}, "i18n.get('error.message.unknown')"), "results" === this.state.status && Object(r.h)(p, {label: t.get("idealIssuer.selectField.placeholder")}, Object(r.h)("div", {className: "adyen-checkout__giropay__results " + ("loading" === this.state.status ? "adyen-checkout__giropay__results--loading" : "")}, Y("selectList", {
                 items: this.state.giroPayIssuers ? this.state.giroPayIssuers : [],
                 placeholder: t.get("giropay.searchField.placeholder"),
                 name: "selectedBic",
@@ -3825,19 +4829,19 @@ var Adyen = function (e) {
             }))))
         }, t
     }(r.Component);
-    In.defaultProps = {
+    zn.defaultProps = {
         onChange: function () {
         }, onValid: function () {
         }, onError: function () {
         }, bic: "", giroPayIssuers: {}
     };
-    var Mn = In, Vn = Object.assign || function (e) {
+    var Gn = zn, $n = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Ln = function () {
+    }, qn = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -3849,7 +4853,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var Bn = function (e) {
+    var Wn = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -3872,7 +4876,7 @@ var Adyen = function (e) {
         }(t, e), t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.formatProps = function (e) {
-            return Vn({
+            return $n({
                 issuerURL: !!e.configuration && e.configuration.giroPayIssuersUrl,
                 originKey: !!e.paymentSession && e.paymentSession.originKey,
                 onValid: function () {
@@ -3883,19 +4887,19 @@ var Adyen = function (e) {
                 }
             }, e)
         }, t.prototype.render = function () {
-            return Object(r.h)(de, this.props, Object(r.h)(Mn, Vn({}, this.props, {
+            return Object(r.h)(ge, this.props, Object(r.h)(Gn, $n({}, this.props, {
                 onInput: this.onInput,
                 onChange: this.setState,
                 onValid: this.onValid
             })))
-        }, Ln(t, [{
+        }, qn(t, [{
             key: "paymentData", get: function () {
-                return Vn({type: t.type}, this.state.data)
+                return $n({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    Bn.type = "giropay";
-    var Un = he(Bn), Kn = {
+    Wn.type = "giropay";
+    var Hn = be(Wn), Jn = {
         AED: "\u062f.\u0625",
         AFN: "\u060b",
         ALL: "L",
@@ -4060,7 +5064,7 @@ var Adyen = function (e) {
         YER: "\ufdfc",
         ZAR: "R",
         ZWD: "Z$"
-    }, $n = {
+    }, Zn = {
         IDR: 1,
         JPY: 1,
         KRW: 1,
@@ -4085,23 +5089,23 @@ var Adyen = function (e) {
         OMR: 1e3,
         LYD: 1e3,
         TND: 1e3
-    }, Gn = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
+    }, Yn = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function (e) {
         return typeof e
     } : function (e) {
         return e && "function" === typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e
-    }, Wn = function () {
-        return !("object" !== ("undefined" === typeof Intl ? "undefined" : Gn(Intl)).toLowerCase() || !Intl || "function" !== Gn(Intl.NumberFormat).toLowerCase())
-    }, Yn = function (e) {
+    }, Xn = function () {
+        return !("object" !== ("undefined" === typeof Intl ? "undefined" : Yn(Intl)).toLowerCase() || !Intl || "function" !== Yn(Intl.NumberFormat).toLowerCase())
+    }, Qn = function (e) {
         return !!function (e) {
-            return !!Kn[e]
-        }(e) && Kn[e]
-    }, Hn = function (e, t) {
+            return !!Jn[e]
+        }(e) && Jn[e]
+    }, er = function (e, t) {
         var n = function (e) {
-            return $n[e] || 100
+            return Zn[e] || 100
         }(t);
         return parseInt(e, 10) / n
     };
-    var qn = {
+    var tr = {
         API_VERSION: 2,
         API_VERSION_MINOR: 0,
         ALLOWED_AUTH_METHODS: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
@@ -4109,28 +5113,28 @@ var Adyen = function (e) {
         GATEWAY: "adyen"
     };
 
-    function zn(e) {
+    function nr(e) {
         var t, n, r = e.payment, o = e.merchant, i = e.gatewayMerchantId, a = function (e, t) {
             var n = {};
             for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
             return n
         }(e, ["payment", "merchant", "gatewayMerchantId"]);
         return {
-            apiVersion: qn.API_VERSION,
-            apiVersionMinor: qn.API_VERSION_MINOR,
+            apiVersion: tr.API_VERSION,
+            apiVersionMinor: tr.API_VERSION_MINOR,
             transactionInfo: function () {
                 var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "USD",
                     t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "0";
-                return {currencyCode: e, totalPrice: String(Hn(t, e)), totalPriceStatus: "FINAL"}
+                return {currencyCode: e, totalPrice: String(er(t, e)), totalPriceStatus: "FINAL"}
             }(r.currency, r.amount),
             merchantInfo: (t = o.name, n = o.id, {merchantId: n, merchantName: t}),
             allowedPaymentMethods: [{
                 type: "CARD",
                 tokenizationSpecification: {
                     type: "PAYMENT_GATEWAY",
-                    parameters: {gateway: qn.GATEWAY, gatewayMerchantId: i}
+                    parameters: {gateway: tr.GATEWAY, gatewayMerchantId: i}
                 },
-                parameters: {allowedAuthMethods: qn.ALLOWED_AUTH_METHODS, allowedCardNetworks: qn.ALLOWED_CARD_NETWORKS}
+                parameters: {allowedAuthMethods: tr.ALLOWED_AUTH_METHODS, allowedCardNetworks: tr.ALLOWED_CARD_NETWORKS}
             }],
             emailRequired: a.emailRequired || !1,
             shippingAddressRequired: a.shippingAddressRequired || !1,
@@ -4138,7 +5142,7 @@ var Adyen = function (e) {
         }
     }
 
-    var Zn = function () {
+    var rr = function () {
         function e(t) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4149,13 +5153,13 @@ var Adyen = function (e) {
             return !(!window.google || !window.google.payments) && new google.payments.api.PaymentsClient({environment: e})
         }, e.prototype.isReadyToPay = function () {
             return this.paymentsClient ? this.paymentsClient.isReadyToPay({
-                apiVersion: qn.API_VERSION,
-                apiVersionMinor: qn.API_VERSION_MINOR,
+                apiVersion: tr.API_VERSION,
+                apiVersionMinor: tr.API_VERSION_MINOR,
                 allowedPaymentMethods: [{
                     type: "CARD",
                     parameters: {
-                        allowedAuthMethods: qn.ALLOWED_AUTH_METHODS,
-                        allowedCardNetworks: qn.ALLOWED_CARD_NETWORKS
+                        allowedAuthMethods: tr.ALLOWED_AUTH_METHODS,
+                        allowedCardNetworks: tr.ALLOWED_CARD_NETWORKS
                     }
                 }],
                 existingPaymentMethodRequired: !0
@@ -4165,13 +5169,13 @@ var Adyen = function (e) {
                 return !0
             }) : Promise.reject(new Error("something bad happened"))
         }, e.prototype.initiatePayment = function (e) {
-            var t = zn(e);
+            var t = nr(e);
             return this.paymentsClient.loadPaymentData(t).then(this.processPayment)
         }, e.prototype.processPayment = function (e) {
             return e
         }, e
     }();
-    var Xn = function (e) {
+    var or = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4208,14 +5212,14 @@ var Adyen = function (e) {
             })
         }, t
     }(r.Component);
-    Xn.defaultProps = {buttonColor: "default", buttonType: "long"};
-    var Jn = Xn, Qn = Object.assign || function (e) {
+    or.defaultProps = {buttonColor: "default", buttonType: "long"};
+    var ir = or, ar = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, er = function () {
+    }, sr = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -4227,7 +5231,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var tr = function (e) {
+    var cr = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4236,7 +5240,7 @@ var Adyen = function (e) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
             }(this, e.call(this, n));
-            return r.googlePay = new Zn(r.props.environment), r.submit = r.submit.bind(r), r.loadPayment = r.loadPayment.bind(r), r
+            return r.googlePay = new rr(r.props.environment), r.submit = r.submit.bind(r), r.loadPayment = r.loadPayment.bind(r), r
         }
 
         return function (e, t) {
@@ -4254,7 +5258,7 @@ var Adyen = function (e) {
                 r = !t && e.paymentSession.company && e.paymentSession.company.name ? e.paymentSession.company.name : "",
                 o = e.configuration && e.configuration.merchantName ? e.configuration.merchantName : r,
                 i = e.configuration && e.configuration.merchantIdentifier ? e.configuration.merchantIdentifier : "";
-            return Qn({
+            return ar({
                 environment: e.environment || n || "TEST",
                 onStatusChange: function () {
                 },
@@ -4275,8 +5279,8 @@ var Adyen = function (e) {
         }, t.prototype.submit = function () {
             var e = this.props.onStatusChange;
             return e({type: "loading"}), this.loadPayment().then(function (e) {
-                return ce({data: {token: e.paymentMethodData.tokenizationData.token}})
-            }).then(pe).then(e).catch(e)
+                return pe({data: {token: e.paymentMethodData.tokenizationData.token}})
+            }).then(ye).then(e).catch(e)
         }, t.prototype.loadPayment = function () {
             var e = this.props, t = e.currencyCode, n = e.amount, r = e.emailRequired, o = e.shippingAddressRequired,
                 i = e.shippingAddressParameters, a = e.gatewayMerchantId, s = e.merchant;
@@ -4293,21 +5297,21 @@ var Adyen = function (e) {
         }, t.prototype.isAvailable = function () {
             return this.googlePay.isReadyToPay()
         }, t.prototype.render = function () {
-            return this.props.showButton ? Object(r.h)(Jn, {
+            return this.props.showButton ? Object(r.h)(ir, {
                 buttonColor: this.props.buttonColor,
                 buttonType: this.props.buttonType,
                 paymentsClient: this.googlePay.paymentsClient,
                 onClick: this.loadPayment
             }) : null
-        }, er(t, [{
+        }, sr(t, [{
             key: "paymentData", get: function () {
-                return Qn({type: t.type}, this.state.data)
+                return ar({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    tr.type = "paywithgoogle";
-    var nr = tr;
-    var rr = function (e) {
+    cr.type = "paywithgoogle";
+    var lr = cr;
+    var ur = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4336,7 +5340,7 @@ var Adyen = function (e) {
             this.props.issuer && this.onChange(this.props.issuer)
         }, t.prototype.render = function (e) {
             var t = e.i18n, n = e.items;
-            return Object(r.h)("div", {className: "adyen-checkout-issuer-list"}, z("select", {
+            return Object(r.h)("div", {className: "adyen-checkout-issuer-list"}, Y("select", {
                 items: n,
                 selected: this.state.data.issuer,
                 placeholder: t.get("idealIssuer.selectField.placeholder"),
@@ -4346,30 +5350,30 @@ var Adyen = function (e) {
             }))
         }, t
     }(r.Component);
-    rr.defaultProps = {
+    ur.defaultProps = {
         items: [], showImage: !0, getImageUrl: function () {
         }, onChange: function () {
         }, onValid: function () {
         }, issuer: ""
     };
-    var or = rr, ir = Object.assign || function (e) {
+    var dr = ur, pr = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, ar = function (e) {
+    }, fr = function (e) {
         return function (t) {
-            var n = ir({parentFolder: t ? "ideal/" : "", type: t || "ideal"}, e);
-            return dn(n)(t)
+            var n = pr({parentFolder: t ? "ideal/" : "", type: t || "ideal"}, e);
+            return Cn(n)(t)
         }
-    }, sr = Object.assign || function (e) {
+    }, hr = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, cr = function () {
+    }, yr = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -4381,7 +5385,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var ur = function (e) {
+    var mr = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4389,9 +5393,9 @@ var Adyen = function (e) {
             var r = function (e, t) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
-            }(this, e.call(this, n)), o = ar({loadingContext: r.props.loadingContext});
+            }(this, e.call(this, n)), o = fr({loadingContext: r.props.loadingContext});
             return r.props.items = r.props.items.map(function (e) {
-                return sr({}, e, {icon: o(e.id)})
+                return hr({}, e, {icon: o(e.id)})
             }), r
         }
 
@@ -4407,8 +5411,8 @@ var Adyen = function (e) {
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.formatProps = function (e) {
             var t = e.items || [];
-            return sr({
-                loadingContext: e.paymentSession ? e.paymentSession.checkoutshopperBaseUrl : ln,
+            return hr({
+                loadingContext: e.paymentSession ? e.paymentSession.checkoutshopperBaseUrl : bn,
                 showImage: !0,
                 onValid: function () {
                 }
@@ -4416,18 +5420,18 @@ var Adyen = function (e) {
         }, t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.render = function () {
-            return Object(r.h)(de, {i18n: this.props.i18n}, Object(r.h)(or, sr({}, this.props, this.state, {
+            return Object(r.h)(ge, {i18n: this.props.i18n}, Object(r.h)(dr, hr({}, this.props, this.state, {
                 onChange: this.setState,
                 onValid: this.onValid
             })))
-        }, cr(t, [{
+        }, yr(t, [{
             key: "paymentData", get: function () {
-                return sr({type: t.type}, this.state.data)
+                return hr({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    ur.type = "ideal";
-    var lr = he(ur), pr = function () {
+    mr.type = "ideal";
+    var br = be(mr), gr = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -4438,14 +5442,14 @@ var Adyen = function (e) {
         return function (t, n, r) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
-    }(), fr = Object.assign || function (e) {
+    }(), vr = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var hr = function (e) {
+    var wr = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4471,34 +5475,45 @@ var Adyen = function (e) {
                     var n = e.details.filter(function (e) {
                         return "socialSecurityNumber" === e.key && t && (e.type = "ssnLookup"), "infix" !== e.key
                     });
-                    return fr({}, e, {details: n})
+                    return vr({}, e, {details: n})
                 }(e, t) : e
             });
-            return fr({}, e, {details: n})
+            return vr({}, e, {details: n})
         }, t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.render = function () {
-            return Object(r.h)(de, {i18n: this.props.i18n}, Object(r.h)(ae, fr({}, this.props, this.state, {onChange: this.setState})), Object(r.h)("a", {
+            return Object(r.h)(ge, {i18n: this.props.i18n}, Object(r.h)(ue, vr({}, this.props, this.state, {onChange: this.setState})), Object(r.h)("a", {
                 className: "adyen-checkout__link adyen-checkout-link__klarna adyen-checkout__link__klarna--more-information",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 href: "https://cdn.klarna.com/1.0/shared/content/legal/terms/2/en_de/invoice?fee=0"
             }, this.props.i18n.get("moreInformation")))
-        }, pr(t, [{
+        }, gr(t, [{
             key: "paymentData", get: function () {
-                return fr({type: t.type}, this.state.data)
+                return vr({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    hr.type = "klarna";
-    var dr = he(hr), yr = Object.assign || function (e) {
+    wr.type = "klarna";
+    var Cr = be(wr), _r = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    };
-    var mr = he(function (e) {
+    }, Or = function () {
+        function e(e, t) {
+            for (var n = 0; n < t.length; n++) {
+                var r = t[n];
+                r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(e, r.key, r)
+            }
+        }
+
+        return function (t, n, r) {
+            return n && e(t.prototype, n), r && e(t, r), t
+        }
+    }();
+    var kr = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4518,27 +5533,33 @@ var Adyen = function (e) {
                     configurable: !0
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
-        }(t, e), t.prototype.formatProps = function (e) {
+        }(t, e), t.prototype.isValid = function () {
+            return !0
+        }, t.prototype.formatProps = function (e) {
             var t = !(!e.details || !e.details.find(function (e) {
                 return "storeDetails" === e.key
             }));
-            return yr({}, e, {enableStoreDetails: t})
-        }, t.prototype.isValid = function () {
-            return !0
+            return _r({}, e, {enableStoreDetails: t})
         }, t.prototype.render = function () {
-            return !this.props.oneClick && this.props.enableStoreDetails ? Object(r.h)(_n, {
+            return !this.props.oneClick && this.props.enableStoreDetails ? Object(r.h)(jn, {
                 i18n: this.props.i18n,
                 onChange: this.setState
             }) : null
-        }, t
-    }(a)), br = (n(72), Object.assign || function (e) {
+        }, Or(t, [{
+            key: "paymentData", get: function () {
+                return {type: t.type}
+            }
+        }]), t
+    }(a);
+    kr.type = "paypal";
+    var Sr = be(kr), Fr = (n(74), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     });
-    var gr = function (e) {
+    var Nr = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4547,7 +5568,7 @@ var Adyen = function (e) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
             }(this, e.call(this, n));
-            return r.handlePrefixChange = r.handlePrefixChange.bind(r), r.handlePhoneInput = r.handlePhoneInput.bind(r), r.onChange = r.onChange.bind(r), r.setState({data: br({}, r.state.data, {prefix: r.props.selected})}), r
+            return r.handlePrefixChange = r.handlePrefixChange.bind(r), r.handlePhoneInput = r.handlePhoneInput.bind(r), r.onChange = r.onChange.bind(r), r.setState({data: Fr({}, r.state.data, {prefix: r.props.selected})}), r
         }
 
         return function (e, t) {
@@ -4563,16 +5584,16 @@ var Adyen = function (e) {
         }(t, e), t.prototype.onChange = function () {
             this.setState({isValid: !!this.state.data.prefix && !!this.state.data.phoneNumber && this.state.data.phoneNumber.length > 3}), this.props.onChange(this.state)
         }, t.prototype.handlePhoneInput = function (e) {
-            this.setState({data: br({}, this.state.data, {phoneNumber: e.target.value})}), this.onChange()
+            this.setState({data: Fr({}, this.state.data, {phoneNumber: e.target.value})}), this.onChange()
         }, t.prototype.handlePrefixChange = function (e) {
             var t = e.target.value;
-            this.setState({data: br({}, this.state.data, {prefix: t})}), this.onChange()
+            this.setState({data: Fr({}, this.state.data, {prefix: t})}), this.onChange()
         }, t.prototype.render = function (e) {
             var t = e.items, n = e.i18n;
             return Object(r.h)("div", {
                 className: "adyen-checkout-phone-input",
                 onChange: this.onChange
-            }, t && z("select", {
+            }, t && Y("select", {
                 className: "adyen-checkout__dropdown--small adyen-checkout-phone-input__prefix",
                 items: t,
                 name: this.props.prefixName,
@@ -4588,11 +5609,11 @@ var Adyen = function (e) {
             }))
         }, t
     }(r.Component);
-    gr.state = {data: {prefix: null, phoneNumber: null}, selectedIndex: 0}, gr.defaultProps = {
+    Nr.state = {data: {prefix: null, phoneNumber: null}, selectedIndex: 0}, Nr.defaultProps = {
         onChange: function () {
         }, phoneName: "phoneNumber", prefixName: "phonePrefix"
     };
-    var vr = gr, wr = function () {
+    var jr = Nr, xr = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -4603,19 +5624,19 @@ var Adyen = function (e) {
         return function (t, n, r) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
-    }(), _r = Object.assign || function (e) {
+    }(), Pr = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var Or = function (e) {
+    var Dr = function (e) {
         var t = e.name.toUpperCase().replace(/./g, function (e) {
             return String.fromCodePoint ? String.fromCodePoint(e.charCodeAt(0) + 127397) : ""
         });
-        return _r({}, e, {name: t + " " + e.name + " (" + e.id + ")"})
-    }, Cr = function (e) {
+        return Pr({}, e, {name: t + " " + e.name + " (" + e.id + ")"})
+    }, Er = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4624,7 +5645,7 @@ var Adyen = function (e) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
             }(this, e.call(this, n));
-            return r.props.items = r.props.items.map(Or), r
+            return r.props.items = r.props.items.map(Dr), r
         }
 
         return function (e, t) {
@@ -4642,7 +5663,7 @@ var Adyen = function (e) {
         }, t.prototype.formatProps = function (e) {
             var t = e.details ? e.details[0].items : e.items || [],
                 n = e.paymentSession && e.paymentSession.payment.countryCode ? e.paymentSession.payment.countryCode : e.countryCode || null;
-            return _r({}, e, {
+            return Pr({}, e, {
                 prefixName: e.details ? e.details[0].key : "qiwiwallet.telephoneNumberPrefix",
                 phoneName: e.details ? e.details[1].key : "qiwiwallet.telephoneNumber",
                 selected: function (e, t) {
@@ -4653,19 +5674,30 @@ var Adyen = function (e) {
                 items: t
             })
         }, t.prototype.render = function () {
-            return Object(r.h)(de, {i18n: this.props.i18n}, Object(r.h)(vr, _r({}, this.props, this.state, {
+            return Object(r.h)(ge, {i18n: this.props.i18n}, Object(r.h)(jr, Pr({}, this.props, this.state, {
                 onChange: this.setState,
                 onValid: this.onValid
             })))
-        }, wr(t, [{
+        }, xr(t, [{
             key: "paymentData", get: function () {
-                return _r({type: t.type}, this.state.data)
+                return Pr({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    Cr.type = "qiwiwallet";
-    var Sr = he(Cr);
-    var jr = he(function (e) {
+    Er.type = "qiwiwallet";
+    var Rr = be(Er), Ar = function () {
+        function e(e, t) {
+            for (var n = 0; n < t.length; n++) {
+                var r = t[n];
+                r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object.defineProperty(e, r.key, r)
+            }
+        }
+
+        return function (t, n, r) {
+            return n && e(t.prototype, n), r && e(t, r), t
+        }
+    }();
+    var Ir = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4689,8 +5721,14 @@ var Adyen = function (e) {
             return !0
         }, t.prototype.render = function () {
             return null
-        }, t
-    }(a)), kr = {
+        }, Ar(t, [{
+            key: "paymentData", get: function () {
+                return {type: t.type}
+            }
+        }]), t
+    }(a);
+    Ir.type = "redirect";
+    var Mr = be(Ir), Tr = {
         AD: {length: 24, structure: "F04F04A12", example: "AD9912345678901234567890"},
         AE: {length: 23, structure: "F03F16", example: "AE993331234567890123456"},
         AL: {length: 28, structure: "F08A16", example: "AL47212110090000000235698741"},
@@ -4775,14 +5813,14 @@ var Adyen = function (e) {
         QA: {length: 29, structure: "U04A21", example: "QA30AAAA123456789012345678901"},
         SN: {length: 28, structure: "U01F23", example: "SN52A12345678901234567890123"},
         UA: {length: 29, structure: "F25", example: "UA511234567890123456789012345"}
-    }, xr = function (e) {
+    }, Br = function (e) {
         return e.replace(/\W/gi, "").replace(/(.{4})(?!$)/g, "$1 ").trim()
-    }, Pr = function (e) {
+    }, Vr = function (e) {
         return e.replace(/[^a-zA-Z0-9]/g, "").toUpperCase()
-    }, Er = function (e, t) {
+    }, Lr = function (e, t) {
         return function (e, t) {
-            if (null === t || !kr[t] || !kr[t].structure) return !1;
-            var n = kr[t].structure.match(/(.{3})/g).map(function (e) {
+            if (null === t || !Tr[t] || !Tr[t].structure) return !1;
+            var n = Tr[t].structure.match(/(.{3})/g).map(function (e) {
                 var t = e.slice(0, 1), n = parseInt(e.slice(1), 10), r = void 0;
                 switch (t) {
                     case"A":
@@ -4810,8 +5848,8 @@ var Adyen = function (e) {
             });
             return new RegExp("^" + n.join("") + "$")
         }(0, t)
-    }, Rr = function (e) {
-        var t = Pr(e);
+    }, Ur = function (e) {
+        var t = Vr(e);
         return 1 === function (e) {
             for (var t = e, n = void 0; t.length > 2;) n = t.slice(0, 9), t = parseInt(n, 10) % 97 + t.slice(n.length);
             return parseInt(t, 10) % 97
@@ -4822,17 +5860,17 @@ var Adyen = function (e) {
                 return t >= n && t <= r ? t - n + 10 : e
             }).join("")
         }(t)) && function (e) {
-            var t = e.slice(0, 2), n = Er(0, t);
+            var t = e.slice(0, 2), n = Lr(0, t);
             return n.test && n.test(e.slice(4)) || !1
         }(t)
-    }, Nr = (n(74), Object.assign || function (e) {
+    }, Kr = (n(76), Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     });
-    var Fr = function (e) {
+    var zr = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4864,57 +5902,57 @@ var Adyen = function (e) {
                     "sepa.ownerName": this.state.data["sepa.ownerName"],
                     "sepa.ibanNumber": this.state.data["sepa.ibanNumber"]
                 },
-                isValid: Rr(this.state.data["sepa.ibanNumber"]) && (e = this.state.data["sepa.ownerName"], !!(e && e.length && e.length > 0))
+                isValid: Ur(this.state.data["sepa.ibanNumber"]) && (e = this.state.data["sepa.ownerName"], !!(e && e.length && e.length > 0))
             };
             this.setState({isValid: t.isValid}), this.props.onChange(t), t.isValid && this.props.onValid(t)
         }, t.prototype.handleHolderChange = function (e) {
             this.setState(function (t) {
-                return {data: Nr({}, t.data, {"sepa.ownerName": e})}
+                return {data: Kr({}, t.data, {"sepa.ownerName": e})}
             }), this.onChange()
         }, t.prototype.handleIbanChange = function (e) {
-            var t = this, n = e.target.selectionStart, r = e.target.value, o = xr(Pr(r)),
+            var t = this, n = e.target.selectionStart, r = e.target.value, o = Br(Vr(r)),
                 i = " " === o.charAt(n - 1) ? n + 1 : n;
             this.setState(function (e) {
-                return {data: Nr({}, e.data, {"sepa.ibanNumber": o})}
+                return {data: Kr({}, e.data, {"sepa.ibanNumber": o})}
             }, function () {
                 t.ibanNumber.base.selectionStart = i, t.ibanNumber.base.selectionEnd = i
             }), this.onChange()
         }, t.prototype.render = function (e) {
             var t = this, n = e.placeholders, o = e.countryCode, i = e.i18n;
-            return Object(r.h)("div", {className: "adyen-checkout__iban-input"}, Object(r.h)("div", {className: "adyen-checkout__field adyen-checkout__iban-input__field--holder"}, Object(r.h)(Z, {label: i.get("sepa.ownerName")}, z("text", {
+            return Object(r.h)("div", {className: "adyen-checkout__iban-input"}, Object(r.h)("div", {className: "adyen-checkout__field adyen-checkout__iban-input__field--holder"}, Object(r.h)(p, {label: i.get("sepa.ownerName")}, Y("text", {
                 name: "sepa.ownerName",
                 className: "adyen-checkout__input adyen-checkout__input--large adyen-checkout__iban-input__input",
                 placeholder: "ownerName" in n ? n.ownerName : i.get("sepa.ownerName"),
                 value: this.state.data["sepa.ownerName"],
-                onChange: function (e) {
+                onInput: function (e) {
                     return t.handleHolderChange(e.target.value)
                 }
-            }))), Object(r.h)("div", {className: "adyen-checkout__field adyen-checkout__iban-input__field--number"}, Object(r.h)(Z, {label: i.get("sepa.ibanNumber")}, z("text", {
+            }))), Object(r.h)("div", {className: "adyen-checkout__field adyen-checkout__iban-input__field--number"}, Object(r.h)(p, {label: i.get("sepa.ibanNumber")}, Y("text", {
                 ref: function (e) {
                     t.ibanNumber = e
                 },
                 name: "sepa.ibanNumber",
                 className: "adyen-checkout__input adyen-checkout__input--large adyen-checkout__iban-input__number",
                 placeholder: "ibanNumber" in n ? n.ibanNumber : function (e) {
-                    return e && kr[e] && kr[e].example ? xr(kr[e].example) : "AB00 1234 5678 9012 3456 7890"
+                    return e && Tr[e] && Tr[e].example ? Br(Tr[e].example) : "AB00 1234 5678 9012 3456 7890"
                 }(o),
                 value: this.state.data["sepa.ibanNumber"],
-                onChange: this.handleIbanChange
+                onInput: this.handleIbanChange
             }))))
         }, t
     }(r.Component);
-    Fr.defaultProps = {
+    zr.defaultProps = {
         onChange: function () {
         }, onValid: function () {
         }, placeholders: {}
     };
-    var Tr = Fr, Ar = Object.assign || function (e) {
+    var Gr = zr, $r = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Dr = function () {
+    }, qr = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -4926,7 +5964,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var Ir = function (e) {
+    var Wr = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4949,32 +5987,44 @@ var Adyen = function (e) {
         }(t, e), t.prototype.isValid = function () {
             return !!this.state.isValid
         }, t.prototype.formatProps = function (e) {
-            return Ar({countryCode: e.paymentSession ? e.paymentSession.payment.countryCode : ""}, e)
+            return $r({countryCode: e.paymentSession ? e.paymentSession.payment.countryCode : ""}, e)
         }, t.prototype.render = function () {
-            return Object(r.h)(de, this.props, Object(r.h)(Tr, Ar({}, this.props, {
+            return Object(r.h)(ge, this.props, Object(r.h)(Gr, $r({}, this.props, {
                 onChange: this.setState,
                 onValid: this.onValid
             })))
-        }, Dr(t, [{
+        }, qr(t, [{
             key: "paymentData", get: function () {
-                return Ar({type: t.type}, this.state.data)
+                return $r({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    Ir.type = "sepadirectdebit";
-    var Mr = he(Ir), Vr = function (e) {
+    Wr.type = "sepadirectdebit";
+    var Hr = be(Wr), Jr = function (e) {
         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2;
         if (0 === t) return e;
         var n = String(e);
         return n.length >= t ? n : ("0".repeat(t) + n).slice(-1 * t)
-    }, Lr = Object.assign || function (e) {
+    }, Zr = function (e, t) {
+        var n = new Date, r = t.getTime() - n.getTime(), o = r / 1e3, i = function (e, t, n) {
+            var r = n.getTime() - e.getTime();
+            return 100 - Math.round(100 * (t.getTime() - e.getTime()) / r)
+        }(e, n, t);
+        return {
+            total: r,
+            minutes: Jr(Math.floor(o / 60 % 60)),
+            seconds: Jr(Math.floor(o % 60)),
+            completed: r <= 0,
+            percentage: i
+        }
+    }, Yr = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var Br = function (e) {
+    var Xr = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -4982,8 +6032,8 @@ var Adyen = function (e) {
             var r = function (e, t) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
-            }(this, e.call(this, n)), o = 6e4 * r.props.minutesFromNow;
-            return r.setState({endTime: new Date((new Date).getTime() + o), minutes: "-", seconds: "-"}), r
+            }(this, e.call(this, n)), o = 6e4 * r.props.minutesFromNow, i = (new Date).getTime();
+            return r.setState({startTime: new Date(i), endTime: new Date(i + o), minutes: "-", seconds: "-"}), r
         }
 
         return function (e, t) {
@@ -4997,15 +6047,10 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.tick = function () {
-            var e, t, n, r, o = (e = this.state.endTime, t = new Date, n = e.getTime() - t.getTime(), r = n / 1e3, {
-                total: n,
-                minutes: Vr(Math.floor(r / 60 % 60)),
-                seconds: Vr(Math.floor(r % 60)),
-                completed: n <= 0
-            });
-            if (o.completed) return this.props.onCompleted(), this.clearInterval();
-            var i = {minutes: o.minutes, seconds: o.seconds};
-            return this.setState(Lr({}, i)), this.props.onTick(i), i
+            var e = Zr(this.state.startTime, this.state.endTime);
+            if (e.completed) return this.props.onCompleted(), this.clearInterval();
+            var t = {minutes: e.minutes, seconds: e.seconds, percentage: e.percentage};
+            return this.setState(Yr({}, t)), this.props.onTick(t), t
         }, t.prototype.clearInterval = function (e) {
             function t() {
                 return e.apply(this, arguments)
@@ -5027,13 +6072,13 @@ var Adyen = function (e) {
             return Object(r.h)("span", {className: "adyen-checkout-countdown"}, Object(r.h)("span", {className: "countdown__minutes"}, this.state.minutes), Object(r.h)("span", {className: "countdown__separator"}, ":"), Object(r.h)("span", {className: "countdown__seconds"}, this.state.seconds))
         }, t
     }(r.Component);
-    Br.defaultProps = {
+    Xr.defaultProps = {
         onTick: function () {
         }, onCompleted: function () {
         }
     };
-    var Ur = Br;
-    var Kr = function (e) {
+    var Qr = Xr;
+    var eo = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5042,7 +6087,10 @@ var Adyen = function (e) {
                 if (!e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                 return !t || "object" !== typeof t && "function" !== typeof t ? e : t
             }(this, e.call(this, n));
-            return r.setState({expired: !1}), r.onTimeUp = r.onTimeUp.bind(r), r
+            return r.setState({
+                expired: !1,
+                percentage: 100
+            }), r.onTimeUp = r.onTimeUp.bind(r), r.onTick = r.onTick.bind(r), r
         }
 
         return function (e, t) {
@@ -5058,10 +6106,12 @@ var Adyen = function (e) {
         }(t, e), t.prototype.componentDidMount = function () {
             var e = this, t = this.props, n = t.onStatusChange, r = t.paymentSession;
             this.wechatInterval = setInterval(function () {
-                ce(r).then(function (t) {
+                pe(r).then(function (t) {
                     return "complete" === t.type && clearInterval(e.wechatInterval), t
-                }).then(pe).catch(n)
+                }).then(ye).catch(n)
             }, 3e3)
+        }, t.prototype.onTick = function (e) {
+            this.setState({percentage: e.percentage})
         }, t.prototype.onTimeUp = function () {
             this.setState({expired: !0}), clearInterval(this.wechatInterval), this.props.onStatusChange({
                 type: "error",
@@ -5070,27 +6120,28 @@ var Adyen = function (e) {
         }, t.prototype.componentWillUnmount = function () {
             clearInterval(this.wechatInterval)
         }, t.prototype.render = function (e, t) {
-            var n = e.qrCodeImage;
-            return t.expired ? "Payment session expired" : Object(r.h)("div", {className: "adyen-checkout-wechatpay"}, Object(r.h)("div", null, "Scan the QR Code"), Object(r.h)("img", {
+            var n = e.qrCodeImage, o = e.paymentSession, i = e.i18n, a = t.expired, s = o.paymentSession.payment;
+            return a ? "Payment session expired" : Object(r.h)("div", {className: "adyen-checkout-wechatpay"}, Object(r.h)("div", {className: "adyen-checkout__wechatpay__subtitle"}, "Scan the QR Code"), Object(r.h)("img", {
                 src: n,
                 alt: "WeChat Pay QRCode"
-            }), Object(r.h)("div", null, "You have\xa0", Object(r.h)(Ur, {
+            }), Object(r.h)("div", {className: "adyen-checkout__wechatpay__payment_amount"}, i.amount(s.amount.value, s.amount.currency)), Object(r.h)("div", {class: "adyen-checkout__wechatpay__progress"}, Object(r.h)("span", {style: {width: this.state.percentage + "%"}})), Object(r.h)("div", {className: "adyen-checkout__wechatpay__countdown"}, "You have\xa0", Object(r.h)(Qr, {
                 minutesFromNow: 15,
+                onTick: this.onTick,
                 onCompleted: this.onTimeUp
             }), "\xa0to pay"))
         }, t
     }(r.Component);
-    Kr.defaultProps = {
+    eo.defaultProps = {
         onStatusChange: function () {
         }
     };
-    var $r = Kr, Gr = Object.assign || function (e) {
+    var to = eo, no = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Wr = function () {
+    }, ro = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -5102,7 +6153,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var Yr = function (e) {
+    var oo = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5125,96 +6176,98 @@ var Adyen = function (e) {
         }(t, e), t.prototype.isValid = function () {
             return !0
         }, t.prototype.submit = function () {
+            var e = this;
             if (!this.props.paymentMethodData) {
-                var e = this.props.paymentSession.paymentMethods.find(function (e) {
+                var t = this.props.paymentSession.paymentMethods.find(function (e) {
                     return "wechatpay" === e.type
                 });
-                if (!e) throw new Error("Payment method not available");
-                this.props.paymentMethodData = e.paymentMethodData
+                if (!t) throw new Error("Payment method not available");
+                this.props.paymentMethodData = t.paymentMethodData
             }
-            var t = this.props, n = t.paymentMethodData, o = t.paymentSession, i = t.onStatusChange;
-            return i({type: "loading"}), ce({paymentSession: o, paymentMethodData: n}).then(pe).then(function (e) {
-                if ("redirect" === e.type) return i(e);
-                var t = {
-                    qrCodeImage: e.redirectData.qrCodeImage,
-                    paymentSession: {paymentSession: o, paymentMethodData: n},
-                    onStatusChange: i
+            var n = this.props, o = n.paymentMethodData, i = n.paymentSession, a = n.onStatusChange;
+            return a({type: "loading"}), pe({paymentSession: i, paymentMethodData: o}).then(ye).then(function (t) {
+                if ("redirect" === t.type) return a(t);
+                var n = {
+                    qrCodeImage: t.redirectData.qrCodeImage,
+                    paymentSession: {paymentSession: i, paymentMethodData: o},
+                    i18n: e.props.i18n,
+                    onStatusChange: a
                 };
-                return i({type: "custom", component: Object(r.h)($r, t), props: t})
-            }).catch(i)
+                return a({type: "custom", component: Object(r.h)(to, n), props: n})
+            }).catch(a)
         }, t.prototype.render = function () {
             return null
-        }, Wr(t, [{
+        }, ro(t, [{
             key: "paymentData", get: function () {
-                return Gr({type: t.type}, this.state.data)
+                return no({type: t.type}, this.state.data)
             }
         }]), t
     }(a);
-    Yr.type = "wechatpay";
-    var Hr = Yr;
-    var qr = Object.assign || function (e) {
+    oo.type = "wechatpay";
+    var io = oo;
+    var ao = Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
             }
             return e
-        }, zr = {
-            afterpay_default: ge,
-            alipay: jr,
-            amex: Rn,
-            bcmc: Rn,
-            bcmc_mobile: jr,
-            card: Rn,
-            discover: Rn,
-            diners: Rn,
-            giropay: Un,
-            ideal: lr,
-            jcb: Rn,
-            klarna: dr,
-            klarna_account: jr,
-            mc: Rn,
-            maestro: Rn,
-            molpay_points: jr,
-            moneybookers: jr,
-            paypal: mr,
-            paysafecard: jr,
-            paywithgoogle: nr,
-            ratepay: jr,
-            redirect: jr,
-            sepadirectdebit: Mr,
-            tenpay: jr,
-            unionpay: jr,
-            visa: Rn,
-            qiwiwallet: Sr,
-            wechatpay: Hr,
+        }, so = {
+            afterpay_default: _e,
+            alipay: Mr,
+            amex: Tn,
+            bcmc: Tn,
+            bcmc_mobile: Mr,
+            card: Tn,
+            discover: Tn,
+            diners: Tn,
+            giropay: Hn,
+            ideal: br,
+            jcb: Tn,
+            klarna: Cr,
+            klarna_account: Mr,
+            mc: Tn,
+            maestro: Tn,
+            molpay_points: Mr,
+            moneybookers: Mr,
+            paypal: Sr,
+            paysafecard: Mr,
+            paywithgoogle: lr,
+            ratepay: Mr,
+            redirect: Mr,
+            sepadirectdebit: Hr,
+            tenpay: Mr,
+            unionpay: Mr,
+            visa: Tn,
+            qiwiwallet: Rr,
+            wechatpay: io,
             default: null
-        }, Zr = function (e, t) {
-            var n = zr[e] || zr.default;
-            return n ? new n(qr({}, t, {
+        }, co = function (e, t) {
+            var n = so[e] || so.default;
+            return n ? new n(ao({}, t, {
                 id: e + "-" + "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (e) {
                     var t = 16 * Math.random() | 0;
                     return ("x" == e ? t : 3 & t | 8).toString(16)
                 })
             })) : null
-        }, Xr = zr, Jr = n(5), Qr = "en-US",
-        eo = ["da-DK", "de-DE", "en-US", "es-ES", "fr-FR", "it-IT", "nl-NL", "no-NO", "pl-PL", "pt-BR", "ru-RU", "sv-SE", "zh-CN", "zh-TW"],
-        to = Object.assign || function (e) {
+        }, lo = so, uo = n(5), po = "en-US",
+        fo = ["da-DK", "de-DE", "en-US", "es-ES", "fr-FR", "it-IT", "nl-NL", "no-NO", "pl-PL", "pt-BR", "ru-RU", "sv-SE", "zh-CN", "zh-TW"],
+        ho = Object.assign || function (e) {
             for (var t = 1; t < arguments.length; t++) {
                 var n = arguments[t];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
             }
             return e
-        }, no = function (e) {
+        }, yo = function (e) {
             var t = e.replace("_", "-");
             if (new RegExp("([a-z]{2})([-])([A-Z]{2})").test(t)) return t;
             var n = t.split("-"), r = n[0] ? n[0].toLowerCase() : "", o = n[1] ? n[1].toUpperCase() : "";
             if (!r || !o) return !1;
             var i = [r, o].join("-");
             return 5 === i.length ? i : ""
-        }, ro = function (e) {
+        }, mo = function (e) {
             var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
-            if (!e || e.length < 1) return Qr;
-            var n = no(e);
+            if (!e || e.length < 1) return po;
+            var n = yo(e);
             return 1 === t.indexOf(n) ? n : function (e, t) {
                 if (!e || "string" !== typeof e) return !1;
                 var n = function (e) {
@@ -5224,22 +6277,22 @@ var Adyen = function (e) {
                     return n(t) === n(e)
                 }) || !1
             }(n || e, t)
-        }, oo = function () {
+        }, bo = function () {
             var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, t = arguments[1];
             return Object.keys(e).reduce(function (n, r) {
-                var o = no(r) || ro(r, t);
+                var o = yo(r) || mo(r, t);
                 return o && (n[o] = e[r]), n
             }, {})
         };
-    var io = function () {
+    var go = function () {
         function e() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : Qr,
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : po,
                 n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-            }(this, e), this.translations = Jr, this.supportedLocales = eo, this.customTranslations = oo(n, this.supportedLocales), this.supportedLocales = [].concat(this.supportedLocales, Object.keys(this.customTranslations)).filter(function (e, t, n) {
+            }(this, e), this.translations = uo, this.supportedLocales = fo, this.customTranslations = bo(n, this.supportedLocales), this.supportedLocales = [].concat(this.supportedLocales, Object.keys(this.customTranslations)).filter(function (e, t, n) {
                 return n.indexOf(e) === t
-            }), this.localeToLoad = ro(t, eo) || Qr, this.locale = no(t) || ro(t, this.supportedLocales) || Qr, this.setTranslations = this.setTranslations.bind(this), this.loadLocale()
+            }), this.localeToLoad = mo(t, fo) || po, this.locale = yo(t) || mo(t, this.supportedLocales) || po, this.setTranslations = this.setTranslations.bind(this), this.loadLocale()
         }
 
         return e.prototype.get = function (e) {
@@ -5248,12 +6301,12 @@ var Adyen = function (e) {
             return function (e, t, n) {
                 var r = e.toString();
                 if (n && t && r) {
-                    var o = Hn(e, n);
-                    if (Wn()) {
+                    var o = er(e, n);
+                    if (Xn()) {
                         var i = t.replace("_", "-"), a = {style: "currency", currency: n, currencyDisplay: "symbol"};
                         return o.toLocaleString(i, a) || o
                     }
-                    var s = o.toLocaleString(), c = Yn(n);
+                    var s = o.toLocaleString(), c = Qn(n);
                     return s ? c ? "" + c + s : s : o
                 }
                 return e
@@ -5263,19 +6316,19 @@ var Adyen = function (e) {
         }, e.prototype.loadLocale = function () {
             return this.loaded = function (e, t) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-                return n(76)("./" + t + ".json").then(function (t) {
-                    return to({}, Jr, t.default, r[e] && r[e])
+                return n(78)("./" + t + ".json").then(function (t) {
+                    return ho({}, uo, t.default, r[e] && r[e])
                 }).catch(function () {
-                    return to({}, Jr, r[e] && r[e])
+                    return ho({}, uo, r[e] && r[e])
                 })
             }(this.locale, this.localeToLoad, this.customTranslations).then(this.setTranslations), this.loaded
         }, e
-    }(), ao = n(8), so = n(2), co = n.n(so), uo = function (e) {
+    }(), vo = n(8), wo = n(2), Co = n.n(wo), _o = function (e) {
         var t = e.paymentMethod, n = e.isLoaded, o = t.render();
-        return o && n ? Object(r.h)("div", {className: "payment-method__details__content " + co.a["payment-method__details__content"]}, o) : null
+        return o && n ? Object(r.h)("div", {className: "adyen-checkout__payment-method__details__content " + Co.a["adyen-checkout__payment-method__details__content"]}, o) : null
     };
-    n(78);
-    var lo = function (e) {
+    n(93);
+    var Oo = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5304,27 +6357,27 @@ var Adyen = function (e) {
             e.preventDefault(), this.props.onDisableOneClick(this.props.paymentMethod)
         }, t.prototype.render = function (e, t, n) {
             var o = e.paymentMethod, i = e.getPaymentMethodImage, a = e.isSelected, s = e.isLoaded, c = e.isLoading,
-                u = t.disabled, l = n.i18n, p = o.props.configuration && o.props.configuration.surchargeTotalCost;
-            return u ? null : Object(r.h)("li", {
+                l = t.disabled, u = n.i18n, d = o.props.configuration && o.props.configuration.surchargeTotalCost;
+            return l ? null : Object(r.h)("li", {
                 key: o.props.id,
-                className: "payment-method " + co.a["payment-method"] + " payment-method--" + o.props.type + "\n                            " + o.props.id + "\n                            " + (a ? "payment-method--selected " + co.a["payment-method--selected"] : "") + "\n                            " + (c ? "payment-method--loading " + co.a["payment-method--loading"] : "") + "\n                            " + this.props.className,
+                className: "adyen-checkout__payment-method " + Co.a["adyen-checkout__payment-method"] + " adyen-checkout__payment-method--" + o.props.type + "\n                            " + o.props.id + "\n                            " + (a ? "adyen-checkout__payment-method--selected " + Co.a["adyen-checkout__payment-method--selected"] : "") + "\n                            " + (c ? "adyen-checkout__payment-method--loading " + Co.a["adyen-checkout__payment-method--loading"] : "") + "\n                            " + this.props.className,
                 onFocus: this.onSelect,
                 onClick: this.onSelect,
                 tabindex: c ? "-1" : "0"
-            }, Object(r.h)("div", {className: "payment-method__header"}, Object(r.h)("span", {className: "payment-method__image__wrapper " + co.a["payment-method__image__wrapper"]}, Object(r.h)("img", {
-                className: "payment-method__image " + co.a["payment-method__image"],
+            }, a && c && Object(r.h)(pn, null), Object(r.h)("div", {className: "adyen-checkout__payment-method__header"}, Object(r.h)("span", {className: "adyen-checkout__payment-method__image__wrapper " + Co.a["adyen-checkout__payment-method__image__wrapper"]}, Object(r.h)("img", {
+                className: "adyen-checkout__payment-method__image " + Co.a["adyen-checkout__payment-method__image"],
                 src: i(o.props.type),
                 alt: o.props.name
-            })), Object(r.h)("span", {className: "payment-method__name"}, o.props.name), p && Object(r.h)("small", {className: "payment-method__surcharge"}, "+ " + l.amount(o.props.configuration.surchargeTotalCost, o.props.paymentSession.payment.amount.currency)), o.props.oneClick && a && Object(r.h)("button", {
-                className: "payment-method__disable_oneclick",
+            })), Object(r.h)("span", {className: "adyen-checkout__payment-method__name"}, o.props.name), d && Object(r.h)("small", {className: "adyen-checkout__payment-method__surcharge"}, "+ " + u.amount(o.props.configuration.surchargeTotalCost, o.props.paymentSession.payment.amount.currency)), o.props.oneClick && a && Object(r.h)("button", {
+                className: "adyen-checkout__payment-method__disable_oneclick",
                 onClick: this.handleDisableOneClick
-            }, l.get("Remove")), Object(r.h)("span", {className: "payment-method__radio " + (a ? "payment-method__radio--selected" : "")})), Object(r.h)("div", {className: "payment-method__details " + co.a["payment-method__details"]}, Object(r.h)(uo, {
+            }, u.get("Remove")), Object(r.h)("span", {className: "adyen-checkout__payment-method__radio " + (a ? "adyen-checkout__payment-method__radio--selected" : "")})), Object(r.h)("div", {className: "adyen-checkout__payment-method__details " + Co.a["adyen-checkout__payment-method__details"]}, Object(r.h)(_o, {
                 paymentMethod: o,
                 isLoaded: s
             })))
         }, t
     }(r.Component);
-    var po = function (e) {
+    var ko = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5350,20 +6403,20 @@ var Adyen = function (e) {
             this.props.focusFirstPaymentMethod && this.paymentMethodRefs[0] && this.paymentMethodRefs[0].base && this.paymentMethodRefs[0].base.focus()
         }, t.prototype.render = function (e) {
             var t = this, n = e.paymentMethods, o = void 0 === n ? [] : n, i = e.activePaymentMethod,
-                a = e.cachedPaymentMethods, s = e.onDisableOneClick, c = e.getPaymentMethodImage, u = e.onSelect,
-                l = e.isLoading;
-            return Object(r.h)("ul", {className: "payment-methods-list " + co.a["payment-methods-list"] + " " + (l ? "payment-methods-list--loading" : "")}, o.map(function (e, n, o) {
-                var p = i && i.props.id === e.props.id, f = e.props.id in a,
-                    h = i && o[n + 1] && i.props.id === o[n + 1].props.id;
-                return Object(r.h)(lo, {
-                    className: h ? "payment-method--next-selected" : "",
+                a = e.cachedPaymentMethods, s = e.onDisableOneClick, c = e.getPaymentMethodImage, l = e.onSelect,
+                u = e.isLoading;
+            return Object(r.h)("ul", {className: "adyen-checkout__payment-methods-list " + Co.a["adyen-checkout__payment-methods-list"] + " " + (u ? "adyen-checkout__payment-methods-list--loading" : "")}, o.map(function (e, n, o) {
+                var d = i && i.props.id === e.props.id, p = e.props.id in a,
+                    f = i && o[n + 1] && i.props.id === o[n + 1].props.id;
+                return Object(r.h)(Oo, {
+                    className: f ? "adyen-checkout__payment-method--next-selected" : "",
                     paymentMethod: e,
-                    isSelected: p,
-                    isLoaded: f,
-                    isLoading: l,
+                    isSelected: d,
+                    isLoaded: p,
+                    isLoading: u,
                     getPaymentMethodImage: c,
                     onDisableOneClick: s,
-                    onSelect: u,
+                    onSelect: l,
                     key: e.props.id,
                     ref: function (e) {
                         return t.paymentMethodRefs.push(e)
@@ -5372,8 +6425,8 @@ var Adyen = function (e) {
             }))
         }, t
     }(r.Component);
-    n(80);
-    var fo = function (e) {
+    n(95);
+    var So = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5394,31 +6447,31 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.render = function (e, t, n) {
-            var o = e.onClick, i = e.amount, a = e.currency, s = e.disabled, c = void 0 !== s && s, u = e.status,
-                l = n.i18n;
+            var o = e.onClick, i = e.amount, a = e.currency, s = e.disabled, c = void 0 !== s && s, l = e.status,
+                u = n.i18n;
             !function (e) {
                 if (null == e) throw new TypeError("Cannot destructure undefined")
             }(t);
-            var p = {
-                loading: "" + l.get("Processing payment..."),
-                redirect: "" + l.get("Redirecting..."),
-                default: l.get("payButton") + " " + l.amount(i, a)
+            var d = {
+                loading: "" + u.get("Processing payment..."),
+                redirect: "" + u.get("Redirecting..."),
+                default: u.get("payButton") + " " + u.amount(i, a)
             };
             return Object(r.h)("button", {
-                className: "adyen-checkout__pay-button " + ("loading" === u || "redirect" === u ? "adyen-checkout__pay-button--loading" : ""),
+                className: "adyen-checkout__pay-button " + ("loading" === l || "redirect" === l ? "adyen-checkout__pay-button--loading" : ""),
                 onClick: o,
                 disabled: c
-            }, p[u] || p.default)
+            }, d[l] || d.default)
         }, t
     }(r.Component);
-    fo.defaultProps = {status: null};
-    var ho = fo, yo = Object.assign || function (e) {
+    So.defaultProps = {status: null};
+    var Fo = So, No = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, mo = function () {
+    }, jo = function () {
         return {
             setLocale: function (e, t) {
                 return {locale: t}
@@ -5431,7 +6484,7 @@ var Adyen = function (e) {
                 return {
                     activePaymentMethod: t,
                     paymentAmount: t.props.configuration && t.props.configuration.surchargeFinalAmount ? t.props.configuration.surchargeFinalAmount : e.initialPaymentAmount,
-                    cachedPaymentMethods: yo({}, e.cachedPaymentMethods, (n = {}, n[t.props.id] = !0, n))
+                    cachedPaymentMethods: No({}, e.cachedPaymentMethods, (n = {}, n[t.props.id] = !0, n))
                 }
             }, resetActivePaymentMethod: function () {
                 return {activePaymentMethod: null}
@@ -5439,22 +6492,22 @@ var Adyen = function (e) {
                 return e
             }
         }
-    }, bo = function (e) {
+    }, xo = function (e) {
         return !!e
-    }, go = function (e) {
+    }, Po = function (e) {
         return e.isAvailable ? e.isAvailable() : Promise.resolve(!!e)
-    }, vo = Object.assign || function (e) {
+    }, Do = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, wo = function () {
+    }, Eo = function () {
         var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], t = arguments[1],
             n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, r = e.map(function (e) {
-                var r, o = vo({}, e, t, (r = e.type, n[r] || {})), i = Zr(e.type, o);
-                return i || e.details || (i = Zr("redirect", o)), i
-            }).filter(bo), o = r.map(go).map(function (e) {
+                var r, o = Do({}, e, t, (r = e.type, n[r] || {})), i = co(e.type, o);
+                return i || e.details || (i = co("redirect", o)), i
+            }).filter(xo), o = r.map(Po).map(function (e) {
                 return e.catch(function (e) {
                     return e
                 })
@@ -5464,31 +6517,31 @@ var Adyen = function (e) {
                 return !0 === e[n]
             })
         })
-    }, _o = Object.assign || function (e) {
+    }, Ro = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Oo = function (e) {
-        return _o({}, e, {name: (t = e.name, n = e.storedDetails, n.emailAddress ? Object(r.h)("span", null, t, " ", Object(r.h)("small", null, "(", n.emailAddress, ")")) : n.card ? "\u2022\u2022\u2022\u2022 " + n.card.number : t)});
+    }, Ao = function (e) {
+        return Ro({}, e, {name: (t = e.name, n = e.storedDetails, n.emailAddress ? Object(r.h)("span", null, t, " ", Object(r.h)("small", null, "(", n.emailAddress, ")")) : n.card ? "\u2022\u2022\u2022\u2022 " + n.card.number : t)});
         var t, n
-    }, Co = function () {
+    }, Io = function () {
         var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], t = arguments[1],
             n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-        return wo(e.map(Oo), _o({}, t, {oneClick: !0}), n)
-    }, So = function (e, t) {
+        return Eo(e.map(Ao), Ro({}, t, {oneClick: !0}), n)
+    }, Mo = function (e, t) {
         var n = e.message, o = t.i18n;
         return Object(r.h)("div", {className: "adyen-checkout-alert adyen-checkout-alert--success"}, o.get(n || "creditCard.success"))
-    }, jo = function (e, t) {
+    }, To = function (e, t) {
         var n = e.url, o = t.i18n;
         return window.location.assign(n), Object(r.h)("div", {className: "adyen-checkout-alert adyen-checkout-alert--info"}, o.get("payment.redirecting"))
-    }, ko = function (e, t) {
+    }, Bo = function (e, t) {
         var n = e.message, o = t.i18n;
         return Object(r.h)("div", {className: "adyen-checkout-alert adyen-checkout-alert--error"}, o.get(n || "error.message.unknown"))
-    }, xo = (n(82), {Success: So, Redirect: jo, Error: ko});
-    n(84);
-    var Po = function (e) {
+    }, Vo = (n(97), {Success: Mo, Redirect: To, Error: Bo});
+    n(99);
+    var Lo = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5532,34 +6585,34 @@ var Adyen = function (e) {
                 onElementStateChange: this.onElementStateChange,
                 onStatusChange: this.props.setStatus,
                 i18n: n
-            }, u = Co(s, c, i), l = wo(a, c, i);
-            Promise.all([u, l]).then(function (t) {
+            }, l = Io(s, c, i), u = Eo(a, c, i);
+            Promise.all([l, u]).then(function (t) {
                 var n = t[0], r = t[1];
-                e.setState({elements: [].concat(n, r)}), e.props.setStatus({type: "initial"})
+                e.setState({elements: [].concat(n, r)}), e.props.setStatus({type: "ready"}), e.props.onReady && e.props.onReady()
             })
         }, t.prototype.getChildContext = function () {
             return {i18n: this.props.i18n}
         }, t.prototype.render = function (e, t) {
             var n = e.paymentSession, o = e.activePaymentMethod, i = e.cachedPaymentMethods, a = e.paymentAmount,
-                s = e.status, c = t.elements, u = "loading" === s.type, l = "redirect" === s.type;
+                s = e.status, c = t.elements, l = "loading" === s.type, u = "redirect" === s.type;
             switch (s.type) {
                 case"success":
-                    return Object(r.h)(xo.Success, {message: s.props && s.props.errorMessage ? s.props.errorMessage : null});
+                    return Object(r.h)(Vo.Success, {message: s.props && s.props.errorMessage ? s.props.errorMessage : null});
                 case"error":
-                    return Object(r.h)(xo.Error, {message: s.props && s.props.message ? s.props.message : null});
+                    return Object(r.h)(Vo.Error, {message: s.props && s.props.message ? s.props.message : null});
                 case"custom":
                     return s.component;
                 default:
-                    return Object(r.h)("div", {className: "adyen-checkout-sdk"}, l && Object(r.h)(xo.Redirect, {url: s.props.url}), c && c.length && Object(r.h)(po, {
-                        isLoading: u || l,
+                    return Object(r.h)("div", {className: "adyen-checkout-sdk"}, u && Object(r.h)(Vo.Redirect, {url: s.props.url}), c && c.length && Object(r.h)(ko, {
+                        isLoading: l || u,
                         paymentMethods: c,
                         activePaymentMethod: o,
                         cachedPaymentMethods: i,
                         onSelect: this.props.setActivePaymentMethod,
                         onDisableOneClick: this.handleDisableOneClick,
                         focusFirstPaymentMethod: this.props.focusFirstPaymentMethod,
-                        getPaymentMethodImage: dn({loadingContext: n.checkoutshopperBaseUrl})
-                    }), this.props.showPayButton && Object(r.h)(ho, {
+                        getPaymentMethodImage: Cn({loadingContext: n.checkoutshopperBaseUrl})
+                    }), this.props.showPayButton && Object(r.h)(Fo, {
                         onClick: this.handleSubmitPayment,
                         status: s.type,
                         amount: a,
@@ -5569,9 +6622,12 @@ var Adyen = function (e) {
             }
         }, t
     }(r.Component);
-    Po.defaultProps = {status: {}, showPayButton: !0, focusFirstPaymentMethod: !0, paymentMethodsConfiguration: {}};
-    var Eo = Object(ao.connect)("locale,status,paymentAmount,paymentSession,activePaymentMethod,cachedPaymentMethods", mo)(Po);
-    var Ro = function (e) {
+    Lo.defaultProps = {
+        status: {}, showPayButton: !0, focusFirstPaymentMethod: !1, onReady: function () {
+        }, paymentMethodsConfiguration: {}
+    };
+    var Uo = Object(vo.connect)("locale,status,paymentAmount,paymentSession,activePaymentMethod,cachedPaymentMethods", jo)(Lo);
+    var Ko = function (e) {
         function t() {
             return function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5597,22 +6653,22 @@ var Adyen = function (e) {
                 for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
                 return n
             }(e, ["store"]);
-            return Object(r.h)(ao.Provider, {store: t}, Object(r.h)(de, {i18n: n.i18n}, Object(r.h)(Eo, n)))
+            return Object(r.h)(vo.Provider, {store: t}, Object(r.h)(ge, {i18n: n.i18n}, Object(r.h)(Uo, n)))
         }, t
     }(r.Component);
 
-    function No(e, t) {
+    function zo(e, t) {
         for (var n in t) e[n] = t[n];
         return e
     }
 
-    var Fo = Object.assign || function (e) {
+    var Go = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, To = {
+    }, $o = {
         locale: "en_US",
         status: {type: "loading"},
         paymentSession: null,
@@ -5620,7 +6676,7 @@ var Adyen = function (e) {
         initialPaymentAmount: 0,
         activePaymentMethod: null,
         cachedPaymentMethods: {}
-    }, Ao = function (e) {
+    }, qo = function (e) {
         return function (e) {
             var t = [];
 
@@ -5630,7 +6686,7 @@ var Adyen = function (e) {
             }
 
             function r(n, r, o) {
-                e = r ? n : No(No({}, e), n);
+                e = r ? n : zo(zo({}, e), n);
                 for (var i = t, a = 0; a < i.length; a++) i[a](e, o)
             }
 
@@ -5653,20 +6709,20 @@ var Adyen = function (e) {
                     return e
                 }
             }
-        }(Fo({}, To, e))
-    }, Do = function (e, t) {
+        }(Go({}, $o, e))
+    }, Wo = function (e, t) {
         var n = e.disableRecurringDetailUrl, r = e.paymentData, o = e.originKey;
         if (!e || !t) throw new Error("Could not submit the payment");
-        return se(n + "?token=" + o, {paymentData: r, paymentMethodData: t, token: o}).catch(function (e) {
+        return de(n + "?token=" + o, {paymentData: r, paymentMethodData: t, token: o}).catch(function (e) {
             throw new Error(e)
         })
-    }, Io = Object.assign || function (e) {
+    }, Ho = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Mo = function () {
+    }, Jo = function () {
         function e(e, t) {
             for (var n = 0; n < t.length; n++) {
                 var r = t[n];
@@ -5678,7 +6734,7 @@ var Adyen = function (e) {
             return n && e(t.prototype, n), r && e(t, r), t
         }
     }();
-    var Vo = function (e) {
+    var Zo = function (e) {
         function t(n) {
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
@@ -5689,7 +6745,7 @@ var Adyen = function (e) {
             }(this, e.call(this, n));
             r.observer = r.observer.bind(r), r.submit = r.submit.bind(r), r.disableOneClick = r.disableOneClick.bind(r);
             var o = r.props, i = o.locale, a = o.paymentSession;
-            return r.store = Ao({locale: i, paymentSession: a}), r.store.subscribe(r.observer), r
+            return r.store = qo({locale: i, paymentSession: a}), r.store.subscribe(r.observer), r
         }
 
         return function (e, t) {
@@ -5703,7 +6759,7 @@ var Adyen = function (e) {
                 }
             }), t && (Object.setPrototypeOf ? Object.setPrototypeOf(e, t) : e.__proto__ = t)
         }(t, e), t.prototype.observer = function (e) {
-            switch (this.state = e, e.activePaymentMethod ? this.props.onValid(e.activePaymentMethod.isValid()) : this.props.onValid(!1), e.status.type) {
+            switch (this.state = e, e.activePaymentMethod ? this.props.onValid(e.activePaymentMethod.isValid(), e.activePaymentMethod.paymentData) : this.props.onValid(!1), e.status.type) {
                 case"redirect":
                     this.props.onRedirect(e.status.props);
                     break;
@@ -5714,7 +6770,7 @@ var Adyen = function (e) {
                     this.props.onError(e.status.props)
             }
         }, t.prototype.formatProps = function (e) {
-            return Io({
+            return Ho({
                 onSuccess: function () {
                 }, onError: function () {
                 }, onRedirect: function () {
@@ -5732,14 +6788,14 @@ var Adyen = function (e) {
             return e.submit()
         }, t.prototype.disableOneClick = function (e) {
             if (!e) throw new Error("No payment method could be disabled.");
-            return Do(this.state.paymentSession, e)
+            return Wo(this.state.paymentSession, e)
         }, t.prototype.render = function () {
-            return Object(r.h)(Ro, Io({}, this.props, {
+            return Object(r.h)(Ko, Ho({}, this.props, {
                 store: this.store,
                 onSubmit: this.submit,
                 onDisableOneClick: this.disableOneClick
             }))
-        }, Mo(t, [{
+        }, Jo(t, [{
             key: "paymentMethods", get: function () {
                 return this.props.paymentSession.paymentMethods
             }
@@ -5748,45 +6804,45 @@ var Adyen = function (e) {
                 return this.props.paymentSession.oneClickPaymentMethods
             }
         }]), t
-    }(a), Lo = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", Bo = window.atob || function (e) {
+    }(a), Yo = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", Xo = window.atob || function (e) {
         var t = String(e).replace(/[=]+$/, "");
         t.length % 4 == 1 && logger.error("'atob' failed: The string to be decoded is not correctly encoded.");
-        for (var n, r, o = 0, i = 0, a = ""; r = t.charAt(i++); ~r && (n = o % 4 ? 64 * n + r : r, o++ % 4) ? a += String.fromCharCode(255 & n >> (-2 * o & 6)) : 0) r = Lo.indexOf(r);
+        for (var n, r, o = 0, i = 0, a = ""; r = t.charAt(i++); ~r && (n = o % 4 ? 64 * n + r : r, o++ % 4) ? a += String.fromCharCode(255 & n >> (-2 * o & 6)) : 0) r = Yo.indexOf(r);
         return a
-    }, Uo = window.btoa || function (e) {
-        for (var t, n, r = String(e), o = 0, i = Lo, a = ""; r.charAt(0 | o) || (i = "=", o % 1); a += i.charAt(63 & t >> 8 - o % 1 * 8)) (n = r.charCodeAt(o += .75)) > 255 && logger.error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range."), t = t << 8 | n;
+    }, Qo = window.btoa || function (e) {
+        for (var t, n, r = String(e), o = 0, i = Yo, a = ""; r.charAt(0 | o) || (i = "=", o % 1); a += i.charAt(63 & t >> 8 - o % 1 * 8)) (n = r.charCodeAt(o += .75)) > 255 && logger.error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range."), t = t << 8 | n;
         return a
-    }, Ko = {
+    }, ei = {
         decode: function (e) {
-            return !!Ko.isBase64(e) && (!!Ko.isBase64(e) && (t = e, decodeURIComponent(Array.prototype.map.call(Bo(t), function (e) {
+            return !!ei.isBase64(e) && (!!ei.isBase64(e) && (t = e, decodeURIComponent(Array.prototype.map.call(Xo(t), function (e) {
                 return "%" + ("00" + e.charCodeAt(0).toString(16)).slice(-2)
             }).join(""))));
             var t
         }, encode: function (e) {
-            return Uo(e)
+            return Qo(e)
         }, isBase64: function (e) {
             if (!e) return !1;
             if (e.length % 4) return !1;
             try {
-                return Uo(Bo(e)) === e
+                return Qo(Xo(e)) === e
             } catch (e) {
                 throw e
             }
         }
-    }, $o = Ko, Go = Object.assign || function (e) {
+    }, ti = ei, ni = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
-    }, Wo = function (e) {
+    }, ri = function (e) {
         var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
         return !t.card || "undefined" === typeof t.card.consolidateCards || t.card.consolidateCards ? function (e) {
             var t = e.reduce(function (e, t, n) {
                 if (t.group) {
                     var r = e[t.group.type] && "undefined" !== typeof e[t.group.type].position ? e[t.group.type].position : n,
                         o = e[t.group.type] && e[t.group.type].groupTypes ? [t.type].concat(e[t.group.type].groupTypes) : [t.type];
-                    e[t.group.type] = Go({position: r, groupTypes: o, details: t.details}, t.group)
+                    e[t.group.type] = ni({position: r, groupTypes: o, details: t.details}, t.group)
                 }
                 return e
             }, {}), n = e.filter(function (e) {
@@ -5796,11 +6852,11 @@ var Adyen = function (e) {
                 return n.splice(t[e].position, 0, t[e])
             }), n
         }(e) : e
-    }, Yo = function (e) {
+    }, oi = function (e) {
         if (!e || !e.paymentSession) throw new Error("No server paymentSession was provided");
         var t = e.paymentSession, n = function () {
             try {
-                return $o.decode(t)
+                return ti.decode(t)
             } catch (e) {
                 throw console.log(e), new Error(e)
             }
@@ -5812,48 +6868,48 @@ var Adyen = function (e) {
             }
         }();
         if (!r) throw new Error("Could not process the paymentSession");
-        return Go({}, r, {
-            paymentMethods: Wo(r.paymentMethods, e.paymentMethodsConfiguration),
+        return ni({}, r, {
+            paymentMethods: ri(r.paymentMethods, e.paymentMethodsConfiguration),
             payment: r.payment,
             originKey: r.originKey,
             checkoutshopperBaseUrl: r.checkoutshopperBaseUrl
         })
-    }, Ho = Object.assign || function (e) {
+    }, ii = Object.assign || function (e) {
         for (var t = 1; t < arguments.length; t++) {
             var n = arguments[t];
             for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r])
         }
         return e
     };
-    var qo = function () {
+    var ai = function () {
         function e() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             !function (e, t) {
                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
-            }(this, e), this.options = Ho({}, t, {
-                paymentSession: t.paymentSession ? Yo(t) : null,
-                i18n: new io(t.locale, t.translations)
+            }(this, e), this.options = ii({}, t, {
+                paymentSession: t.paymentSession ? oi(t) : null,
+                i18n: new go(t.locale, t.translations)
             })
         }
 
         return e.prototype.create = function (e) {
-            var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = Ho({}, this.options, t);
+            var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = ii({}, this.options, t);
             return e ? this.handleCreate(e, n) : this.handleCreateError()
         }, e.prototype.sdk = function () {
             var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             if (!e.paymentSession) throw new Error("Payment session was not found.");
-            return this.handleCreate(Vo, Ho({}, this.options, e, {paymentSession: Yo(e)}))
+            return this.handleCreate(Zo, ii({}, this.options, e, {paymentSession: oi(e)}))
         }, e.prototype.handleCreate = function (e, t) {
-            return e.prototype instanceof a ? new e(t) : "string" === typeof e && Xr[e] ? this.handleCreate(Xr[e], t) : this.handleCreateError(e)
+            return e.prototype instanceof a ? new e(t) : "string" === typeof e && lo[e] ? this.handleCreate(lo[e], t) : this.handleCreateError(e)
         }, e.prototype.handleCreateError = function (e) {
             var t = e && e.name ? e.name : "The passed payment method";
             throw new Error(e ? t + " is not a valid Checkout Component" : "No Payment Method component was passed")
         }, e
     }();
-    n(86), n(87), n(90);
-    "undefined" === typeof Promise && (window.Promise = n(97)), n.d(t, "Checkout", function () {
-        return qo
+    n(101), n(102), n(105);
+    "undefined" === typeof Promise && (window.Promise = n(112)), n.d(t, "Checkout", function () {
+        return ai
     }), n.d(t, "paymentMethods", function () {
-        return Xr
+        return lo
     })
 }]);

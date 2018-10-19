@@ -258,7 +258,7 @@ var AdyenCheckout = (function () {
         },
         initiateCheckout: function (locale) {
             var configuration = {
-                locale: 'nl_NL' // shopper's locale
+                locale: locale // shopper's locale
             };
             this.checkout = new Adyen.Checkout(configuration);
         },

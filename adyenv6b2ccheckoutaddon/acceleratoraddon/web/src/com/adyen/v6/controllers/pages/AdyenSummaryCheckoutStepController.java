@@ -160,8 +160,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
-                LOGGER.error("API exception " + e.getError());
+                LOGGER.error("API exception " + e);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug(e);
                 PaymentResult paymentResult = e.getPaymentResult();
                 if (paymentResult.isRefused()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
