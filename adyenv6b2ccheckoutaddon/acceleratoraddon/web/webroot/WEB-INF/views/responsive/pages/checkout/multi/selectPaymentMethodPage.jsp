@@ -121,7 +121,7 @@
                                 <c:if test="${not empty iDealissuerList}">
                                     <adyen:alternativeMethod
                                             brandCode="ideal"
-                                            name="ideal"
+                                            name="iDEAL"
                                     />
                                 </c:if>
 
