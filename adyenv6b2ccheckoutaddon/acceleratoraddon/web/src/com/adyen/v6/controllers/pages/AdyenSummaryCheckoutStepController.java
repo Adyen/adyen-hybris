@@ -67,11 +67,10 @@ import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
-import static de.hybris.platform.addonsupport.controllers.AbstractAddOnController.REDIRECT_PREFIX;
+import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -172,9 +171,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
-        }
-        else
-         {
+        } else {
             try {
                 cartData.setAdyenReturnUrl(getReturnUrl());
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
@@ -192,10 +189,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                         model.addAttribute("issuerUrl", paymentsResponse.getRedirect().getUrl());
                         model.addAttribute("termUrl", termUrl);
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
-                    } else {
-                        return REDIRECT_PREFIX + paymentsResponse.getRedirect().getUrl();
-
                     }
+                    return REDIRECT_PREFIX + paymentsResponse.getRedirect().getUrl();
                 }
                 if (REFUSED == paymentsResponse.getResultCode()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
@@ -222,11 +217,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             LOGGER.debug("Redirecting to confirmation");
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
-                PaymentsResponse paymentsResponse = e.getPaymentsResponse();
-                if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
-                    LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentsResponse: " + paymentsResponse, e);
-                    errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
-                }
+            PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+            if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
+                LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentsResponse: " + paymentsResponse, e);
+                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
+            }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
             return REDIRECT_PREFIX + "/cart";
@@ -293,7 +288,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         apiPaymentMethods.add(PAYMENT_METHOD_BOLETO);
         apiPaymentMethods.add(PAYPAL_ECS);
-        apiPaymentMethods.addAll(OPENINVOICE_METHODS_API);
+        apiPaymentMethods.add(RATEPAY);
 
         return apiPaymentMethods.contains(paymentMethod);
     }
