@@ -533,7 +533,7 @@ public class AdyenRequestFactory {
     }
 
 
-    /**
+    /*
      * Set the required fields for using the OpenInvoice API
      */
     public void setOpenInvoiceData(PaymentsRequest paymentsRequest, CartData cartData, final CustomerModel customerModel) {
@@ -557,6 +557,10 @@ public class AdyenRequestFactory {
         String currency = cartData.getTotalPrice().getCurrencyIso();
 
         for (OrderEntryData entry : cartData.getEntries()) {
+            if(entry.getQuantity() == 0L) {
+                // skip zero quantities
+                continue;
+            }
             // Use totalPrice because the basePrice does include tax as well if you have configured this to be calculated in the price
             BigDecimal pricePerItem = entry.getTotalPrice().getValue().divide(new BigDecimal(entry.getQuantity()));
 
