@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import com.adyen.enums.Environment;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -48,7 +47,6 @@ import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentMethodsRequest;
 import com.adyen.model.checkout.PaymentMethodsResponse;
-import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
@@ -71,6 +69,8 @@ import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
@@ -104,7 +104,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config.setMerchantAccount(merchantAccount);
         config.setSkinCode(skinCode);
         config.setHmacKey(hmacKey);
-        config.setApplicationName("Adyen Hybris v3.4.0");
+        config.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
         client = new Client(config);
 
         if (isTestMode) {
@@ -137,10 +137,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
-                                                                                              cartData,
-                                                                                              requestInfo,
-                                                                                              customerModel,
-                                                                                              baseStore.getAdyenRecurringContractMode());
+                                                                                         cartData,
+                                                                                         requestInfo,
+                                                                                         customerModel,
+                                                                                         baseStore.getAdyenRecurringContractMode());
 
 
         LOG.debug(paymentsRequest);
@@ -224,15 +224,13 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         Checkout checkout = new Checkout(client);
 
         PaymentMethodsRequest request = new PaymentMethodsRequest();
-        request.merchantAccount(client.getConfig().getMerchantAccount())
-               .amount(Util.createAmount(amount, currency))
-               .countryCode(countryCode);
+        request.merchantAccount(client.getConfig().getMerchantAccount()).amount(Util.createAmount(amount, currency)).countryCode(countryCode);
 
-        if(!StringUtils.isEmpty(shopperLocale)) {
+        if (! StringUtils.isEmpty(shopperLocale)) {
             request.setShopperLocale(shopperLocale);
         }
 
-        if(!StringUtils.isEmpty(shopperReference)) {
+        if (! StringUtils.isEmpty(shopperReference)) {
             request.setShopperReference(shopperReference);
         }
 
@@ -322,10 +320,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     public AdyenRequestFactory getAdyenRequestFactory() {
-        if (adyenRequestFactory == null) {
-            adyenRequestFactory = new AdyenRequestFactory();
-        }
-
         return adyenRequestFactory;
     }
 

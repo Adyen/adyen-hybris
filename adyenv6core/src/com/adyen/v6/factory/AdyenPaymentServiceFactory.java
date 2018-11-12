@@ -30,10 +30,12 @@ import de.hybris.platform.store.BaseStoreModel;
  */
 public class AdyenPaymentServiceFactory {
     private PaymentMethodConverter paymentMethodConverter;
+    private AdyenRequestFactory adyenRequestFactory;
 
     public AdyenPaymentService createFromBaseStore(final BaseStoreModel baseStoreModel) {
         DefaultAdyenPaymentService adyenPaymentService = new DefaultAdyenPaymentService(baseStoreModel);
         adyenPaymentService.setPaymentMethodConverter(paymentMethodConverter);
+        adyenPaymentService.setAdyenRequestFactory(adyenRequestFactory);
         return adyenPaymentService;
     }
 
@@ -43,5 +45,13 @@ public class AdyenPaymentServiceFactory {
 
     public void setPaymentMethodConverter(PaymentMethodConverter paymentMethodConverter) {
         this.paymentMethodConverter = paymentMethodConverter;
+    }
+
+    public AdyenRequestFactory getAdyenRequestFactory() {
+        return adyenRequestFactory;
+    }
+
+    public void setAdyenRequestFactory(AdyenRequestFactory adyenRequestFactory) {
+        this.adyenRequestFactory = adyenRequestFactory;
     }
 }
