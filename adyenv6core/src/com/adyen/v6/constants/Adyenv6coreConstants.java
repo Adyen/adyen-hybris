@@ -29,6 +29,9 @@ import java.util.List;
  */
 public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
+
+	public static final String PLUGIN_NAME = "adyen-hybris";
+	public static final String PLUGIN_VERSION = "4.0.0-rc";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
