@@ -36,6 +36,9 @@ import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.additionalData.InvoiceLine;
+import com.adyen.model.applicationinfo.ApplicationInfo;
+import com.adyen.model.applicationinfo.CommonField;
+import com.adyen.model.applicationinfo.ExternalPlatform;
 import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.LineItem;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
@@ -53,6 +56,7 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
@@ -62,9 +66,15 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
 public class AdyenRequestFactory {
+    private ConfigurationService configurationService;
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
+
+    private static final String PLATFORM_NAME = "Hybris";
+    private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
 
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
         return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
@@ -168,7 +178,27 @@ public class AdyenRequestFactory {
         else {
             updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
         }
+
+        ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
+        paymentsRequest.setApplicationInfo(applicationInfo);
         return paymentsRequest;
+    }
+
+    public ApplicationInfo updateApplicationInfo(ApplicationInfo applicationInfo) {
+        if (applicationInfo == null) {
+            applicationInfo = new ApplicationInfo();
+        }
+        ExternalPlatform externalPlatform = new ExternalPlatform();
+        externalPlatform.setName(PLATFORM_NAME);
+        externalPlatform.setVersion(getPlatformVersion());
+        applicationInfo.setExternalPlatform(externalPlatform);
+
+        CommonField adyenPaymentSource = new CommonField();
+        adyenPaymentSource.setName(PLUGIN_NAME);
+        adyenPaymentSource.setVersion(PLUGIN_VERSION);
+        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
+
+        return applicationInfo;
     }
 
     private void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest) {
@@ -280,15 +310,30 @@ public class AdyenRequestFactory {
 
 
     public CaptureRequest createCaptureRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
-        return new CaptureRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode()).merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
+        CaptureRequest request = new CaptureRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode())
+                                                     .merchantAccount(merchantAccount)
+                                                     .originalReference(authReference)
+                                                     .reference(merchantReference);
+        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
+        request.setApplicationInfo(applicationInfo);
+        return request;
     }
 
     public CancelOrRefundRequest createCancelOrRefundRequest(final String merchantAccount, final String authReference, final String merchantReference) {
-        return new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
+        CancelOrRefundRequest request = new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
+        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
+        request.setApplicationInfo(applicationInfo);
+        return request;
     }
 
     public RefundRequest createRefundRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
-        return new RefundRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode()).merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
+        RefundRequest request = new RefundRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode())
+                                                   .merchantAccount(merchantAccount)
+                                                   .originalReference(authReference)
+                                                   .reference(merchantReference);
+        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
+        request.setApplicationInfo(applicationInfo);
+        return request;
     }
 
     public RecurringDetailsRequest createListRecurringDetailsRequest(final String merchantAccount, final String customerId) {
@@ -429,7 +474,7 @@ public class AdyenRequestFactory {
 
     /**
      * Set the required fields for using the OpenInvoice API
-     *
+     * <p>
      * To deprecate when RatePay is natively implemented
      */
     public void setOpenInvoiceData(PaymentRequest paymentRequest, CartData cartData, final CustomerModel customerModel) {
@@ -557,7 +602,7 @@ public class AdyenRequestFactory {
         String currency = cartData.getTotalPrice().getCurrencyIso();
 
         for (OrderEntryData entry : cartData.getEntries()) {
-            if(entry.getQuantity() == 0L) {
+            if (entry.getQuantity() == 0L) {
                 // skip zero quantities
                 continue;
             }
@@ -645,5 +690,17 @@ public class AdyenRequestFactory {
     private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
         paymentRequest.selectedBrand(PAYPAL_ECS);
         paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
+    }
+
+    private String getPlatformVersion() {
+        return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
+    }
+
+    public ConfigurationService getConfigurationService() {
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 }
