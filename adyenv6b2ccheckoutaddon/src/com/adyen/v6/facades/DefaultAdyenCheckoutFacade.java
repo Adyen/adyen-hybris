@@ -34,7 +34,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -63,6 +62,7 @@ import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
@@ -400,7 +400,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
-        if(adyenPaymentMethod.equals(PAYMENT_METHOD_BOLETO) || adyenPaymentMethod.equals(PAYPAL_ECS) || adyenPaymentMethod.startsWith(RATEPAY)) {
+        if (adyenPaymentMethod.equals(PAYMENT_METHOD_BOLETO) || adyenPaymentMethod.equals(PAYPAL_ECS) || adyenPaymentMethod.startsWith(RATEPAY)) {
 
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
             if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
@@ -419,7 +419,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
-        if(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
+        if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
             if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -453,16 +453,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         try {
             //Check if MD matches in order to avoid authorizing wrong order
-            if (sessionMd != null && !sessionMd.equals(md)) {
+            if (sessionMd != null && ! sessionMd.equals(md)) {
                 throw new SignatureException("MD does not match!");
             }
 
             restoreSessionCart();
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
-                if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-                    return createAuthorizedOrder(paymentsResponse);
-                }
-                throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                return createAuthorizedOrder(paymentsResponse);
+            }
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         } catch (ApiException e) {
             throw e;
         }
@@ -595,7 +595,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set APMs from Adyen HPP Directory Lookup
         List<PaymentMethod> alternativePaymentMethods = new ArrayList<>();
-        String iDealissuerList=null;
+        String iDealissuerList = null;
 
         try {
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
@@ -603,11 +603,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                                               cartData.getDeliveryAddress().getCountry().getIsocode(),
                                                                               getShopperLocale(),
                                                                               null);
-            PaymentMethod idealPaymentMethod= alternativePaymentMethods.stream()
-                    .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                            &&  PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())).findFirst().orElse(null);
+            PaymentMethod idealPaymentMethod = alternativePaymentMethods.stream()
+                                                                        .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType()))
+                                                                        .findFirst()
+                                                                        .orElse(null);
 
-            if(idealPaymentMethod!=null) {
+            if (idealPaymentMethod != null) {
                 Gson gson = new Gson();
                 iDealissuerList = gson.toJson(idealPaymentMethod.getDetails().get(0).getItems());
             }
@@ -716,9 +717,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public boolean showSocialSecurityNumber() {
         Boolean showSocialSecurityNumber = false;
-        final AddressData addressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-        String countryCode = addressData.getCountry().getIsocode();
-        if (OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
+        CartData cart = getCheckoutFacade().getCheckoutCart();
+        final AddressData deliveryAddress = cart.getDeliveryAddress();
+        String countryCode = deliveryAddress.getCountry().getIsocode();
+        if (OPENINVOICE_METHODS_API.contains(cart.getAdyenPaymentMethod()) && OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
             showSocialSecurityNumber = true;
         }
         return showSocialSecurityNumber;
