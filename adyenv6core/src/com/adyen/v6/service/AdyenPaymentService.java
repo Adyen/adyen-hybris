@@ -74,7 +74,8 @@ public interface AdyenPaymentService {
     List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference) throws IOException, ApiException;
 
     /**
-     * @deprecated use getPaymentMethods including shopperLocale instead
+     * Get Payment methods using HPP Directory Lookup
+     * @deprecated use getPaymentMethods including shopperReference instead
      * {@link #getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale)
      */
     @Deprecated
