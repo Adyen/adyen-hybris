@@ -168,12 +168,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_IDEAL_ISSUER_LIST = "iDealissuerList";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
-                                                                                             HPPConstants.Response.SKIN_CODE,
-                                                                                             HPPConstants.Response.SHOPPER_LOCALE,
-                                                                                             HPPConstants.Response.PAYMENT_METHOD,
-                                                                                             HPPConstants.Response.AUTH_RESULT,
-                                                                                             HPPConstants.Response.PSP_REFERENCE,
-                                                                                             HPPConstants.Response.MERCHANT_RETURN_DATA));
+                                                                                          HPPConstants.Response.SKIN_CODE,
+                                                                                          HPPConstants.Response.SHOPPER_LOCALE,
+                                                                                          HPPConstants.Response.PAYMENT_METHOD,
+                                                                                          HPPConstants.Response.AUTH_RESULT,
+                                                                                          HPPConstants.Response.PSP_REFERENCE,
+                                                                                          HPPConstants.Response.MERCHANT_RETURN_DATA));
 
     public DefaultAdyenCheckoutFacade() {
         hmacValidator = new HMACValidator();
@@ -288,6 +288,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
+    /**
+     * @deprecated use authorisePayment instead
+     */
     @Override
     public OrderData authorisePayment(final CartData cartData) throws Exception {
         CustomerModel customer = null;
