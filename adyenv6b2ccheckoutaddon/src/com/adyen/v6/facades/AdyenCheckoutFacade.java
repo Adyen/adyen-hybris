@@ -109,13 +109,6 @@ public interface AdyenCheckoutFacade {
     PaymentsResponse handleRedirectPayload(String payload);
 
     /**
-     * @deprecated use authorisePayment instead
-     *  * {@link #authorisePayment(HttpServletRequest request, CartData cartData)
-     */
-    @Deprecated
-    OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
-
-    /**
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
