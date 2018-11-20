@@ -20,24 +20,22 @@
  */
 package com.adyen.v6.service;
 
-import com.adyen.httpclient.HTTPClientException;
-import com.adyen.model.PaymentResult;
-import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.model.checkout.PaymentMethod;
-import com.adyen.model.modification.ModificationResult;
-import com.adyen.model.recurring.RecurringDetail;
-import com.adyen.service.exception.ApiException;
-import javax.servlet.http.HttpServletRequest;
-
-import com.adyen.v6.model.RequestInfo;
-import de.hybris.platform.commercefacades.order.data.CartData;
-import de.hybris.platform.core.model.user.CustomerModel;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
 import java.util.Currency;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import com.adyen.httpclient.HTTPClientException;
+import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.modification.ModificationResult;
+import com.adyen.model.recurring.RecurringDetail;
+import com.adyen.service.exception.ApiException;
+import com.adyen.v6.model.RequestInfo;
+import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.core.model.user.CustomerModel;
 
 public interface AdyenPaymentService {
     /**
@@ -51,6 +49,7 @@ public interface AdyenPaymentService {
      * Performs 3D secure authorization request via Adyen API
      */
     PaymentResult authorise3D(HttpServletRequest request, String paRes, String md) throws Exception;
+
     PaymentsResponse authorise3DPayment(String paymentData, String paRes, String md) throws Exception;
 
     /**
@@ -74,8 +73,7 @@ public interface AdyenPaymentService {
     List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference) throws IOException, ApiException;
 
     /**
-     * @deprecated use getPaymentMethods including shopperLocale instead
-     * {@link #getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale)
+     * @deprecated use getPaymentMethods including shopperReference instead {@link #getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference)
      */
     @Deprecated
     List<com.adyen.model.hpp.PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale) throws HTTPClientException, SignatureException, IOException;
