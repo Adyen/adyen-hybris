@@ -20,13 +20,6 @@
  */
 package com.adyen.v6.factory;
 
-import java.math.BigDecimal;
-import javax.servlet.http.HttpServletRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -37,6 +30,15 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -51,7 +53,7 @@ public class AdyenRequestFactoryTest {
     CartData cartDataMock;
 
     @Mock
-    HttpServletRequest requestMock;
+    javax.servlet.http.HttpServletRequest requestMock;
 
     @Mock
     CustomerModel customerModelMock;
