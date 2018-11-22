@@ -29,9 +29,13 @@ import java.util.List;
  */
 public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
+
+	public static final String PLUGIN_NAME = "adyen-hybris";
+	public static final String PLUGIN_VERSION = "4.0.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
+	final public static String PAYMENT_METHOD_IDEAL = "ideal";
 	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
 	final public static String PAYMENT_METHOD_BOLETO = "boleto";
 	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";

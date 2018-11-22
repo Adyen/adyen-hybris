@@ -41,7 +41,7 @@ public class AbstractOrderPopulator implements Populator<AbstractOrderModel, Abs
     @Override
     public void populate(final AbstractOrderModel source, final AbstractOrderData target) throws ConversionException {
         final PaymentInfoModel paymentInfo = source.getPaymentInfo();
-        if (paymentInfo != null && isNotCreditCard(paymentInfo)) {
+        if (paymentInfo != null && isAdyenPaymentInfo(paymentInfo)) {
             // In the OrderConfirmationPage, orderData.PaymentInfo is "required" to be a CCPaymentInfoData, and cannot be null.
             final CCPaymentInfoData ccPaymentInfoData = new CCPaymentInfoData();
             ccPaymentInfoData.setBillingAddress(addressConverter.convert(paymentInfo.getBillingAddress()));
@@ -52,7 +52,7 @@ public class AbstractOrderPopulator implements Populator<AbstractOrderModel, Abs
         }
     }
 
-    protected boolean isNotCreditCard(final PaymentInfoModel paymentInfo) {
+    protected boolean isAdyenPaymentInfo(final PaymentInfoModel paymentInfo) {
         return !(paymentInfo instanceof CreditCardPaymentInfoModel);
     }
 

@@ -18,36 +18,42 @@
  *  This file is open source and available under the MIT license.
  *  See the LICENSE file for more info.
  */
-package com.adyen.v6.exceptions;
+package com.adyen.v6.model;
 
-import com.adyen.model.PaymentResult;
-import com.adyen.model.checkout.PaymentsResponse;
+import javax.servlet.http.HttpServletRequest;
 
-public class AdyenNonAuthorizedPaymentException extends Exception {
-    private PaymentResult paymentResult;
-    private PaymentsResponse paymentsResponse;
+public class RequestInfo {
 
-    public AdyenNonAuthorizedPaymentException(PaymentResult paymentResult) {
-        this.paymentResult = paymentResult;
+    public static final String USER_AGENT_HEADER = "User-Agent";
+    public static final String ACCEPT_HEADER = "Accept";
+
+    private String userAgent;
+    private String acceptHeader;
+    private String shopperIp;
+
+    public RequestInfo(HttpServletRequest request) {
+        this.userAgent = request.getHeader(USER_AGENT_HEADER);
+        this.acceptHeader = request.getHeader(ACCEPT_HEADER);
+        this.shopperIp = request.getRemoteAddr();
     }
 
-    public AdyenNonAuthorizedPaymentException(PaymentsResponse paymentsResponse) {
-        this.paymentsResponse = paymentsResponse;
+    private RequestInfo() {
+
     }
 
-    public PaymentResult getPaymentResult() {
-        return paymentResult;
+    public static RequestInfo empty() {
+        return new RequestInfo();
     }
 
-    public void setPaymentResult(PaymentResult paymentResult) {
-        this.paymentResult = paymentResult;
+    public String getUserAgent() {
+        return userAgent;
     }
 
-    public PaymentsResponse getPaymentsResponse() {
-        return paymentsResponse;
+    public String getAcceptHeader() {
+        return acceptHeader;
     }
 
-    public void setPaymentsResponse(PaymentsResponse paymentsResponse) {
-        this.paymentsResponse = paymentsResponse;
+    public String getShopperIp() {
+        return shopperIp;
     }
 }

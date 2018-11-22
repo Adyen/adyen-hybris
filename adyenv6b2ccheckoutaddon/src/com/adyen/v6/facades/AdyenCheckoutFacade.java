@@ -20,15 +20,20 @@
  */
 package com.adyen.v6.facades;
 
+import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Map;
 import java.util.SortedMap;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
@@ -53,11 +58,6 @@ public interface AdyenCheckoutFacade {
      * @throws SignatureException in case signature doesn't match
      */
     void validateHPPResponse(HttpServletRequest request) throws SignatureException;
-
-    /**
-     * Retrieve the CSE JS Url
-     */
-    String getCSEUrl();
 
     /**
      * Retrieve the WS User Origin Key
@@ -100,22 +100,40 @@ public interface AdyenCheckoutFacade {
     OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
 
     /**
-     * @deprecated use authorisePayment instead
-     *  * {@link #authorisePayment(HttpServletRequest request, CartData cartData)
+     * Handles Adyen Redirect Response
+     * In case of authorized, it places an order from cart
+     *
+     * @param payload included in querystring of response
+     * @return PaymentsResponse
      */
-    @Deprecated
-    OrderData authoriseCardPayment(HttpServletRequest request, CartData cartData) throws Exception;
+    PaymentsResponse handleRedirectPayload(String payload);
 
     /**
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
      *
-     * @param request  HTTP Request object
+     * @param request  HTTP Request info
      * @param cartData cartData object
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
     OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Authorizes a payment using Adyen API
+     * In case of authorized, it places an order from cart
+     * No session handling
+     *
+     * @param cartData cartData object
+     * @return OrderData
+     * @throws Exception In case order failed to be created
+     */
+    OrderData authorisePayment(CartData cartData) throws Exception;
+
+    /**
+     * Add payment details to cart
+     */
+    PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails);
 
     /**
      * Handles an 3D response
@@ -134,7 +152,7 @@ public interface AdyenCheckoutFacade {
      * @param cartData    Shopper's cart
      * @param redirectUrl HPP result url
      * @return HPP data
-     * @throws SignatureException In case signature cannot be generated
+     * @throws SignatureException   In case signature cannot be generated
      * @throws InvalidCartException In case there is an existing locked cart
      */
     Map<String, String> initializeHostedPayment(CartData cartData, String redirectUrl) throws SignatureException, InvalidCartException;
@@ -172,4 +190,6 @@ public interface AdyenCheckoutFacade {
      * Updates BindingResult
      */
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+
+    PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 }

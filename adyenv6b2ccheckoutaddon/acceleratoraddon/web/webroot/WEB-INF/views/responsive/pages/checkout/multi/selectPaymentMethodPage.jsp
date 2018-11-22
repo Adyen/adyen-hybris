@@ -56,9 +56,15 @@
                 AdyenCheckout.togglePaymentMethod( paymentMethod );
             } );
 
-            AdyenCheckout.createDobDatePicker( "p_method_adyen_hpp_dob" );
-
+            AdyenCheckout.createDobDatePicker("p_method_adyen_hpp_dob");
             AdyenCheckout.createDfValue();
+            AdyenCheckout.initiateCheckout("${shopperLocale}");
+
+            <c:if test="${not empty iDealissuerList}">
+                AdyenCheckout.initiateIdeal(${iDealissuerList});
+            </c:if>
+
+
         </script>
     </jsp:attribute>
 
@@ -102,17 +108,22 @@
                                     <adyen:securedFieldsMethod showRememberTheseDetails="${showRememberTheseDetails}"/>
                                 </c:if>
 
+                                    <%--to-do populate issuers and rest of items via checkout components--%>
                                 <c:forEach items="${paymentMethods}" var="paymentMethod">
-                                    <c:if test="${not paymentMethod.isCard()}">
-                                        <adyen:alternativeMethod
-                                                brandCode="${paymentMethod.brandCode}"
-                                                issuers="${paymentMethod.issuers}"
-                                                name="${paymentMethod.name}"
-                                                showDob="${openInvoiceMethods.contains(paymentMethod.brandCode)}"
-                                                showSocialSecurityNumber="${showSocialSecurityNumber}"
-                                        />
-                                    </c:if>
+                                    <adyen:alternativeMethod
+                                            brandCode="${paymentMethod.type}"
+                                            name="${paymentMethod.name}"
+                                            showDob="${openInvoiceMethods.contains(paymentMethod.type)}"
+                                            showSocialSecurityNumber="${showSocialSecurityNumber}"
+                                    />
                                 </c:forEach>
+
+                                <c:if test="${not empty iDealissuerList}">
+                                    <adyen:alternativeMethod
+                                            brandCode="ideal"
+                                            name="iDEAL"
+                                    />
+                                </c:if>
 
                                 <c:if test="${showBoleto}">
                                     <adyen:alternativeMethod
