@@ -240,7 +240,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         try {
             PaymentsResponse response = adyenCheckoutFacade.handleRedirectPayload(payload);
 
-            switch (response.getAuthResponse()) {
+            switch (response.getResultCode()) {
                 case AUTHORISED:
                 case RECEIVED:
                     LOGGER.debug("Redirecting to order confirmation");
