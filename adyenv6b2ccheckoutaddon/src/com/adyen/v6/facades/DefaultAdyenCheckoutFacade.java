@@ -378,7 +378,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 throw new InvalidCartException("Merchant reference doesn't match cart's code");
             }
 
-            if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getAuthResponse() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getAuthResponse()) {
+            if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
                 getCheckoutFacade().placeOrder();
             }
 
