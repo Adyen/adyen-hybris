@@ -17,23 +17,5 @@
 -->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
-	<bean class="de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO">
-		<property name="encryptedCardNumber" type="String" />
-		<property name="encryptedExpiryMonth" type="String" />
-		<property name="encryptedExpiryYear" type="String" />
-		<property name="encryptedSecurityCode" type="String" />
-		<property name="saveCardData" type="Boolean" />
-		<property name="adyenPaymentMethod" type="String" />
-		<property name="adyenSelectedReference" type="String" />
-		<property name="adyenSocialSecurityNumber" type="String" />
-		<property name="adyenFirstName" type="String" />
-		<property name="adyenLastName" type="String" />
-	</bean>
 
-	<bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">
-		<property name="adyenBoletoUrl" type="String" />
-		<property name="adyenBoletoData" type="String" />
-		<property name="adyenBoletoExpirationDate" type="java.util.Date" />
-		<property name="adyenBoletoDueDate" type="java.util.Date" />
-	</bean>
 </beans>
