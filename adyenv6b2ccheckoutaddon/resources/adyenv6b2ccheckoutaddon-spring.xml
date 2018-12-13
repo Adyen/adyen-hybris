@@ -93,35 +93,4 @@
 	<!-- To obtain the oder number before the order is created -->
 	<alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
 	<bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
-
-	<alias name="defaultAdyenCheckoutFacade" alias="adyenCheckoutFacade" />
-	<bean id="defaultAdyenCheckoutFacade" class="com.adyen.v6.facades.DefaultAdyenCheckoutFacade">
-		<property name="baseStoreService" ref="baseStoreService"/>
-		<property name="sessionService" ref="sessionService"/>
-		<property name="cartService" ref="cartService"/>
-		<property name="orderFacade" ref="orderFacade"/>
-		<property name="checkoutFacade" ref="checkoutFacade"/>
-		<property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
-		<property name="adyenTransactionService" ref="adyenTransactionService"/>
-		<property name="orderRepository" ref="adyenOrderRepository"/>
-		<property name="adyenOrderService" ref="adyenOrderService"/>
-		<property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
-		<property name="modelService" ref="modelService"/>
-		<property name="commonI18NService" ref="commonI18NService"/>
-		<property name="keyGenerator" ref="orderCodeGenerator"/>
-		<property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
-		<property name="flexibleSearchService" ref="flexibleSearchService"/>
-		<property name="addressReverseConverter" ref="addressReverseConverter"/>
-	</bean>
-
-	<alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
-	<bean id="defaultAdyenPaypalFacade" class="com.adyen.v6.facades.DefaultAdyenPaypalFacade">
-		<property name="adyenAddressDataFactory" ref="adyenAddressDataFactory"/>
-		<property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
-		<property name="modelService" ref="modelService"/>
-		<property name="cartService" ref="cartService"/>
-		<property name="checkoutFacade" ref="checkoutFacade"/>
-		<property name="userFacade" ref="userFacade"/>
-		<property name="addressReverseConverter" ref="addressReverseConverter"/>
-	</bean>
 </beans>

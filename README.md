@@ -75,7 +75,7 @@ Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/developers/pro
 
 ## Usage with OCC
 
-The plugin supports the following OCC v2 compatible methods via [com.adyen.v6.facades.AdyenCheckoutFacade](adyenv6b2ccheckoutaddon/src/com/adyen/v6/facades/AdyenCheckoutFacade.java):
+The plugin supports the following OCC v2 compatible methods via [com.adyen.v6.facades.AdyenCheckoutFacade](adyenv6core/src/com/adyen/v6/facades/AdyenCheckoutFacade.java):
 
 1. PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 
