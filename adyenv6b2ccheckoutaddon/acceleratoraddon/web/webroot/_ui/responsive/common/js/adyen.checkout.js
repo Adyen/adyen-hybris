@@ -35,13 +35,12 @@ var AdyenCheckoutHybris = (function () {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
-                var cvc =null;
-
-                if(!(oneClickCard.props.type == "bcmc"))
-                {
-                    cvc = oneClickCard.state.data.encryptedSecurityCode;
+                if ( (oneClickCard.props.type == "bcmc") ) {
+                    this.copyOneClickCardDataBCMC( recurringReference )
                 }
-                this.copyOneClickCardData(recurringReference, cvc);
+                else {
+                    this.copyOneClickCardData( recurringReference, oneClickCard.state.data.encryptedSecurityCode );
+                }
             }
 
             $( 'input[name="txvariant"]' ).remove();
@@ -58,9 +57,14 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="cardHolder"]' ).val( state.holderName );
         },
 
-        copyOneClickCardData: function(recurringReference, cvc) {
-            $("#selectedReference").val(recurringReference);
-            $('input[name="encryptedSecurityCode"]').val(cvc);
+        copyOneClickCardData: function ( recurringReference, cvc ) {
+            $( "#selectedReference" ).val( recurringReference );
+            $( 'input[name="encryptedSecurityCode"]' ).val( cvc );
+
+        },
+        copyOneClickCardDataBCMC: function ( recurringReference ) {
+            $( "#selectedReference" ).val( recurringReference );
+            $( 'input[name="cardBrand"]' ).val( "bcmc" );
         },
 
         /**
