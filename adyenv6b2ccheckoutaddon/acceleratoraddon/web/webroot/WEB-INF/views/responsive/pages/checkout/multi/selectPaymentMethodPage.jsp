@@ -102,6 +102,7 @@
                             <form:hidden path="socialSecurityNumber"/>
                             <form:hidden path="dfValue"/>
                             <form:hidden path="cardHolder"/>
+                            <form:hidden path="cardBrand"/>
 
                             <form:hidden path="encryptedCardNumber"/>
                             <form:hidden path="encryptedExpiryMonth"/>

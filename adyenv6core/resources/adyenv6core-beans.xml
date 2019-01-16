@@ -19,6 +19,7 @@
         <property name="adyenEncryptedExpiryMonth" type="java.lang.String"/>
         <property name="adyenEncryptedExpiryYear" type="java.lang.String"/>
         <property name="adyenEncryptedSecurityCode" type="java.lang.String"/>
+        <property name="adyenCardBrand" type="java.lang.String"/>
         <property name="adyenCardHolder" type="java.lang.String"/>
         <property name="adyenSelectedReference" type="java.lang.String"/>
         <property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
