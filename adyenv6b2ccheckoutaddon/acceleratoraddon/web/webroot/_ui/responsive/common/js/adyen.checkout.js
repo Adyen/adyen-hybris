@@ -154,6 +154,7 @@ var AdyenCheckoutHybris = (function () {
             this.card = this.checkout.create( 'card', {
                 type: 'card',
                 hasHolderName: true,
+                holderNameRequired: true,
                 groupTypes: allowedCards
 
             });
