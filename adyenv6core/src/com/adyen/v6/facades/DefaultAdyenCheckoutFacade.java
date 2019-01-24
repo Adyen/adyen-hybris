@@ -148,6 +148,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_SF_EXPIRY_MONTH = "encryptedExpiryMonth";
     public static final String SESSION_SF_EXPIRY_YEAR = "encryptedExpiryYear";
     public static final String SESSION_SF_SECURITY_CODE = "encryptedSecurityCode";
+    public static final String SESSION_CARD_BRAND = "cardBrand";
     public static final String THREE_D_MD = "MD";
     public static final String THREE_D_PARES = "PaRes";
     public static final String SESSION_PAYMENT_DATA = "adyen_payment_data";
@@ -435,12 +436,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         cartData.setAdyenEncryptedExpiryMonth(getSessionService().getAttribute(SESSION_SF_EXPIRY_MONTH));
         cartData.setAdyenEncryptedExpiryYear(getSessionService().getAttribute(SESSION_SF_EXPIRY_YEAR));
         cartData.setAdyenEncryptedSecurityCode(getSessionService().getAttribute(SESSION_SF_SECURITY_CODE));
+        cartData.setAdyenCardBrand(getSessionService().getAttribute(SESSION_CARD_BRAND));
 
         getSessionService().removeAttribute(SESSION_CSE_TOKEN);
         getSessionService().removeAttribute(SESSION_SF_CARD_NUMBER);
         getSessionService().removeAttribute(SESSION_SF_EXPIRY_MONTH);
         getSessionService().removeAttribute(SESSION_SF_EXPIRY_YEAR);
         getSessionService().removeAttribute(SESSION_SF_SECURITY_CODE);
+        getSessionService().removeAttribute(SESSION_CARD_BRAND);
     }
 
     @Override
@@ -617,6 +620,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
                                                                          && ! "scheme".equals(paymentMethod.getType())
+                                                                         && ! "bcmc".equals(paymentMethod.getType())
                                                                          && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
                                                                          && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
                                                                  .collect(Collectors.toList());
@@ -814,6 +818,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         if (! StringUtils.isEmpty(adyenPaymentForm.getEncryptedSecurityCode())) {
             getSessionService().setAttribute(SESSION_SF_SECURITY_CODE, adyenPaymentForm.getEncryptedSecurityCode());
+        }
+        if (! StringUtils.isEmpty(adyenPaymentForm.getCardBrand())) {
+            getSessionService().setAttribute(SESSION_CARD_BRAND, adyenPaymentForm.getCardBrand());
         }
 
         //Update CartModel

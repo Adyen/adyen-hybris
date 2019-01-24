@@ -17,52 +17,65 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/assets/js/sdk/checkoutSecuredFields.1.1.0.js"></script>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.0.0/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.0.0/adyen.css"/>
 
         <script type="text/javascript">
+            AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/", "${originKey}" );
+
             <c:if test="${not empty allowedCards}">
             //Set the allowed cards
             var allowedCards = [];
             <c:forEach items="${allowedCards}" var="allowedCard">
             allowedCards.push( "${allowedCard.code}" );
             </c:forEach>
+            AdyenCheckoutHybris.initiateCard(allowedCards);
 
-            var cardLogosContainer = document.getElementById( 'cardLogos' );
-            AdyenCheckout.enableCardTypeDetection( allowedCards, cardLogosContainer );
-
-            var securedFieldsForm = AdyenCheckout.createSecuredFieldsForm( "${originKey}", ".js-chckt-pm-list" );
             </c:if>
 
             //Handle form submission
             $( ".submit_silentOrderPostForm" ).click( function ( event ) {
-                if ( !AdyenCheckout.validateForm() ) {
+                if ( !AdyenCheckoutHybris.validateForm() ) {
                     return false;
                 }
-
-                AdyenCheckout.setCustomPaymentMethodValues();
+                AdyenCheckoutHybris.setCustomPaymentMethodValues();
 
                 $( "#adyen-encrypted-form" ).submit();
             } );
 
             <c:if test="${not empty selectedPaymentMethod}">
-            AdyenCheckout.togglePaymentMethod( "${selectedPaymentMethod}" );
+            AdyenCheckoutHybris.togglePaymentMethod( "${selectedPaymentMethod}" );
             $( 'input[type=radio][name=paymentMethod][value="${selectedPaymentMethod}"]' ).prop("checked", true);
             </c:if>
 
             // Toggle payment method specific areas (credit card form and issuers list)
             $( 'input[type=radio][name=paymentMethod]' ).change( function () {
                 var paymentMethod = this.value;
-                AdyenCheckout.togglePaymentMethod( paymentMethod );
+                AdyenCheckoutHybris.togglePaymentMethod( paymentMethod );
             } );
 
-            AdyenCheckout.createDobDatePicker("p_method_adyen_hpp_dob");
-            AdyenCheckout.createDfValue();
-            AdyenCheckout.initiateCheckout("${shopperLocale}");
+            AdyenCheckoutHybris.createDobDatePicker("p_method_adyen_hpp_dob");
+            AdyenCheckoutHybris.createDfValue();
+
 
             <c:if test="${not empty iDealissuerList}">
-                AdyenCheckout.initiateIdeal(${iDealissuerList});
+            AdyenCheckoutHybris.initiateIdeal(${iDealissuerList});
             </c:if>
+
+            <c:forEach items="${storedCards}" var="storedCard">
+
+            //convert java stored card object to javascript object
+            var storedCardJS= {
+                    type: "${storedCard.variant}",
+                    reference: "${storedCard.recurringDetailReference}",
+                    number: "${storedCard.card.number}",
+                    expiryMonth: "${storedCard.card.expiryMonth}",
+                    expiryYear: "${storedCard.card.expiryYear}"
+                };
+
+            AdyenCheckoutHybris.initiateOneClickCard(storedCardJS);
+            </c:forEach>
 
 
         </script>
@@ -87,6 +100,8 @@
                             <form:hidden path="dob"/>
                             <form:hidden path="socialSecurityNumber"/>
                             <form:hidden path="dfValue"/>
+                            <form:hidden path="cardHolder"/>
+                            <form:hidden path="cardBrand"/>
 
                             <form:hidden path="encryptedCardNumber"/>
                             <form:hidden path="encryptedExpiryMonth"/>
@@ -99,8 +114,6 @@
                                             variant="${storedCard.variant}"
                                             cardReference="${storedCard.recurringDetailReference}"
                                             cardNumber="${storedCard.card.number}"
-                                            expiryMonth="${storedCard.card.expiryMonth}"
-                                            expiryYear="${storedCard.card.expiryYear}"
                                     />
                                 </c:forEach>
 
