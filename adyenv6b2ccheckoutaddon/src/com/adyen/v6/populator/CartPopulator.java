@@ -47,7 +47,7 @@ public class CartPopulator implements Populator<CartModel, CartData> {
             target.setAdyenLastName(paymentInfo.getAdyenLastName());
             target.setAdyenPaymentToken(paymentInfo.getAdyenPaypalEcsToken());
             target.setAdyenCardHolder(paymentInfo.getAdyenCardHolder());
-
+            target.setAdyenCardBrand(paymentInfo.getCardBrand());
             target.setAdyenEncryptedCardNumber(paymentInfo.getEncryptedCardNumber());
             target.setAdyenEncryptedExpiryMonth(paymentInfo.getEncryptedExpiryMonth());
             target.setAdyenEncryptedExpiryYear(paymentInfo.getEncryptedExpiryYear());

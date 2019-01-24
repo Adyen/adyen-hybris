@@ -46,6 +46,7 @@ public class AdyenPaymentForm {
     private String encryptedExpiryMonth;
     private String encryptedExpiryYear;
     private String encryptedSecurityCode;
+    private String cardBrand;
     private String cardHolder;
 
     private String selectedReference;
@@ -212,6 +213,14 @@ public class AdyenPaymentForm {
         this.cardHolder = cardHolder;
     }
 
+    public String getCardBrand() {
+        return cardBrand;
+    }
+
+    public void setCardBrand(String cardBrand) {
+        this.cardBrand = cardBrand;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -231,6 +240,7 @@ public class AdyenPaymentForm {
         sb.append("    firstName: ").append(Util.toIndentedString(firstName)).append("\n");
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
         sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
+        sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("}");
         return sb.toString();
     }

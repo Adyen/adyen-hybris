@@ -49,6 +49,7 @@ import com.adyen.model.modification.RefundRequest;
 import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
+import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -172,6 +173,12 @@ public class AdyenRequestFactory {
             String selectedReference = cartData.getAdyenSelectedReference();
             if (selectedReference != null && ! selectedReference.isEmpty()) {
                 paymentsRequest.addOneClickData(selectedReference, cartData.getAdyenEncryptedSecurityCode());
+                String cardBrand = cartData.getAdyenCardBrand();
+                if(cardBrand!=null && cardBrand.equals(AdyenCardTypeEnum.BCMC.getCode())) {
+                    DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
+                    paymentMethodDetails.setType(cardBrand);
+                    paymentsRequest.setPaymentMethod(paymentMethodDetails);
+                }
             }
         }
         //For alternate payment methods like iDeal, Paypal etc.
