@@ -46,13 +46,6 @@
 	</bean>
 
 
-	<bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
-		<property name="addressConverter" ref="addressConverter"/>
-	</bean>
-
-	<bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
-
-	<bean id="adyenOrderEntryPopulator" class="com.adyen.v6.populator.TaxValuesOrderEntryPopulator" parent="defaultOrderEntryPopulator" />
 
 	<bean parent="modifyPopulatorList">
 		<property name="list" ref="cartConverter"/>
