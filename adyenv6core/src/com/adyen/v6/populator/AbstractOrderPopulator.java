@@ -20,7 +20,6 @@
  */
 package com.adyen.v6.populator;
 
-import org.springframework.beans.factory.annotation.Required;
 import de.hybris.platform.commercefacades.order.data.AbstractOrderData;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -31,6 +30,7 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.servicelayer.dto.converter.ConversionException;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
+import org.springframework.beans.factory.annotation.Required;
 
 public class AbstractOrderPopulator implements Populator<AbstractOrderModel, AbstractOrderData> {
     private Converter<AddressModel, AddressData> addressConverter;
