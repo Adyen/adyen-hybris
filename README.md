@@ -4,7 +4,8 @@ This plugin supports SAP Commerce (Hybris) versions 6.x
 
 ## Integration
 
-The SAP Commerce integrates Adyen Checkout for all card payments and local/redirect payment methods. Boleto, PayPal ECS and RatePay are routed over the old integration. When avaialble in the new Checkout they will be migrated to the new flow.
+The SAP Commerce integrates Adyen Checkout for all card payments and local/redirect payment methods.
+Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
 
 ## Requirements
 SAP Commerce (Hybris) version 6.x
