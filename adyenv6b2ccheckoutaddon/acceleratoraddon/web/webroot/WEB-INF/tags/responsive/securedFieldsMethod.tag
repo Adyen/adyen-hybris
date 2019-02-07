@@ -34,29 +34,7 @@
 
     <div class="chckt-pm__details js-chckt-pm__details payment_method_details" id="dd_method_adyen_cc">
         <div class="chckt-form chckt-form--max-width">
-            <label class="chckt-form-label chckt-form-label--full-width">
-                <span class="chckt-form-label__text js-chckt-card-label">Card Number:</span>
-                <span class="chckt-input-field js-chckt-hosted-input-field" data-hosted-id="hostedCardNumberField" data-cse="encryptedCardNumber"></span>
-                <span class="chckt-form-label__error-text">Invalid card number</span>
-            </label>
-
-            <label class="chckt-form-label chckt-form-label--exp-date">
-                <span class="chckt-form-label__text">Expiry Date:</span>
-                <span class="chckt-input-field js-chckt-hosted-input-field" data-hosted-id="hostedExpiryDateField" data-cse="encryptedExpiryDate"></span>
-                <span class="chckt-form-label__error-text">Invalid expiration date</span>
-            </label>
-
-            <label class="chckt-form-label chckt-form-label--cvc">
-                <span class="chckt-form-label__text js-chckt-cvc-field-label">CVV:</span>
-                <span class="chckt-input-field chckt-input-field--cvc js-chckt-hosted-input-field" data-hosted-id="hostedSecurityCodeField" data-cse="encryptedSecurityCode"
-                      data-optional="false"></span>
-                <span class="chckt-form-label__error-text">Please enter a valid CVC to continue.</span>
-            </label>
-
-            <label class="chckt-form-label chckt-form-label--full-width" data-enrich="holderName">
-                <span class="chckt-form-label__text">holderName:</span>
-                <input class="chckt-input-field js-chckt-holdername" name="cardHolder" placeholder="" data-shopper-locale="en-US" type="text" size="20">
-            </label>
+            <div id="card-div"></div>
 
             <c:if test="${showRememberTheseDetails}">
                 <label class="chckt-form-label chckt-form-label--full-width">

@@ -1,6 +1,14 @@
-# Adyen Hybris v6 plugin
+# Adyen SAP Commerce (Hybris) v6 plugin
 
-This plugin supports Hybris versions 6.x
+This plugin supports SAP Commerce (Hybris) versions 6.x
+
+## Integration
+
+The SAP Commerce integrates Adyen Checkout for all card payments and local/redirect payment methods.
+Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
+
+## Requirements
+SAP Commerce (Hybris) version 6.x
 
 ## Installation
 
@@ -75,7 +83,7 @@ Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/developers/pro
 
 ## Usage with OCC
 
-The plugin supports the following OCC v2 compatible methods via [com.adyen.v6.facades.AdyenCheckoutFacade](adyenv6b2ccheckoutaddon/src/com/adyen/v6/facades/AdyenCheckoutFacade.java):
+The plugin supports the following OCC v2 compatible methods via [com.adyen.v6.facades.AdyenCheckoutFacade](adyenv6core/src/com/adyen/v6/facades/AdyenCheckoutFacade.java):
 
 1. PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 
@@ -114,3 +122,14 @@ This method will place the payment request using the previously stored payment m
 It returns an instance of OrderWSDTO obtained from OrderData of the placed order.
 For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
+
+
+ ## Documentation
+ https://docs.adyen.com/developers/plugins/hybris
+ 
+ ## Support
+ You can create issues on our Magento Repository. In case of specific problems with your account, please contact
+ support@adyen.com.
+ 
+ ## License
+ MIT license. For more information, see the LICENSE file.

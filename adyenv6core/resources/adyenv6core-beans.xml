@@ -19,6 +19,7 @@
         <property name="adyenEncryptedExpiryMonth" type="java.lang.String"/>
         <property name="adyenEncryptedExpiryYear" type="java.lang.String"/>
         <property name="adyenEncryptedSecurityCode" type="java.lang.String"/>
+        <property name="adyenCardBrand" type="java.lang.String"/>
         <property name="adyenCardHolder" type="java.lang.String"/>
         <property name="adyenSelectedReference" type="java.lang.String"/>
         <property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
@@ -42,5 +43,25 @@
 
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
         <property name="taxValues" type="java.util.Collection&lt;de.hybris.platform.util.TaxValue>"/>
+    </bean>
+
+    <bean class="de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO">
+        <property name="encryptedCardNumber" type="String" />
+        <property name="encryptedExpiryMonth" type="String" />
+        <property name="encryptedExpiryYear" type="String" />
+        <property name="encryptedSecurityCode" type="String" />
+        <property name="saveCardData" type="Boolean" />
+        <property name="adyenPaymentMethod" type="String" />
+        <property name="adyenSelectedReference" type="String" />
+        <property name="adyenSocialSecurityNumber" type="String" />
+        <property name="adyenFirstName" type="String" />
+        <property name="adyenLastName" type="String" />
+    </bean>
+
+    <bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">
+        <property name="adyenBoletoUrl" type="String" />
+        <property name="adyenBoletoData" type="String" />
+        <property name="adyenBoletoExpirationDate" type="java.util.Date" />
+        <property name="adyenBoletoDueDate" type="java.util.Date" />
     </bean>
 </beans>
