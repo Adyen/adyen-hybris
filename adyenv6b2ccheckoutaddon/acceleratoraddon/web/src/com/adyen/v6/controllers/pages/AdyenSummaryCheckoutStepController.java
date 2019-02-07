@@ -182,7 +182,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_ONECLICK)) {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                         final String termUrl = getTermUrl();
                         model.addAttribute("paReq", paymentsResponse.getRedirect().getData().get(PAREQ));
                         model.addAttribute("md", paymentsResponse.getRedirect().getData().get(MD));

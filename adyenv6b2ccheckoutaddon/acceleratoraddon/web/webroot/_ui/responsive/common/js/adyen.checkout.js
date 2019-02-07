@@ -1,4 +1,4 @@
-var AdyenCheckout = (function () {
+var AdyenCheckoutHybris = (function () {
     'use strict';
     return {
         oneClickForms: [],
@@ -7,47 +7,9 @@ var AdyenCheckout = (function () {
         allowedCards: [],
         cseEncryptedForm: null,
         checkout: null,
+        card: null,
+        oneClickCards: {},
 
-        updateCardType: function ( cardType, friendlyName ) {
-            $( ".cse-cardtype" ).removeClass( "cse-cardtype-style-active" );
-
-            if ( cardType === "unknown" ) {
-                return;
-            }
-
-            var activeCard = document.getElementById( 'cse-card-' + cardType );
-            if ( activeCard !== null ) {
-                activeCard.className = "cse-cardtype cse-cardtype-style-active cse-cardtype-" + cardType;
-            }
-        },
-        enableCardTypeDetection: function ( allowedCards, cardLogosContainer ) {
-            var cardTypesHTML = "";
-            this.allowedCards = allowedCards;
-
-            for ( var i = allowedCards.length; i-- > 0; ) {
-                cardTypesHTML = cardTypesHTML + this.getCardSpan( allowedCards[ i ] );
-            }
-
-            cardLogosContainer.innerHTML = cardTypesHTML;
-        },
-        getCardSpan: function ( type ) {
-            return "<span id=\"cse-card-" + type + "\" class=\"cse-cardtype cse-cardtype-style-active cse-cardtype-" + type + "\"></span>";
-        },
-        getCardBrand: function () {
-            if ( this.securedFieldsData.brand ) {
-                return this.securedFieldsData.brand;
-            }
-
-            var creditCardNumberElement = document.getElementById( 'creditCardNumber' );
-            if ( creditCardNumberElement ) {
-                var creditCardNumber = creditCardNumberElement.value.replace( / /g, '' );
-                return window.adyen.cardTypes.determine( creditCardNumber );
-            }
-        },
-        isAllowedCard: function () {
-            var brand = this.getCardBrand();
-            return (brand !== null && this.allowedCards.indexOf( brand ) !== -1);
-        },
         validateForm: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
 
@@ -58,59 +20,51 @@ var AdyenCheckout = (function () {
 
             // Check if it is a valid card and encrypt
             if ( paymentMethod === "adyen_cc" ) {
-                if ( !this.isAllowedCard() ) {
-                    window.alert( 'This credit card is not allowed' );
+                if (!this.card.isValid()) {
+                    window.alert('This credit card is not allowed');
                     return false;
                 }
+                this.copyCardData();
+            }
 
-                if ( this.cseEncryptedForm ) {
-                    // CSE
-                    this.fillCSEToken( this.cseEncryptedForm );
-                } else {
-                    // SECURED FIELDS
-                    $( 'input[name="encryptedCardNumber"]' ).val( this.securedFieldsData.new.cardNumber );
-                    $( 'input[name="encryptedExpiryMonth"]' ).val( this.securedFieldsData.new.expiryMonth );
-                    $( 'input[name="encryptedExpiryYear"]' ).val( this.securedFieldsData.new.expiryYear );
-                    $( 'input[name="encryptedSecurityCode"]' ).val( this.securedFieldsData.new.securityCode );
-                }
-            } else if ( paymentMethod.indexOf( "adyen_oneclick_" ) === 0 ) {
-                var recurringReference = paymentMethod.slice( "adyen_oneclick_".length );
-                $( "#selectedReference" ).val( recurringReference );
+            if (paymentMethod.indexOf( "adyen_oneclick_" ) === 0) {
+                var recurringReference = paymentMethod.slice("adyen_oneclick_".length);
+                var oneClickCard = this.oneClickCards[recurringReference];
 
-                if ( this.oneClickForms[ recurringReference ] ) {
-                    // CSE
-                    this.fillCSEToken( this.oneClickForms[ recurringReference ] );
-                } else {
-                    $( 'input[name="encryptedSecurityCode"]' ).val( this.securedFieldsData[ recurringReference ].securityCode );
+                if (!(oneClickCard && oneClickCard.isValid())) {
+                    window.alert('This credit card is not allowed');
+                    return false;
                 }
-            } else {
-                // if issuerId is present let the customer select it
-                var issuer = $( '#p_method_adyen_hpp_' + paymentMethod + '_issuer' );
-                if ( issuer ) {
-                    if ( issuer.val() === "" ) {
-                        window.alert( 'Please select issuer' );
-                        return false;
-                    }
+                if ( (oneClickCard.props.type == "bcmc") ) {
+                    this.copyOneClickCardDataBCMC( recurringReference )
+                }
+                else {
+                    this.copyOneClickCardData( recurringReference, oneClickCard.state.data.encryptedSecurityCode );
                 }
             }
 
-            // Remove SF injected elements
-            $( '#encrypted-hostedCardNumberField' ).remove();
-            $( '#encrypted-month' ).remove();
-            $( '#encrypted-year' ).remove();
-            $( '#encrypted-hostedSecurityCodeField' ).remove();
             $( 'input[name="txvariant"]' ).remove();
 
             return true;
         },
 
-        fillCSEToken: function ( form ) {
-            var cseToken = form.encrypt();
-            if ( cseToken === false ) {
-                window.alert( 'This credit card is not valid' );
-                return false;
-            }
-            $( "#cseToken" ).val( cseToken );
+        copyCardData: function() {
+            var state = this.card.state.data;
+            $( 'input[name="encryptedCardNumber"]' ).val( state.encryptedCardNumber );
+            $( 'input[name="encryptedExpiryMonth"]' ).val( state.encryptedExpiryMonth );
+            $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
+            $( 'input[name="encryptedSecurityCode"]' ).val( state.encryptedSecurityCode );
+            $( 'input[name="cardHolder"]' ).val( state.holderName );
+        },
+
+        copyOneClickCardData: function ( recurringReference, cvc ) {
+            $( "#selectedReference" ).val( recurringReference );
+            $( 'input[name="encryptedSecurityCode"]' ).val( cvc );
+
+        },
+        copyOneClickCardDataBCMC: function ( recurringReference ) {
+            $( "#selectedReference" ).val( recurringReference );
+            $( 'input[name="cardBrand"]' ).val( "bcmc" );
         },
 
         /**
@@ -128,40 +82,6 @@ var AdyenCheckout = (function () {
             if ( ssn ) {
                 $( "#socialSecurityNumber" ).val( ssn.val() );
             }
-        },
-
-        createForm: function () {
-            // The form element to encrypt.
-            var form = document.getElementById( 'adyen-encrypted-form' );
-
-            // Form and encryption options. See adyen.encrypt.simple.html for details.
-            var options = {};
-            options.cvcIgnoreBins = '6703'; // Ignore CVC for BCMC
-
-            // Create the form.
-            // Note that the method is on the adyen object, not the adyen.encrypt object.
-            this.cseEncryptedForm = window.adyen.createEncryptedForm( form, options );
-
-            this.cseEncryptedForm.addCardTypeDetection( this.updateCardType );
-
-            return this.cseEncryptedForm;
-        },
-
-        createOneClickForm: function ( recurringReference ) {
-            // The form element to encrypt.
-            var form = document.getElementById( 'adyen-encrypted-form' );
-
-            // Form and encryption options. See adyen.encrypt.simple.html for details.
-            var options = {};
-            options.fieldNameAttribute = "data-encrypted-name-" + recurringReference;
-            options.enableValidations = false;
-
-            // Create the form.
-            // Note that the method is on the adyen object, not the adyen.encrypt object.
-            var encryptedForm = window.adyen.createEncryptedForm( form, options );
-            this.oneClickForms[ recurringReference ] = encryptedForm;
-
-            return encryptedForm;
         },
 
         /**
@@ -190,77 +110,56 @@ var AdyenCheckout = (function () {
         createDfValue: function () {
             window.dfDo( "dfValue" );
         },
-
-        createSecuredFieldsForm: function ( originKey, rootNode ) {
-            var self = this;
-            var securedFieldsConfiguration = {
-                configObject: {
-                    originKey: originKey,
-                    cardGroupTypes: self.allowedCards
-                },
-                rootNode: rootNode
-            };
-
-            var securedFields = window.csf( securedFieldsConfiguration );
-            securedFields.onBrand( function ( brandObject ) {
-                if ( brandObject.brand ) {
-                    self.securedFieldsData.brand = brandObject.brand;
-                    self.updateCardType( brandObject.brand, null );
-                }
-            } );
-
-            window.addEventListener( "message", this.securedFieldsListener( this ), false );
-
-            return securedFields;
-        },
-
-        securedFieldsListener: function ( self ) {
-            return function ( message ) {
-                if ( !("data" in message) ) {
-                    return;
-                }
-                try {
-                    var data = JSON.parse( message.data );
-                    if ( "encryptionSuccess" in data && data.encryptionSuccess === true ) {
-                        var fieldName = data.cseKey;
-                        var encryptedData = data[ fieldName ];
-                        var securedFieldsData = self.securedFieldsData;
-                        var parts = fieldName.split( "-" );
-                        var card = "new";
-
-                        if ( parts.length === 2 ) {
-                            card = parts[ 1 ];
-                        }
-
-                        if ( !(card in securedFieldsData) ) {
-                            securedFieldsData[ card ] = {};
-                        }
-
-                        switch ( data.fieldType ) {
-                        case "hostedCardNumberField":
-                            securedFieldsData[ card ].cardNumber = encryptedData;
-                            break;
-                        case "month":
-                            securedFieldsData[ card ].expiryMonth = encryptedData;
-                            break;
-                        case "year":
-                            securedFieldsData[ card ].expiryYear = encryptedData;
-                            break;
-                        case "hostedSecurityCodeField":
-                            securedFieldsData[ card ].securityCode = encryptedData;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    //not json data
-                }
-            };
-        },
-        initiateCheckout: function (locale) {
+        initiateCheckout: function ( locale, loadingContext, originKey ) {
             var configuration = {
-                locale: locale // shopper's locale
+                locale: locale,// shopper's locale
+                loadingContext: loadingContext,
+                originKey: originKey
             };
-            this.checkout = new Adyen.Checkout(configuration);
+            this.checkout = new AdyenCheckout( configuration );
+        },
+
+
+        initiateOneClickCard: function(card) {
+            var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
+            var hideCVC= false;
+
+            if(card.type=== "bcmc" )
+            {
+                hideCVC = true;
+            }
+
+            var oneClickCard = this.checkout.create('card', {
+                details: [{
+                    key: "cardDetails.cvc",
+                    type: "cvc"
+                }],
+                oneClick: true,
+                storedDetails: {
+                    card: {
+                        expiryMonth: card.expiryMonth,
+                        expiryYear: card.expiryYear,
+                        number: card.number
+                    }
+                },
+                type: card.type,
+                hideCVC: hideCVC
+            });
+
+            oneClickCard.mount(oneClickCardNode);
+            this.oneClickCards[card.reference] = oneClickCard;
+        },
+
+        initiateCard: function (allowedCards) {
+            this.card = this.checkout.create( 'card', {
+                type: 'card',
+                hasHolderName: true,
+                holderNameRequired: true,
+                groupTypes: allowedCards
+
+            });
+
+            this.card.mount(document.getElementById('card-div'));
         },
 
         initiateIdeal: function (idealItems) {

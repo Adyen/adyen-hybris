@@ -21,8 +21,6 @@
 <%@ attribute name="variant" required="true" type="java.lang.String" %>
 <%@ attribute name="cardReference" required="true" type="java.lang.String" %>
 <%@ attribute name="cardNumber" required="true" type="java.lang.String" %>
-<%@ attribute name="expiryMonth" required="true" type="java.lang.String" %>
-<%@ attribute name="expiryYear" required="true" type="java.lang.String" %>
 
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 
@@ -39,16 +37,8 @@
     <div class="chckt-pm__details js-chckt-pm__details" id="dd_method_adyen_oneclick_${cardReference}">
         <div class="chckt-form chckt-form--max-width">
             <div class="chckt-pm__recurring-details">
+                <div id="one-click-card_${cardReference}"></div>
                 <input type="hidden" name="txvariant" value="${variant}_${cardReference}"/>
-                <label class="chckt-form-label chckt-form-label--exp-date">
-                    <span class="chckt-form-label__text">Expiry Date:</span>
-                    <span class="chckt-input-field chckt-input-field--recurring" data-cse="encryptedSecurityCode">${expiryMonth}/${expiryYear}</span>
-                </label>
-                <label class="chckt-form-label chckt-form-label--cvc">
-                    <span class="chckt-form-label__text js-chckt-cvc-field-label">CVV:</span>
-                    <span class="chckt-input-field chckt-input-field--cvc js-chckt-hosted-input-field" data-hosted-id="hostedSecurityCodeField" data-cse="encryptedSecurityCode-${cardReference}" data-optional=""></span>
-                    <span class="chckt-form-label__error-text">Invalid CVC</span>
-                </label>
             </div>
         </div>
     </div>
