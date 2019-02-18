@@ -129,10 +129,7 @@ public class AdyenRequestFactory {
             paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
         }
 
-        //Set Boleto parameters
-        if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
-            setBoletoData(paymentRequest, cartData);
-        }
+
 
         //Set Paypal Express Checkout Shortcut parameters
         if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
@@ -181,10 +178,15 @@ public class AdyenRequestFactory {
                 }
             }
         }
-        //For alternate payment methods like iDeal, Paypal etc.
-        else {
-            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
-        }
+        else
+            //Set Boleto parameters
+            if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+                setBoletoData(paymentsRequest, cartData);
+            }
+            //For alternate payment methods like iDeal, Paypal etc.
+            else {
+                updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
+            }
 
         ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
@@ -681,14 +683,19 @@ public class AdyenRequestFactory {
     /**
      * Set Boleto payment request data
      */
-    private void setBoletoData(PaymentRequest paymentRequest, CartData cartData) {
-        paymentRequest.selectedBrand(PAYMENT_METHOD_BOLETO_SANTANDER);
-        paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+    private void setBoletoData(PaymentsRequest paymentsRequest, CartData cartData) {
+        DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
+        if (paymentMethodDetails==null) {
+            paymentMethodDetails = new DefaultPaymentMethodDetails();
+        }
+        paymentMethodDetails.setType(PAYMENT_METHOD_BOLETO_SANTANDER);
+        paymentsRequest.setPaymentMethod(paymentMethodDetails);
+        paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
 
         Name shopperName = new Name();
         shopperName.setFirstName(cartData.getAdyenFirstName());
         shopperName.setLastName(cartData.getAdyenLastName());
-        paymentRequest.setShopperName(shopperName);
+        paymentsRequest.setShopperName(shopperName);
     }
 
     /**
