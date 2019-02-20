@@ -130,7 +130,6 @@ public class AdyenRequestFactory {
         }
 
 
-
         //Set Paypal Express Checkout Shortcut parameters
         if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
             setPaypalEcsData(paymentRequest, cartData);
@@ -171,22 +170,21 @@ public class AdyenRequestFactory {
             if (selectedReference != null && ! selectedReference.isEmpty()) {
                 paymentsRequest.addOneClickData(selectedReference, cartData.getAdyenEncryptedSecurityCode());
                 String cardBrand = cartData.getAdyenCardBrand();
-                if(cardBrand!=null && cardBrand.equals(AdyenCardTypeEnum.BCMC.getCode())) {
+                if (cardBrand != null && cardBrand.equals(AdyenCardTypeEnum.BCMC.getCode())) {
                     DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
                     paymentMethodDetails.setType(cardBrand);
                     paymentsRequest.setPaymentMethod(paymentMethodDetails);
                 }
             }
         }
-        else
-            //Set Boleto parameters
-            if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
-                setBoletoData(paymentsRequest, cartData);
-            }
-            //For alternate payment methods like iDeal, Paypal etc.
-            else {
-                updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
-            }
+        //Set Boleto parameters
+        else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+            setBoletoData(paymentsRequest, cartData);
+        }
+        //For alternate payment methods like iDeal, Paypal etc.
+        else {
+            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
+        }
 
         ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
@@ -685,7 +683,7 @@ public class AdyenRequestFactory {
      */
     private void setBoletoData(PaymentsRequest paymentsRequest, CartData cartData) {
         DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
-        if (paymentMethodDetails==null) {
+        if (paymentMethodDetails == null) {
             paymentMethodDetails = new DefaultPaymentMethodDetails();
         }
         paymentMethodDetails.setType(PAYMENT_METHOD_BOLETO_SANTANDER);
