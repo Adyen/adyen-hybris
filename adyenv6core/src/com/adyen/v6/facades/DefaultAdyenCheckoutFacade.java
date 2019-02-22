@@ -308,6 +308,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
 
+        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsResponse.getResultCode()) {
+            return createOrderFromPaymentsResponse(paymentsResponse);
+        }
+
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
