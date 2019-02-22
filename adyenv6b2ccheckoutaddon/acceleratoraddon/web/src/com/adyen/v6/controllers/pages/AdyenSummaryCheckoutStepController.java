@@ -152,12 +152,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         if (canUseAPI(adyenPaymentMethod)) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
-
-                //In case of Boleto, show link to pdf
-                if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {
-                    addBoletoMessage(redirectModel, orderData.getCode());
-                }
-
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
@@ -175,6 +169,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             try {
                 cartData.setAdyenReturnUrl(getReturnUrl());
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
+                //In case of Boleto, show link to pdf
+                if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {
+                    addBoletoMessage(redirectModel, orderData.getCode());
+                }
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
                 LOGGER.error("API exception ", e);
@@ -286,7 +284,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private boolean canUseAPI(String paymentMethod) {
         Set<String> apiPaymentMethods = new HashSet<String>();
 
-        apiPaymentMethods.add(PAYMENT_METHOD_BOLETO);
         apiPaymentMethods.add(PAYPAL_ECS);
         apiPaymentMethods.add(RATEPAY);
 
