@@ -122,7 +122,6 @@ var AdyenCheckoutHybris = (function () {
 
         initiateOneClickCard: function(card) {
             var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
-            var hideCVC= false;
             var details = [{
                 key: "cardDetails.cvc",
                 type: "cvc"
@@ -130,10 +129,8 @@ var AdyenCheckoutHybris = (function () {
 
             if(card.type=== "bcmc" )
             {
-                hideCVC = true;
                 details =[];
             }
-
             var oneClickCard = this.checkout.create('card', {
                 details: details,
                 storedDetails: {
@@ -144,7 +141,7 @@ var AdyenCheckoutHybris = (function () {
                     }
                 },
                 type: card.type,
-                hideCVC: hideCVC
+                hideCVC: false
             });
 
             oneClickCard.mount(oneClickCardNode);
