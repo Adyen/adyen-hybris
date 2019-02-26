@@ -620,7 +620,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             if (idealPaymentMethod != null) {
                 Gson gson = new Gson();
-                iDealissuerList = gson.toJson(idealPaymentMethod.getDetails().get(0).getItems());
+                iDealissuerList = gson.toJson(idealPaymentMethod.getDetails());
             }
 
             //Exclude cards, boleto and iDeal
