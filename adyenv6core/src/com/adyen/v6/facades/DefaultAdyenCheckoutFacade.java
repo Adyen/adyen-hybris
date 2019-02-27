@@ -623,11 +623,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 iDealissuerList = gson.toJson(idealPaymentMethod.getDetails().get(0).getItems());
             }
 
-            //Exclude cards, boleto and iDeal
+            //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
                                                                          && ! "scheme".equals(paymentMethod.getType())
                                                                          && ! "bcmc".equals(paymentMethod.getType())
+                                                                         && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
                                                                          && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
                                                                          && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
                                                                  .collect(Collectors.toList());
