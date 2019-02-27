@@ -140,8 +140,7 @@ var AdyenCheckoutHybris = (function () {
                         number: card.number
                     }
                 },
-                type: card.type,
-                hideCVC: false
+                type: card.type
             });
 
             oneClickCard.mount(oneClickCardNode);
