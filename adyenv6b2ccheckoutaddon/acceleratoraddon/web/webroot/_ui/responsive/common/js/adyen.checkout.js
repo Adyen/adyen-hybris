@@ -122,19 +122,17 @@ var AdyenCheckoutHybris = (function () {
 
         initiateOneClickCard: function(card) {
             var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
-            var hideCVC= false;
+            var details = [{
+                key: "cardDetails.cvc",
+                type: "cvc"
+            }];
 
             if(card.type=== "bcmc" )
             {
-                hideCVC = true;
+                details =[];
             }
-
             var oneClickCard = this.checkout.create('card', {
-                details: [{
-                    key: "cardDetails.cvc",
-                    type: "cvc"
-                }],
-                oneClick: true,
+                details: details,
                 storedDetails: {
                     card: {
                         expiryMonth: card.expiryMonth,
@@ -142,8 +140,7 @@ var AdyenCheckoutHybris = (function () {
                         number: card.number
                     }
                 },
-                type: card.type,
-                hideCVC: hideCVC
+                type: card.type
             });
 
             oneClickCard.mount(oneClickCardNode);
@@ -162,10 +159,10 @@ var AdyenCheckoutHybris = (function () {
             this.card.mount(document.getElementById('card-div'));
         },
 
-        initiateIdeal: function (idealItems) {
+        initiateIdeal: function (idealDetails) {
             var idealNode = document.getElementById('adyen_hpp_ideal_container');
             var ideal = this.checkout.create('ideal', {
-                items: idealItems, // The array of issuers coming from the /paymentMethods api call
+                details: idealDetails, // The array of issuers coming from the /paymentMethods api call
                 showImage: true, // Optional, defaults to true
                 onChange: handleChange // Gets triggered whenever a user selects a bank// Gets triggered once the state is valid
             });
