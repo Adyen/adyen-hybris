@@ -308,6 +308,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
 
+        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsResponse.getResultCode()) {
+            return createOrderFromPaymentsResponse(paymentsResponse);
+        }
+
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
@@ -401,7 +405,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
-        if (adyenPaymentMethod.equals(PAYMENT_METHOD_BOLETO) || adyenPaymentMethod.equals(PAYPAL_ECS) || adyenPaymentMethod.startsWith(RATEPAY)) {
+        if (adyenPaymentMethod.equals(PAYPAL_ECS) || adyenPaymentMethod.startsWith(RATEPAY)) {
 
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
             if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
@@ -418,6 +422,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return createAuthorizedOrder(paymentsResponse);
         }
         if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            return createOrderFromPaymentsResponse(paymentsResponse);
+        }
+        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsResponse.getResultCode()) {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
         if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
@@ -613,14 +620,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             if (idealPaymentMethod != null) {
                 Gson gson = new Gson();
-                iDealissuerList = gson.toJson(idealPaymentMethod.getDetails().get(0).getItems());
+                iDealissuerList = gson.toJson(idealPaymentMethod.getDetails());
             }
 
-            //Exclude cards, boleto and iDeal
+            //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
                                                                          && ! "scheme".equals(paymentMethod.getType())
                                                                          && ! "bcmc".equals(paymentMethod.getType())
+                                                                         && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
                                                                          && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
                                                                          && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
                                                                  .collect(Collectors.toList());

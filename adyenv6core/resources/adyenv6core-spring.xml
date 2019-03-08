@@ -214,7 +214,42 @@
         <property name="addressConverter" ref="addressConverter"/>
     </bean>
 
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="cartConverter"/>
+        <property name="add" ref="adyenCartPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="extendedCartConverter"/>
+        <property name="add" ref="adyenCartPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="cartConverter"/>
+        <property name="add" ref="adyenAbstractOrderPopulator"/>
+    </bean>
+
+    <!--For CommerceCartFacade-->
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="extendedCartConverter"/>
+        <property name="add" ref="adyenAbstractOrderPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="orderConverter"/>
+        <property name="add" ref="adyenAbstractOrderPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="orderEntryConverter"/>
+        <property name="add" ref="adyenOrderEntryPopulator"/>
+    </bean>
+
     <bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
+    <!-- To obtain the oder number before the order is created -->
+    <alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
+
+    <bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
 
     <bean id="adyenOrderEntryPopulator" class="com.adyen.v6.populator.TaxValuesOrderEntryPopulator" parent="defaultOrderEntryPopulator" />
 
