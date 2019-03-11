@@ -49,6 +49,7 @@ ant clean all
 ### 5. Add your Adyen credentials to the BaseStore via Hybris backoffice
 
 For more detailed instructions you can visit the [documentation page](https://docs.adyen.com/developers/plug-ins-and-partners/hybris)
+Please make sure your merchant has Varient true in API and responses section so that you get paymentMethod back in response.
 
 
 ## Supported payment methods
