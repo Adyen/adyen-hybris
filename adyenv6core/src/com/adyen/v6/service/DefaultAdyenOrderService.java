@@ -139,6 +139,12 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         //Boleto data
         paymentInfo.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
 
+        //Multibanco data
+        paymentInfo.setAdyenMultibancoEntity(paymentsResponse.getMultibancoEntity());
+        paymentInfo.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
+        paymentInfo.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
+        paymentInfo.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
+
         modelService.save(paymentInfo);
 
         storeFraudReportFromPaymentsResponse(order, paymentsResponse);

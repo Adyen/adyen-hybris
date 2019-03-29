@@ -39,6 +39,10 @@
         <property name="adyenBoletoData" type="java.lang.String"/>
         <property name="adyenBoletoExpirationDate" type="java.util.Date"/>
         <property name="adyenBoletoDueDate" type="java.util.Date"/>
+        <property name="adyenMultibancoEntity" type="java.lang.String" />
+        <property name="adyenMultibancoAmount" type="java.lang.String" />
+        <property name="adyenMultibancoDeadLine" type="java.lang.String" />
+        <property name="adyenMultibancoReference" type="java.lang.String" />
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
@@ -63,5 +67,10 @@
         <property name="adyenBoletoData" type="String" />
         <property name="adyenBoletoExpirationDate" type="java.util.Date" />
         <property name="adyenBoletoDueDate" type="java.util.Date" />
+        <property name="adyenMultibancoEntity" type="String" />
+        <property name="adyenMultibancoAmount" type="String" />
+        <property name="adyenMultibancoDeadline" type="String" />
+        <property name="adyenMultibancoReference" type="String" />
     </bean>
+
 </beans>
