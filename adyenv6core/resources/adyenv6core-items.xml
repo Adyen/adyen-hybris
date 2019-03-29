@@ -293,6 +293,39 @@
                         </columntype>
                     </persistence>
                 </attribute>
+                <!-- Multibanco-->
+                <attribute qualifier="adyenMultibancoEntity" type="java.lang.String">
+                    <description>Multibanco entity</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenMultibancoAmount" type="java.lang.String">
+                    <description>Multibanco amount</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenMultibancoDeadline" type="java.lang.String">
+                    <description>Multibanco dead line</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenMultibancoReference" type="java.lang.String">
+                    <description>Multibanco reference</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
                 <attribute qualifier="adyenPaypalEcsToken" type="java.lang.String">
                     <description>Paypal ECS payment token</description>
                     <persistence type="property">
