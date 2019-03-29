@@ -295,7 +295,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                                        "<p> Multibanco order summary " + "</p>" +
                                        "<p> Amount: "  + orderData.getAdyenMultibancoAmount() + "</p>"
                                                + "<p> Entity: "  + orderData.getAdyenMultibancoEntity() + "</p>"
-                                               + "<p> Dealine: "  + orderData.getAdyenMultibancoDeadLine() + "</p>"
+                                               + "<p> Deadline: "  + orderData.getAdyenMultibancoDeadline() + "</p>"
                                                + "<p> Reference: "  + orderData.getAdyenMultibancoReference() + "</p>"
         );
     }
