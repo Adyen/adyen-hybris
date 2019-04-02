@@ -175,7 +175,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     addBoletoMessage(redirectModel, orderData.getCode());
                 }
 
-                if (PAYMENT_METHOD_MULTIBANCO.equals(cartData.getAdyenPaymentMethod())) {
+                else if (PAYMENT_METHOD_MULTIBANCO.equals(cartData.getAdyenPaymentMethod())) {
                     addMultibancoMessage(redirectModel, orderData.getCode());
                 }
 
