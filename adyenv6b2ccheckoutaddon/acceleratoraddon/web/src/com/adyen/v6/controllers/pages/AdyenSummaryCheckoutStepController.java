@@ -283,7 +283,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
 
     /**
-     * Adds a flash message containing the Multibanco
+     * Adds a flash message containing the Multibanco response fields
      */
     private void addMultibancoMessage(RedirectAttributes redirectModel, final String orderCode) {
         //Use OrderFacade to force execution of AbstractOrder populators
