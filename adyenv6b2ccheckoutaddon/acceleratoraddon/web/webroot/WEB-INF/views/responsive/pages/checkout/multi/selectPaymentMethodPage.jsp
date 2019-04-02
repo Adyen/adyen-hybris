@@ -40,6 +40,7 @@
                     return false;
                 }
                 AdyenCheckoutHybris.setCustomPaymentMethodValues();
+                AdyenCheckoutHybris.setBrowserData();
 
                 $( "#adyen-encrypted-form" ).submit();
             } );
@@ -107,6 +108,8 @@
                             <form:hidden path="encryptedExpiryMonth"/>
                             <form:hidden path="encryptedExpiryYear"/>
                             <form:hidden path="encryptedSecurityCode"/>
+
+                            <form:hidden path="browserInfo"/>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">

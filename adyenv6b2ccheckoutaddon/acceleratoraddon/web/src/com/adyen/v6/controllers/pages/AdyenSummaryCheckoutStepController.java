@@ -65,6 +65,8 @@ import de.hybris.platform.site.BaseSiteService;
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
+import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER;
+import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
@@ -198,6 +200,25 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 }
                 if (REFUSED == paymentsResponse.getResultCode()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
+                }
+                if(IDENTIFYSHOPPER == paymentsResponse.getResultCode())
+                {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
+                        LOGGER.debug("IDENTIFYSHOPPER!!!! terminating it here for now");
+                        model.addAttribute("paymentData", paymentsResponse.getPaymentData());
+                        model.addAttribute("resultObject", paymentsResponse.getAuthentication().get("threeds2.fingerprintToken"));
+                        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
+                    }
+                }
+                if(CHALLENGESHOPPER == paymentsResponse.getResultCode())
+                {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
+                        LOGGER.debug("CHALLENGESHOPPER!!!! terminating it here for now");
+                        model.addAttribute("paymentData", paymentsResponse.getPaymentData());
+                        model.addAttribute("resultObject", paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
+                        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
+                    }
+
                 }
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));

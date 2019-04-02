@@ -434,6 +434,20 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
             lockSessionCart();
         }
+        if ("IdentifyShopper".equals(paymentsResponse.getResultCode())) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
+                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
+            }
+            lockSessionCart();
+        }
+        if ("ChallengeShopper".equals(paymentsResponse.getResultCode())) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
+                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
+            }
+            lockSessionCart();
+        }
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
@@ -634,7 +648,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
                                                                          && !isHiddenPaymentMethod(paymentMethod))
-                                                                 .collect(Collectors.toList());
+                                                            .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
@@ -787,6 +801,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenLastName(adyenPaymentForm.getLastName());
 
         paymentInfo.setAdyenCardHolder(adyenPaymentForm.getCardHolder());
+
+        //required for 3DS2
+        paymentInfo.setAdyenBrowserInfo(adyenPaymentForm.getBrowserInfo());
 
         modelService.save(paymentInfo);
 
