@@ -579,8 +579,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
         orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
 
+        orderData.setAdyenMultibancoEntity(paymentsResponse.getMultibancoEntity());
+        orderData.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
+        orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
+        orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
+
         return orderData;
     }
+
 
     /**
      * Create order
