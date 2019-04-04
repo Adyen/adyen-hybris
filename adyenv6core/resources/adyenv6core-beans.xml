@@ -40,7 +40,7 @@
         <property name="adyenBoletoExpirationDate" type="java.util.Date"/>
         <property name="adyenBoletoDueDate" type="java.util.Date"/>
         <property name="adyenMultibancoEntity" type="java.lang.String" />
-        <property name="adyenMultibancoAmount" type="java.lang.String" />
+        <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
         <property name="adyenMultibancoDeadline" type="java.lang.String" />
         <property name="adyenMultibancoReference" type="java.lang.String" />
     </bean>
@@ -68,7 +68,7 @@
         <property name="adyenBoletoExpirationDate" type="java.util.Date" />
         <property name="adyenBoletoDueDate" type="java.util.Date" />
         <property name="adyenMultibancoEntity" type="String" />
-        <property name="adyenMultibancoAmount" type="String" />
+        <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
         <property name="adyenMultibancoDeadline" type="String" />
         <property name="adyenMultibancoReference" type="String" />
     </bean>

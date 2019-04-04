@@ -298,7 +298,7 @@
                     <description>Multibanco entity</description>
                     <persistence type="property"/>
                 </attribute>
-                <attribute qualifier="adyenMultibancoAmount" type="java.lang.String">
+                <attribute qualifier="adyenMultibancoAmount" type="java.math.BigDecimal">
                     <description>Multibanco amount</description>
                     <persistence type="property"/>
                 </attribute>
