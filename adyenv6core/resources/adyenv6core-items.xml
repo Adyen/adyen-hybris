@@ -293,6 +293,22 @@
                         </columntype>
                     </persistence>
                 </attribute>
+                <attribute qualifier="adyenBoletoBarCodeReference" type="java.lang.String">
+                    <description>Boleto bar code</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
+                <attribute qualifier="adyenBoletoDueDate" type="java.util.Date">
+                    <description>Boleto due date</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenBoletoExpirationDate" type="java.util.Date">
+                    <description>Boleto expiration date</description>
+                    <persistence type="property"/>
+                </attribute>
                 <!-- Multibanco-->
                 <attribute qualifier="adyenMultibancoEntity" type="java.lang.String">
                     <description>Multibanco entity</description>
