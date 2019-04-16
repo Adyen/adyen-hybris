@@ -631,12 +631,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && ! "scheme".equals(paymentMethod.getType())
-                                                                         && ! "bcmc".equals(paymentMethod.getType())
-                                                                         && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
-                                                                         && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
-                                                                         && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && filterPaymentMethods(paymentMethod))
                                                                  .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -696,6 +691,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Include Issuer List for iDEAL
         model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
         modelService.save(cartModel);
+    }
+
+    private boolean filterPaymentMethods(PaymentMethod paymentMethod) {
+
+        return (! "scheme".equals(paymentMethod.getType())
+                && ! "bcmc".equals(paymentMethod.getType())
+                && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
+                && ! "wechatpayWeb".equals(paymentMethod.getType())
+                && ! "wechatpayQR".equals(paymentMethod.getType())
+                && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
+                && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0);
     }
 
     @Override
