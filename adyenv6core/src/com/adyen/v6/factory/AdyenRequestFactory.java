@@ -32,6 +32,7 @@ import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
 import com.adyen.model.Address;
 import com.adyen.model.Amount;
+import com.adyen.model.Installments;
 import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
@@ -260,6 +261,11 @@ public class AdyenRequestFactory {
         String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
         String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
         String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
+        if (cartData.getAdyenInstallments() != null) {
+            Installments installmentObj = new Installments();
+            installmentObj.setValue(cartData.getAdyenInstallments());
+            paymentsRequest.setInstallments(installmentObj);
+        }
 
         if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
 
@@ -321,15 +327,13 @@ public class AdyenRequestFactory {
                                                      .merchantAccount(merchantAccount)
                                                      .originalReference(authReference)
                                                      .reference(merchantReference);
-        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
-        request.setApplicationInfo(applicationInfo);
+        updateApplicationInfo(request.getApplicationInfo());
         return request;
     }
 
     public CancelOrRefundRequest createCancelOrRefundRequest(final String merchantAccount, final String authReference, final String merchantReference) {
         CancelOrRefundRequest request = new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
-        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
-        request.setApplicationInfo(applicationInfo);
+        updateApplicationInfo(request.getApplicationInfo());
         return request;
     }
 
@@ -338,8 +342,7 @@ public class AdyenRequestFactory {
                                                    .merchantAccount(merchantAccount)
                                                    .originalReference(authReference)
                                                    .reference(merchantReference);
-        ApplicationInfo applicationInfo = updateApplicationInfo(request.getApplicationInfo());
-        request.setApplicationInfo(applicationInfo);
+        updateApplicationInfo(request.getApplicationInfo());
         return request;
     }
 
