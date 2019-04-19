@@ -698,7 +698,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return (! "scheme".equals(paymentMethod.getType())
                 && ! "bcmc".equals(paymentMethod.getType())
                 && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
-                && ! "wechatpayWeb".equals(paymentMethod.getType())
+                && (! "wechatpay".contains(paymentMethod.getType()) && "wechatpayWeb".equals(paymentMethod.getType()))
                 && ! "wechatpayQR".equals(paymentMethod.getType())
                 && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
                 && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0);
