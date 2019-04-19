@@ -29,6 +29,7 @@
         <property name="adyenSocialSecurityNumber" type="java.lang.String"/>
         <property name="adyenDfValue" type="java.lang.String"/>
         <property name="adyenFirstName" type="java.lang.String"/>
+        <property name="adyenInstallments" type="java.lang.Integer"/>
         <property name="adyenLastName" type="java.lang.String"/>
         <property name="adyenPaymentToken" type="java.lang.String"/>
         <property name="adyenReturnUrl" type="java.lang.String"/>
@@ -59,6 +60,7 @@
         <property name="adyenSelectedReference" type="String" />
         <property name="adyenSocialSecurityNumber" type="String" />
         <property name="adyenFirstName" type="String" />
+        <property name="installments" type="Integer" />
         <property name="adyenLastName" type="String" />
     </bean>
 

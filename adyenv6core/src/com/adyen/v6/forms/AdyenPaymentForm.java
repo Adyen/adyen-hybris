@@ -50,6 +50,7 @@ public class AdyenPaymentForm {
     private String cardHolder;
 
     private String selectedReference;
+    private int installments;
 
     //Save card
     private boolean rememberTheseDetails;
@@ -221,6 +222,14 @@ public class AdyenPaymentForm {
         this.cardBrand = cardBrand;
     }
 
+    public int getInstallments() {
+        return installments;
+    }
+
+    public void setInstallments(int installments) {
+        this.installments = installments;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -232,6 +241,7 @@ public class AdyenPaymentForm {
         sb.append("    encryptedExpiryYear isEmpty?: ").append(StringUtils.isEmpty(encryptedExpiryYear)).append("\n");
         sb.append("    encryptedSecurityCode isEmpty?: ").append(StringUtils.isEmpty(encryptedSecurityCode)).append("\n");
         sb.append("    cardHolder: ").append(Util.toIndentedString(cardHolder)).append("\n");
+        sb.append("    installments: ").append(Util.toIndentedString(installments)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
