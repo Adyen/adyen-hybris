@@ -631,7 +631,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && filterPaymentMethods(paymentMethod))
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
+                                                                         && !filterPaymentMethods(paymentMethod))
                                                                  .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -694,14 +695,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private boolean filterPaymentMethods(PaymentMethod paymentMethod) {
-
-        return (! "scheme".equals(paymentMethod.getType())
-                && ! "bcmc".equals(paymentMethod.getType())
-                && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
-                && (! "wechatpay".contains(paymentMethod.getType()) && "wechatpayWeb".equals(paymentMethod.getType()))
-                && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
-                && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0);
+        String paymentMethodType = paymentMethod.getType();
+        if (paymentMethodType == null
+                || paymentMethodType.isEmpty()
+                || paymentMethodType.equals("scheme")
+                || paymentMethodType.equals("bcmc")
+                || paymentMethodType.equals("bcmc_mobile_QR")
+                || paymentMethodType.equals(PAYMENT_METHOD_IDEAL)
+                || (paymentMethodType.contains("wechatpay") && ! paymentMethodType.equals("wechatpayWeb"))
+                || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO)) {
+            return true;
+        }
+        return false;
     }
+
+
 
     @Override
     public boolean showBoleto() {
