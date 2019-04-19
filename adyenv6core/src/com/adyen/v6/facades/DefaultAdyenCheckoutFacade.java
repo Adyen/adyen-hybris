@@ -632,7 +632,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && !filterPaymentMethods(paymentMethod))
+                                                                         && !isHiddenPaymentMethod(paymentMethod))
                                                                  .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -694,7 +694,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         modelService.save(cartModel);
     }
 
-    private boolean filterPaymentMethods(PaymentMethod paymentMethod) {
+    private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
         if (paymentMethodType == null
                 || paymentMethodType.isEmpty()
