@@ -64,7 +64,13 @@ import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.site.BaseSiteService;
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
+import static com.adyen.constants.ApiConstants.Redirect.Data.PAYMENT_DATA;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_TOKEN;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_TOKEN;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
+import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
@@ -74,6 +80,8 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -204,18 +212,22 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if(IDENTIFYSHOPPER == paymentsResponse.getResultCode())
                 {
                     if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
-                        LOGGER.debug("IDENTIFYSHOPPER!!!! terminating it here for now");
-                        model.addAttribute("paymentData", paymentsResponse.getPaymentData());
-                        model.addAttribute("resultObject", paymentsResponse.getAuthentication().get("threeds2.fingerprintToken"));
+                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
+                        model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
+                        model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
+                        model.addAttribute(FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
                     }
                 }
                 if(CHALLENGESHOPPER == paymentsResponse.getResultCode())
                 {
                     if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
-                        LOGGER.debug("CHALLENGESHOPPER!!!! terminating it here for now");
-                        model.addAttribute("paymentData", paymentsResponse.getPaymentData());
-                        model.addAttribute("resultObject", paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
+                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
+                        model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
+                        model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
+                        model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
                     }
 
@@ -227,6 +239,38 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         LOGGER.debug("Redirecting to summary view");
         GlobalMessages.addErrorMessage(model, errorMessage);
         return enterStep(model, redirectModel);
+    }
+
+    @RequestMapping(value = "/3ds2-adyen-response", method = RequestMethod.POST)
+    @RequireHardLogIn
+    public String authorise3DS2Payment(final Model model,
+                                           final RedirectAttributes redirectModel,
+                                           final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
+
+        String errorMessage = "checkout.error.authorization.failed";
+        try {
+            OrderData orderData = adyenCheckoutFacade.handle3DS2Response(request);
+            LOGGER.debug("Redirecting to confirmation");
+            return redirectToOrderConfirmationPage(orderData);
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+            if(paymentsResponse!=null && paymentsResponse.getResultCode()== CHALLENGESHOPPER)
+            {
+                model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+                model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
+                model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
+                model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
+                model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
+                return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
+            }
+            if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
+                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
+            }
+        } catch (Exception e) {
+            return REDIRECT_PREFIX + "/cart";
+        }
+        LOGGER.debug("Redirecting to final step of checkout");
+        return redirectToSummaryWithError(redirectModel, errorMessage);
     }
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
