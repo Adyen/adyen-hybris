@@ -51,7 +51,6 @@
                 } // Gets triggered on error
             } );
             identifyShopperComponent.mount( threeDS2IdentifyShopperNode );
-
         }
 
         function initiate3DS2ChallengeShopper ( challengeToken ) {
@@ -82,20 +81,14 @@
       action="3ds2-adyen-response">
     <div class="row">
         <div class="col-sm-6">
-
             <div id="threeDS2"></div>
             <input type="hidden" name="challengeToken" value="${challengeToken}"/>
             <input type="hidden" name="fingerprintToken" value="${fingerprintToken}"/>
             <input type="hidden" name="paymentData" value="${paymentData}"/>
             <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
             <input type="hidden" id="challengeResult" name="challengeResult"/>
-
-
         </div>
     </div>
 </form>
 </body>
 </html>
-
-
-

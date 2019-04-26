@@ -124,32 +124,6 @@ var AdyenCheckoutHybris = (function () {
             this.checkout = new AdyenCheckout( configuration );
         },
 
-        initiate3DS2IdentifyShopper : function(fingerprintToken)
-        {
-            var threeDS2IdentifyShopperNode = document.getElementById('threeDS2');
-            var identifyShopperComponent = this.checkout.create('threeDS2DeviceFingerprint', {
-                fingerprintToken: fingerprintToken,
-                onComplete: function() {alert ("onComplete initiate3DS2IdentifyShopper "+fingerprintToken)}, // Gets triggered whenever the ThreeDS2 component has a result
-                onError: function() {alert ("onComplete initiate3DS2IdentifyShopper "+fingerprintToken)} // Gets triggered on error
-            });
-            identifyShopperComponent.mount(threeDS2IdentifyShopperNode);
-
-        },
-
-        initiate3DS2ChallengeShopper : function(challengeToken)
-        {
-            var threeDS2IdentifyShopperNode = document.getElementById('threeDS2');
-            var challengeShopperComponent = this.checkout
-                .create('threeDS2Challenge', {
-                    challengeToken: challengeToken,
-                    onComplete: function() {alert ("onComplete initiate3DS2ChallengeShopper "+challengeToken)}, // Gets triggered whenever the ThreeDS2 component has a result
-                    onError: function(){alert ("oneError initiate3DS2ChallengeShopper "+challengeToken)}, // Gets triggered on error
-                    size: '05' // Defaults to '01'
-                });
-            challengeShopperComponent.mount(threeDS2IdentifyShopperNode);
-
-        },
-
         initiateOneClickCard: function(card) {
             var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
             var details = [{
