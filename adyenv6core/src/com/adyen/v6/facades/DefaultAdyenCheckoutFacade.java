@@ -91,6 +91,11 @@ import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
+import static com.adyen.constants.ApiConstants.Redirect.Data.PAYMENT_DATA;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
 import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
@@ -434,16 +439,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
             lockSessionCart();
         }
-        if ("IdentifyShopper".equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-                getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
+        if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
+                getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
+
             }
             lockSessionCart();
         }
-        if ("ChallengeShopper".equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-                getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
+        if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
+                getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
             lockSessionCart();
@@ -484,6 +490,38 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             restoreSessionCart();
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
             if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                return createAuthorizedOrder(paymentsResponse);
+            }
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+        } catch (ApiException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public OrderData handle3DS2Response(final HttpServletRequest request) throws Exception {
+
+
+        String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
+        String challengeResult = request.getParameter(CHALLENGE_RESULT);
+        String paymentData = request.getParameter(PAYMENT_DATA);
+
+        String type = "";
+        String token = "";
+
+        if (challengeResult != null && ! challengeResult.isEmpty()) {
+            type = "challenge";
+            token = challengeResult;
+        } else if (fingerprintResult != null && ! fingerprintResult.isEmpty()) {
+            type = "fingerprint";
+            token = fingerprintResult;
+
+        }
+
+        try {
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DS2Payment(paymentData, token, type);
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                restoreSessionCart();
                 return createAuthorizedOrder(paymentsResponse);
             }
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
@@ -911,7 +949,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentDetailsWsDTO;
     }
 
-    private String getShopperLocale() {
+    @Override
+    public String getShopperLocale() {
         if (commonI18NService.getCurrentLanguage() != null) {
             return commonI18NService.getCurrentLanguage().getIsocode();
         }

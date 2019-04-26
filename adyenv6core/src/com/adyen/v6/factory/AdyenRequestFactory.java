@@ -81,6 +81,7 @@ public class AdyenRequestFactory {
     private static final String PLATFORM_NAME = "Hybris";
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
+    private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
 
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
         return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
@@ -150,6 +151,18 @@ public class AdyenRequestFactory {
         return paymentsDetailsRequest;
     }
 
+    public PaymentsDetailsRequest create3DS2PaymentsRequest(final String paymentData, final String token, String type) {
+
+        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
+        if (type.equals("fingerprint")) {
+            paymentsDetailsRequest.setFingerPrint(token, paymentData);
+
+        } else if (type.equals("challenge")) {
+            paymentsDetailsRequest.setChallengeResult(token, paymentData);
+        }
+        return paymentsDetailsRequest;
+    }
+
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
                                                  final CartData cartData,
                                                  final RequestInfo requestInfo,
@@ -169,16 +182,9 @@ public class AdyenRequestFactory {
         if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
             updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
             Boolean is3DS2allowed = is3DS2Allowed();
-
-            LOG.debug("is3DS2allowed"+ is3DS2allowed);
-
-            if(is3DS2allowed)
-            {
-                LOG.debug("payment request before enhancement"+ paymentsRequest.toString());
+            if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
-                LOG.debug("payment request after enhancement"+ paymentsRequest.toString());
             }
-
         }
         //For one click
         else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
@@ -207,33 +213,20 @@ public class AdyenRequestFactory {
         return paymentsRequest;
     }
 
-    public PaymentsRequest enhanceForThreeDS2(PaymentsRequest paymentsRequest, CartData cartData)
-    {
-        if ( paymentsRequest.getAdditionalData()==null)
-        {
+    public PaymentsRequest enhanceForThreeDS2(PaymentsRequest paymentsRequest, CartData cartData) {
+        if (paymentsRequest.getAdditionalData() == null) {
             paymentsRequest.setAdditionalData(new HashMap<>());
         }
-        paymentsRequest.getAdditionalData().put("allow3DS2", is3DS2Allowed().toString());
+        paymentsRequest.getAdditionalData().put(ALLOW_3DS2_PROPERTY, is3DS2Allowed().toString());
         paymentsRequest.setChannel(PaymentsRequest.ChannelEnum.WEB);
         BrowserInfo browserInfo = new Gson().fromJson(cartData.getAdyenBrowserInfo(), BrowserInfo.class);
-
-        LOG.debug("browserInfo before update :" + browserInfo.toString());
-
         browserInfo = updateBrowserInfoFromRequest(browserInfo, paymentsRequest);
-
-        LOG.debug("browserInfo after update :" + browserInfo.toString());
-
         paymentsRequest.setBrowserInfo(browserInfo);
-
-        LOG.debug(paymentsRequest.getBrowserInfo());
-
         return paymentsRequest;
     }
 
-    public BrowserInfo updateBrowserInfoFromRequest(BrowserInfo browserInfo, PaymentsRequest paymentsRequest)
-    {
-        if(browserInfo!= null)
-        {
+    public BrowserInfo updateBrowserInfoFromRequest(BrowserInfo browserInfo, PaymentsRequest paymentsRequest) {
+        if (browserInfo != null) {
             browserInfo.setUserAgent(paymentsRequest.getBrowserInfo().getUserAgent());
             browserInfo.setAcceptHeader(paymentsRequest.getBrowserInfo().getAcceptHeader());
         }
@@ -272,8 +265,6 @@ public class AdyenRequestFactory {
         String acceptHeader = requestInfo.getAcceptHeader();
         String shopperIP = requestInfo.getShopperIp();
         String origin = requestInfo.getOrigin();
-
-        LOG.debug("requestinfo is 1 "+ requestInfo.toString());
 
         paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).
                 shopperIP(shopperIP).setCountryCode(getCountryCode(cartData));
@@ -412,9 +403,6 @@ public class AdyenRequestFactory {
     private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, HttpServletRequest request, final String merchantAccount) {
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
-        LOG.debug("userAgent is "+ userAgent);
-        LOG.debug("acceptHeader is "+ acceptHeader);
-
         String shopperIP = request.getRemoteAddr();
         abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
 
@@ -766,8 +754,7 @@ public class AdyenRequestFactory {
         return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
     }
 
-    private Boolean is3DS2Allowed()
-    {
+    private Boolean is3DS2Allowed() {
         return getConfigurationService().getConfiguration().getBoolean(IS_3DS2_ALLOWED_PROPERTY);
     }
 
