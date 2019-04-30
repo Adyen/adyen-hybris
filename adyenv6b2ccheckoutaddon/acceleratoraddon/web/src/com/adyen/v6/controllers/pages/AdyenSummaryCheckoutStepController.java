@@ -71,6 +71,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -173,6 +174,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {
                     addBoletoMessage(redirectModel, orderData.getCode());
                 }
+
+                else if (PAYMENT_METHOD_MULTIBANCO.equals(cartData.getAdyenPaymentMethod())) {
+                    addMultibancoMessage(redirectModel, orderData.getCode());
+                }
+
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {
                 LOGGER.error("API exception ", e);
@@ -273,6 +279,25 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         GlobalMessages.addFlashMessage(redirectModel,
                                        GlobalMessages.INFO_MESSAGES_HOLDER,
                                        "Boleto PDf: <a target=\"_blank\" href=\"" + orderData.getAdyenBoletoUrl() + "\" title=\"Boleto PDF\">Download</a>");
+    }
+
+
+    /**
+     * Adds a flash message containing the Multibanco response fields
+     */
+    private void addMultibancoMessage(RedirectAttributes redirectModel, final String orderCode) {
+        //Use OrderFacade to force execution of AbstractOrder populators
+
+        OrderData orderData = orderFacade.getOrderDetailsForCode(orderCode);
+
+        GlobalMessages.addFlashMessage(redirectModel,
+                                       GlobalMessages.INFO_MESSAGES_HOLDER,
+                                       "<p> Multibanco order summary " + "</p>" +
+                                       "<p> Amount: "  + orderData.getAdyenMultibancoAmount() + "</p>"
+                                               + "<p> Entity: "  + orderData.getAdyenMultibancoEntity() + "</p>"
+                                               + "<p> Deadline: "  + orderData.getAdyenMultibancoDeadline() + "</p>"
+                                               + "<p> Reference: "  + orderData.getAdyenMultibancoReference() + "</p>"
+        );
     }
 
     /**

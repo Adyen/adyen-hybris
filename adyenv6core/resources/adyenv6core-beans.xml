@@ -29,6 +29,7 @@
         <property name="adyenSocialSecurityNumber" type="java.lang.String"/>
         <property name="adyenDfValue" type="java.lang.String"/>
         <property name="adyenFirstName" type="java.lang.String"/>
+        <property name="adyenInstallments" type="java.lang.Integer"/>
         <property name="adyenLastName" type="java.lang.String"/>
         <property name="adyenPaymentToken" type="java.lang.String"/>
         <property name="adyenReturnUrl" type="java.lang.String"/>
@@ -37,8 +38,13 @@
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
         <property name="adyenBoletoUrl" type="java.lang.String"/>
         <property name="adyenBoletoData" type="java.lang.String"/>
+        <property name="adyenBoletoBarCodeReference" type="String" />
         <property name="adyenBoletoExpirationDate" type="java.util.Date"/>
         <property name="adyenBoletoDueDate" type="java.util.Date"/>
+        <property name="adyenMultibancoEntity" type="java.lang.String" />
+        <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
+        <property name="adyenMultibancoDeadline" type="java.lang.String" />
+        <property name="adyenMultibancoReference" type="java.lang.String" />
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
@@ -55,13 +61,20 @@
         <property name="adyenSelectedReference" type="String" />
         <property name="adyenSocialSecurityNumber" type="String" />
         <property name="adyenFirstName" type="String" />
+        <property name="installments" type="Integer" />
         <property name="adyenLastName" type="String" />
     </bean>
 
     <bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">
         <property name="adyenBoletoUrl" type="String" />
         <property name="adyenBoletoData" type="String" />
+        <property name="adyenBoletoBarCodeReference" type="String" />
         <property name="adyenBoletoExpirationDate" type="java.util.Date" />
         <property name="adyenBoletoDueDate" type="java.util.Date" />
+        <property name="adyenMultibancoEntity" type="String" />
+        <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
+        <property name="adyenMultibancoDeadline" type="String" />
+        <property name="adyenMultibancoReference" type="String" />
     </bean>
+
 </beans>
