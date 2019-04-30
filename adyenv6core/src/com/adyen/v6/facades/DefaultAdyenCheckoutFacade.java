@@ -576,6 +576,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         orderData.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
         orderData.setAdyenBoletoData(paymentsResponse.getBoletoData());
+        orderData.setAdyenBoletoBarCodeReference(paymentsResponse.getBoletoBarCodeReference());
         orderData.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
         orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
 
