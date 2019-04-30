@@ -49,6 +49,14 @@ public class AbstractOrderPopulator implements Populator<AbstractOrderModel, Abs
 
             //Set boleto url
             target.setAdyenBoletoUrl(paymentInfo.getAdyenBoletoUrl());
+            target.setAdyenBoletoBarCodeReference(paymentInfo.getAdyenBoletoBarCodeReference());
+            target.setAdyenBoletoDueDate(paymentInfo.getAdyenBoletoDueDate());
+            target.setAdyenBoletoExpirationDate(paymentInfo.getAdyenBoletoExpirationDate());
+            //Set multibanco
+            target.setAdyenMultibancoAmount(paymentInfo.getAdyenMultibancoAmount());
+            target.setAdyenMultibancoDeadline(paymentInfo.getAdyenMultibancoDeadline());
+            target.setAdyenMultibancoReference(paymentInfo.getAdyenMultibancoReference());
+            target.setAdyenMultibancoEntity(paymentInfo.getAdyenMultibancoEntity());
         }
     }
 

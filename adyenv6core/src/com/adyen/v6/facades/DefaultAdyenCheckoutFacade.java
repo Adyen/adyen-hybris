@@ -576,11 +576,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         orderData.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
         orderData.setAdyenBoletoData(paymentsResponse.getBoletoData());
+        orderData.setAdyenBoletoBarCodeReference(paymentsResponse.getBoletoBarCodeReference());
         orderData.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
         orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
 
+        orderData.setAdyenMultibancoEntity(paymentsResponse.getMultibancoEntity());
+        orderData.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
+        orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
+        orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
+
         return orderData;
     }
+
 
     /**
      * Create order
@@ -626,11 +633,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && ! "scheme".equals(paymentMethod.getType())
-                                                                         && ! "bcmc".equals(paymentMethod.getType())
-                                                                         && ! "bcmc_mobile_QR".equals(paymentMethod.getType())
-                                                                         && ! PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType())
-                                                                         && paymentMethod.getType().indexOf(PAYMENT_METHOD_BOLETO) != 0)
+                                                                         && !isHiddenPaymentMethod(paymentMethod))
                                                                  .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -691,6 +694,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
         modelService.save(cartModel);
     }
+
+    private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
+        String paymentMethodType = paymentMethod.getType();
+        if (paymentMethodType == null
+                || paymentMethodType.isEmpty()
+                || paymentMethodType.equals("scheme")
+                || paymentMethodType.equals("bcmc")
+                || paymentMethodType.equals("bcmc_mobile_QR")
+                || paymentMethodType.equals(PAYMENT_METHOD_IDEAL)
+                || (paymentMethodType.contains("wechatpay") && ! paymentMethodType.equals("wechatpayWeb"))
+                || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO)) {
+            return true;
+        }
+        return false;
+    }
+
+
 
     @Override
     public boolean showBoleto() {
@@ -793,7 +813,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
         paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
         paymentInfo.setOwner(cartModel.getOwner());
-
+        paymentInfo.setAdyenInstallments(paymentDetails.getInstallments());
         return paymentInfo;
     }
 
