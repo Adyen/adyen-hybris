@@ -177,11 +177,11 @@ public class AdyenRequestFactory {
         //Update payment request for generic information for all payment method types
 
         updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        Boolean is3DS2allowed = is3DS2Allowed();
 
         //For credit cards
         if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
             updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
-            Boolean is3DS2allowed = is3DS2Allowed();
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
@@ -197,6 +197,9 @@ public class AdyenRequestFactory {
                     paymentMethodDetails.setType(cardBrand);
                     paymentsRequest.setPaymentMethod(paymentMethodDetails);
                 }
+            }
+            if (is3DS2allowed) {
+                paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
         }
         //Set Boleto parameters

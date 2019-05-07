@@ -183,9 +183,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 //In case of Boleto, show link to pdf
                 if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {
                     addBoletoMessage(redirectModel, orderData.getCode());
-                }
-
-                else if (PAYMENT_METHOD_MULTIBANCO.equals(cartData.getAdyenPaymentMethod())) {
+                } else if (PAYMENT_METHOD_MULTIBANCO.equals(cartData.getAdyenPaymentMethod())) {
                     addMultibancoMessage(redirectModel, orderData.getCode());
                 }
 
@@ -209,10 +207,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (REFUSED == paymentsResponse.getResultCode()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
-                if(IDENTIFYSHOPPER == paymentsResponse.getResultCode())
-                {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
-                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+                if (IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -220,17 +217,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
                     }
                 }
-                if(CHALLENGESHOPPER == paymentsResponse.getResultCode())
-                {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)) {
-                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+                if (CHALLENGESHOPPER == paymentsResponse.getResultCode()) {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                         model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
                     }
-
                 }
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -244,8 +239,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequestMapping(value = "/3ds2-adyen-response", method = RequestMethod.POST)
     @RequireHardLogIn
     public String authorise3DS2Payment(final Model model,
-                                           final RedirectAttributes redirectModel,
-                                           final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
+                                       final RedirectAttributes redirectModel,
+                                       final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
 
         String errorMessage = "checkout.error.authorization.failed";
         try {
@@ -254,9 +249,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
-            if(paymentsResponse!=null && paymentsResponse.getResultCode()== CHALLENGESHOPPER)
-            {
-                model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST,adyenCheckoutFacade.getCheckoutShopperHost());
+            if (paymentsResponse != null && paymentsResponse.getResultCode() == CHALLENGESHOPPER) {
+                model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                 model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                 model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                 model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -267,9 +261,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
         } catch (Exception e) {
-            return REDIRECT_PREFIX + "/cart";
+            LOGGER.debug("Redirecting to summary" + errorMessage);
+            return redirectToSummaryWithError(redirectModel, errorMessage);
         }
-        LOGGER.debug("Redirecting to final step of checkout");
+        LOGGER.debug("Redirecting to final step of checkout" +errorMessage);
         return redirectToSummaryWithError(redirectModel, errorMessage);
     }
 
