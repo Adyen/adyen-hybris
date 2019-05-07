@@ -46,8 +46,7 @@
                 }, // Gets triggered whenever the ThreeDS2 component has a result
 
                 onError: function ( error ) {
-                    alert(
-                        "onComplete initiate3DS2IdentifyShopper " + error )
+                    alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
                 } // Gets triggered on error
             } );
             identifyShopperComponent.mount( threeDS2IdentifyShopperNode );
@@ -65,7 +64,8 @@
                         document.getElementById( "3ds2-form" ).submit();
                     },
                     onError: function ( error ) {
-                        alert( "oneError initiate3DS2ChallengeShopper " + error )
+                        alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
+
                     }, // Gets triggered on error
                     size: '05' // Defaults to '01'
                 } );
