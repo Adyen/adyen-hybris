@@ -501,7 +501,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public OrderData handle3DS2Response(final HttpServletRequest request) throws Exception {
 
-
         String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
         String challengeResult = request.getParameter(CHALLENGE_RESULT);
         String paymentData = request.getParameter(PAYMENT_DATA);
@@ -520,12 +519,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         try {
             PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DS2Payment(paymentData, token, type);
-            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            if (paymentsResponse.getResultCode() != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER && paymentsResponse.getResultCode() != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
                 restoreSessionCart();
+            }
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+
                 return createAuthorizedOrder(paymentsResponse);
             }
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         } catch (ApiException e) {
+            if (type.equals("challenge")) {
+                LOGGER.debug("Restoring cart because ApiException occurred after challengeResult ");
+                restoreSessionCart();
+            }
             throw e;
         }
     }
@@ -761,7 +767,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         return false;
     }
-
 
 
     @Override
