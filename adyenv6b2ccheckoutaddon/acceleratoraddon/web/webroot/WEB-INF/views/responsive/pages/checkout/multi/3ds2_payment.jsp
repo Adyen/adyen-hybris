@@ -21,7 +21,6 @@
             initiateCheckout( "${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/", "${originKey}" );
             var challengeToken = "${challengeToken}";
             var fingerprintToken = "${fingerprintToken}";
-            var paymentData = "${paymentData}";
             if ( challengeToken ) {
                 initiate3DS2ChallengeShopper( challengeToken );
             } else {
@@ -84,7 +83,6 @@
             <div id="threeDS2"></div>
             <input type="hidden" name="challengeToken" value="${challengeToken}"/>
             <input type="hidden" name="fingerprintToken" value="${fingerprintToken}"/>
-            <input type="hidden" name="paymentData" value="${paymentData}"/>
             <input type="hidden" id="fingerprintResult" name="fingerprintResult"/>
             <input type="hidden" id="challengeResult" name="challengeResult"/>
         </div>

@@ -110,6 +110,7 @@
                             <form:hidden path="encryptedSecurityCode"/>
 
                             <form:hidden path="browserInfo"/>
+                            <form:hidden path="rememberTheseDetails" value="false"/>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">
