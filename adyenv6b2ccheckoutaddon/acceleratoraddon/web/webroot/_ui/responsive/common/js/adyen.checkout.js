@@ -60,6 +60,9 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
             $( 'input[name="encryptedSecurityCode"]' ).val( state.encryptedSecurityCode );
             $( 'input[name="cardHolder"]' ).val( state.holderName );
+            if(state.storeDetails!=null){
+            $( 'input[name="rememberTheseDetails"]' ).val( state.storeDetails );}
+
         },
 
         copyOneClickCardData: function ( recurringReference, cvc ) {
@@ -119,7 +122,10 @@ var AdyenCheckoutHybris = (function () {
             var configuration = {
                 locale: locale,// shopper's locale
                 loadingContext: loadingContext,
-                originKey: originKey
+                originKey: originKey,
+                risk: {
+                    enabled: false
+                }
             };
             this.checkout = new AdyenCheckout( configuration );
         },

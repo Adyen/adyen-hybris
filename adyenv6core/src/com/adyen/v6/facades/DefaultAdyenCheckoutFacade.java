@@ -503,7 +503,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
         String challengeResult = request.getParameter(CHALLENGE_RESULT);
-        String paymentData = request.getParameter(PAYMENT_DATA);
+        String paymentData =getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
         String type = "";
         String token = "";
@@ -530,6 +530,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         } catch (ApiException e) {
             if (type.equals("challenge")) {
                 LOGGER.debug("Restoring cart because ApiException occurred after challengeResult ");
+                restoreSessionCart();
+            }
+            else if (type.equals("fingerprint")) {
+                LOGGER.debug("Restoring cart because ApiException occurred after fingerPrintResult ");
                 restoreSessionCart();
             }
             throw e;
