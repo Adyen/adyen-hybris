@@ -532,10 +532,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 LOGGER.debug("Restoring cart because ApiException occurred after challengeResult ");
                 restoreSessionCart();
             }
-            else if (type.equals("fingerprint")) {
-                LOGGER.debug("Restoring cart because ApiException occurred after fingerPrintResult ");
-                restoreSessionCart();
-            }
             throw e;
         }
     }
