@@ -440,7 +440,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
@@ -448,7 +448,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
