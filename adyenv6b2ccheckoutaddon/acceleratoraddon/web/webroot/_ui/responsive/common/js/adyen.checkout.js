@@ -162,6 +162,7 @@ var AdyenCheckoutHybris = (function () {
                 type: 'card',
                 hasHolderName: true,
                 holderNameRequired: true,
+                enableStoreDetails: true,
                 groupTypes: allowedCards
 
             });
