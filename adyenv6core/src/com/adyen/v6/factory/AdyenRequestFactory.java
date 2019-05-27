@@ -26,6 +26,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
@@ -758,7 +759,13 @@ public class AdyenRequestFactory {
     }
 
     private Boolean is3DS2Allowed() {
-        return getConfigurationService().getConfiguration().getBoolean(IS_3DS2_ALLOWED_PROPERTY);
+
+        Configuration configuration = getConfigurationService().getConfiguration();
+        boolean is3DS2AllowedValue = false;
+        if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
+            is3DS2AllowedValue = configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
+        }
+        return is3DS2AllowedValue;
     }
 
     public ConfigurationService getConfigurationService() {
