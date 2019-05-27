@@ -3,8 +3,8 @@
 <html>
 <head>
 
-    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.2.1/adyen.js"></script>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.2.1/adyen.css"/>
+    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.js"></script>
+    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.css"/>
 
     <script type="text/javascript">
 
@@ -12,7 +12,10 @@
             var configuration = {
                 locale: locale,// shopper's locale
                 loadingContext: loadingContext,
-                originKey: originKey
+                originKey: originKey,
+                risk: {
+                    enabled: false
+                }
             };
             this.checkout = new AdyenCheckout( configuration );
         }
@@ -45,7 +48,8 @@
                 }, // Gets triggered whenever the ThreeDS2 component has a result
 
                 onError: function ( error ) {
-                    alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
+                    //alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
+                    console.log(JSON.stringify(error));
                 } // Gets triggered on error
             } );
             identifyShopperComponent.mount( threeDS2IdentifyShopperNode );
@@ -63,7 +67,8 @@
                         document.getElementById( "3ds2-form" ).submit();
                     },
                     onError: function ( error ) {
-                        alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
+                        console.log(JSON.stringify(error));
+//                        alert( "Payment Refused with error ["+ error.errorCode +"] and reason is "+ error.message );
 
                     }, // Gets triggered on error
                     size: '05' // Defaults to '01'
