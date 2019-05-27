@@ -126,7 +126,8 @@ https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment
 
  ## 3DS2 configuration
  By default 3DS2 is in off mode. If you want to enable 3DS2 in your system, please set following property in local.properties file and build your environment and restart the server.
-is3DS2allowed = true
+```is3DS2allowed = true
+```
 
  ## Documentation
  https://docs.adyen.com/developers/plugins/hybris
