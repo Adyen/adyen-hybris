@@ -64,6 +64,8 @@ public interface AdyenCheckoutFacade {
      */
     String getOriginKey();
 
+    String getShopperLocale();
+
     /**
      * Retrieve the host of Secured Fields
      */
@@ -143,6 +145,9 @@ public interface AdyenCheckoutFacade {
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
+
+    OrderData handle3DS2Response(HttpServletRequest request) throws Exception;
+
     OrderData handle3DResponse(HttpServletRequest request) throws Exception;
 
     /**
