@@ -79,7 +79,7 @@ More details can be found here: https://docs.adyen.com/developers/payment-method
 
 ### Other alternative payment methods
 
-Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/developers/products-and-subscriptions/hosted-payment-pages).
+Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/classic-integration/hosted-payment-pages/).
 
 
 ## Usage with OCC
