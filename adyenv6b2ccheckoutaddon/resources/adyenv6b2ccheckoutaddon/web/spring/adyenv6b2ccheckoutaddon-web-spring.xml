@@ -161,7 +161,4 @@
 		<constructor-arg value="redirect:/checkout/multi/adyen/select-payment-method"/>
 	</bean>
 
-	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
-		<property name="baseStoreService" ref="baseStoreService" />
-	</bean>
 </beans>
