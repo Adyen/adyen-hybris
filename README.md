@@ -22,6 +22,10 @@ Required for the checkout:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6b2ccheckoutaddon"/>
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6backoffice"/>
 ```
+Required for the notifications:
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
+```
 
 Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe):
 ```
