@@ -1,0 +1,9 @@
+#Ant properties
+#Thu Oct 12 09:41:54 CEST 2017
+builddate=20171012 0936
+description=adyenv6notification
+name=adyenv6notification
+releasedate=20170803 1323
+vendor=adyen
+version=4.2.0
+version.api=4.2.0
