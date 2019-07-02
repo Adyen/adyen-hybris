@@ -23,8 +23,10 @@ package com.adyen.v6.factory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
@@ -33,6 +35,7 @@ import com.adyen.model.AbstractPaymentRequest;
 import com.adyen.model.Address;
 import com.adyen.model.Amount;
 import com.adyen.model.Installments;
+import com.adyen.model.BrowserInfo;
 import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
@@ -53,6 +56,7 @@ import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
+import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -62,6 +66,7 @@ import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
@@ -77,6 +82,8 @@ public class AdyenRequestFactory {
 
     private static final String PLATFORM_NAME = "Hybris";
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
+    private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
+    private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
 
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
         return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
@@ -146,6 +153,18 @@ public class AdyenRequestFactory {
         return paymentsDetailsRequest;
     }
 
+    public PaymentsDetailsRequest create3DS2PaymentsRequest(final String paymentData, final String token, String type) {
+
+        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
+        if (type.equals("fingerprint")) {
+            paymentsDetailsRequest.setFingerPrint(token, paymentData);
+
+        } else if (type.equals("challenge")) {
+            paymentsDetailsRequest.setChallengeResult(token, paymentData);
+        }
+        return paymentsDetailsRequest;
+    }
+
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
                                                  final CartData cartData,
                                                  final RequestInfo requestInfo,
@@ -160,10 +179,14 @@ public class AdyenRequestFactory {
         //Update payment request for generic information for all payment method types
 
         updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        Boolean is3DS2allowed = is3DS2Allowed();
 
         //For credit cards
         if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
             updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
+            if (is3DS2allowed) {
+                paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
+            }
         }
         //For one click
         else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
@@ -176,6 +199,9 @@ public class AdyenRequestFactory {
                     paymentMethodDetails.setType(cardBrand);
                     paymentsRequest.setPaymentMethod(paymentMethodDetails);
                 }
+            }
+            if (is3DS2allowed) {
+                paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
         }
         //Set Boleto parameters
@@ -190,6 +216,26 @@ public class AdyenRequestFactory {
         ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
         return paymentsRequest;
+    }
+
+    public PaymentsRequest enhanceForThreeDS2(PaymentsRequest paymentsRequest, CartData cartData) {
+        if (paymentsRequest.getAdditionalData() == null) {
+            paymentsRequest.setAdditionalData(new HashMap<>());
+        }
+        paymentsRequest.getAdditionalData().put(ALLOW_3DS2_PROPERTY, is3DS2Allowed().toString());
+        paymentsRequest.setChannel(PaymentsRequest.ChannelEnum.WEB);
+        BrowserInfo browserInfo = new Gson().fromJson(cartData.getAdyenBrowserInfo(), BrowserInfo.class);
+        browserInfo = updateBrowserInfoFromRequest(browserInfo, paymentsRequest);
+        paymentsRequest.setBrowserInfo(browserInfo);
+        return paymentsRequest;
+    }
+
+    public BrowserInfo updateBrowserInfoFromRequest(BrowserInfo browserInfo, PaymentsRequest paymentsRequest) {
+        if (browserInfo != null) {
+            browserInfo.setUserAgent(paymentsRequest.getBrowserInfo().getUserAgent());
+            browserInfo.setAcceptHeader(paymentsRequest.getBrowserInfo().getAcceptHeader());
+        }
+        return browserInfo;
     }
 
     public ApplicationInfo updateApplicationInfo(ApplicationInfo applicationInfo) {
@@ -223,9 +269,11 @@ public class AdyenRequestFactory {
         String userAgent = requestInfo.getUserAgent();
         String acceptHeader = requestInfo.getAcceptHeader();
         String shopperIP = requestInfo.getShopperIp();
+        String origin = requestInfo.getOrigin();
 
         paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).
                 shopperIP(shopperIP).setCountryCode(getCountryCode(cartData));
+        paymentsRequest.setOrigin(origin);
 
         // set shopper details from CustomerModel.
         if (customerModel != null) {
@@ -295,7 +343,7 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         if (adyenPaymentMethod.equals(PAYMENT_METHOD_IDEAL)) {
             paymentMethod.setIdealIssuer(cartData.getAdyenIssuerId());
-        } else if (KLARNA.contains(adyenPaymentMethod)) {
+        } else if (KLARNA.contains(adyenPaymentMethod)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
             setOpenInvoiceData(paymentsRequest, cartData, customerModel);
         }
     }
@@ -709,6 +757,16 @@ public class AdyenRequestFactory {
 
     private String getPlatformVersion() {
         return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
+    }
+
+    private Boolean is3DS2Allowed() {
+
+        Configuration configuration = getConfigurationService().getConfiguration();
+        boolean is3DS2AllowedValue = false;
+        if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
+            is3DS2AllowedValue = configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
+        }
+        return is3DS2AllowedValue;
     }
 
     public ConfigurationService getConfigurationService() {

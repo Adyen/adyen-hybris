@@ -164,6 +164,14 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    public PaymentsResponse authorise3DS2Payment(String paymentData, String token, String type) throws Exception {
+        Checkout checkout = new Checkout(client);
+        PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DS2PaymentsRequest(paymentData, token, type);
+        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        return paymentsResponse;
+    }
+
+    @Override
     public PaymentResult authorise3D(final HttpServletRequest request, final String paRes, final String md) throws Exception {
         Payment payment = new Payment(client);
 

@@ -17,9 +17,9 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.1.0/adyen.js"></script>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.1.0/adyen.css"/>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.css"/>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/", "${originKey}" );
@@ -40,6 +40,7 @@
                     return false;
                 }
                 AdyenCheckoutHybris.setCustomPaymentMethodValues();
+                AdyenCheckoutHybris.setBrowserData();
 
                 $( "#adyen-encrypted-form" ).submit();
             } );
@@ -107,6 +108,9 @@
                             <form:hidden path="encryptedExpiryMonth"/>
                             <form:hidden path="encryptedExpiryYear"/>
                             <form:hidden path="encryptedSecurityCode"/>
+
+                            <form:hidden path="browserInfo"/>
+                            <form:hidden path="rememberTheseDetails" value="false"/>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">
