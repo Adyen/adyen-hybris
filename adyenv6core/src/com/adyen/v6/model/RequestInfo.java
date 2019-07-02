@@ -30,15 +30,29 @@ public class RequestInfo {
     private String userAgent;
     private String acceptHeader;
     private String shopperIp;
+    private String origin;
 
     public RequestInfo(HttpServletRequest request) {
         this.userAgent = request.getHeader(USER_AGENT_HEADER);
         this.acceptHeader = request.getHeader(ACCEPT_HEADER);
         this.shopperIp = request.getRemoteAddr();
+        this.origin = getOrigin(request);
     }
 
     private RequestInfo() {
+    }
 
+    public String getOrigin(HttpServletRequest request) {
+        String currentRequestURL = request.getRequestURL().toString();
+        int requestUrlLength = currentRequestURL.length();
+        int requestUriLength = request.getRequestURI().length();
+
+        String baseURL = currentRequestURL.substring(0, requestUrlLength - requestUriLength);
+        return baseURL;
+    }
+
+    public String getOrigin() {
+        return this.origin;
     }
 
     public static RequestInfo empty() {

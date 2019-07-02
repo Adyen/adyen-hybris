@@ -69,6 +69,17 @@ public class AdyenPaymentForm {
     // used in openinvoice and boleto
     private String socialSecurityNumber;
 
+    //3DS 2.0
+    private String browserInfo;
+
+    public String getBrowserInfo() {
+        return browserInfo;
+    }
+
+    public void setBrowserInfo(String browserInfo) {
+        this.browserInfo = browserInfo;
+    }
+
     public String getCseToken() {
         return cseToken;
     }
@@ -251,6 +262,7 @@ public class AdyenPaymentForm {
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
         sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
+        sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
         sb.append("}");
         return sb.toString();
     }

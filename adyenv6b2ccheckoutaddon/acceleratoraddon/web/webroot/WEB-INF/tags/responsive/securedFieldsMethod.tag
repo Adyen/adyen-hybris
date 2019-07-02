@@ -35,15 +35,6 @@
     <div class="chckt-pm__details js-chckt-pm__details payment_method_details" id="dd_method_adyen_cc">
         <div class="chckt-form chckt-form--max-width">
             <div id="card-div"></div>
-
-            <c:if test="${showRememberTheseDetails}">
-                <label class="chckt-form-label chckt-form-label--full-width">
-                    <input class="chckt-checkbox" checked="" type="checkbox" name="rememberTheseDetails" value="true">
-                    <span class="chckt-form-label__text">
-                        Save for my next payment
-                    </span>
-                </label>
-            </c:if>
         </div>
     </div>
 </div>

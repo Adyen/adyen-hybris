@@ -31,7 +31,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "4.2.0";
+	public static final String PLUGIN_VERSION = "5.0.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
@@ -53,6 +53,8 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String COUNTRY_CODE_DENMARK = "DK";
 	public static final String COUNTRY_CODE_FINLAND = "FI";
 	public static final String COUNTRY_CODE_NORWAY = "NO";
+	//Prefix for Oney methods like facilpay_3x or facilpay_4x
+	public static final String PAYMENT_METHOD_FACILPAY_PREFIX = "facilypay";
 
 	private Adyenv6coreConstants() {
 		//empty to avoid instantiating this constant class

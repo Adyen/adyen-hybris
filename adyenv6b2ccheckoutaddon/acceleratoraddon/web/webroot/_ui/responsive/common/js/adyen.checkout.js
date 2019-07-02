@@ -10,6 +10,11 @@ var AdyenCheckoutHybris = (function () {
         card: null,
         oneClickCards: {},
 
+        setBrowserData: function () {
+            var browserData = ThreedDS2Utils.getBrowserInfo();
+            $( 'input[name="browserInfo"]' ).val( JSON.stringify( browserData ) );
+        },
+
         validateForm: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
 
@@ -55,6 +60,9 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
             $( 'input[name="encryptedSecurityCode"]' ).val( state.encryptedSecurityCode );
             $( 'input[name="cardHolder"]' ).val( state.holderName );
+            if(state.storeDetails!=null){
+            $( 'input[name="rememberTheseDetails"]' ).val( state.storeDetails );}
+
         },
 
         copyOneClickCardData: function ( recurringReference, cvc ) {
@@ -114,11 +122,13 @@ var AdyenCheckoutHybris = (function () {
             var configuration = {
                 locale: locale,// shopper's locale
                 loadingContext: loadingContext,
-                originKey: originKey
+                originKey: originKey,
+                risk: {
+                    enabled: false
+                }
             };
             this.checkout = new AdyenCheckout( configuration );
         },
-
 
         initiateOneClickCard: function(card) {
             var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
@@ -152,6 +162,7 @@ var AdyenCheckoutHybris = (function () {
                 type: 'card',
                 hasHolderName: true,
                 holderNameRequired: true,
+                enableStoreDetails: true,
                 groupTypes: allowedCards
 
             });

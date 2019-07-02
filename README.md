@@ -22,6 +22,10 @@ Required for the checkout:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6b2ccheckoutaddon"/>
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6backoffice"/>
 ```
+Required for the notifications:
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
+```
 
 Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe):
 ```
@@ -33,9 +37,9 @@ Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6fulfilmentprocess"/>
 ```
 
-### 3. Modify local.properties 
+### 3. Modify local.properties
 
-Modify config/local.properties file: 
+Modify config/local.properties file:
 append ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ to the value of csrf.allowed.url.patterns
 
 ### 4. Build
@@ -56,12 +60,11 @@ Please make sure your merchant has Variant true in API and responses section so 
 
 ### Credit Cards
 
-Credit Card payments are supported using [Client Side Encryption](https://docs.adyen.com/support/payment-glossary/client-side-encryption-cse).
+Credit Card payments are supported using Checkout Components.
 
-### Klarna
+### Ratepay
 
-Klarna is supported via Adyen API.
-Requires shopper data listed in: https://developers.klarna.com/en/se/kpm/test-credentials
+Ratepay is supported via Adyen API.
 
 ### Boleto
 
@@ -79,7 +82,7 @@ More details can be found here: https://docs.adyen.com/developers/payment-method
 
 ### Other alternative payment methods
 
-Supported via Adyen [Hosted Payment Pages](https://docs.adyen.com/developers/products-and-subscriptions/hosted-payment-pages).
+Supported via Adyen Checkout.
 
 
 ## Usage with OCC
@@ -109,7 +112,7 @@ For Credit Card payments - it expects encrypted card holder data obtained from y
 For Stored Cards payments - selected Adyen recurringReference of the card and encrypted cvc
 
 For Boleto payments - social security number
-    
+
 
 3. OrderData authorisePayment(CartData cartData) throws Exception;
 
@@ -124,13 +127,18 @@ It returns an instance of OrderWSDTO obtained from OrderData of the placed order
 For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
 
+ ## 3DS2 configuration
+ By default 3DS2 is disabled. If you want to enable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
+```
+is3DS2allowed = true
+```
 
  ## Documentation
  https://docs.adyen.com/developers/plugins/hybris
- 
+
  ## Support
  You can create issues on our Magento Repository. In case of specific problems with your account, please contact
  support@adyen.com.
- 
+
  ## License
  MIT license. For more information, see the LICENSE file.
