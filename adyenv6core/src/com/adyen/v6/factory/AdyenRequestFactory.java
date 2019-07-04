@@ -451,6 +451,7 @@ public class AdyenRequestFactory {
         }
 
         if (addressData.getRegion() != null && ! addressData.getRegion().getIsocode().isEmpty()) {
+            //State value will be updated later for boleto in boleto specific method.
             address.setStateOrProvince(addressData.getRegion().getIsocode());
         }
 
@@ -745,6 +746,21 @@ public class AdyenRequestFactory {
         shopperName.setFirstName(cartData.getAdyenFirstName());
         shopperName.setLastName(cartData.getAdyenLastName());
         paymentsRequest.setShopperName(shopperName);
+
+        if (paymentsRequest.getBillingAddress() != null) {
+            String stateOrProvinceBilling = paymentsRequest.getBillingAddress().getStateOrProvince();
+            if (! StringUtils.isEmpty(stateOrProvinceBilling) && stateOrProvinceBilling.length() > 2) {
+                String shortStateOrProvince = stateOrProvinceBilling.substring(stateOrProvinceBilling.length() - 2);
+                paymentsRequest.getBillingAddress().setStateOrProvince(shortStateOrProvince);
+            }
+        }
+        if (paymentsRequest.getDeliveryAddress() != null) {
+            String stateOrProvinceDelivery = paymentsRequest.getDeliveryAddress().getStateOrProvince();
+            if (! StringUtils.isEmpty(stateOrProvinceDelivery) && stateOrProvinceDelivery.length() > 2) {
+                String shortStateOrProvince = stateOrProvinceDelivery.substring(stateOrProvinceDelivery.length() - 2);
+                paymentsRequest.getDeliveryAddress().setStateOrProvince(shortStateOrProvince);
+            }
+        }
     }
 
     /**
