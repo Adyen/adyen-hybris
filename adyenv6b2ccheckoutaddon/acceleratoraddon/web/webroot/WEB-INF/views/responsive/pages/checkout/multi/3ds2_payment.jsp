@@ -11,7 +11,7 @@
         function initiateCheckout ( locale, environmentMode, originKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
-                environment: environmentMode, //TEST or LIVE
+                environment: environmentMode, //test or live
                 originKey: originKey,
                 risk: {
                     enabled: false
