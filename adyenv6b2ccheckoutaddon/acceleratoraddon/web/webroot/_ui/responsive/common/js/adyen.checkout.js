@@ -60,8 +60,8 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
             $( 'input[name="encryptedSecurityCode"]' ).val( state.encryptedSecurityCode );
             $( 'input[name="cardHolder"]' ).val( state.holderName );
-            if(state.storeDetails!=null){
-            $( 'input[name="rememberTheseDetails"]' ).val( state.storeDetails );}
+            if(this.card.data.storePaymentMethod!=null){
+            $( 'input[name="rememberTheseDetails"]' ).val( this.card.data.storePaymentMethod );}
 
         },
 
