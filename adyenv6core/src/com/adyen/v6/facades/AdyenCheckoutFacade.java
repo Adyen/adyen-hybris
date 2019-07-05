@@ -72,7 +72,7 @@ public interface AdyenCheckoutFacade {
     String getCheckoutShopperHost();
 
     /**
-     * Retrieve the environment is running in TEST mode or LIVE mode
+     * Retrieve the environment is running in test mode or live mode
      */
     String getEnvironmentMode();
 
