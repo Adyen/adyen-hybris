@@ -25,7 +25,7 @@ var AdyenCheckoutHybris = (function () {
 
             // Check if it is a valid card and encrypt
             if ( paymentMethod === "adyen_cc" ) {
-                if (!this.card.isValid()) {
+                if (!this.card.isValid) {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
@@ -36,7 +36,7 @@ var AdyenCheckoutHybris = (function () {
                 var recurringReference = paymentMethod.slice("adyen_oneclick_".length);
                 var oneClickCard = this.oneClickCards[recurringReference];
 
-                if (!(oneClickCard && oneClickCard.isValid())) {
+                if (!(oneClickCard && oneClickCard.isValid)) {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
@@ -44,7 +44,7 @@ var AdyenCheckoutHybris = (function () {
                     this.copyOneClickCardDataBCMC( recurringReference )
                 }
                 else {
-                    this.copyOneClickCardData( recurringReference, oneClickCard.state.data.encryptedSecurityCode );
+                    this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
                 }
             }
 
@@ -54,7 +54,7 @@ var AdyenCheckoutHybris = (function () {
         },
 
         copyCardData: function() {
-            var state = this.card.state.data;
+            var state = this.card.data.paymentMethod;
             $( 'input[name="encryptedCardNumber"]' ).val( state.encryptedCardNumber );
             $( 'input[name="encryptedExpiryMonth"]' ).val( state.encryptedExpiryMonth );
             $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
@@ -118,10 +118,10 @@ var AdyenCheckoutHybris = (function () {
         createDfValue: function () {
             window.dfDo( "dfValue" );
         },
-        initiateCheckout: function ( locale, loadingContext, originKey ) {
+        initiateCheckout: function ( locale, environment, originKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
-                loadingContext: loadingContext,
+                environment: environment,
                 originKey: originKey,
                 risk: {
                     enabled: false
@@ -180,7 +180,7 @@ var AdyenCheckoutHybris = (function () {
 
             function handleChange(event) {
                 var issuerIdField = document.getElementById('issuerId');
-                var issuerId = event.data.issuer;
+                var issuerId = event.data.paymentMethod.issuer;
                 issuerIdField.value = issuerId;
             }
 

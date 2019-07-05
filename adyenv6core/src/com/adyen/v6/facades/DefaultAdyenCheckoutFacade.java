@@ -172,6 +172,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
     public static final String MODEL_IDEAL_ISSUER_LIST = "iDealissuerList";
+    public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -234,6 +235,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         return CHECKOUT_SHOPPER_HOST_LIVE;
+    }
+
+
+    @Override
+    public String getEnvironmentMode() {
+        if (baseStoreService.getCurrentBaseStore().getAdyenTestMode()) {
+            return "test";
+        }
+        return "live";
     }
 
     @Override
@@ -728,6 +738,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_ORIGIN_KEY, getOriginKey());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
 
         Set<String> recurringDetailReferences = new HashSet<>();
