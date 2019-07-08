@@ -82,6 +82,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -210,6 +211,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
                     if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -220,6 +222,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (CHALLENGESHOPPER == paymentsResponse.getResultCode()) {
                     if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -251,6 +254,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
             if (paymentsResponse != null && paymentsResponse.getResultCode() == CHALLENGESHOPPER) {
                 model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                 model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                 model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                 model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
