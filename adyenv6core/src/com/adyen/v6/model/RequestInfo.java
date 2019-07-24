@@ -31,6 +31,7 @@ public class RequestInfo {
     private String acceptHeader;
     private String shopperIp;
     private String origin;
+    private String shopperLocale;
 
     public RequestInfo(HttpServletRequest request) {
         this.userAgent = request.getHeader(USER_AGENT_HEADER);
@@ -69,5 +70,13 @@ public class RequestInfo {
 
     public String getShopperIp() {
         return shopperIp;
+    }
+
+    public String getShopperLocale() {
+        return shopperLocale;
+    }
+
+    public void setShopperLocale(String shopperLocale) {
+        this.shopperLocale = shopperLocale;
     }
 }
