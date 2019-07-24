@@ -301,12 +301,26 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse getPaymentDetailsFromPayload(final String payload) throws Exception {
+    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
-        paymentsDetailsRequest.setDetails(new HashMap<>());
-        paymentsDetailsRequest.getDetails().put("payload", payload);
+        paymentsDetailsRequest.setDetails(details);
+
+        LOG.debug(paymentsDetailsRequest);
+        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        LOG.debug(paymentsResponse);
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details, String paymentData) throws Exception {
+        Checkout checkout = new Checkout(client);
+
+        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
+        paymentsDetailsRequest.setDetails(details);
+        paymentsDetailsRequest.setPaymentData(paymentData);
 
         LOG.debug(paymentsDetailsRequest);
         PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);

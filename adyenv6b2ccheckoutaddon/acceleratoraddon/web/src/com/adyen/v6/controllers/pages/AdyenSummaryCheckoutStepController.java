@@ -22,6 +22,7 @@ package com.adyen.v6.controllers.pages;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Resource;
@@ -92,6 +93,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
     private static final String HPP_RESULT_URL = "/hpp-adyen-response";
     private static final String ADYEN_PAYLOAD = "payload";
+    private static final String REDIRECT_RESULT = "redirectResult";
 
     @Resource(name = "siteBaseUrlResolutionService")
     private SiteBaseUrlResolutionService siteBaseUrlResolutionService;
@@ -300,9 +302,20 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     public String handleAdyenResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
         //Compose HPP response data map
         String payload = request.getParameter(ADYEN_PAYLOAD);
+        String redirectResult = request.getParameter(REDIRECT_RESULT);
+        HashMap<String, String> details = new HashMap<>();
+
+        if (payload !=null && !payload.isEmpty() )
+        {
+            details.put(ADYEN_PAYLOAD, payload);
+        }
+        if (redirectResult !=null && !redirectResult.isEmpty() )
+        {
+            details.put(REDIRECT_RESULT, redirectResult);
+        }
 
         try {
-            PaymentsResponse response = adyenCheckoutFacade.handleRedirectPayload(payload);
+            PaymentsResponse response = adyenCheckoutFacade.handleRedirectPayload(details);
 
             switch (response.getResultCode()) {
                 case AUTHORISED:
