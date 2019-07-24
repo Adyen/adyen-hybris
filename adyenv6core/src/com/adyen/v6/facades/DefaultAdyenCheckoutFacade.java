@@ -386,16 +386,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentsResponse handleRedirectPayload(HashMap<String,String> details) {
+    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) {
         try {
             PaymentsResponse response;
             String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
-            if(paymentMethod!=null && paymentMethod.equals(KLARNA)) {
+            if (paymentMethod != null && paymentMethod.equals(KLARNA)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
-            }
-            else
-            {
+            } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
             }
             restoreSessionCart();
@@ -438,10 +436,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         }
 
-        RequestInfo requestInfo =new RequestInfo(request);
+        RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
 
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo , customer);
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
             return createAuthorizedOrder(paymentsResponse);
         }
@@ -463,7 +461,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
@@ -471,7 +469,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
@@ -526,7 +524,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
         String challengeResult = request.getParameter(CHALLENGE_RESULT);
-        String paymentData =getSessionService().getAttribute(SESSION_PAYMENT_DATA);
+        String paymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
         String type = "";
         String token = "";
@@ -713,9 +711,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && !isHiddenPaymentMethod(paymentMethod))
-                                                            .collect(Collectors.toList());
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
+                                                                 .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
