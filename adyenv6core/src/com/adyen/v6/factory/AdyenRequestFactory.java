@@ -270,10 +270,10 @@ public class AdyenRequestFactory {
         String acceptHeader = requestInfo.getAcceptHeader();
         String shopperIP = requestInfo.getShopperIp();
         String origin = requestInfo.getOrigin();
+        String shopperLocale = requestInfo.getShopperLocale();
 
         paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).
-                shopperIP(shopperIP).setCountryCode(getCountryCode(cartData));
-        paymentsRequest.setOrigin(origin);
+                shopperIP(shopperIP).origin(origin).shopperLocale(shopperLocale).setCountryCode(getCountryCode(cartData));
 
         // set shopper details from CustomerModel.
         if (customerModel != null) {
