@@ -8,11 +8,10 @@
 
     <script type="text/javascript">
 
-        function initiateCheckout ( locale, loadingContext, originKey ) {
+        function initiateCheckout ( locale, loadingContext ) {
             var configuration = {
                 locale: locale,// shopper's locale
                 loadingContext: loadingContext,
-                originKey: originKey,
                 risk: {
                     enabled: false
                 }
@@ -21,7 +20,7 @@
         }
 
         function perform3DS2Operations () {
-            initiateCheckout( "${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/", "${originKey}" );
+            initiateCheckout( "${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/");
             var challengeToken = "${challengeToken}";
             var fingerprintToken = "${fingerprintToken}";
             if ( challengeToken ) {

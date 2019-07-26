@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,13 +28,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -44,6 +49,7 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMe
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -65,6 +71,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
     /**
      * {@inheritDoc}
      */
@@ -83,6 +92,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
         model.addAttribute("expiryYears", getExpiryYears());
+
+        try {
+            model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
+        } catch (ApiException e) {
+            LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
+        }
 
         adyenCheckoutFacade.initializeCheckoutData(model);
 

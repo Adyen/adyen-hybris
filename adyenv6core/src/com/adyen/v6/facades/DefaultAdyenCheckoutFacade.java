@@ -222,10 +222,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public String getOriginKey() {
-        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+    public String getOriginKey(HttpServletRequest request) throws IOException, ApiException {
+        return getAdyenPaymentService().getOriginKey(getBaseURL(request));
+    }
 
-        return baseStore.getAdyenOriginKey();
+    public String getBaseURL(HttpServletRequest request) {
+        String currentRequestURL = request.getRequestURL().toString();
+        int requestUrlLength = currentRequestURL.length();
+        int requestUriLength = request.getRequestURI().length();
+        return currentRequestURL.substring(0, requestUrlLength - requestUriLength);
     }
 
     @Override
@@ -393,9 +398,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             if(paymentMethod!=null && paymentMethod.equals(KLARNA)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
-            }
-            else
-            {
+            } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
             }
             restoreSessionCart();
@@ -748,7 +751,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         model.addAttribute(MODEL_REMEMBER_DETAILS, showRememberTheseDetails);
         model.addAttribute(MODEL_STORED_CARDS, storedCards);
-        model.addAttribute(MODEL_ORIGIN_KEY, getOriginKey());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
@@ -773,6 +775,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include Issuer List for iDEAL
         model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
+        LOGGER.debug("Model is =========="+model.toString());
+        LOGGER.debug("Origin key is present in model ????????????????"+model.containsAttribute(MODEL_ORIGIN_KEY));
         modelService.save(cartModel);
     }
 
