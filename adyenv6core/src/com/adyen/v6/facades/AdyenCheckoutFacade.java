@@ -73,6 +73,11 @@ public interface AdyenCheckoutFacade {
     String getCheckoutShopperHost();
 
     /**
+     * Retrieve the environment is running in test mode or live mode
+     */
+    String getEnvironmentMode();
+
+    /**
      * Retrieve the HPP base URL for the current basestore
      *
      * @return HPP url

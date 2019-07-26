@@ -82,6 +82,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -209,8 +210,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
                 if (IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                         model.addAttribute(FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
@@ -218,8 +220,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     }
                 }
                 if (CHALLENGESHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                         model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
@@ -250,6 +253,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
             if (paymentsResponse != null && paymentsResponse.getResultCode() == CHALLENGESHOPPER) {
                 model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+                model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                 model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
                 model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                 model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
@@ -262,7 +266,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             LOGGER.debug("Redirecting to summary" + errorMessage);
             return redirectToSummaryWithError(redirectModel, errorMessage);
         }
-        LOGGER.debug("Redirecting to final step of checkout" +errorMessage);
+        LOGGER.debug("Redirecting to final step of checkout" + errorMessage);
         return redirectToSummaryWithError(redirectModel, errorMessage);
     }
 
@@ -296,17 +300,14 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
     public String handleAdyenResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
-        //Compose HPP response data map
         String payload = request.getParameter(ADYEN_PAYLOAD);
         String redirectResult = request.getParameter(REDIRECT_RESULT);
         HashMap<String, String> details = new HashMap<>();
 
-        if (payload !=null && !payload.isEmpty() )
-        {
+        if (payload != null && ! payload.isEmpty()) {
             details.put(ADYEN_PAYLOAD, payload);
         }
-        if (redirectResult !=null && !redirectResult.isEmpty() )
-        {
+        if (redirectResult != null && ! redirectResult.isEmpty()) {
             details.put(REDIRECT_RESULT, redirectResult);
         }
 
@@ -361,12 +362,20 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         GlobalMessages.addFlashMessage(redirectModel,
                                        GlobalMessages.INFO_MESSAGES_HOLDER,
-                                       "<p> Multibanco order summary " + "</p>" +
-                                       "<p> Amount: "  + orderData.getAdyenMultibancoAmount() + "</p>"
-                                               + "<p> Entity: "  + orderData.getAdyenMultibancoEntity() + "</p>"
-                                               + "<p> Deadline: "  + orderData.getAdyenMultibancoDeadline() + "</p>"
-                                               + "<p> Reference: "  + orderData.getAdyenMultibancoReference() + "</p>"
-        );
+                                       "<p> Multibanco order summary "
+                                               + "</p>"
+                                               + "<p> Amount: "
+                                               + orderData.getAdyenMultibancoAmount()
+                                               + "</p>"
+                                               + "<p> Entity: "
+                                               + orderData.getAdyenMultibancoEntity()
+                                               + "</p>"
+                                               + "<p> Deadline: "
+                                               + orderData.getAdyenMultibancoDeadline()
+                                               + "</p>"
+                                               + "<p> Reference: "
+                                               + orderData.getAdyenMultibancoReference()
+                                               + "</p>");
     }
 
     /**

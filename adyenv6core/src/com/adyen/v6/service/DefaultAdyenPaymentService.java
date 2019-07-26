@@ -321,7 +321,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details, String paymentData) throws Exception {
         Checkout checkout = new Checkout(client);
-
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
         paymentsDetailsRequest.setDetails(details);
         paymentsDetailsRequest.setPaymentData(paymentData);

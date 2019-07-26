@@ -3,15 +3,16 @@
 <html>
 <head>
 
-    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.js"></script>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/2.5.0/adyen.css"/>
+    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.js"></script>
+    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.css"/>
 
     <script type="text/javascript">
 
         function initiateCheckout ( locale, loadingContext ) {
+        function initiateCheckout ( locale, environmentMode ) {
             var configuration = {
                 locale: locale,// shopper's locale
-                loadingContext: loadingContext,
+                environment: environmentMode, //test or live
                 risk: {
                     enabled: false
                 }
@@ -20,7 +21,7 @@
         }
 
         function perform3DS2Operations () {
-            initiateCheckout( "${shopperLocale}", "https://${checkoutShopperHost}/checkoutshopper/");
+            initiateCheckout( "${shopperLocale}", "${environmentMode}" );
             var challengeToken = "${challengeToken}";
             var fingerprintToken = "${fingerprintToken}";
             if ( challengeToken ) {

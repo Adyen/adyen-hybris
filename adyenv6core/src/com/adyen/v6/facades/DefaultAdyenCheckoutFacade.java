@@ -175,6 +175,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
     public static final String MODEL_IDEAL_ISSUER_LIST = "iDealissuerList";
+    public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -242,6 +243,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         return CHECKOUT_SHOPPER_HOST_LIVE;
+    }
+
+
+    @Override
+    public String getEnvironmentMode() {
+        if (baseStoreService.getCurrentBaseStore().getAdyenTestMode()) {
+            return "test";
+        }
+        return "live";
     }
 
     @Override
@@ -391,12 +401,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentsResponse handleRedirectPayload(HashMap<String,String> details) {
+    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) {
         try {
             PaymentsResponse response;
             String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
-            if(paymentMethod!=null && paymentMethod.equals(KLARNA)) {
+            if (paymentMethod != null && paymentMethod.equals(KLARNA)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
             } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
@@ -441,10 +451,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         }
 
-        RequestInfo requestInfo =new RequestInfo(request);
+        RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
 
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo , customer);
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
             return createAuthorizedOrder(paymentsResponse);
         }
@@ -466,7 +476,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
@@ -474,7 +484,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
@@ -529,7 +539,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
         String challengeResult = request.getParameter(CHALLENGE_RESULT);
-        String paymentData =getSessionService().getAttribute(SESSION_PAYMENT_DATA);
+        String paymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
         String type = "";
         String token = "";
@@ -716,9 +726,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && !isHiddenPaymentMethod(paymentMethod))
-                                                            .collect(Collectors.toList());
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
+                                                                 .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
@@ -753,6 +762,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_STORED_CARDS, storedCards);
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
 
         Set<String> recurringDetailReferences = new HashSet<>();
