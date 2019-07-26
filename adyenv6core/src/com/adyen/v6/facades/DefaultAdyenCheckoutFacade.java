@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -110,8 +111,10 @@ import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
 import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
 import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
+import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
@@ -271,6 +274,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         getCartService().setSessionCart(cartModel);
         getSessionService().removeAttribute(SESSION_LOCKED_CART);
+        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
+        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
+        getSessionService().removeAttribute(PAYMENT_METHOD);
 
         return cartModel;
     }
@@ -389,9 +396,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentsResponse handleRedirectPayload(final String payload) {
+    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) {
         try {
-            PaymentsResponse response = getAdyenPaymentService().getPaymentDetailsFromPayload(payload);
+            PaymentsResponse response;
+            String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
+
+            if (paymentMethod != null && paymentMethod.equals(KLARNA)) {
+                response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
+            } else {
+                response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
+            }
             restoreSessionCart();
             CartData cartData = getCheckoutFacade().getCheckoutCart();
             if (! cartData.getCode().equals(response.getMerchantReference())) {
@@ -432,7 +446,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new AdyenNonAuthorizedPaymentException(paymentResult);
         }
 
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, new RequestInfo(request), customer);
+        RequestInfo requestInfo = new RequestInfo(request);
+        requestInfo.setShopperLocale(getShopperLocale());
+
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
             return createAuthorizedOrder(paymentsResponse);
         }
@@ -447,10 +464,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
+            if (KLARNA.equals(adyenPaymentMethod)) {
+                getSessionService().setAttribute(PAYMENT_METHOD, KLARNA);
+                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
+            }
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
 
@@ -458,7 +479,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             lockSessionCart();
         }
         if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
-            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)|| adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
@@ -513,7 +534,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String fingerprintResult = request.getParameter(FINGERPRINT_RESULT);
         String challengeResult = request.getParameter(CHALLENGE_RESULT);
-        String paymentData =getSessionService().getAttribute(SESSION_PAYMENT_DATA);
+        String paymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
         String type = "";
         String token = "";
@@ -700,9 +721,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
             alternativePaymentMethods = alternativePaymentMethods.stream()
-                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty()
-                                                                         && !isHiddenPaymentMethod(paymentMethod))
-                                                            .collect(Collectors.toList());
+                                                                 .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
+                                                                 .collect(Collectors.toList());
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
