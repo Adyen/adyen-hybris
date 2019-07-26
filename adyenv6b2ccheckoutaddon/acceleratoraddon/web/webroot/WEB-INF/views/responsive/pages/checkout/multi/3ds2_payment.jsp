@@ -8,7 +8,6 @@
 
     <script type="text/javascript">
 
-        function initiateCheckout ( locale, loadingContext ) {
         function initiateCheckout ( locale, environmentMode ) {
             var configuration = {
                 locale: locale,// shopper's locale

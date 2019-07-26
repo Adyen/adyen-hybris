@@ -785,8 +785,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include Issuer List for iDEAL
         model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
-        LOGGER.debug("Model is =========="+model.toString());
-        LOGGER.debug("Origin key is present in model ????????????????"+model.containsAttribute(MODEL_ORIGIN_KEY));
         modelService.save(cartModel);
     }
 
