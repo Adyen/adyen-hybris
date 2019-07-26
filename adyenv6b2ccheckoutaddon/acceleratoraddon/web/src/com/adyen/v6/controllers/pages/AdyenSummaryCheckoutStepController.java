@@ -300,7 +300,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
     public String handleAdyenResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
-        //Compose HPP response data map
         String payload = request.getParameter(ADYEN_PAYLOAD);
         String redirectResult = request.getParameter(REDIRECT_RESULT);
         HashMap<String, String> details = new HashMap<>();
