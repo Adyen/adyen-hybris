@@ -223,10 +223,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public String getOriginKey() {
-        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+    public String getOriginKey(HttpServletRequest request) throws IOException, ApiException {
+        return getAdyenPaymentService().getOriginKey(getBaseURL(request));
+    }
 
-        return baseStore.getAdyenOriginKey();
+    public String getBaseURL(HttpServletRequest request) {
+        String currentRequestURL = request.getRequestURL().toString();
+        int requestUrlLength = currentRequestURL.length();
+        int requestUriLength = request.getRequestURI().length();
+        return currentRequestURL.substring(0, requestUrlLength - requestUriLength);
     }
 
     @Override
@@ -755,7 +760,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         model.addAttribute(MODEL_REMEMBER_DETAILS, showRememberTheseDetails);
         model.addAttribute(MODEL_STORED_CARDS, storedCards);
-        model.addAttribute(MODEL_ORIGIN_KEY, getOriginKey());
         model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
         model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());

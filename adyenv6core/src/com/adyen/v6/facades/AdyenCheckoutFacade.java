@@ -63,7 +63,7 @@ public interface AdyenCheckoutFacade {
     /**
      * Retrieve the WS User Origin Key
      */
-    String getOriginKey();
+    String getOriginKey(HttpServletRequest request) throws IOException, ApiException;
 
     String getShopperLocale();
 
