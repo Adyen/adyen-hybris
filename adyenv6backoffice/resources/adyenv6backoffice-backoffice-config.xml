@@ -28,6 +28,10 @@
                     <editorArea:attribute qualifier="adyenRecurringContractMode"/>
 					<editorArea:attribute qualifier="adyenTestMode"/>
                 </editorArea:section>
+                <editorArea:section name="hmc.adyen.api">
+                    <editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
+                    <editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+                </editorArea:section>
 				<editorArea:section name="hmc.adyen.hpp">
 					<editorArea:attribute qualifier="adyenSkinCode"/>
 					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
