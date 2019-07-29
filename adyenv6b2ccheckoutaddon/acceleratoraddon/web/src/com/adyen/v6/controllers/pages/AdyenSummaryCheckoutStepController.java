@@ -82,7 +82,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
 
 @Controller
@@ -215,7 +214,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                         model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                        model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                         model.addAttribute(FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
@@ -226,7 +224,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                         model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                         model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                        model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                         model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                         model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
@@ -258,7 +255,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
                 model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
                 model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey());
                 model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
                 model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
                 return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
