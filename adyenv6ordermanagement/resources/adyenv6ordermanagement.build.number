@@ -7,5 +7,5 @@ module.name=platform-module
 name=adyenv6ordermanagement
 releasedate=20170509 1754
 vendor=adyen
-version=5.0.0
-version.api=5.0.0
+version=6.0.0
+version.api=6.0.0
