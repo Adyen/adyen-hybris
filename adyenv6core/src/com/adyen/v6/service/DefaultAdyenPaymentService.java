@@ -26,6 +26,7 @@ import java.security.SignatureException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
@@ -50,6 +51,8 @@ import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkoututility.OriginKeysRequest;
+import com.adyen.model.checkoututility.OriginKeysResponse;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
@@ -60,6 +63,7 @@ import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
 import com.adyen.service.Checkout;
+import com.adyen.service.CheckoutUtility;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import com.adyen.service.exception.ApiException;
@@ -301,18 +305,48 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse getPaymentDetailsFromPayload(final String payload) throws Exception {
+    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
-        paymentsDetailsRequest.setDetails(new HashMap<>());
-        paymentsDetailsRequest.getDetails().put("payload", payload);
+        paymentsDetailsRequest.setDetails(details);
 
         LOG.debug(paymentsDetailsRequest);
         PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
         LOG.debug(paymentsResponse);
 
         return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details, String paymentData) throws Exception {
+        Checkout checkout = new Checkout(client);
+        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
+        paymentsDetailsRequest.setDetails(details);
+        paymentsDetailsRequest.setPaymentData(paymentData);
+
+        LOG.debug(paymentsDetailsRequest);
+        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        LOG.debug(paymentsResponse);
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public String getOriginKey(String originDomain) throws ApiException, IOException {
+        CheckoutUtility checkoutUtility = new CheckoutUtility(client);
+        OriginKeysRequest originKeysRequest = new OriginKeysRequest();
+        String originkey = "";
+        ArrayList<String> originDomains = new ArrayList<>(Arrays.asList(originDomain));
+
+        originKeysRequest.setOriginDomains(originDomains);
+        LOG.debug(originKeysRequest);
+        OriginKeysResponse originKeysResponse = checkoutUtility.originKeys(originKeysRequest);
+
+        if (originKeysResponse != null && originKeysResponse.getOriginKeys() != null) {
+            originkey = originKeysResponse.getOriginKeys().get(originDomain);
+        }
+        return originkey;
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import com.adyen.httpclient.HTTPClientException;
@@ -90,9 +91,20 @@ public interface AdyenPaymentService {
     boolean disableStoredCard(String customerId, String recurringReference) throws IOException, ApiException;
 
     /**
+     * Retrieves payment response from /payments/details for redirect methods like klarna
+     */
+    PaymentsResponse getPaymentDetailsFromPayload( HashMap<String, String> details, String paymentData) throws Exception;
+
+    /**
      * Retrieves payment response from /payments/details
      */
-    PaymentsResponse getPaymentDetailsFromPayload(String payload) throws Exception;
+    PaymentsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
+
+    /**
+     * Retrieves origin key from /originKeys endpoint
+     */
+
+    String getOriginKey(String originDomain) throws ApiException, IOException;
 
     /**
      * Returns the HPP base URL for the current basestore

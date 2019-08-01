@@ -31,8 +31,9 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "5.0.0";
+	public static final String PLUGIN_VERSION = "6.0.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
+	public static final String PAYMENT_METHOD ="paymentMethod";
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
 	final public static String PAYMENT_METHOD_IDEAL = "ideal";
