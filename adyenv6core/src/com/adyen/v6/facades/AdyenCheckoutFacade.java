@@ -22,6 +22,7 @@ package com.adyen.v6.facades;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +63,7 @@ public interface AdyenCheckoutFacade {
     /**
      * Retrieve the WS User Origin Key
      */
-    String getOriginKey();
+    String getOriginKey(HttpServletRequest request) throws IOException, ApiException;
 
     String getShopperLocale();
 
@@ -70,6 +71,11 @@ public interface AdyenCheckoutFacade {
      * Retrieve the host of Secured Fields
      */
     String getCheckoutShopperHost();
+
+    /**
+     * Retrieve the environment is running in test mode or live mode
+     */
+    String getEnvironmentMode();
 
     /**
      * Retrieve the HPP base URL for the current basestore
@@ -105,10 +111,10 @@ public interface AdyenCheckoutFacade {
      * Handles Adyen Redirect Response
      * In case of authorized, it places an order from cart
      *
-     * @param payload included in querystring of response
+     * @param details consisting of parameters present in response query string
      * @return PaymentsResponse
      */
-    PaymentsResponse handleRedirectPayload(String payload);
+    PaymentsResponse handleRedirectPayload(HashMap<String,String> details);
 
     /**
      * Authorizes a payment using Adyen API
