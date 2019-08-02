@@ -778,7 +778,7 @@ public class AdyenRequestFactory {
     private Boolean is3DS2Allowed() {
 
         Configuration configuration = getConfigurationService().getConfiguration();
-        boolean is3DS2AllowedValue = false;
+        boolean is3DS2AllowedValue = true;
         if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
             is3DS2AllowedValue = configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
         }
