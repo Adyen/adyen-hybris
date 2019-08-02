@@ -41,8 +41,8 @@ Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
 
 Modify config/local.properties file:
 
-1. append ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ to the value of csrf.allowed.url.patterns
-2. add is3DS2allowed = true
+1. append ``` ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ ``` to the value of ```csrf.allowed.url.patterns```
+2. add ```is3DS2allowed = true```
 
 
 ### 4. Build
