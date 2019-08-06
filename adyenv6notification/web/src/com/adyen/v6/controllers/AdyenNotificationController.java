@@ -52,7 +52,7 @@ public class AdyenNotificationController {
 			return RESPONSE_NOT_ACCEPTED;
 		}
 
-		LOG.debug("Received Adyen notification1:" + requestString);
+		LOG.debug("Received Adyen notification:" + requestString);
 		if (! adyenNotificationAuthenticationProvider.authenticateBasic(request, baseSiteId)) {
 			throw new AccessDeniedException("Wrong credentials. Please check your basesite, username and password.");
 		}
