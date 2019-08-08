@@ -343,7 +343,7 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         if (adyenPaymentMethod.equals(PAYMENT_METHOD_IDEAL)) {
             paymentMethod.setIdealIssuer(cartData.getAdyenIssuerId());
-        } else if (KLARNA.contains(adyenPaymentMethod)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
+        } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
             setOpenInvoiceData(paymentsRequest, cartData, customerModel);
         }
     }
