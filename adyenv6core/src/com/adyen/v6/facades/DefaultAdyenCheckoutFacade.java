@@ -406,7 +406,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             PaymentsResponse response;
             String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
-            if (paymentMethod != null && paymentMethod.equals(KLARNA)) {
+            if (paymentMethod != null && paymentMethod.startsWith(KLARNA)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
             } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
@@ -469,8 +469,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
-            if (KLARNA.equals(adyenPaymentMethod)) {
-                getSessionService().setAttribute(PAYMENT_METHOD, KLARNA);
+            if (adyenPaymentMethod.startsWith(KLARNA)) {
+                getSessionService().setAttribute(PAYMENT_METHOD, adyenPaymentMethod);
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
             lockSessionCart();
