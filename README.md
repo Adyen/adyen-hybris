@@ -40,7 +40,10 @@ Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
 ### 3. Modify local.properties
 
 Modify config/local.properties file:
-append ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ to the value of csrf.allowed.url.patterns
+
+1. append ``` ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ ``` to the value of ```csrf.allowed.url.patterns```
+2. add ```is3DS2allowed = true```
+
 
 ### 4. Build
 ```
@@ -128,9 +131,9 @@ For Boleto, it will contain the pdf url, the base64 encoded data, expiration dat
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
 
  ## 3DS2 configuration
- By default 3DS2 is disabled. If you want to enable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
+ By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
 ```
-is3DS2allowed = true
+is3DS2allowed = false
 ```
 
  ## Documentation

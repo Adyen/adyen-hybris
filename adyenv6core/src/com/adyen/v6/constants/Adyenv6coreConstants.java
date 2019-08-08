@@ -31,7 +31,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "6.0.0";
+	public static final String PLUGIN_VERSION = "6.1.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
@@ -54,6 +54,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String COUNTRY_CODE_DENMARK = "DK";
 	public static final String COUNTRY_CODE_FINLAND = "FI";
 	public static final String COUNTRY_CODE_NORWAY = "NO";
+	public static final String KLARNA_SLICE = "klarna_account";
 	//Prefix for Oney methods like facilpay_3x or facilpay_4x
 	public static final String PAYMENT_METHOD_FACILPAY_PREFIX = "facilypay";
 
@@ -68,6 +69,8 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final List<String> OPENINVOICE_METHODS_API = Collections.unmodifiableList(new ArrayList<String>() {{
 		add(KLARNA);
 		add(RATEPAY);
+		add(KLARNA_SLICE);
+
 //		add(AFTERPAY); // not supported yet
 	}});
 
