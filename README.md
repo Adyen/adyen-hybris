@@ -131,7 +131,7 @@ For Boleto, it will contain the pdf url, the base64 encoded data, expiration dat
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
 
  ## 3DS2 configuration
- By default 3DS2 is enabled. If you want to enable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
+ By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
 ```
 is3DS2allowed = false
 ```
