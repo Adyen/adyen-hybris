@@ -507,6 +507,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getSessionService().removeAttribute(SESSION_SF_EXPIRY_YEAR);
         getSessionService().removeAttribute(SESSION_SF_SECURITY_CODE);
         getSessionService().removeAttribute(SESSION_CARD_BRAND);
+        getSessionService().removeAttribute(PAYMENT_METHOD);
+        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
     }
 
     @Override
