@@ -7,5 +7,5 @@ module.name=platform-module
 name=adyenv6backoffice
 releasedate=20170509 1903
 vendor=adyen
-version=6.1.0
-version.api=6.1.0
+version=6.1.1
+version.api=6.1.1
