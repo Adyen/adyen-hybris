@@ -17,6 +17,12 @@
         <property name="resource" value="classpath:/adyenv6ordermanagement/process/return-process.xml"/>
     </bean>
 
+    <alias name="orderConfirmationEmailProcessResource" alias="orderConfirmationEmailProcessResource"/>
+    <bean id="orderConfirmationEmailProcessResource"
+          class="de.hybris.platform.processengine.definition.ProcessDefinitionResource">
+        <property name="resource" value="classpath:/adyenv6ordermanagement/process/orderConfirmationEmailProcess.xml"/>
+    </bean>
+
     <!--order-process beans-->
     <import resource="adyenv6ordermanagement/process/order-process-spring.xml"/>
 
