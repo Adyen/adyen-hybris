@@ -43,7 +43,7 @@
 				<editorArea:section name="hmc.adyen.advanced">
 					<editorArea:attribute qualifier="adyenBoleto"/>
 				</editorArea:section>
-				<editorArea:section name="hmc.adyen.terminalApi">
+				<editorArea:section name="hmc.adyen.pos">
 					<editorArea:attribute qualifier="adyenPOSEnabled"/>
 					<editorArea:attribute qualifier="adyenPOSMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenPOSApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>

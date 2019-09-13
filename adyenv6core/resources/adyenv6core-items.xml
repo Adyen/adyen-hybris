@@ -203,7 +203,7 @@
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
                 <attribute qualifier="adyenPOSEnabled" type="java.lang.boolean">
-                    <description>Enable terminal api</description>
+                    <description>Enable POS transactions</description>
                     <persistence type="property"/>
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
