@@ -202,31 +202,31 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenPosEnabled" type="java.lang.boolean">
+                <attribute qualifier="adyenPOSEnabled" type="java.lang.boolean">
                     <description>Enable terminal api</description>
                     <persistence type="property"/>
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenPosMerchantAccount" type="java.lang.String">
+                <attribute qualifier="adyenPOSMerchantAccount" type="java.lang.String">
                     <description>Terminal api merchant account</description>
                     <persistence type="property"/>
                     <modifiers optional="true"/>
                 </attribute>
-                <attribute qualifier="adyenPosApiKey" type="java.lang.String">
+                <attribute qualifier="adyenPOSApiKey" type="java.lang.String">
                     <description>Terminal api XAPI key</description>
                     <persistence type="property"/>
-                    <modifiers encrypted="true"/>
+                    <modifiers encrypted="true" optional="true"/>
                 </attribute>
-                <attribute qualifier="adyenPosStoreId" type="java.lang.String">
+                <attribute qualifier="adyenPOSStoreId" type="java.lang.String">
                     <description>Terminal api store id</description>
                     <persistence type="property"/>
-                    <modifiers encrypted="true"/>
+                    <modifiers optional="true"/>
                 </attribute>
-                <attribute type="RecurringContractMode" qualifier="adyenPosAgreementType"
+                <attribute type="RecurringContractMode" qualifier="adyenPOSAgreementType"
                            generate="true" autocreate="true">
                     <persistence type="property"/>
-                    <modifiers optional="false"/>
+                    <modifiers optional="true"/>
                     <defaultvalue>em().getEnumerationValue("RecurringContractMode","NONE")</defaultvalue>
                     <description>How the payment will be stored on Adyen</description>
                 </attribute>
