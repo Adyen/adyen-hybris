@@ -209,17 +209,17 @@
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
                 <attribute qualifier="adyenPOSMerchantAccount" type="java.lang.String">
-                    <description>Terminal api merchant account</description>
+                    <description>POS merchant account</description>
                     <persistence type="property"/>
                     <modifiers optional="true"/>
                 </attribute>
                 <attribute qualifier="adyenPOSApiKey" type="java.lang.String">
-                    <description>Terminal api XAPI key</description>
+                    <description>POS XAPI key</description>
                     <persistence type="property"/>
                     <modifiers encrypted="true" optional="true"/>
                 </attribute>
                 <attribute qualifier="adyenPOSStoreId" type="java.lang.String">
-                    <description>Terminal api store id</description>
+                    <description>POS store id</description>
                     <persistence type="property"/>
                     <modifiers optional="true"/>
                 </attribute>
