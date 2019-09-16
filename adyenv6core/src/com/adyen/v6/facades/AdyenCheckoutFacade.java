@@ -208,4 +208,9 @@ public interface AdyenCheckoutFacade {
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
 
     PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
+
+    /**
+     * Create order and authorized TX
+     */
+    OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException;
 }

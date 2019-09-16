@@ -644,7 +644,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     /**
      * Create order and authorized TX
      */
-    private OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException {
+    @Override
+    public OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException {
         final CartModel cartModel = cartService.getSessionCart();
         final String merchantTransactionCode = cartModel.getCode();
 
