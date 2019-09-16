@@ -25,6 +25,7 @@ public interface AdyenControllerConstants
 	String ADDON_PREFIX = "addon:/adyenv6b2ccheckoutaddon/";
 	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
 	String PAYPAL_ECS_PREFIX = "/adyen/paypal-ecs";
+	String POS_PAYMENT_PREFIX = "/checkout/multi/adyen/pos";
 
 	/**
 	 * Class with view name constants
