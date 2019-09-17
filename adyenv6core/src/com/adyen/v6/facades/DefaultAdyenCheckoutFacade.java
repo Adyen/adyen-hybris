@@ -172,9 +172,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
     public static final String MODEL_SHOW_BOLETO = "showBoleto";
+    public static final String MODEL_SHOW_POS = "showPos";
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
     public static final String MODEL_IDEAL_ISSUER_LIST = "iDealissuerList";
+    public static final String MODEL_CONNECTED_TERMINAL_LIST = "connectedTerminalList";
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
@@ -709,6 +711,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Set APMs from Adyen HPP Directory Lookup
         List<PaymentMethod> alternativePaymentMethods = new ArrayList<>();
         String iDealissuerList = null;
+        List<String> connectedTerminalList = null;
 
         try {
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
@@ -720,6 +723,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                                         .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType()))
                                                                         .findFirst()
                                                                         .orElse(null);
+            if(showPos()) {
+                connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
+            }
 
             if (idealPaymentMethod != null) {
                 Gson gson = new Gson();
@@ -784,7 +790,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include Boleto banks
         model.addAttribute(MODEL_SHOW_BOLETO, showBoleto());
-
+        //Include POS Enable configuration
+        model.addAttribute(MODEL_SHOW_POS, showPos());
+        //Include connnected terminal List for POS
+        model.addAttribute(MODEL_CONNECTED_TERMINAL_LIST, connectedTerminalList);
         //Include Issuer List for iDEAL
         model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
         modelService.save(cartModel);
@@ -805,7 +814,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return false;
     }
 
-
     @Override
     public boolean showBoleto() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
@@ -813,7 +821,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (baseStore.getAdyenBoleto() == null || ! baseStore.getAdyenBoleto()) {
             return false;
         }
-
         CartData cartData = getCheckoutFacade().getCheckoutCart();
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String country = cartData.getDeliveryAddress().getCountry().getIsocode();
@@ -823,9 +830,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
+    public boolean showPos() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        //Check base store settings for POS Enabled or not.
+        if (baseStore.getAdyenPOSEnabled() == null || ! baseStore.getAdyenPOSEnabled()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public boolean showRememberDetails() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-
         /*
          * The show remember me checkout should only be shown as the
          * user is logged in and the recurirng mode is set to ONECLICK or ONECLICK,RECURRING
@@ -836,7 +852,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 return true;
             }
         }
-
         return false;
     }
 

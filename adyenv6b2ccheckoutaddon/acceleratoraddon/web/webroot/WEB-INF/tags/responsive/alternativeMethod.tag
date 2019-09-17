@@ -25,6 +25,7 @@
 <%@ attribute name="showSocialSecurityNumber" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showFirstName" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showLastName" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="showTerminalList" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="countryCode" required="false" type="java.lang.String" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -50,6 +51,19 @@
                         </c:forEach>
                     </select>
                 </label>
+            </c:if>
+
+            <c:if test="${showTerminalList}">
+                <c:if test="${not empty connectedTerminalList}">
+                    <label class="chckt-form-label chckt-form-label--full-width">
+                        <select class="chckt-select-box js-chckt-terminal-select-box" id="p_method_adyen_hpp_${brandCode}_terminal" name="${brandCode}">
+                            <option value="" label="SELECT YOUR TERMINAL"/>
+                            <c:forEach items="${connectedTerminalList}" var="connectedTerminal">
+                                <option value="${connectedTerminal}">${connectedTerminal}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
+                </c:if>
             </c:if>
 
             <c:if test="${showDob}">

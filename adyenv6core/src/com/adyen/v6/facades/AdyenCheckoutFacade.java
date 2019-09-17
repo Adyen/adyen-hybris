@@ -180,6 +180,11 @@ public interface AdyenCheckoutFacade {
     boolean showBoleto();
 
     /**
+     * Returns whether POS should be shown as an available payment method on the checkout page
+     */
+    boolean showPos();
+
+    /**
      * Returns whether CC can be stored depending on the recurring contract settings
      */
     boolean showRememberDetails();
