@@ -736,7 +736,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             alternativePaymentMethods = alternativePaymentMethods.stream()
                                                                  .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
                                                                  .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 

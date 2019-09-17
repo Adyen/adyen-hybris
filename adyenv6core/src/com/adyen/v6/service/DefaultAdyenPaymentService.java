@@ -159,7 +159,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public ConnectedTerminalsResponse getConnectedTerminals() throws Exception {
+    public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
         PosPayment posPayment = new PosPayment(posClient);
         ConnectedTerminalsRequest request = new ConnectedTerminalsRequest();
         request.setMerchantAccount(posConfig.getMerchantAccount());

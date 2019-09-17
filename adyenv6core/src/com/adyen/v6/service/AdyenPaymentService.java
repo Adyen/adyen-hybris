@@ -45,7 +45,7 @@ public interface AdyenPaymentService {
      */
     PaymentResult authorise(CartData cartData, HttpServletRequest request, CustomerModel customerModel) throws Exception;
 
-    ConnectedTerminalsResponse getConnectedTerminals() throws Exception;
+    ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException ;
 
     PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
