@@ -203,6 +203,8 @@
         <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
         <property name="flexibleSearchService" ref="flexibleSearchService"/>
         <property name="addressReverseConverter" ref="addressReverseConverter"/>
+        <property name="adyenPosServiceFactory" ref="adyenPosServiceFactory"/>
+        <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
     </bean>
 
     <alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
@@ -214,14 +216,6 @@
         <property name="checkoutFacade" ref="checkoutFacade"/>
         <property name="userFacade" ref="userFacade"/>
         <property name="addressReverseConverter" ref="addressReverseConverter"/>
-    </bean>
-
-    <alias name="defaultAdyenPosFacade" alias="adyenPosFacade" />
-    <bean id="defaultAdyenPosFacade" class="com.adyen.v6.facades.DefaultAdyenPosFacade">
-        <property name="adyenPosServiceFactory" ref="adyenPosServiceFactory"/>
-        <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
-        <property name="baseStoreService" ref="baseStoreService"/>
-        <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
