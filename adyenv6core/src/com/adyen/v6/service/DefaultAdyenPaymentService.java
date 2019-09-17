@@ -20,23 +20,6 @@
  */
 package com.adyen.v6.service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.Util.Util;
@@ -64,21 +47,43 @@ import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
 import com.adyen.model.terminal.ConnectedTerminalsRequest;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
+import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.Checkout;
 import com.adyen.service.CheckoutUtility;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
 import com.adyen.service.PosPayment;
+import com.adyen.service.TerminalCloudAPI;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.converters.PaymentMethodConverter;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
-import static org.junit.Assert.assertEquals;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
@@ -394,6 +399,23 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         DateFormat df = new SimpleDateFormat("yyyyMMdd");
         Date today = Calendar.getInstance().getTime();
         return "https://live.adyen.com/hpp/js/df.js?v=" + df.format(today);
+    }
+
+    /**
+     * Send POS Payment Request using Adyen Terminal API
+     */
+    @Override
+    public TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer) throws Exception {
+        TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
+
+        RecurringContractMode recurringContractMode = getBaseStore().getAdyenPOSAgreementType();
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode);
+
+        LOG.debug(terminalApiRequest);
+        TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
+        LOG.debug(terminalApiResponse);
+
+        return terminalApiResponse;
     }
 
     public AdyenRequestFactory getAdyenRequestFactory() {

@@ -38,14 +38,12 @@ import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.factory.AdyenPosServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
-import com.adyen.v6.service.AdyenPosService;
 import com.adyen.v6.service.AdyenTransactionService;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
@@ -149,7 +147,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private PaymentsResponseConverter paymentsResponseConverter;
     private FlexibleSearchService flexibleSearchService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
-    private AdyenPosServiceFactory adyenPosServiceFactory;
     private PosPaymentResponseConverter posPaymentResponseConverter;
 
 
@@ -1072,7 +1069,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
-        TerminalAPIResponse terminalApiResponse = getAdyenPosService().sendSyncPaymentRequest(cartData, customer);
+        TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosPaymentRequest(cartData, customer);
         ResultType resultType = getResultType(terminalApiResponse);
 
         if (ResultType.SUCCESS == resultType) {
@@ -1089,10 +1086,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         return ResultType.FAILURE;
-    }
-
-    private AdyenPosService getAdyenPosService() {
-        return adyenPosServiceFactory.createFromBaseStore(baseStoreService.getCurrentBaseStore());
     }
 
     public BaseStoreService getBaseStoreService() {
@@ -1237,14 +1230,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setI18NFacade(I18NFacade i18NFacade) {
         this.i18NFacade = i18NFacade;
-    }
-
-    public AdyenPosServiceFactory getAdyenPosServiceFactory() {
-        return adyenPosServiceFactory;
-    }
-
-    public void setAdyenPosServiceFactory(AdyenPosServiceFactory adyenPosServiceFactory) {
-        this.adyenPosServiceFactory = adyenPosServiceFactory;
     }
 
     public PosPaymentResponseConverter getPosPaymentResponseConverter() {

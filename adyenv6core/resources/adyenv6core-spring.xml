@@ -133,10 +133,6 @@
         <property name="adyenRequestFactory" ref="adyenRequestFactory" />
     </bean>
 
-    <bean id="adyenPosServiceFactory" class="com.adyen.v6.factory.AdyenPosServiceFactory">
-        <property name="adyenRequestFactory" ref="adyenRequestFactory" />
-    </bean>
-
     <bean id="adyenPaymentsResponseConverter" class="com.adyen.v6.converters.PaymentsResponseConverter" />
     <bean id="adyenPaymentMethodConverter" class="com.adyen.v6.converters.PaymentMethodConverter" />
     <bean id="adyenPosPaymentResponseConverter" class="com.adyen.v6.converters.PosPaymentResponseConverter" />
@@ -203,7 +199,6 @@
         <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
         <property name="flexibleSearchService" ref="flexibleSearchService"/>
         <property name="addressReverseConverter" ref="addressReverseConverter"/>
-        <property name="adyenPosServiceFactory" ref="adyenPosServiceFactory"/>
         <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
     </bean>
 
