@@ -32,25 +32,26 @@
 					<editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
 					<editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 				</editorArea:section>
-				<editorArea:section name="hmc.adyen.hpp">
-					<editorArea:attribute qualifier="adyenSkinCode"/>
-					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-				</editorArea:section>
 				<editorArea:section name="hmc.adyen.notifications">
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 				</editorArea:section>
-				<editorArea:section name="hmc.adyen.advanced">
-					<editorArea:attribute qualifier="adyenBoleto"/>
-				</editorArea:section>
 				<editorArea:section name="hmc.adyen.pos">
 					<editorArea:attribute qualifier="adyenPOSEnabled"/>
-					<editorArea:attribute qualifier="adyenPOSMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenPOSApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-					<editorArea:attribute qualifier="adyenPOSStoreId"/>
-					<editorArea:attribute qualifier="adyenPOSAgreementType"/>
+					<editorArea:attribute qualifier="adyenPOSMerchantAccount"/>
+					<editorArea:attribute qualifier="adyenPOSStoreID"/>
+					<editorArea:attribute qualifier="adyenPOSRecurringContractMode"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.hpp">
+					<editorArea:attribute qualifier="adyenSkinCode"/>
+					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.advanced">
+					<editorArea:attribute qualifier="adyenBoleto"/>
 				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>
 	</context>
 </config>
+F
