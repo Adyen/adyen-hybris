@@ -52,15 +52,17 @@
                 </label>
             </c:if>
 
-            <c:if test="${not empty connectedTerminalList}">
-                <label class="chckt-form-label chckt-form-label--full-width">
-                    <select class="chckt-select-box js-chckt-terminal-select-box" id="p_method_adyen_hpp_${brandCode}_terminal" name="${brandCode}">
-                        <option value="" label="Please select Terminal"/>
-                        <c:forEach items="${connectedTerminalList}" var="connectedTerminal">
-                            <option value="${connectedTerminal}">${connectedTerminal}</option>
-                        </c:forEach>
-                    </select>
-                </label>
+            <c:if test="${showTerminalList}">
+                <c:if test="${not empty connectedTerminalList}">
+                    <label class="chckt-form-label chckt-form-label--full-width">
+                        <select class="chckt-select-box js-chckt-terminal-select-box" id="p_method_adyen_hpp_${brandCode}_terminal" name="${brandCode}">
+                            <option value="" label="SELECT YOUR TERMINAL"/>
+                            <c:forEach items="${connectedTerminalList}" var="connectedTerminal">
+                                <option value="${connectedTerminal}">${connectedTerminal}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
+                </c:if>
             </c:if>
 
             <c:if test="${showDob}">
