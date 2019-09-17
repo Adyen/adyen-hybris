@@ -110,6 +110,7 @@
                             <form:hidden path="encryptedSecurityCode"/>
 
                             <form:hidden path="browserInfo"/>
+                            <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
@@ -156,6 +157,7 @@
                                     <adyen:alternativeMethod
                                             brandCode="pos"
                                             name="POS"
+                                            showTerminalList="true"
                                     />
                                 </c:if>
                             </div>

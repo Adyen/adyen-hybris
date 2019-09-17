@@ -80,7 +80,7 @@ var AdyenCheckoutHybris = (function () {
          */
         setCustomPaymentMethodValues: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
-
+            console.log("payment method is" +paymentMethod);
             var dob = $( '#p_method_adyen_hpp_' + paymentMethod + '_dob' );
             if ( dob ) {
                 $( "#dob" ).val( dob.val() );
@@ -89,6 +89,11 @@ var AdyenCheckoutHybris = (function () {
             var ssn = $( '#p_method_adyen_hpp_' + paymentMethod + '_ssn' );
             if ( ssn ) {
                 $( "#socialSecurityNumber" ).val( ssn.val() );
+            }
+
+            var terminalId = $( '#p_method_adyen_hpp_' + paymentMethod + '_terminal' );
+            if ( terminalId ) {
+                $( "#terminalId" ).val( terminalId.val() );
             }
         },
 

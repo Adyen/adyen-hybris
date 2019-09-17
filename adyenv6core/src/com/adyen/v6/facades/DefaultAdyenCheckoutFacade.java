@@ -925,6 +925,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
         paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
         paymentInfo.setOwner(cartModel.getOwner());
+        paymentInfo.setAdyenTerminalId(paymentDetails.getTerminalId());
         paymentInfo.setAdyenInstallments(paymentDetails.getInstallments());
         return paymentInfo;
     }
