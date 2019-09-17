@@ -156,6 +156,7 @@
                                     <adyen:alternativeMethod
                                             brandCode="pos"
                                             name="POS"
+                                            showTerminalList="true"
                                     />
                                 </c:if>
                             </div>
