@@ -29,7 +29,6 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
-import com.adyen.v6.facades.AdyenPosFacade;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
@@ -110,9 +109,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
-    @Resource(name = "adyenPosFacade")
-    private AdyenPosFacade adyenPosFacade;
-
     @Resource(name = "orderFacade")
     private OrderFacade orderFacade;
 
@@ -189,7 +185,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         } else if(PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
             try {
-                OrderData orderData = adyenPosFacade.initiatePosPayment(cartData);
+                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(cartData);
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (ApiException e) {

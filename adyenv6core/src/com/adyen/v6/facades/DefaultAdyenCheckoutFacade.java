@@ -20,27 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -49,19 +28,24 @@ import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.nexo.ResultType;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
+import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.converters.PaymentsResponseConverter;
+import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+import com.adyen.v6.factory.AdyenPosServiceFactory;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
+import com.adyen.v6.service.AdyenPosService;
 import com.adyen.v6.service.AdyenTransactionService;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
@@ -91,8 +75,30 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.ApiConstants.Redirect.Data.PAYMENT_DATA;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
@@ -143,6 +149,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private PaymentsResponseConverter paymentsResponseConverter;
     private FlexibleSearchService flexibleSearchService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
+    private AdyenPosServiceFactory adyenPosServiceFactory;
+    private PosPaymentResponseConverter posPaymentResponseConverter;
+
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -1039,6 +1048,39 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return adyenPaymentServiceFactory.createFromBaseStore(baseStoreService.getCurrentBaseStore());
     }
 
+    /**
+     * Ininiate POS Payment using Adyen Terminal API
+     */
+    @Override
+    public OrderData initiatePosPayment(CartData cartData) throws Exception {
+        CustomerModel customer = null;
+        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        TerminalAPIResponse terminalApiResponse = getAdyenPosService().sendSyncPaymentRequest(cartData, customer);
+        ResultType resultType = getResultType(terminalApiResponse);
+
+        if (ResultType.SUCCESS == resultType) {
+            PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+            return createAuthorizedOrder(paymentsResponse);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
+    }
+
+    private ResultType getResultType(TerminalAPIResponse terminalApiResponse) {
+        if(terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null) {
+            return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
+        }
+
+        return ResultType.FAILURE;
+    }
+
+    private AdyenPosService getAdyenPosService() {
+        return adyenPosServiceFactory.createFromBaseStore(baseStoreService.getCurrentBaseStore());
+    }
+
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;
     }
@@ -1181,5 +1223,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setI18NFacade(I18NFacade i18NFacade) {
         this.i18NFacade = i18NFacade;
+    }
+
+    public AdyenPosServiceFactory getAdyenPosServiceFactory() {
+        return adyenPosServiceFactory;
+    }
+
+    public void setAdyenPosServiceFactory(AdyenPosServiceFactory adyenPosServiceFactory) {
+        this.adyenPosServiceFactory = adyenPosServiceFactory;
+    }
+
+    public PosPaymentResponseConverter getPosPaymentResponseConverter() {
+        return posPaymentResponseConverter;
+    }
+
+    public void setPosPaymentResponseConverter(PosPaymentResponseConverter posPaymentResponseConverter) {
+        this.posPaymentResponseConverter = posPaymentResponseConverter;
     }
 }

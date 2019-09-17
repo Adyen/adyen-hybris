@@ -67,6 +67,7 @@ import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -430,19 +431,18 @@ public class AdyenRequestFactory {
         return abstractPaymentRequest;
     }
 
-    public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData) throws Exception {
+    public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode) throws Exception {
         SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
 
         //TODO get Service ID generated from session
-        long id = Calendar.getInstance().getTimeInMillis() % 1000000000;
+        long id = Calendar.getInstance().getTimeInMillis() % 10000000000L;
 
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.setProtocolVersion("3.0");
         messageHeader.setMessageClass(MessageClassType.SERVICE);
         messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
         messageHeader.setMessageType(MessageType.REQUEST);
-        //TODO what value use for Sale ID?
-        messageHeader.setSaleID(Long.toString(id));
+        messageHeader.setSaleID(cartData.getStore());
         //TODO get Service ID generated from session
         messageHeader.setServiceID(Long.toString(id));
         //TODO get POI ID from session
@@ -453,11 +453,27 @@ public class AdyenRequestFactory {
 
         SaleData saleData = new SaleData();
         TransactionIdentification transactionIdentification = new TransactionIdentification();
-        //TODO what value use for Transaction ID?
-        transactionIdentification.setTransactionID("999");
+        transactionIdentification.setTransactionID(cartData.getCode());
         XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         transactionIdentification.setTimeStamp(timestamp);
         saleData.setSaleTransactionID(transactionIdentification);
+
+        //Set recurring contract, if exists
+        if(customer != null) {
+            String shopperReference = customer.getCustomerID();
+            String shopperEmail = customer.getContactEmail();
+            Recurring recurringContract = getRecurringContractType(recurringContractMode);
+
+            if(recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
+                URIBuilder builder = new URIBuilder();
+                builder.addParameter("shopperEmail", shopperEmail);
+                builder.addParameter("shopperReference", shopperReference);
+                builder.addParameter("recurringContract", recurringContract.getContract().toString());
+                saleData.setSaleToAcquirerData(builder.build().getQuery());
+            }
+        }
+
+        paymentRequest.setSaleData(saleData);
 
         PaymentTransaction paymentTransaction = new PaymentTransaction();
         AmountsReq amountsReq = new AmountsReq();
@@ -465,7 +481,6 @@ public class AdyenRequestFactory {
         amountsReq.setRequestedAmount(cartData.getTotalPrice().getValue());
         paymentTransaction.setAmountsReq(amountsReq);
 
-        paymentRequest.setSaleData(saleData);
         paymentRequest.setPaymentTransaction(paymentTransaction);
 
         saleToPOIRequest.setPaymentRequest(paymentRequest);

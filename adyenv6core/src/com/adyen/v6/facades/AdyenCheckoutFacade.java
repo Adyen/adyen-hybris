@@ -208,4 +208,9 @@ public interface AdyenCheckoutFacade {
      * Create order and authorized TX
      */
     OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException;
+
+    /**
+     * Ininiate POS Payment using Adyen Terminal API
+     */
+    OrderData initiatePosPayment(CartData cartData) throws Exception;
 }
