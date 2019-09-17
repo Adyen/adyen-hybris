@@ -25,6 +25,7 @@
 <%@ attribute name="showSocialSecurityNumber" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showFirstName" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showLastName" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="showTerminalList" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="countryCode" required="false" type="java.lang.String" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
