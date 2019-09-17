@@ -62,10 +62,13 @@ import com.adyen.model.recurring.DisableResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.terminal.ConnectedTerminalsRequest;
+import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import com.adyen.service.Checkout;
 import com.adyen.service.CheckoutUtility;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
+import com.adyen.service.PosPayment;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.converters.PaymentMethodConverter;
 import com.adyen.v6.factory.AdyenRequestFactory;
@@ -75,12 +78,16 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
+import static org.junit.Assert.assertEquals;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
     private Config config;
     private Client client;
+    private Config posConfig;
+    private Client posClient;
+
     private PaymentMethodConverter paymentMethodConverter;
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
@@ -100,7 +107,22 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
+        boolean isPosEnabled = baseStore.getAdyenPOSEnabled();
+        if (isPosEnabled) {
+            String posApiKey = baseStore.getAdyenPOSApiKey();
+            String posMerchantAccount = baseStore.getAdyenPOSMerchantAccount();
+            posConfig = new Config();
+            posConfig.setApiKey(posApiKey);
+            posConfig.setMerchantAccount(posMerchantAccount);
+            posConfig.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
+            posClient = new Client(posConfig);
 
+            if (isTestMode) {
+                posClient.setEnvironment(Environment.TEST, null);
+            } else {
+                posClient.setEnvironment(Environment.LIVE, null);
+            }
+        }
         Assert.notNull(merchantAccount);
 
         config = new Config();
@@ -134,6 +156,19 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         LOG.debug(paymentResult);
 
         return paymentResult;
+    }
+
+    @Override
+    public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
+        PosPayment posPayment = new PosPayment(posClient);
+        ConnectedTerminalsRequest request = new ConnectedTerminalsRequest();
+        request.setMerchantAccount(posConfig.getMerchantAccount());
+        if (baseStore.getAdyenPOSStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPOSStoreId())) {
+            request.setStore(baseStore.getAdyenPOSStoreId());
+        }
+        ConnectedTerminalsResponse result = posPayment.connectedTerminals(request);
+        LOG.debug("ConnectedTerminalsResponse is " + result.toString());
+        return result;
     }
 
     @Override

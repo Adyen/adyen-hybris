@@ -16,7 +16,7 @@
 	<!-- adyenv6backoffice UI configuration should be provided here -->
 
 	<!--<context component="component-code" module="adyenv6backoffice">-->
-		<!--Please check documentation for code snippets for specific components-->
+	<!--Please check documentation for code snippets for specific components-->
 	<!--</context>-->
 	<context merge-by="type" type="BaseStore" component="editor-area">
 		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
@@ -25,13 +25,13 @@
 					<editorArea:attribute qualifier="adyenMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
 					<editorArea:attribute qualifier="adyenAllowedCards"/>
-                    <editorArea:attribute qualifier="adyenRecurringContractMode"/>
+					<editorArea:attribute qualifier="adyenRecurringContractMode"/>
 					<editorArea:attribute qualifier="adyenTestMode"/>
-                </editorArea:section>
-                <editorArea:section name="hmc.adyen.api">
-                    <editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
-                    <editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-                </editorArea:section>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.api">
+					<editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
+					<editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+				</editorArea:section>
 				<editorArea:section name="hmc.adyen.hpp">
 					<editorArea:attribute qualifier="adyenSkinCode"/>
 					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>

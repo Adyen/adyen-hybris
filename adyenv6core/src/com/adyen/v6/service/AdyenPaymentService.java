@@ -33,6 +33,7 @@ import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
+import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -43,6 +44,8 @@ public interface AdyenPaymentService {
      * Performs authorization request via Adyen API
      */
     PaymentResult authorise(CartData cartData, HttpServletRequest request, CustomerModel customerModel) throws Exception;
+
+    ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException ;
 
     PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
