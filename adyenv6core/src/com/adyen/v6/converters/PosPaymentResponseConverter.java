@@ -36,7 +36,6 @@ public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse,
 
         PaymentsResponse paymentsResponse = new PaymentsResponse();
         paymentsResponse.setPspReference(pspReference);
-//        paymentsResponse.setFraudResult(paymentResult.getFraudResult());
 
         paymentsResponse.setAdditionalData(additionalData);
 

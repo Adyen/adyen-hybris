@@ -27,8 +27,10 @@ import com.adyen.enums.Environment;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.TerminalCloudAPI;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
 import org.apache.log4j.Logger;
 
@@ -69,10 +71,11 @@ public class DefaultAdyenPosService implements AdyenPosService {
     }
 
     @Override
-    public TerminalAPIResponse sync(CartData cartData) throws Exception {
+    public TerminalAPIResponse sendSyncPaymentRequest(CartData cartData, CustomerModel customer) throws Exception {
         TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(client);
 
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData);
+        RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosAgreementType();
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode);
 
         LOGGER.debug(terminalApiRequest);
         TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
