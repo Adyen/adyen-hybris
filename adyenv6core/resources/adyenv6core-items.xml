@@ -202,34 +202,6 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
-                <attribute qualifier="adyenPOSEnabled" type="java.lang.boolean">
-                    <description>Enable POS transactions</description>
-                    <persistence type="property"/>
-                    <modifiers optional="false"/>
-                    <defaultvalue>Boolean.FALSE</defaultvalue>
-                </attribute>
-                <attribute qualifier="adyenPOSMerchantAccount" type="java.lang.String">
-                    <description>POS merchant account</description>
-                    <persistence type="property"/>
-                    <modifiers optional="true"/>
-                </attribute>
-                <attribute qualifier="adyenPOSApiKey" type="java.lang.String">
-                    <description>POS XAPI key</description>
-                    <persistence type="property"/>
-                    <modifiers encrypted="true" optional="true"/>
-                </attribute>
-                <attribute qualifier="adyenPOSStoreId" type="java.lang.String">
-                    <description>POS store id</description>
-                    <persistence type="property"/>
-                    <modifiers optional="true"/>
-                </attribute>
-                <attribute type="RecurringContractMode" qualifier="adyenPOSAgreementType"
-                           generate="true" autocreate="true">
-                    <persistence type="property"/>
-                    <modifiers optional="true"/>
-                    <defaultvalue>em().getEnumerationValue("RecurringContractMode","NONE")</defaultvalue>
-                    <description>How the payment will be stored on Adyen</description>
-                </attribute>
             </attributes>
         </itemtype>
 
