@@ -37,11 +37,11 @@
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.pos">
-					<editorArea:attribute qualifier="adyenPOSEnabled"/>
-					<editorArea:attribute qualifier="adyenPOSApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-					<editorArea:attribute qualifier="adyenPOSMerchantAccount"/>
-					<editorArea:attribute qualifier="adyenPOSStoreId"/>
-					<editorArea:attribute qualifier="adyenPOSRecurringContractMode"/>
+					<editorArea:attribute qualifier="adyenPosEnabled"/>
+					<editorArea:attribute qualifier="adyenPosApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenPosMerchantAccount"/>
+					<editorArea:attribute qualifier="adyenPosStoreId"/>
+					<editorArea:attribute qualifier="adyenPosRecurringContractMode"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.hpp">
 					<editorArea:attribute qualifier="adyenSkinCode"/>
