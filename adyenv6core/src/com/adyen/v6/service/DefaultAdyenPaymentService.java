@@ -161,14 +161,15 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
         PosPayment posPayment = new PosPayment(posClient);
-        ConnectedTerminalsRequest request = new ConnectedTerminalsRequest();
-        request.setMerchantAccount(posConfig.getMerchantAccount());
+        ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
+        connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
         if (baseStore.getAdyenPOSStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPOSStoreId())) {
-            request.setStore(baseStore.getAdyenPOSStoreId());
+            connectedTerminalsRequest.setStore(baseStore.getAdyenPOSStoreId());
         }
-        ConnectedTerminalsResponse result = posPayment.connectedTerminals(request);
-        LOG.debug("ConnectedTerminalsResponse is " + result.toString());
-        return result;
+        LOG.debug(connectedTerminalsRequest);
+        ConnectedTerminalsResponse connectedTerminalsResponse = posPayment.connectedTerminals(connectedTerminalsRequest);
+        LOG.debug(connectedTerminalsResponse);
+        return connectedTerminalsResponse;
     }
 
     @Override
