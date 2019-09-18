@@ -107,10 +107,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
-        boolean isPosEnabled = baseStore.getAdyenPOSEnabled();
+        boolean isPosEnabled = baseStore.getAdyenPosEnabled();
         if (isPosEnabled) {
-            String posApiKey = baseStore.getAdyenPOSApiKey();
-            String posMerchantAccount = baseStore.getAdyenPOSMerchantAccount();
+            String posApiKey = baseStore.getAdyenPosApiKey();
+            String posMerchantAccount = baseStore.getAdyenPosMerchantAccount();
             posConfig = new Config();
             posConfig.setApiKey(posApiKey);
             posConfig.setMerchantAccount(posMerchantAccount);
@@ -163,8 +163,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         PosPayment posPayment = new PosPayment(posClient);
         ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
         connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
-        if (baseStore.getAdyenPOSStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPOSStoreId())) {
-            connectedTerminalsRequest.setStore(baseStore.getAdyenPOSStoreId());
+        if (baseStore.getAdyenPosStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPosStoreId())) {
+            connectedTerminalsRequest.setStore(baseStore.getAdyenPosStoreId());
         }
         LOG.debug(connectedTerminalsRequest);
         ConnectedTerminalsResponse connectedTerminalsResponse = posPayment.connectedTerminals(connectedTerminalsRequest);
