@@ -305,6 +305,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return null;
     }
 
+
     @Override
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
         if (customerId == null) {
