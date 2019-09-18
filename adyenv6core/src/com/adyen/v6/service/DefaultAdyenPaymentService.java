@@ -170,6 +170,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         ConnectedTerminalsResponse connectedTerminalsResponse = posPayment.connectedTerminals(connectedTerminalsRequest);
         LOG.debug(connectedTerminalsResponse);
         return connectedTerminalsResponse;
+
     }
 
     @Override
