@@ -445,8 +445,7 @@ public class AdyenRequestFactory {
         messageHeader.setSaleID(cartData.getStore());
         //TODO get Service ID generated from session
         messageHeader.setServiceID(Long.toString(id));
-        //TODO get POI ID from session
-        messageHeader.setPOIID("V400m-346489243");
+        messageHeader.setPOIID(cartData.getAdyenTerminalId());
         saleToPOIRequest.setMessageHeader(messageHeader);
 
         com.adyen.model.nexo.PaymentRequest paymentRequest = new com.adyen.model.nexo.PaymentRequest();

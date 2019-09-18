@@ -518,7 +518,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
         }
 
-        return null;
+        return ErrorConditionType.MESSAGE_FORMAT;
     }
 
     private String getErrorMessageByPosRefusalReason(ErrorConditionType refusalReason) {
@@ -539,6 +539,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 errorMessage = "checkout.error.authorization.payment.refused";
                 break;
             case DEVICE_OUT:
+            case MESSAGE_FORMAT:
             case NOT_FOUND:
             case UNAVAILABLE_DEVICE:
             case UNAVAILABLE_SERVICE:
