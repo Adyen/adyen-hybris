@@ -900,6 +900,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //required for 3DS2
         paymentInfo.setAdyenBrowserInfo(adyenPaymentForm.getBrowserInfo());
 
+        //pos field(s)
+        paymentInfo.setAdyenTerminalId(adyenPaymentForm.getTerminalId());
+
         modelService.save(paymentInfo);
 
         return paymentInfo;
