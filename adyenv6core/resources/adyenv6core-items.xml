@@ -227,7 +227,7 @@
                            generate="true" autocreate="true">
                     <persistence type="property"/>
                     <modifiers optional="false"/>
-                    <defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
+                    <defaultvalue>em().getEnumerationValue("RecurringContractMode","NONE")</defaultvalue>
                     <description>How the payment will be stored on Adyen</description>
                 </attribute>
             </attributes>

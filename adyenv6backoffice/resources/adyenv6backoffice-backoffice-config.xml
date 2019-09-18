@@ -40,7 +40,7 @@
 					<editorArea:attribute qualifier="adyenPOSEnabled"/>
 					<editorArea:attribute qualifier="adyenPOSApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 					<editorArea:attribute qualifier="adyenPOSMerchantAccount"/>
-					<editorArea:attribute qualifier="adyenPOSStoreID"/>
+					<editorArea:attribute qualifier="adyenPOSStoreId"/>
 					<editorArea:attribute qualifier="adyenPOSRecurringContractMode"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.hpp">
@@ -54,4 +54,3 @@
 		</editorArea:editorArea>
 	</context>
 </config>
-F
