@@ -285,6 +285,10 @@
                     <description>Number of Installments</description>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="adyenTerminalId" type="java.lang.String">
+                    <description>Terminal ID</description>
+                    <persistence type="property"/>
+                </attribute>
                 <attribute qualifier="adyenLastName" type="java.lang.String">
                     <description>Shopper's last name (applicable for Boleto)</description>
                     <persistence type="property"/>

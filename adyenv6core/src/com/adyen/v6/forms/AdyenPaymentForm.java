@@ -72,6 +72,9 @@ public class AdyenPaymentForm {
     //3DS 2.0
     private String browserInfo;
 
+    //POS
+    private String terminalId;
+
     public String getBrowserInfo() {
         return browserInfo;
     }
@@ -241,6 +244,14 @@ public class AdyenPaymentForm {
         this.installments = installments;
     }
 
+    public String getTerminalId() {
+        return terminalId;
+    }
+
+    public void setTerminalId(String terminalId) {
+        this.terminalId = terminalId;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -262,6 +273,7 @@ public class AdyenPaymentForm {
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
         sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
+        sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
         sb.append("}");
         return sb.toString();
