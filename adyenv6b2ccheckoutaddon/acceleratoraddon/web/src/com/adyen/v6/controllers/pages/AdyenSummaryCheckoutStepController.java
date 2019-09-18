@@ -47,7 +47,6 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
-import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -149,8 +148,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm,
                              final Model model,
                              final HttpServletRequest request,
-                             final RedirectAttributes redirectModel) throws CMSItemNotFoundException, // NOSONAR
-            InvalidCartException, CommerceCartModificationException {
+                             final RedirectAttributes redirectModel) throws CMSItemNotFoundException, CommerceCartModificationException {
         if (validateOrderForm(placeOrderForm, model)) {
             return enterStep(model, redirectModel);
         }
@@ -192,9 +190,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
-                TerminalAPIResponse terminalApiResponse = e.getTerminalApiResponse();
-                ErrorConditionType refusalReason = getPosRefusalReason(terminalApiResponse);
-                errorMessage = getErrorMessageByPosRefusalReason(refusalReason);
+                errorMessage = handleNonAuthorizedPosPayment(e.getTerminalApiResponse());
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
@@ -513,20 +509,26 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return invalid;
     }
 
-    private ErrorConditionType getPosRefusalReason(TerminalAPIResponse terminalAPIResponse) {
-        if(terminalAPIResponse.getSaleToPOIResponse() != null) {
-            return terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+    private String handleNonAuthorizedPosPayment(TerminalAPIResponse terminalApiResponse) {
+        String errorMessage;
+
+        if(terminalApiResponse.getSaleToPOIResponse() != null) {
+            ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+            errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
+        } else {
+            // probably SaleToPOIRequest, that means terminal unreachable, return the response as error
+            errorMessage = "checkout.error.authorization.pos.configuration";
         }
 
-        return ErrorConditionType.MESSAGE_FORMAT;
+        return errorMessage;
     }
 
-    private String getErrorMessageByPosRefusalReason(ErrorConditionType refusalReason) {
-        LOGGER.debug("getErrorMessageByPosRefusalReason: " + refusalReason);
+    private String getErrorMessageByPosErrorCondition(ErrorConditionType errorCondition) {
+        LOGGER.debug("getErrorMessageByPosErrorCondition: " + errorCondition);
 
         String errorMessage;
 
-        switch (refusalReason) {
+        switch (errorCondition) {
             case ABORTED:
             case CANCEL:
                 errorMessage = "checkout.error.authorization.payment.cancelled";
@@ -547,7 +549,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 errorMessage = "checkout.error.authorization.pos.configuration";
                 break;
             case WRONG_PIN:
-                errorMessage = "checkout.error.authorization.pin";
+                errorMessage = "checkout.error.authorization.pos.pin";
                 break;
             default:
                 errorMessage = "checkout.error.authorization.payment.error";

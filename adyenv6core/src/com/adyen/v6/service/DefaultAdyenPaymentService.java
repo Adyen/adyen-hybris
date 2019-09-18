@@ -56,6 +56,7 @@ import com.adyen.service.Payment;
 import com.adyen.service.PosPayment;
 import com.adyen.service.TerminalCloudAPI;
 import com.adyen.service.exception.ApiException;
+import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.v6.converters.PaymentMethodConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
@@ -411,10 +412,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         RecurringContractMode recurringContractMode = getBaseStore().getAdyenPOSAgreementType();
         TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode);
 
-        LOG.debug(terminalApiRequest);
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
         TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
-        LOG.debug(terminalApiResponse);
 
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiResponse));
         return terminalApiResponse;
     }
 
