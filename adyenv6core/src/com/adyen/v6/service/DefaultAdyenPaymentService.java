@@ -113,10 +113,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
-        boolean isPosEnabled = baseStore.getAdyenPOSEnabled();
+        boolean isPosEnabled = baseStore.getAdyenPosEnabled();
         if (isPosEnabled) {
-            String posApiKey = baseStore.getAdyenPOSApiKey();
-            String posMerchantAccount = baseStore.getAdyenPOSMerchantAccount();
+            String posApiKey = baseStore.getAdyenPosApiKey();
+            String posMerchantAccount = baseStore.getAdyenPosMerchantAccount();
             posConfig = new Config();
             posConfig.setApiKey(posApiKey);
             posConfig.setMerchantAccount(posMerchantAccount);
@@ -167,14 +167,16 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
         PosPayment posPayment = new PosPayment(posClient);
-        ConnectedTerminalsRequest request = new ConnectedTerminalsRequest();
-        request.setMerchantAccount(posConfig.getMerchantAccount());
-        if (baseStore.getAdyenPOSStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPOSStoreId())) {
-            request.setStore(baseStore.getAdyenPOSStoreId());
+        ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
+        connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
+        if (baseStore.getAdyenPosStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPosStoreId())) {
+            connectedTerminalsRequest.setStore(baseStore.getAdyenPosStoreId());
         }
-        ConnectedTerminalsResponse result = posPayment.connectedTerminals(request);
-        LOG.debug("ConnectedTerminalsResponse is " + result.toString());
-        return result;
+        LOG.debug(connectedTerminalsRequest);
+        ConnectedTerminalsResponse connectedTerminalsResponse = posPayment.connectedTerminals(connectedTerminalsRequest);
+        LOG.debug(connectedTerminalsResponse);
+        return connectedTerminalsResponse;
+
     }
 
     @Override

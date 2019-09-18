@@ -33,6 +33,7 @@
         <property name="adyenLastName" type="java.lang.String"/>
         <property name="adyenPaymentToken" type="java.lang.String"/>
         <property name="adyenReturnUrl" type="java.lang.String"/>
+        <property name="adyenTerminalId" type="java.lang.String"/>
         <property name="adyenBrowserInfo" type="java.lang.String"/>
     </bean>
 
@@ -63,6 +64,7 @@
         <property name="adyenSocialSecurityNumber" type="String" />
         <property name="adyenFirstName" type="String" />
         <property name="installments" type="Integer" />
+        <property name="terminalId" type="String" />
         <property name="adyenLastName" type="String" />
     </bean>
 

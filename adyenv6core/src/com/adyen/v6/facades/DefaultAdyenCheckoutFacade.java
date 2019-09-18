@@ -906,6 +906,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //required for 3DS2
         paymentInfo.setAdyenBrowserInfo(adyenPaymentForm.getBrowserInfo());
 
+        //pos field(s)
+        paymentInfo.setAdyenTerminalId(adyenPaymentForm.getTerminalId());
+
         modelService.save(paymentInfo);
 
         return paymentInfo;
@@ -931,6 +934,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
         paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
         paymentInfo.setOwner(cartModel.getOwner());
+        paymentInfo.setAdyenTerminalId(paymentDetails.getTerminalId());
         paymentInfo.setAdyenInstallments(paymentDetails.getInstallments());
         return paymentInfo;
     }
