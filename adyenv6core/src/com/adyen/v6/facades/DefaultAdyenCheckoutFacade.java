@@ -833,7 +833,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public boolean showPos() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
         //Check base store settings for POS Enabled or not.
-        if (baseStore.getAdyenPOSEnabled() == null || ! baseStore.getAdyenPOSEnabled()) {
+        if (baseStore.getAdyenPosEnabled() == null || ! baseStore.getAdyenPosEnabled()) {
             return false;
         }
         return true;
