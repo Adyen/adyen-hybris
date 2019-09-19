@@ -34,6 +34,7 @@ import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
+import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -118,4 +119,9 @@ public interface AdyenPaymentService {
      * Returns the Device Fingerprint url
      */
     String getDeviceFingerprintUrl();
+
+    /**
+     * Send POS Payment Request using Adyen Terminal API
+     */
+    TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer) throws Exception;
 }

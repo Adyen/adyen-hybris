@@ -208,4 +208,9 @@ public interface AdyenCheckoutFacade {
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
 
     PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
+
+    /**
+     * Ininiate POS Payment using Adyen Terminal API
+     */
+    OrderData initiatePosPayment(CartData cartData) throws Exception;
 }
