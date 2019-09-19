@@ -96,6 +96,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     private PaymentMethodConverter paymentMethodConverter;
 
+    private static final int POS_REQUEST_TIMEOUT = 25000;
+
     private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
 
     /**
@@ -120,6 +122,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
             posConfig = new Config();
             posConfig.setApiKey(posApiKey);
             posConfig.setMerchantAccount(posMerchantAccount);
+            posConfig.setReadTimeoutMillis(POS_REQUEST_TIMEOUT);
             posConfig.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
             posClient = new Client(posConfig);
 
