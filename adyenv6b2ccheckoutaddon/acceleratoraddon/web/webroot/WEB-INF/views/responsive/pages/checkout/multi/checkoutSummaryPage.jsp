@@ -11,6 +11,10 @@
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
+<div id="spinner_wrapper" style="display: none">
+<div id="spinner" style="display: none"></div>
+</div>
+
 <div class="row">
     <div class="col-sm-6">
     	<div class="checkout-headline">
@@ -32,8 +36,8 @@
                             </label>
                         </div>
 
-                        <button id="placeOrder" type="submit" class="btn btn-primary btn-place-order btn-block">
-                            <spring:theme code="checkout.summary.placeOrder" text="Place Order"/>
+                        <button id="placeOrder" type="submit" class="btn btn-primary btn-place-order btn-block" onclick="AdyenCheckoutHybris.showSpinner()">
+                            <spring:theme code="checkout.summary.placeOrder" text="Place Order" />
                         </button>
                     </form:form>
                 </div>

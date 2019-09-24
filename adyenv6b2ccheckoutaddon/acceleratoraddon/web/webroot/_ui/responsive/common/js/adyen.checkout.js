@@ -193,6 +193,11 @@ var AdyenCheckoutHybris = (function () {
             } catch (e) {
                 console.log('Something went wrong trying to mount the iDEAL component: ${e}');
             }
+        },
+
+        showSpinner: function () {
+            document.getElementById("spinner").style.display = "block";
+            document.getElementById("spinner_wrapper").style.display = "block";
         }
     };
 })();
