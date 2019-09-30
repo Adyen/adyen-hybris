@@ -60,6 +60,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -181,11 +182,25 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
-        } else if(PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
+        } else if (PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
             try {
-                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(cartData);
+
+                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
+            } catch (SocketTimeoutException e) {
+                try {
+                    LOGGER.debug("POS request timed out. Checking POS Payment status ");
+                    OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
+                    LOGGER.debug("Redirecting to confirmation!");
+                    return redirectToOrderConfirmationPage(orderData);
+                } catch (AdyenNonAuthorizedPaymentException nx) {
+                    LOGGER.debug("AdyenNonAuthorizedPaymentException", nx);
+                    errorMessage = handleNonAuthorizedPosPayment(nx.getTerminalApiResponse());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
             } catch (ApiException e) {
                 LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
@@ -512,8 +527,17 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private String handleNonAuthorizedPosPayment(TerminalAPIResponse terminalApiResponse) {
         String errorMessage;
 
-        if(terminalApiResponse.getSaleToPOIResponse() != null) {
+        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
             ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+            errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
+        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+            ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse()
+                                                                   .getTransactionStatusResponse()
+                                                                   .getRepeatedMessageResponse()
+                                                                   .getRepeatedResponseMessageBody()
+                                                                   .getPaymentResponse()
+                                                                   .getResponse()
+                                                                   .getErrorCondition();
             errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
         } else {
             // probably SaleToPOIRequest, that means terminal unreachable, return the response as error

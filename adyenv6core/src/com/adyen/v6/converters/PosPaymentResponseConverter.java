@@ -35,13 +35,43 @@ import java.util.Map;
 public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse, PaymentsResponse> {
     @Override
     public PaymentsResponse convert(SaleToPOIResponse saleToPOIResponse) {
-        String pspReference = saleToPOIResponse.getPaymentResponse().getPaymentResult().getPaymentAcquirerData().getAcquirerTransactionID().getTransactionID();
-        String additionalResponse = saleToPOIResponse.getPaymentResponse().getResponse().getAdditionalResponse();
-        Map<String, String> additionalData = parseAdditionalResponse(additionalResponse);
+        String pspReference = null;
+        Map<String, String> additionalData = null;
+        String additionalResponse = null;
 
+        if (saleToPOIResponse != null && saleToPOIResponse.getPaymentResponse() != null) {
+            pspReference = saleToPOIResponse.getPaymentResponse()
+                                            .getPaymentResult()
+                                            .getPaymentAcquirerData()
+                                            .getAcquirerTransactionID()
+                                            .getTransactionID();
+
+            additionalResponse = saleToPOIResponse.getPaymentResponse()
+                                                  .getResponse()
+                                                  .getAdditionalResponse();
+
+        } else if (saleToPOIResponse != null && saleToPOIResponse.getTransactionStatusResponse() != null) {
+            pspReference = saleToPOIResponse.getTransactionStatusResponse()
+                                            .getRepeatedMessageResponse()
+                                            .getRepeatedResponseMessageBody()
+                                            .getPaymentResponse()
+                                            .getPaymentResult()
+                                            .getPaymentAcquirerData()
+                                            .getAcquirerTransactionID()
+                                            .getTransactionID();
+
+            additionalResponse = saleToPOIResponse.getTransactionStatusResponse()
+                                                  .getRepeatedMessageResponse()
+                                                  .getRepeatedResponseMessageBody()
+                                                  .getPaymentResponse()
+                                                  .getResponse()
+                                                  .getAdditionalResponse();
+        }
+        if (additionalResponse != null) {
+            additionalData = parseAdditionalResponse(additionalResponse);
+        }
         PaymentsResponse paymentsResponse = new PaymentsResponse();
         paymentsResponse.setPspReference(pspReference);
-
         paymentsResponse.setAdditionalData(additionalData);
 
         return paymentsResponse;
@@ -53,9 +83,9 @@ public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse,
      */
     private Map<String, String> parseAdditionalResponse(String additionalResponse) {
         Map<String, String> additionalData = new HashMap<>();
-        if(StringUtils.isNotEmpty(additionalResponse)) {
+        if (StringUtils.isNotEmpty(additionalResponse)) {
             List<NameValuePair> parsedNameValues = URLEncodedUtils.parse(additionalResponse, Charset.forName("UTF-8"));
-            for(NameValuePair nameValue : parsedNameValues) {
+            for (NameValuePair nameValue : parsedNameValues) {
                 additionalData.put(nameValue.getName(), nameValue.getValue());
             }
         }

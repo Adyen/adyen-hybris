@@ -45,11 +45,13 @@ import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageClassType;
 import com.adyen.model.nexo.MessageHeader;
+import com.adyen.model.nexo.MessageReference;
 import com.adyen.model.nexo.MessageType;
 import com.adyen.model.nexo.PaymentTransaction;
 import com.adyen.model.nexo.SaleData;
 import com.adyen.model.nexo.SaleToPOIRequest;
 import com.adyen.model.nexo.TransactionIdentification;
+import com.adyen.model.nexo.TransactionStatusRequest;
 import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
@@ -431,11 +433,55 @@ public class AdyenRequestFactory {
         return abstractPaymentRequest;
     }
 
-    public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode) throws Exception {
+
+    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode, String serviceId) throws Exception {
+
+
+
+
+
         SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
 
         //TODO get Service ID generated from session
+        //TODO get Service ID generated from session
         long id = Calendar.getInstance().getTimeInMillis() % 10000000000L;
+
+        MessageHeader messageHeader = new MessageHeader();
+        messageHeader.setProtocolVersion("3.0");
+        messageHeader.setMessageClass(MessageClassType.SERVICE);
+        messageHeader.setMessageCategory(MessageCategoryType.TRANSACTION_STATUS);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setSaleID(cartData.getStore());
+
+
+
+        //TODO get Service ID generated from session
+        messageHeader.setServiceID(Long.toString(id));
+        messageHeader.setPOIID(cartData.getAdyenTerminalId());
+        saleToPOIRequest.setMessageHeader(messageHeader);
+
+        TransactionStatusRequest transactionStatusRequest = new TransactionStatusRequest();
+        transactionStatusRequest.setReceiptReprintFlag(true);
+
+        MessageReference messageReference = new MessageReference();
+        messageReference.setMessageCategory(MessageCategoryType.PAYMENT);
+        messageReference.setSaleID(cartData.getStore());
+        messageReference.setServiceID(serviceId);
+
+        transactionStatusRequest.setMessageReference(messageReference);
+        saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
+
+
+
+        TerminalAPIRequest terminalApiRequest = new TerminalAPIRequest();
+
+        terminalApiRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalApiRequest;
+    }
+
+    public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode, String serviceId) throws Exception {
+        SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
 
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.setProtocolVersion("3.0");
@@ -444,7 +490,7 @@ public class AdyenRequestFactory {
         messageHeader.setMessageType(MessageType.REQUEST);
         messageHeader.setSaleID(cartData.getStore());
         //TODO get Service ID generated from session
-        messageHeader.setServiceID(Long.toString(id));
+        messageHeader.setServiceID(serviceId);
         messageHeader.setPOIID(cartData.getAdyenTerminalId());
         saleToPOIRequest.setMessageHeader(messageHeader);
 

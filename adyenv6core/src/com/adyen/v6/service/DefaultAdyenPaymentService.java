@@ -411,11 +411,28 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
      * Send POS Payment Request using Adyen Terminal API
      */
     @Override
-    public TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer) throws Exception {
+    public TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception {
         TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
 
         RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosRecurringContractMode();
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode);
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode, serviceId);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
+        TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiResponse));
+        return terminalApiResponse;
+    }
+
+    /**
+     * Send POS Payment Request using Adyen Terminal API
+     */
+    @Override
+    public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception {
+        TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
+
+        RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosRecurringContractMode();
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartData, customer, recurringContractMode, serviceId);
 
         LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
         TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);

@@ -28,7 +28,10 @@ import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.nexo.ErrorConditionType;
 import com.adyen.model.nexo.ResultType;
+import com.adyen.model.nexo.SaleToPOIResponse;
+import com.adyen.model.nexo.TransactionStatusResponse;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.TerminalAPIResponse;
@@ -86,6 +89,7 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -689,6 +693,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
 
+        LOGGER.debug("returning orderdata...." + orderData);
+
         return orderData;
     }
 
@@ -729,7 +735,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                                         .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType()))
                                                                         .findFirst()
                                                                         .orElse(null);
-            if(showPos()) {
+            if (showPos()) {
                 connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
             }
 
@@ -1067,30 +1073,114 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
      * Ininiate POS Payment using Adyen Terminal API
      */
     @Override
-    public OrderData initiatePosPayment(CartData cartData) throws Exception {
+    public OrderData initiatePosPayment(HttpServletRequest request, CartData cartData) throws Exception {
         CustomerModel customer = null;
-        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
+        long id = Calendar.getInstance().getTimeInMillis() % 10000000000L;
 
-        TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosPaymentRequest(cartData, customer);
-        ResultType resultType = getResultType(terminalApiResponse);
+        String serviceId = Long.toString(id);
+        request.setAttribute("serviceId", serviceId);
+        LOGGER.debug("setting service id " + serviceId);
+
+        TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosPaymentRequest(cartData, customer, serviceId);
+        ResultType resultType = getPaymentResult(terminalApiResponse);
 
         if (ResultType.SUCCESS == resultType) {
             PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+            LOGGER.debug("paymentsResponse========>" + paymentsResponse.toString());
             return createAuthorizedOrder(paymentsResponse);
         }
 
         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
     }
 
-    private ResultType getResultType(TerminalAPIResponse terminalApiResponse) {
-        if(terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null) {
-            return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
+    /**
+     * Ininiate POS Payment using Adyen Terminal API
+     */
+    @Override
+    public OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception {
+
+        CustomerModel customer = null;
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
+        String serviceId = request.getAttribute("serviceId").toString();
+        TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosStatusRequest(cartData, customer, serviceId);
+        ResultType result = getStatusResult(terminalApiResponse);
+
+        if (result != null) {
+            if (result == ResultType.SUCCESS) {
+                //this will be success even if payment is failed. because this belongs to status call not payment call
+
+                ResultType paymentResult = getPaymentResult(terminalApiResponse);
+
+                if (paymentResult == ResultType.FAILURE) {
+                    ErrorConditionType errorCondition = getErrorConditionForPayment(terminalApiResponse);
+                    throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
+                } else if (paymentResult == ResultType.SUCCESS) {
+                    PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+                    return createAuthorizedOrder(paymentsResponse);
+                }
+
+            } else if (result == ResultType.FAILURE) {
+                ErrorConditionType errorCondition = getErrorConditionForStatus(terminalApiResponse);
+                if (errorCondition == ErrorConditionType.IN_PROGRESS) {
+                    Thread.sleep(1000);
+                    return checkPosPaymentStatus(request, cartData);
+
+                } else if (errorCondition == ErrorConditionType.NOT_FOUND) {
+                    throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
+                } else {
+                    throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static ResultType getPaymentResult(TerminalAPIResponse terminalApiResponse) {
+
+        if (terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null) {
+            if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
+                return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
+            } else if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+                return terminalApiResponse.getSaleToPOIResponse()
+                                          .getTransactionStatusResponse()
+                                          .getRepeatedMessageResponse()
+                                          .getRepeatedResponseMessageBody()
+                                          .getPaymentResponse()
+                                          .getResponse()
+                                          .getResult();
+            }
+        }
         return ResultType.FAILURE;
     }
+
+    public static ResultType getStatusResult(TerminalAPIResponse terminalApiResponse) {
+        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+            return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getResult();
+        }
+        return null;
+
+    }
+
+    private ErrorConditionType getErrorConditionForPayment(TerminalAPIResponse terminalApiResponse) {
+        return terminalApiResponse.getSaleToPOIResponse()
+                                  .getTransactionStatusResponse()
+                                  .getRepeatedMessageResponse()
+                                  .getRepeatedResponseMessageBody()
+                                  .getPaymentResponse()
+                                  .getResponse()
+                                  .getErrorCondition();
+    }
+
+    private ErrorConditionType getErrorConditionForStatus(TerminalAPIResponse terminalApiResponse) {
+        return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getErrorCondition();
+    }
+
 
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;

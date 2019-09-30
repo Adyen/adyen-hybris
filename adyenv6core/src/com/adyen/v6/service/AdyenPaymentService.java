@@ -123,5 +123,11 @@ public interface AdyenPaymentService {
     /**
      * Send POS Payment Request using Adyen Terminal API
      */
-    TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer) throws Exception;
+    TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception;
+    /**
+     * Send POS Payment Request using Adyen Terminal API
+     */
+    TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception;
+
+
 }
