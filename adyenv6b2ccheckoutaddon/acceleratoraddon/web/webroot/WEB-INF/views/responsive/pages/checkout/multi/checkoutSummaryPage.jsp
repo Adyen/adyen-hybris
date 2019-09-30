@@ -12,7 +12,7 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
 <div id="spinner_wrapper" style="display: none">
-<div id="spinner" style="display: none"></div>
+    <div id="spinner" style="display: none"></div>
 </div>
 
 <div class="row">
