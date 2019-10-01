@@ -428,11 +428,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
      * Send POS Payment Request using Adyen Terminal API
      */
     @Override
-    public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception {
+    public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String originalServiceId) throws Exception {
         TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
 
-        RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosRecurringContractMode();
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartData, customer, recurringContractMode, serviceId);
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartData, originalServiceId);
 
         LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
         TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);

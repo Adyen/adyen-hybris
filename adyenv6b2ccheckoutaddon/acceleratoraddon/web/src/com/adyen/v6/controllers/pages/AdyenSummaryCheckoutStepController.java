@@ -47,6 +47,7 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -111,6 +112,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @Resource(name = "orderFacade")
     private OrderFacade orderFacade;
+
+    @Resource(name = "configurationService")
+    private ConfigurationService configurationService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
@@ -184,13 +188,19 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         } else if (PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
             try {
-
+                String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
+                request.setAttribute("originalServiceId", originalServiceId);
+                Long paymentStartTime = System.currentTimeMillis()/1000;
+                request.setAttribute("paymentStartTime", paymentStartTime);
                 OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
             } catch (SocketTimeoutException e) {
                 try {
                     LOGGER.debug("POS request timed out. Checking POS Payment status ");
+                    int totalTimeout = configurationService.getConfiguration().getInt("pos.totaltimeout");
+                    request.setAttribute("totalTimeout", totalTimeout);
+
                     OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
                     LOGGER.debug("Redirecting to confirmation!");
                     return redirectToOrderConfirmationPage(orderData);
@@ -530,7 +540,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
             ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
             errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
-        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
+        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null) {
             ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse()
                                                                    .getTransactionStatusResponse()
                                                                    .getRepeatedMessageResponse()

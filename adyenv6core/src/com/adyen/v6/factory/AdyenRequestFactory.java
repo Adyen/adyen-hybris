@@ -434,7 +434,7 @@ public class AdyenRequestFactory {
     }
 
 
-    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode, String serviceId) throws Exception {
+    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, String originalServiceId) throws Exception {
 
 
 
@@ -444,7 +444,7 @@ public class AdyenRequestFactory {
 
         //TODO get Service ID generated from session
         //TODO get Service ID generated from session
-        long id = Calendar.getInstance().getTimeInMillis() % 10000000000L;
+
 
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.setProtocolVersion("3.0");
@@ -456,7 +456,7 @@ public class AdyenRequestFactory {
 
 
         //TODO get Service ID generated from session
-        messageHeader.setServiceID(Long.toString(id));
+        messageHeader.setServiceID(Long.toString(System.currentTimeMillis() % 10000000000L));
         messageHeader.setPOIID(cartData.getAdyenTerminalId());
         saleToPOIRequest.setMessageHeader(messageHeader);
 
@@ -466,12 +466,10 @@ public class AdyenRequestFactory {
         MessageReference messageReference = new MessageReference();
         messageReference.setMessageCategory(MessageCategoryType.PAYMENT);
         messageReference.setSaleID(cartData.getStore());
-        messageReference.setServiceID(serviceId);
+        messageReference.setServiceID(originalServiceId);
 
         transactionStatusRequest.setMessageReference(messageReference);
         saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
-
-
 
         TerminalAPIRequest terminalApiRequest = new TerminalAPIRequest();
 
