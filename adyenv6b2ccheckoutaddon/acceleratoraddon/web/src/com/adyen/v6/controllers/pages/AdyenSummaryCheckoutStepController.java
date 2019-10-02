@@ -190,7 +190,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             try {
                 String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
                 request.setAttribute("originalServiceId", originalServiceId);
-                Long paymentStartTime = System.currentTimeMillis()/1000;
+                Long paymentStartTime = System.currentTimeMillis();
                 request.setAttribute("paymentStartTime", paymentStartTime);
                 OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
