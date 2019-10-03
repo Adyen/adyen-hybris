@@ -56,6 +56,7 @@ import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.model.terminal.TerminalAPIRequestBuilder;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
@@ -434,32 +435,7 @@ public class AdyenRequestFactory {
     }
 
 
-    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, String originalServiceId) throws Exception {
-
-
-
-
-
-        SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
-
-        //TODO get Service ID generated from session
-        //TODO get Service ID generated from session
-
-
-        MessageHeader messageHeader = new MessageHeader();
-        messageHeader.setProtocolVersion("3.0");
-        messageHeader.setMessageClass(MessageClassType.SERVICE);
-        messageHeader.setMessageCategory(MessageCategoryType.TRANSACTION_STATUS);
-        messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setSaleID(cartData.getStore());
-
-
-
-        //TODO get Service ID generated from session
-        messageHeader.setServiceID(Long.toString(System.currentTimeMillis() % 10000000000L));
-        messageHeader.setPOIID(cartData.getAdyenTerminalId());
-        saleToPOIRequest.setMessageHeader(messageHeader);
-
+    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, String originalServiceId) {
         TransactionStatusRequest transactionStatusRequest = new TransactionStatusRequest();
         transactionStatusRequest.setReceiptReprintFlag(true);
 
@@ -469,29 +445,19 @@ public class AdyenRequestFactory {
         messageReference.setServiceID(originalServiceId);
 
         transactionStatusRequest.setMessageReference(messageReference);
-        saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
 
-        TerminalAPIRequest terminalApiRequest = new TerminalAPIRequest();
+        String serviceId = Long.toString(System.currentTimeMillis() % 10000000000L);
 
-        terminalApiRequest.setSaleToPOIRequest(saleToPOIRequest);
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder()
+                .withSaleId(cartData.getStore())
+                .withServiceId(serviceId)
+                .withPoiId(cartData.getAdyenTerminalId())
+                .withTransactionStatusRequest(transactionStatusRequest);
 
-        return terminalApiRequest;
+        return builder.build();
     }
 
     public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode, String serviceId) throws Exception {
-        SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
-
-        MessageHeader messageHeader = new MessageHeader();
-        messageHeader.setProtocolVersion("3.0");
-        messageHeader.setMessageClass(MessageClassType.SERVICE);
-        messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
-        messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setSaleID(cartData.getStore());
-        //TODO get Service ID generated from session
-        messageHeader.setServiceID(serviceId);
-        messageHeader.setPOIID(cartData.getAdyenTerminalId());
-        saleToPOIRequest.setMessageHeader(messageHeader);
-
         com.adyen.model.nexo.PaymentRequest paymentRequest = new com.adyen.model.nexo.PaymentRequest();
 
         SaleData saleData = new SaleData();
@@ -526,12 +492,13 @@ public class AdyenRequestFactory {
 
         paymentRequest.setPaymentTransaction(paymentTransaction);
 
-        saleToPOIRequest.setPaymentRequest(paymentRequest);
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder()
+                .withSaleId(cartData.getStore())
+                .withServiceId(serviceId)
+                .withPoiId(cartData.getAdyenTerminalId())
+                .withPaymentRequest(paymentRequest);
 
-        TerminalAPIRequest terminalApiRequest = new TerminalAPIRequest();
-        terminalApiRequest.setSaleToPOIRequest(saleToPOIRequest);
-
-        return terminalApiRequest;
+        return builder.build();
     }
 
     /**
