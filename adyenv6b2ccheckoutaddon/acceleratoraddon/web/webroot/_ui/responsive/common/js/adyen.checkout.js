@@ -196,8 +196,7 @@ var AdyenCheckoutHybris = (function () {
         },
 
         showSpinner: function () {
-            document.getElementById("spinner").style.display = "block";
-            document.getElementById("spinner_wrapper").style.display = "block";
+            document.getElementById("spinner_wrapper").style.display = "flex";
         }
     };
 })();

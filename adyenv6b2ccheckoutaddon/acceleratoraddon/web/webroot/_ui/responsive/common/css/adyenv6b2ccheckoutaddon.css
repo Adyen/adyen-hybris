@@ -11,17 +11,12 @@
 /* Spinner for "place order" */
 div#spinner {
     position: absolute;
-    left: 50%;
-    top: 50%;
     z-index: 1;
-    width: 150px;
-    height: 150px;
-    margin: -75px 0 0 -75px;
-    border: 16px solid #f3f3f3;
+    width: 75px;
+    height: 75px;
+    border: 10px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 16px solid #0f7384;
-    background: rgba(0,0,0,0);
-    -webkit-animation: spin 2s linear infinite;
+    border-top: 10px solid #0f7384;
     animation: spin 2s linear infinite;
 }
 
@@ -55,13 +50,32 @@ div#spinner {
 }
 
 div#spinner_wrapper {
-    position:fixed;
-    padding:0;
-    margin:0;
-    top:0;
-    left:0;
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
     height: 100vh;
     width: 100vw;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.65);
     z-index: 999999;
+    justify-content: center;
+    align-items: center;
+}
+
+div#spinner_text {
+    position: absolute;
+    bottom: 25%;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div#spinner_text p {
+    margin: 25px 0 25px;
+    color: white;
+    width: 50%;
+    padding: 20px;
 }

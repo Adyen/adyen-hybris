@@ -12,7 +12,10 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
 <div id="spinner_wrapper" style="display: none">
-    <div id="spinner" style="display: none"></div>
+    <div id="spinner"></div>
+    <div id="spinner_text">
+        <p>Please wait while your payment is processed. Do not click back or refresh the page.</p>
+    </div>
 </div>
 
 <div class="row">
