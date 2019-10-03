@@ -533,8 +533,13 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             case CANCEL:
                 errorMessage = "checkout.error.authorization.payment.cancelled";
                 break;
+            case BUSY:
+            case IN_PROGRESS:
+                errorMessage = "checkout.error.authorization.pos.busy";
+                break;
             case INVALID_CARD:
             case NOT_ALLOWED:
+            case PAYMENT_RESTRICTION:
                 errorMessage = "checkout.error.authorization.transaction.not.permitted";
                 break;
             case REFUSAL:
