@@ -42,6 +42,7 @@ import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
 import com.adyen.model.nexo.AmountsReq;
+import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageClassType;
 import com.adyen.model.nexo.MessageHeader;
@@ -470,6 +471,8 @@ public class AdyenRequestFactory {
 
         transactionStatusRequest.setMessageReference(messageReference);
         saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
 
         TerminalAPIRequest terminalApiRequest = new TerminalAPIRequest();
 
@@ -756,7 +759,6 @@ public class AdyenRequestFactory {
         paymentRequest.setInvoiceLines(invoiceLines);
     }
 
-
     /*
      * Set the required fields for using the OpenInvoice API
      */
@@ -846,7 +848,6 @@ public class AdyenRequestFactory {
             LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine.toString());
             invoiceLines.add(invoiceLine);
         }
-
         paymentsRequest.setLineItems(invoiceLines);
     }
 
