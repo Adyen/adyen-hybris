@@ -1112,7 +1112,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                     throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
 
-            } else if (statusResult == ResultType.FAILURE) {
+            } else {
                 ErrorConditionType errorCondition = getErrorConditionForStatus(terminalApiResponse);
                 //If transaction is still in progress, keep retrying in 5 seconds.
                 if (errorCondition == ErrorConditionType.IN_PROGRESS) {

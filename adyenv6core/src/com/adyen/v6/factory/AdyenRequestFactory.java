@@ -21,6 +21,7 @@
 package com.adyen.v6.factory;
 
 import com.adyen.Util.Util;
+import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
 import com.adyen.model.Address;
@@ -52,7 +53,6 @@ import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.TerminalAPIRequest;
-import com.adyen.model.terminal.TerminalAPIRequestBuilder;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
@@ -443,11 +443,8 @@ public class AdyenRequestFactory {
 
         String serviceId = Long.toString(System.currentTimeMillis() % 10000000000L);
 
-        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder()
-                .withSaleId(cartData.getStore())
-                .withServiceId(serviceId)
-                .withPoiId(cartData.getAdyenTerminalId())
-                .withTransactionStatusRequest(transactionStatusRequest);
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder(cartData.getStore(), serviceId, cartData.getAdyenTerminalId());
+        builder.withTransactionStatusRequest(transactionStatusRequest);
 
         return builder.build();
     }
@@ -487,11 +484,8 @@ public class AdyenRequestFactory {
 
         paymentRequest.setPaymentTransaction(paymentTransaction);
 
-        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder()
-                .withSaleId(cartData.getStore())
-                .withServiceId(serviceId)
-                .withPoiId(cartData.getAdyenTerminalId())
-                .withPaymentRequest(paymentRequest);
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder(cartData.getStore(), serviceId, cartData.getAdyenTerminalId());
+        builder.withPaymentRequest(paymentRequest);
 
         return builder.build();
     }

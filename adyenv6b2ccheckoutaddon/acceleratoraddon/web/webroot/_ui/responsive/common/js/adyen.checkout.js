@@ -48,6 +48,14 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if ( paymentMethod === "pos" ) {
+                var terminalId = document.getElementById('p_method_adyen_hpp_pos_terminal').value;
+                if( terminalId === "" ) {
+                    window.alert("Please select a terminal");
+                    return false;
+                }
+            }
+
             $( 'input[name="txvariant"]' ).remove();
 
             return true;
