@@ -191,14 +191,14 @@ public class AdyenRequestFactoryTest {
 
     @Test
     public void testTerminalApiRequestAnonymous() throws Exception {
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, null, null);
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, null, null, null);
 
         validateTerminalApiRequest(terminalApiRequest);
     }
 
     @Test
     public void testTerminalApiRequestWithRecurring() throws Exception {
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, customerModelMock, RecurringContractMode.ONECLICK_RECURRING);
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, customerModelMock, RecurringContractMode.ONECLICK_RECURRING, null);
 
         validateTerminalApiRequest(terminalApiRequest);
 
