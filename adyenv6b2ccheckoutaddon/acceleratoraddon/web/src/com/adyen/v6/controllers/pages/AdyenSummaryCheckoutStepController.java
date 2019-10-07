@@ -47,6 +47,7 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,6 +61,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -110,6 +112,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @Resource(name = "orderFacade")
     private OrderFacade orderFacade;
+
+    @Resource(name = "configurationService")
+    private ConfigurationService configurationService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
@@ -181,11 +186,31 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
-        } else if(PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
+        } else if (PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
             try {
-                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(cartData);
+                String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
+                request.setAttribute("originalServiceId", originalServiceId);
+                Long paymentStartTime = System.currentTimeMillis();
+                request.setAttribute("paymentStartTime", paymentStartTime);
+                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
                 return redirectToOrderConfirmationPage(orderData);
+            } catch (SocketTimeoutException e) {
+                try {
+                    LOGGER.debug("POS request timed out. Checking POS Payment status ");
+                    int totalTimeout = configurationService.getConfiguration().getInt("pos.totaltimeout");
+                    request.setAttribute("totalTimeout", totalTimeout);
+
+                    OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
+                    LOGGER.debug("Redirecting to confirmation!");
+                    return redirectToOrderConfirmationPage(orderData);
+                } catch (AdyenNonAuthorizedPaymentException nx) {
+                    LOGGER.debug("AdyenNonAuthorizedPaymentException", nx);
+                    errorMessage = handleNonAuthorizedPosPayment(nx.getTerminalApiResponse());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
             } catch (ApiException e) {
                 LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
@@ -512,8 +537,18 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private String handleNonAuthorizedPosPayment(TerminalAPIResponse terminalApiResponse) {
         String errorMessage;
 
-        if(terminalApiResponse.getSaleToPOIResponse() != null) {
+        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
             ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+            errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
+        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
+        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null) {
+            ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse()
+                                                                   .getTransactionStatusResponse()
+                                                                   .getRepeatedMessageResponse()
+                                                                   .getRepeatedResponseMessageBody()
+                                                                   .getPaymentResponse()
+                                                                   .getResponse()
+                                                                   .getErrorCondition();
             errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
         } else {
             // probably SaleToPOIRequest, that means terminal unreachable, return the response as error

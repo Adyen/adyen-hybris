@@ -212,5 +212,10 @@ public interface AdyenCheckoutFacade {
     /**
      * Ininiate POS Payment using Adyen Terminal API
      */
-    OrderData initiatePosPayment(CartData cartData) throws Exception;
+    OrderData initiatePosPayment(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Check POS Payment status using Adyen Terminal API
+     */
+    OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
 }
