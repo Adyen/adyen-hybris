@@ -690,9 +690,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
         orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
-
-        LOGGER.debug("returning orderdata...." + orderData);
-
+        
         return orderData;
     }
 
@@ -1102,13 +1100,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (statusResult != null) {
             if (statusResult == ResultType.SUCCESS) {
                 //this will be success even if payment is failed. because this belongs to status call not payment call
-
                 ResultType paymentResult = getPaymentResult(terminalApiResponse);
-
                 if (paymentResult == ResultType.SUCCESS) {
                     PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
                     return createAuthorizedOrder(paymentsResponse);
-                } else if (paymentResult == ResultType.FAILURE) {
+                } else {
                     throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
 
