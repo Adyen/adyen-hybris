@@ -28,7 +28,10 @@ import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.ErrorConditionType;
+import com.adyen.model.nexo.OutputText;
+import com.adyen.model.nexo.PaymentReceipt;
 import com.adyen.model.nexo.ResultType;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
@@ -46,6 +49,7 @@ import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -84,6 +88,7 @@ import org.springframework.validation.BindingResult;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -690,6 +695,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
         orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
+
+        orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
         
         return orderData;
     }
@@ -1103,6 +1110,26 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 ResultType paymentResult = getPaymentResult(terminalApiResponse);
                 if (paymentResult == ResultType.SUCCESS) {
                     PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+                    if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse().getPaymentReceipt()
+                            != null) {
+                        LOGGER.debug("receipt is present ==================" + terminalApiResponse.getSaleToPOIResponse()
+                                                                                                  .getTransactionStatusResponse()
+                                                                                                  .getRepeatedMessageResponse()
+                                                                                                  .getRepeatedResponseMessageBody()
+                                                                                                  .getPaymentResponse()
+                                                                                                  .getPaymentReceipt());
+                        String posReceipt = formatTerminalAPIReceipt(terminalApiResponse.getSaleToPOIResponse()
+                                                                                        .getTransactionStatusResponse()
+                                                                                        .getRepeatedMessageResponse()
+                                                                                        .getRepeatedResponseMessageBody()
+                                                                                        .getPaymentResponse()
+                                                                                        .getPaymentReceipt());
+                        if (StringUtils.isNotEmpty(posReceipt)) {
+
+                            paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
+                        }
+
+                    }
                     return createAuthorizedOrder(paymentsResponse);
                 } else {
                     throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
@@ -1130,6 +1157,38 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         return null;
     }
+
+    public String formatTerminalAPIReceipt(List<PaymentReceipt> paymentReceipts) {
+        String formattedHtml = "<table class='terminal-api-receipt'>";
+        for (PaymentReceipt paymentReceipt : paymentReceipts) {
+            if (paymentReceipt.getDocumentQualifier() == DocumentQualifierType.CUSTOMER_RECEIPT) {
+                for (OutputText outputText : paymentReceipt.getOutputContent().getOutputText()) {
+                    String test = outputText.getText();
+                    Map<String, String> map = Splitter.on("&").withKeyValueSeparator('=').split(test);
+                    formattedHtml += "<tr class='terminal-api-receipt'>";
+                    if ((map.get("name") != null)) {
+                        formattedHtml += "<td class='terminal-api-receipt-name'>" + map.get("name") + "</td>";
+                    } else {
+                        formattedHtml += "<td class='terminal-api-receipt-name'>&nbsp;</td>";
+                    }
+                    if (map.get("value") != null) {
+                        formattedHtml += "<td class='terminal-api-receipt-value' align='right'>" + map.get("value") + "</td>";
+                    } else {
+                        formattedHtml += "<td class='terminal-api-receipt-value' align='right'>&nbsp;</td>";
+                    }
+                    formattedHtml += "</tr>";
+                }
+            }
+        }
+        formattedHtml += "</table>";
+        try {
+            formattedHtml = java.net.URLDecoder.decode(formattedHtml, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return formattedHtml;
+    }
+
 
     /**
      * @param terminalApiResponse

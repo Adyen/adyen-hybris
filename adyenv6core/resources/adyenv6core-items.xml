@@ -362,6 +362,15 @@
                     <description>Multibanco reference</description>
                     <persistence type="property"/>
                 </attribute>
+                <!-- POS-->
+                <attribute qualifier="adyenPosReceipt" type="java.lang.String">
+                    <description>POS Receipt</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
+                </attribute>
                 <attribute qualifier="adyenPaypalEcsToken" type="java.lang.String">
                     <description>Paypal ECS payment token</description>
                     <persistence type="property">
