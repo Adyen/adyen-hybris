@@ -1086,6 +1086,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (ResultType.SUCCESS == resultType) {
             PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+            if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt() != null) {
+                String posReceipt = TerminalAPIUtil.formatTerminalAPIReceipt(terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt());
+                if (StringUtils.isNotEmpty(posReceipt)) {
+                    paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
+                }
+            }
             return createAuthorizedOrder(paymentsResponse);
         }
         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
