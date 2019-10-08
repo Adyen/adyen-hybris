@@ -1086,6 +1086,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (ResultType.SUCCESS == resultType) {
             PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+            String posReceipt = TerminalAPIUtil.getReceiptFromPaymentResponse(terminalApiResponse);
+            if (StringUtils.isNotEmpty(posReceipt)) {
+                paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
+            }
             return createAuthorizedOrder(paymentsResponse);
         }
         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
@@ -1107,18 +1111,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 ResultType paymentResult = TerminalAPIUtil.getPaymentResult(terminalApiResponse);
                 if (paymentResult == ResultType.SUCCESS) {
                     PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
-                    if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse().getPaymentReceipt()
-                            != null) {
-                        String posReceipt = TerminalAPIUtil.formatTerminalAPIReceipt(terminalApiResponse.getSaleToPOIResponse()
-                                                                                                        .getTransactionStatusResponse()
-                                                                                                        .getRepeatedMessageResponse()
-                                                                                                        .getRepeatedResponseMessageBody()
-                                                                                                        .getPaymentResponse()
-                                                                                                        .getPaymentReceipt());
-                        if (StringUtils.isNotEmpty(posReceipt)) {
-                            paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
-                        }
-
+                    String posReceipt = TerminalAPIUtil.getReceiptFromStatusResponse(terminalApiResponse);
+                    if (StringUtils.isNotEmpty(posReceipt)) {
+                        paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
                     }
                     return createAuthorizedOrder(paymentsResponse);
                 } else {
@@ -1129,12 +1124,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 //If transaction is still in progress, keep retrying in 5 seconds.
                 if (errorCondition == ErrorConditionType.IN_PROGRESS) {
                     TimeUnit.SECONDS.sleep(5);
-                    long currentTime = System.currentTimeMillis();
-                    long processStartTime = (long) request.getAttribute("paymentStartTime");
-                    int totalTimeout = ((int) request.getAttribute("totalTimeout")) * 1000;
-                    long timeDiff = currentTime - processStartTime;
-
-                    if (timeDiff >= totalTimeout) {
+                    if (isPosTimedOut(request)) {
                         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                     } else {
                         return checkPosPaymentStatus(request, cartData);
@@ -1147,6 +1137,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return null;
     }
 
+    private boolean isPosTimedOut(HttpServletRequest request) {
+        long currentTime = System.currentTimeMillis();
+        long processStartTime = (long) request.getAttribute("paymentStartTime");
+        int totalTimeout = ((int) request.getAttribute("totalTimeout")) * 1000;
+        long timeDiff = currentTime - processStartTime;
+        if (timeDiff >= totalTimeout) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;
