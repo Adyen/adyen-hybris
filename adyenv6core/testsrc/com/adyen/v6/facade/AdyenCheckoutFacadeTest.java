@@ -12,6 +12,7 @@ import com.adyen.model.nexo.TransactionStatusResponse;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.DefaultAdyenCheckoutFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
@@ -47,6 +48,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -250,17 +252,18 @@ public class AdyenCheckoutFacadeTest {
         when(statusResponse.getResult()).thenReturn(ResultType.FAILURE);
         //TerminalAPIUtil.getErrorConditionForStatus
         when(statusResponse.getErrorCondition()).thenReturn(ErrorConditionType.IN_PROGRESS);
-        //isPosTimedOut (will timeout after 5 seconds)
+        //isPosTimedOut (will timeout after 10 seconds)
         long processStartTime = System.currentTimeMillis();
         when(request.getAttribute("paymentStartTime")).thenReturn(processStartTime);
-        when(request.getAttribute("totalTimeout")).thenReturn(5);
+        when(request.getAttribute("totalTimeout")).thenReturn(10);
 
+        AdyenCheckoutFacade adyenCheckoutFacadeSpy = spy(adyenCheckoutFacade);
         try {
-            adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
+            adyenCheckoutFacadeSpy.checkPosPaymentStatus(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
-            verify(adyenPaymentService, atLeast(2)).sendSyncPosStatusRequest(cartData, SERVICE_ID);
+            verify(adyenCheckoutFacadeSpy, atLeast(2)).checkPosPaymentStatus(request, cartData);
         }
     }
 
