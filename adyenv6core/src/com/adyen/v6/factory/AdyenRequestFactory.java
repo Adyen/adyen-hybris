@@ -64,6 +64,9 @@ import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
+
+import static com.adyen.constants.BrandCodes.APPLEPAY;
+import static com.adyen.constants.BrandCodes.GOOGLEPAY;
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
@@ -208,6 +211,14 @@ public class AdyenRequestFactory {
         else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
             setBoletoData(paymentsRequest, cartData);
         }
+        //Set Applepay parameters
+        else if (cartData.getAdyenPaymentMethod().indexOf(APPLEPAY) == 0) {
+            setApplePayData(paymentsRequest, cartData);
+        }
+        //Set Googlepay parameters
+        else if (cartData.getAdyenPaymentMethod().indexOf(GOOGLEPAY) == 0) {
+            setGooglePayData(paymentsRequest, cartData);
+        }
         //For alternate payment methods like iDeal, Paypal etc.
         else {
             updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
@@ -255,7 +266,7 @@ public class AdyenRequestFactory {
         return applicationInfo;
     }
 
-    private void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest) {
+    protected void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest) {
 
         //Get details from CartData to set in PaymentRequest.
         String amount = String.valueOf(cartData.getTotalPrice().getValue());
@@ -296,7 +307,7 @@ public class AdyenRequestFactory {
         }
     }
 
-    private void updatePaymentRequestForCC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
+    protected void updatePaymentRequestForCC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
         Recurring recurringContract = getRecurringContractType(recurringContractMode);
         Recurring.ContractEnum contractEnum = null;
         if (recurringContract != null) {
@@ -335,7 +346,7 @@ public class AdyenRequestFactory {
         }
     }
 
-    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData, CustomerModel customerModel) {
+    protected void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData, CustomerModel customerModel) {
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         DefaultPaymentMethodDetails paymentMethod = new DefaultPaymentMethodDetails();
         paymentsRequest.setPaymentMethod(paymentMethod);
@@ -348,7 +359,7 @@ public class AdyenRequestFactory {
         }
     }
 
-    private String getCountryCode(CartData cartData) {
+    protected String getCountryCode(CartData cartData) {
         //Identify country code based on shopper's delivery address
         String countryCode = "";
         AddressData billingAddressData = cartData.getPaymentInfo().getBillingAddress();
@@ -405,7 +416,7 @@ public class AdyenRequestFactory {
         return new DisableRequest().merchantAccount(merchantAccount).shopperReference(customerId).recurringDetailReference(recurringReference);
     }
 
-    private <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, HttpServletRequest request, final String merchantAccount) {
+    protected <T extends AbstractPaymentRequest> T createBasePaymentRequest(T abstractPaymentRequest, HttpServletRequest request, final String merchantAccount) {
         String userAgent = request.getHeader("User-Agent");
         String acceptHeader = request.getHeader("Accept");
         String shopperIP = request.getRemoteAddr();
@@ -417,7 +428,7 @@ public class AdyenRequestFactory {
     /**
      * Set Address Data into API
      */
-    private Address setAddressData(AddressData addressData) {
+    protected Address setAddressData(AddressData addressData) {
 
         Address address = new Address();
 
@@ -462,7 +473,7 @@ public class AdyenRequestFactory {
     /**
      * Return Recurring object from RecurringContractMode
      */
-    private Recurring getRecurringContractType(RecurringContractMode recurringContractMode) {
+    protected Recurring getRecurringContractType(RecurringContractMode recurringContractMode) {
         Recurring recurringContract = new Recurring();
 
         //If recurring contract is disabled, return null
@@ -481,7 +492,7 @@ public class AdyenRequestFactory {
     /**
      * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
      */
-    private Recurring getRecurringContractType(RecurringContractMode recurringContractMode, final Boolean enableOneClick) {
+    protected Recurring getRecurringContractType(RecurringContractMode recurringContractMode, final Boolean enableOneClick) {
         Recurring recurringContract = getRecurringContractType(recurringContractMode);
 
         //If recurring contract is disabled, return null
@@ -512,7 +523,7 @@ public class AdyenRequestFactory {
     /**
      * Get shopper name and gender
      */
-    private Name getShopperNameFromAddress(AddressData addressData) {
+    protected Name getShopperNameFromAddress(AddressData addressData) {
         Name shopperName = new Name();
 
         shopperName.setFirstName(addressData.getFirstName());
@@ -733,7 +744,7 @@ public class AdyenRequestFactory {
     /**
      * Set Boleto payment request data
      */
-    private void setBoletoData(PaymentsRequest paymentsRequest, CartData cartData) {
+    protected void setBoletoData(PaymentsRequest paymentsRequest, CartData cartData) {
         DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
         if (paymentMethodDetails == null) {
             paymentMethodDetails = new DefaultPaymentMethodDetails();
@@ -766,16 +777,44 @@ public class AdyenRequestFactory {
     /**
      * Set Paypal ECS request data
      */
-    private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
+    protected void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
         paymentRequest.selectedBrand(PAYPAL_ECS);
         paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
+    }
+
+    /**
+     * Set Applepay request data
+     */
+    protected void setApplePayData(PaymentsRequest paymentsRequest, CartData cartData) {
+        DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
+        if (paymentMethodDetails == null) {
+            paymentMethodDetails = new DefaultPaymentMethodDetails();
+        }
+
+        paymentMethodDetails.setType(APPLEPAY);
+        paymentMethodDetails.setGooglepayToken(cartData.getAdyenApplepayToken());
+        paymentsRequest.setPaymentMethod(paymentMethodDetails);
+    }
+
+    /**
+     * Set Googlepay request data
+     */
+    protected void setGooglePayData(PaymentsRequest paymentsRequest, CartData cartData) {
+        DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
+        if (paymentMethodDetails == null) {
+            paymentMethodDetails = new DefaultPaymentMethodDetails();
+        }
+
+        paymentMethodDetails.setType(GOOGLEPAY);
+        paymentMethodDetails.setGooglepayToken(cartData.getAdyenGooglepayToken());
+        paymentsRequest.setPaymentMethod(paymentMethodDetails);
     }
 
     private String getPlatformVersion() {
         return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
     }
 
-    private Boolean is3DS2Allowed() {
+    protected Boolean is3DS2Allowed() {
 
         Configuration configuration = getConfigurationService().getConfiguration();
         boolean is3DS2AllowedValue = false;

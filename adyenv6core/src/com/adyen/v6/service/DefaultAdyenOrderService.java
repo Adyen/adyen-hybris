@@ -30,6 +30,7 @@ import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import de.hybris.platform.basecommerce.enums.FraudStatus;
+import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.fraud.model.FraudReportModel;
@@ -101,22 +102,22 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     }
 
     @Override
-    public void storeFraudReportFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse) {
+    public void storeFraudReportFromPaymentsResponse(AbstractOrderModel order, PaymentsResponse paymentsResponse) {
         FraudReportModel fraudReport = createFraudReportFromPaymentsResponse(paymentsResponse);
-        if(fraudReport != null) {
-            fraudReport.setOrder(order);
+        if(fraudReport != null && order instanceof OrderModel) {
+            fraudReport.setOrder((OrderModel) order);
             storeFraudReport(fraudReport);
         }
     }
 
     @Override
-    public void storeFraudReportFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
+    public void storeFraudReportFromPaymentResult(AbstractOrderModel order, PaymentResult paymentResult) {
         PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
         storeFraudReportFromPaymentsResponse(order, paymentsResponse);
     }
 
     @Override
-    public void updateOrderFromPaymentsResponse(OrderModel order, PaymentsResponse paymentsResponse) {
+    public void updateOrderFromPaymentsResponse(AbstractOrderModel order, PaymentsResponse paymentsResponse) {
         if (order == null) {
             LOG.error("Order is null");
             return;
@@ -154,7 +155,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     }
 
     @Override
-    public void updateOrderFromPaymentResult(OrderModel order, PaymentResult paymentResult) {
+    public void updateOrderFromPaymentResult(AbstractOrderModel order, PaymentResult paymentResult) {
         PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
         updateOrderFromPaymentsResponse(order, paymentsResponse);
     }

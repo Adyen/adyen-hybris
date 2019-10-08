@@ -124,11 +124,13 @@
         </property>
     </bean>
 
-    <bean id="adyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory">
+    <alias name="defaultAdyenRequestFactory" alias="adyenRequestFactory" />
+    <bean id="defaultAdyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory">
         <property name="configurationService" ref="configurationService" />
     </bean>
 
-    <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
+    <alias name="defaultAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
+    <bean id="defaultAdyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <property name="paymentMethodConverter" ref="adyenPaymentMethodConverter" />
         <property name="adyenRequestFactory" ref="adyenRequestFactory" />
     </bean>
@@ -245,7 +247,8 @@
         <property name="add" ref="adyenOrderEntryPopulator"/>
     </bean>
 
-    <bean name="adyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
+    <alias name="defaultAdyenCartPopulator" alias="adyenCartPopulator" />
+    <bean name="defaultAdyenCartPopulator" class="com.adyen.v6.populator.CartPopulator" />
     <!-- To obtain the oder number before the order is created -->
     <alias alias="createOrderFromCartStrategy" name="adyenCreateOrderFromCartStrategy"/>
 

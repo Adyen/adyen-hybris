@@ -34,6 +34,8 @@
         <property name="adyenPaymentToken" type="java.lang.String"/>
         <property name="adyenReturnUrl" type="java.lang.String"/>
         <property name="adyenBrowserInfo" type="java.lang.String"/>
+        <property name="adyenApplepayToken" type="java.lang.String"/>
+        <property name="adyenGooglepayToken" type="java.lang.String"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
