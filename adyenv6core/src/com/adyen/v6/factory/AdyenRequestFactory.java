@@ -43,6 +43,7 @@ import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
 import com.adyen.model.nexo.AmountsReq;
+import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageReference;
 import com.adyen.model.nexo.PaymentTransaction;
@@ -440,6 +441,8 @@ public class AdyenRequestFactory {
         messageReference.setServiceID(originalServiceId);
 
         transactionStatusRequest.setMessageReference(messageReference);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
 
         String serviceId = Long.toString(System.currentTimeMillis() % 10000000000L);
 
