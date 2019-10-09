@@ -26,6 +26,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 public class AdyenPaymentFormValidator implements Validator {
     private Set<String> storedCards;
@@ -78,7 +79,7 @@ public class AdyenPaymentFormValidator implements Validator {
         }
 
         // check if date or social seucrity number is set
-        if (OPENINVOICE_METHODS_API.contains(form.getPaymentMethod())) {
+        if (RATEPAY.equals(form.getPaymentMethod())) {
 
             if (showSocialSecurityNumber) {
                 if (form.getSocialSecurityNumber().isEmpty()) {
