@@ -792,7 +792,7 @@ public class AdyenRequestFactory {
         }
 
         paymentMethodDetails.setType(APPLEPAY);
-        paymentMethodDetails.setGooglepayToken(cartData.getAdyenApplepayToken());
+        paymentMethodDetails.setApplepayToken(cartData.getAdyenApplepayToken());
         paymentsRequest.setPaymentMethod(paymentMethodDetails);
     }
 
