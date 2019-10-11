@@ -130,7 +130,7 @@
                                     <adyen:alternativeMethod
                                             brandCode="${paymentMethod.type}"
                                             name="${paymentMethod.name}"
-                                            showDob="${openInvoiceMethods.contains(paymentMethod.type)}"
+                                            showDob="${paymentMethod.type=='ratepay'}"
                                             showSocialSecurityNumber="${showSocialSecurityNumber}"
                                     />
                                 </c:forEach>
