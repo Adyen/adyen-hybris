@@ -23,8 +23,11 @@ package com.adyen.v6.factory;
 import java.math.BigDecimal;
 
 import com.adyen.model.nexo.AmountsReq;
+import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageHeader;
+import com.adyen.model.nexo.MessageReference;
 import com.adyen.model.nexo.SaleData;
+import com.adyen.model.nexo.TransactionStatusRequest;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -61,6 +64,29 @@ import static org.mockito.Mockito.when;
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
 public class AdyenRequestFactoryTest {
+
+    private static final String MERCHANT_ACCOUNT = "merchantAccount";
+    private static final String BILLING_TOWN = "billingTown";
+    private static final String BILLING_COUNTRY = "GR";
+    private static final String DELIVERY_TOWN = "deliveryTown";
+    private static final String DELIVERY_COUNTRY = "NL";
+    private static final String CUSTOMER_ID = "uuid";
+    private static final String CUSTOMER_EMAIL = "email";
+    private static final String CART_CODE = "code";
+    private static final String STORE_NAME = "StoreName";
+    private static final String CURRENCY = "EUR";
+    private static final String AMOUNT = "12.34";
+    private static final String RECURRING_REFERENCE = "recurring_reference";
+    //Request
+    private static final String ACCEPT_HEADER = "Accept";
+    private static final String USER_AGENT_HEADER = "User-Agent";
+    private static final String REMOTE_ADDRESS = "1.2.3.4";
+    private static final String REQUEST_URL = "https://localhost:9002/electronics/en/checkout/multi/adyen/summary/placeOrder";
+    private static final String REQUEST_URI = "/electronics/en/checkout/multi/adyen/summary/placeOrder";
+    //POS
+    private static final String SERVICE_ID = "serviceId";
+    private static final String TERMINAL_ID = "V400m-123456789";
+
     private AdyenRequestFactory adyenRequestFactory;
 
     @Mock
@@ -94,33 +120,34 @@ public class AdyenRequestFactoryTest {
     public void setUp() {
         adyenRequestFactory = new AdyenRequestFactory();
         PriceData priceData = new PriceData();
-        priceData.setValue(new BigDecimal("12.34"));
-        priceData.setCurrencyIso("EUR");
+        priceData.setValue(new BigDecimal(AMOUNT));
+        priceData.setCurrencyIso(CURRENCY);
 
         when(cartDataMock.getTotalPrice()).thenReturn(priceData);
-        when(cartDataMock.getCode()).thenReturn("code");
+        when(cartDataMock.getCode()).thenReturn(CART_CODE);
         when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddressMock);
         when(cartDataMock.getPaymentInfo()).thenReturn(paymentInfoMock);
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
-        when(cartDataMock.getStore()).thenReturn("StoreName");
-        when(cartDataMock.getAdyenTerminalId()).thenReturn("V400m-123456789");
+        when(cartDataMock.getStore()).thenReturn(STORE_NAME);
+        when(cartDataMock.getAdyenTerminalId()).thenReturn(TERMINAL_ID);
 
         when(paymentInfoMock.getBillingAddress()).thenReturn(billingAddressMock);
-        when(deliveryAddressMock.getTown()).thenReturn("deliveryTown");
-        when(billingAddressMock.getTown()).thenReturn("billingTown");
+        when(deliveryAddressMock.getTown()).thenReturn(DELIVERY_TOWN);
+        when(billingAddressMock.getTown()).thenReturn(BILLING_TOWN);
         when(deliveryAddressMock.getCountry()).thenReturn(deliveryCountryDataMock);
         when(billingAddressMock.getCountry()).thenReturn(billingCountryDataMock);
-        when(deliveryCountryDataMock.getIsocode()).thenReturn("NL");
-        when(billingCountryDataMock.getIsocode()).thenReturn("GR");
+        when(deliveryCountryDataMock.getIsocode()).thenReturn(DELIVERY_COUNTRY);
+        when(billingCountryDataMock.getIsocode()).thenReturn(BILLING_COUNTRY);
 
-        when(customerModelMock.getCustomerID()).thenReturn("uuid");
-        when(customerModelMock.getContactEmail()).thenReturn("email");
+        when(customerModelMock.getCustomerID()).thenReturn(CUSTOMER_ID);
 
-        when(requestMock.getHeader("User-Agent")).thenReturn("User-Agent");
-        when(requestMock.getHeader("Accept")).thenReturn("Accept");
-        when(requestMock.getRemoteAddr()).thenReturn("1.2.3.4");
-        when(requestMock.getRequestURL()).thenReturn(new StringBuffer("https://localhost:9002/electronics/en/checkout/multi/adyen/summary/placeOrder"));
-        when(requestMock.getRequestURI()).thenReturn("/electronics/en/checkout/multi/adyen/summary/placeOrder");
+        when(customerModelMock.getContactEmail()).thenReturn(CUSTOMER_EMAIL);
+
+        when(requestMock.getHeader(USER_AGENT_HEADER)).thenReturn(USER_AGENT_HEADER);
+        when(requestMock.getHeader(ACCEPT_HEADER)).thenReturn(ACCEPT_HEADER);
+        when(requestMock.getRemoteAddr()).thenReturn(REMOTE_ADDRESS);
+        when(requestMock.getRequestURL()).thenReturn(new StringBuffer(REQUEST_URL));
+        when(requestMock.getRequestURI()).thenReturn(REQUEST_URI);
 
         Configuration configurationMock = mock(BaseConfiguration.class);
         when(configurationMock.getString(any(String.class))).thenReturn("dummy");
@@ -134,19 +161,19 @@ public class AdyenRequestFactoryTest {
         PaymentsRequest paymentsRequest;
 
         //Test anonymous
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest("merchantAccount", cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE);
 
         //use delivery/billing address from cart
-        assertEquals("deliveryTown", paymentsRequest.getDeliveryAddress().getCity());
-        assertEquals("NL", paymentsRequest.getDeliveryAddress().getCountry());
-        assertEquals("billingTown", paymentsRequest.getBillingAddress().getCity());
-        assertEquals("GR", paymentsRequest.getBillingAddress().getCountry());
+        assertEquals(DELIVERY_TOWN, paymentsRequest.getDeliveryAddress().getCity());
+        assertEquals(DELIVERY_COUNTRY, paymentsRequest.getDeliveryAddress().getCountry());
+        assertEquals(BILLING_TOWN, paymentsRequest.getBillingAddress().getCity());
+        assertEquals(BILLING_COUNTRY, paymentsRequest.getBillingAddress().getCountry());
 
         assertNull(paymentsRequest.getShopperReference());
 
-        assertEquals("User-Agent", paymentsRequest.getBrowserInfo().getUserAgent());
-        assertEquals("Accept", paymentsRequest.getBrowserInfo().getAcceptHeader());
-        assertEquals("1.2.3.4", paymentsRequest.getShopperIP());
+        assertEquals(USER_AGENT_HEADER, paymentsRequest.getBrowserInfo().getUserAgent());
+        assertEquals(ACCEPT_HEADER, paymentsRequest.getBrowserInfo().getAcceptHeader());
+        assertEquals(REMOTE_ADDRESS, paymentsRequest.getShopperIP());
 
         //Test recurring contract when remember-me is NOT set
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
@@ -166,17 +193,17 @@ public class AdyenRequestFactoryTest {
 
         //When a store card is selected, send the reference and include the recurring contract
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
-        when(cartDataMock.getAdyenSelectedReference()).thenReturn("recurring_reference");
+        when(cartDataMock.getAdyenSelectedReference()).thenReturn(RECURRING_REFERENCE);
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest("merchantAccount", cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
 
         DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
-        assertEquals("recurring_reference", paymentMethodDetails.getRecurringDetailReference());
+        assertEquals(RECURRING_REFERENCE, paymentMethodDetails.getRecurringDetailReference());
     }
 
     private void testRecurringOption(final RecurringContractMode recurringContractModeSetting, final Recurring.ContractEnum expectedRecurringContractMode) {
 
-        PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest("merchantAccount", cartDataMock, requestMock, customerModelMock, recurringContractModeSetting);
+        PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest(MERCHANT_ACCOUNT, cartDataMock, requestMock, customerModelMock, recurringContractModeSetting);
 
         if (expectedRecurringContractMode == null) {
             assertNull(paymentRequest.getRecurring());
@@ -185,52 +212,78 @@ public class AdyenRequestFactoryTest {
         }
 
         //when customer is set, shopperReference and Email should be set as well
-        assertEquals("uuid", paymentRequest.getShopperReference());
-        assertEquals("email", paymentRequest.getShopperEmail());
+        assertEquals(CUSTOMER_ID, paymentRequest.getShopperReference());
+        assertEquals(CUSTOMER_EMAIL, paymentRequest.getShopperEmail());
     }
 
     @Test
-    public void testTerminalApiRequestAnonymous() throws Exception {
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, null, null, null);
+    public void testTerminalApiPaymentRequestAnonymous() throws Exception {
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, null, null, SERVICE_ID);
 
-        validateTerminalApiRequest(terminalApiRequest);
+        validateTerminalApiPaymentRequest(terminalApiRequest);
     }
 
     @Test
-    public void testTerminalApiRequestWithRecurring() throws Exception {
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, customerModelMock, RecurringContractMode.ONECLICK_RECURRING, null);
+    public void testTerminalApiPaymentRequestWithRecurring() throws Exception {
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, customerModelMock, RecurringContractMode.ONECLICK_RECURRING, SERVICE_ID);
 
-        validateTerminalApiRequest(terminalApiRequest);
+        validateTerminalApiPaymentRequest(terminalApiRequest);
 
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData());
 
         String saleToAcquirerData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData();
-        assertTrue(saleToAcquirerData.contains("recurringContract=ONECLICK,RECURRING"));
-        assertTrue(saleToAcquirerData.contains("shopperEmail=email"));
-        assertTrue(saleToAcquirerData.contains("shopperReference=uuid"));
+        assertTrue(saleToAcquirerData.contains("recurringContract=" + Recurring.ContractEnum.ONECLICK_RECURRING.toString()));
+        assertTrue(saleToAcquirerData.contains("shopperEmail=" + CUSTOMER_EMAIL));
+        assertTrue(saleToAcquirerData.contains("shopperReference=" + CUSTOMER_ID));
     }
 
-    private void validateTerminalApiRequest(TerminalAPIRequest terminalApiRequest) {
+    private void validateTerminalApiPaymentRequest(TerminalAPIRequest terminalApiRequest) {
         assertNotNull(terminalApiRequest);
         assertNotNull(terminalApiRequest.getSaleToPOIRequest());
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getMessageHeader());
 
         MessageHeader messageHeader = terminalApiRequest.getSaleToPOIRequest().getMessageHeader();
-        assertEquals("StoreName", messageHeader.getSaleID());
-        assertEquals("V400m-123456789", messageHeader.getPOIID());
+        assertNotNull(messageHeader.getServiceID());
+        assertEquals(STORE_NAME, messageHeader.getSaleID());
+        assertEquals(TERMINAL_ID, messageHeader.getPOIID());
 
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest());
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData());
 
         SaleData saleData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData();
         assertNotNull(saleData.getSaleTransactionID());
-        assertEquals("code", saleData.getSaleTransactionID().getTransactionID());
+        assertEquals(CART_CODE, saleData.getSaleTransactionID().getTransactionID());
 
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getPaymentTransaction());
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getPaymentTransaction().getAmountsReq());
 
         AmountsReq amountsReq = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getPaymentTransaction().getAmountsReq();
-        assertEquals("EUR", amountsReq.getCurrency());
-        assertEquals("12.34", amountsReq.getRequestedAmount().toString());
+        assertEquals(CURRENCY, amountsReq.getCurrency());
+        assertEquals(AMOUNT, amountsReq.getRequestedAmount().toString());
+    }
+
+    @Test
+    public void testTerminalApiStatusRequest() throws Exception {
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartDataMock, SERVICE_ID);
+
+        assertNotNull(terminalApiRequest);
+        assertNotNull(terminalApiRequest.getSaleToPOIRequest());
+        assertNotNull(terminalApiRequest.getSaleToPOIRequest().getMessageHeader());
+
+        MessageHeader messageHeader = terminalApiRequest.getSaleToPOIRequest().getMessageHeader();
+        assertNotNull(messageHeader.getServiceID());
+        assertEquals(STORE_NAME, messageHeader.getSaleID());
+        assertEquals(TERMINAL_ID, messageHeader.getPOIID());
+
+        assertNotNull(terminalApiRequest.getSaleToPOIRequest().getTransactionStatusRequest());
+        TransactionStatusRequest transactionStatusRequest = terminalApiRequest.getSaleToPOIRequest().getTransactionStatusRequest();
+
+        assertNotNull(transactionStatusRequest.getMessageReference());
+        assertNotNull(transactionStatusRequest.getMessageReference().getMessageCategory());
+        assertEquals(MessageCategoryType.PAYMENT, transactionStatusRequest.getMessageReference().getMessageCategory());
+        assertNotNull(transactionStatusRequest.getMessageReference().getSaleID());
+        assertEquals(STORE_NAME, transactionStatusRequest.getMessageReference().getSaleID());
+        assertNotNull(transactionStatusRequest.getMessageReference().getServiceID());
+        assertEquals(SERVICE_ID, transactionStatusRequest.getMessageReference().getServiceID());
     }
 }
