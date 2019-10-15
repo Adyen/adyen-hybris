@@ -24,9 +24,13 @@ import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.nexo.PaymentAcquirerData;
 import com.adyen.model.nexo.PaymentResponse;
 import com.adyen.model.nexo.PaymentResult;
+import com.adyen.model.nexo.RepeatedMessageResponse;
+import com.adyen.model.nexo.RepeatedResponseMessageBody;
 import com.adyen.model.nexo.Response;
 import com.adyen.model.nexo.SaleToPOIResponse;
 import com.adyen.model.nexo.TransactionIdentification;
+import com.adyen.model.nexo.TransactionStatusRequest;
+import com.adyen.model.nexo.TransactionStatusResponse;
 import de.hybris.bootstrap.annotations.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,14 +53,15 @@ public class PosPaymentResponseConverterTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "tid=1234&expiryYear=2028&expiryDate=2%2f2028&cardHolderName=test&avsResult=0%20Unknown&authCode=1234", 6, "1234" },
-                { "authCode=1234", 1, "1234" },
-                { "", 0, null },
-                { null, 0, null }
+                { "tid=1234&expiryYear=2028&expiryDate=2%2f2028&cardHolderName=test&avsResult=0%20Unknown&authCode=1234", true, 6, "1234" },
+                { "authCode=1234", true, 1, "1234" },
+                { "", true, 0, null },
+                { null, false, null, null }
         });
     }
 
     private String additionalResponse;
+    private Boolean shouldExpectAdditionalData;
     private Integer expectedAdditionalDataSize;
     private String expectedAuthCode;
 
@@ -64,6 +69,8 @@ public class PosPaymentResponseConverterTest {
 
     @Mock
     private SaleToPOIResponse saleToPoiResponse;
+
+    //Payment Response
     @Mock
     private PaymentResponse paymentResponse;
     @Mock
@@ -75,8 +82,17 @@ public class PosPaymentResponseConverterTest {
     @Mock
     private TransactionIdentification acquirerTransactionId;
 
-    public PosPaymentResponseConverterTest(String additionalResponse, Integer expectedAdditionalDataSize, String expectedAuthCode) {
+    //Status response
+    @Mock
+    TransactionStatusResponse transactionStatusResponse;
+    @Mock
+    RepeatedMessageResponse repeatedMessageResponse;
+    @Mock
+    RepeatedResponseMessageBody repeatedResponseMessageBody;
+
+    public PosPaymentResponseConverterTest(String additionalResponse, Boolean shouldExpectAdditionalData, Integer expectedAdditionalDataSize, String expectedAuthCode) {
         this.additionalResponse = additionalResponse;
+        this.shouldExpectAdditionalData = shouldExpectAdditionalData;
         this.expectedAdditionalDataSize = expectedAdditionalDataSize;
         this.expectedAuthCode = expectedAuthCode;
     }
@@ -86,7 +102,6 @@ public class PosPaymentResponseConverterTest {
         initMocks(this);
         posPaymentResponseConverter = new PosPaymentResponseConverter();
 
-        when(saleToPoiResponse.getPaymentResponse()).thenReturn(paymentResponse);
         when(paymentResponse.getPaymentResult()).thenReturn(paymentResult);
         when(paymentResult.getPaymentAcquirerData()).thenReturn(paymentAcquirerData);
         when(paymentAcquirerData.getAcquirerTransactionID()).thenReturn(acquirerTransactionId);
@@ -97,13 +112,39 @@ public class PosPaymentResponseConverterTest {
     }
 
     @Test
-    public void testConverter() {
+    public void testConverterForPaymentResponse() {
+        when(saleToPoiResponse.getPaymentResponse()).thenReturn(paymentResponse);
+
         PaymentsResponse paymentsResponse = posPaymentResponseConverter.convert(saleToPoiResponse);
 
         assertNotNull(paymentsResponse);
         assertEquals("psp", paymentsResponse.getPspReference());
-        assertNotNull(paymentsResponse.getAdditionalData());
-        assertEquals((int) expectedAdditionalDataSize, paymentsResponse.getAdditionalData().size());
-        assertEquals(expectedAuthCode, paymentsResponse.getAuthCode());
+        assertEquals(shouldExpectAdditionalData, paymentsResponse.getAdditionalData() != null);
+
+        if(shouldExpectAdditionalData) {
+            assertEquals((int) expectedAdditionalDataSize, paymentsResponse.getAdditionalData().size());
+            assertEquals(expectedAuthCode, paymentsResponse.getAuthCode());
+        }
+    }
+
+    @Test
+    public void testConverterForStatusResponse() {
+        when(saleToPoiResponse.getPaymentResponse()).thenReturn(null);
+
+        when(saleToPoiResponse.getTransactionStatusResponse()).thenReturn(transactionStatusResponse);
+        when(transactionStatusResponse.getRepeatedMessageResponse()).thenReturn(repeatedMessageResponse);
+        when(repeatedMessageResponse.getRepeatedResponseMessageBody()).thenReturn(repeatedResponseMessageBody);
+        when(repeatedResponseMessageBody.getPaymentResponse()).thenReturn(paymentResponse);
+
+        PaymentsResponse paymentsResponse = posPaymentResponseConverter.convert(saleToPoiResponse);
+
+        assertNotNull(paymentsResponse);
+        assertEquals("psp", paymentsResponse.getPspReference());
+        assertEquals(shouldExpectAdditionalData, paymentsResponse.getAdditionalData() != null);
+
+        if (shouldExpectAdditionalData) {
+            assertEquals((int) expectedAdditionalDataSize, paymentsResponse.getAdditionalData().size());
+            assertEquals(expectedAuthCode, paymentsResponse.getAuthCode());
+        }
     }
 }

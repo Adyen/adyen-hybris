@@ -1,0 +1,343 @@
+{
+  "SaleToPOIResponse": {
+    "MessageHeader": {
+      "ProtocolVersion": "3.0",
+      "MessageClass": "Service",
+      "MessageCategory": "TransactionStatus",
+      "MessageType": "Response",
+      "ServiceID": "1057526683",
+      "SaleID": "electronics",
+      "POIID": "V400m-346489243"
+    },
+    "TransactionStatusResponse": {
+      "Response": {
+        "Result": "Success"
+      },
+      "MessageReference": {
+        "MessageCategory": "Payment",
+        "ServiceID": "1057439341",
+        "SaleID": "electronics"
+      },
+      "RepeatedMessageResponse": {
+        "RepeatedResponseMessageBody": {
+          "PaymentResponse": {
+            "Response": {
+              "AdditionalResponse": "tid=46489243&AID=A0000000041010&transactionType=GOODS_SERVICES&backendGiftcardIndicator=false&posadditionalamounts.originalAmountValue=1798&expiryYear=2025&acquirerAccountCode=TestPmmAcquirerAccount&alias=M900978995070104&posAmountGratuityValue=0&giftcardIndicator=false&authorisedAmountValue=1798&pspReference=851571057526088G&paymentMethodVariant=mc&cardHolderName=N%2fA&refusalReasonRaw=APPROVED&authorisationMid=1000&expiryDate=12%2f2025&applicationPreferredName=MCC%20351%20v1%202&acquirerCode=TestPmmAcquirer&store=MyStore&recurring.recurringDetailReference=8415699210776615&txtime=14%3a50%3a40&iso8601TxDate=2019-10-14T12%3a50%3a40.0000000%2b0000&cardType=mc&posOriginalAmountValue=1798&offline=false&aliasType=Default&recurring.shopperReference=16eebd8c-8c1b-48e3-b6e8-67734d960af5&txdate=14-10-2019&paymentMethod=mc&cvcResult=0%20Unknown&authorisedAmountCurrency=EUR&shopperReference=16eebd8c-8c1b-48e3-b6e8-67734d960af5&shopperEmail=renato.martins%40adyen.com&avsResult=0%20Unknown&mid=1000&merchantReference=00025002&transactionReferenceNumber=851571057526088G&expiryMonth=12&cardSummary=3511&pinBlockISOFormat=0&posadditionalamounts.originalAmountCurrency=EUR&posAuthAmountCurrency=EUR&cardHolderVerificationMethodResults=3F0300&authCode=123456&posAmountCashbackValue=0&shopperCountry=NL&posEntryMode=CLESS_SWIPE&issuerCountry=unknown&cardScheme=mc&cardBin=541333&posAuthAmountValue=1798",
+              "Result": "Success"
+            },
+            "SaleData": {
+              "SaleTransactionID": {
+                "TransactionID": "00025002",
+                "TimeStamp": "2019-10-14T12:50:39.343Z"
+              }
+            },
+            "POIData": {
+              "POITransactionID": {
+                "TransactionID": "93yV001571057440002.851571057526088G",
+                "TimeStamp": "2019-10-14T12:50:40.000Z"
+              },
+              "POIReconciliationID": "1000"
+            },
+            "PaymentResult": {
+              "PaymentInstrumentData": {
+                "CardData": {
+                  "SensitiveCardData": {
+                    "ExpiryDate": "1225"
+                  },
+                  "PaymentBrand": "mc",
+                  "MaskedPan": "541333 ** 3511",
+                  "EntryMode": [
+                    "Tapped"
+                  ]
+                },
+                "PaymentInstrumentType": "Card"
+              },
+              "AmountsResp": {
+                "Currency": "EUR",
+                "AuthorizedAmount": 17.98
+              },
+              "PaymentAcquirerData": {
+                "AcquirerTransactionID": {
+                  "TransactionID": "851571057526088G",
+                  "TimeStamp": "2019-10-14T12:50:40.000Z"
+                },
+                "ApprovalCode": "123456",
+                "MerchantID": "TestMerchantRenatoTest",
+                "AcquirerPOIID": "V400m-346489243"
+              },
+              "OnlineFlag": true
+            },
+            "PaymentReceipt": [
+              {
+                "OutputContent": {
+                  "OutputText": [
+                    {
+                      "Text": "key=header1",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=header2",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=MERCHANT%20COPY&key=merchantTitle",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Date&value=14%2f10%2f2019&key=txdate",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Time&value=14%3a50%3a40&key=txtime",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Card&value=%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a3511&key=pan",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Pref.%20name&value=MCC%20351%20v1%202&key=preferredName",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Card%20type&value=mc&key=cardType",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Payment%20method&value=mc&key=paymentMethod",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Payment%20variant&value=mc&key=paymentMethodVariant",
+                      "EndOfLineFlag": true
+                    },
+
+                    {
+                      "Text": "name=Entry%20mode&value=Contactless%20swipe&key=posEntryMode",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=AID&value=A0000000041010&key=aid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=MID&value=1000&key=mid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=TID&value=V400m-346489243&key=tid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=PTID&value=46489243&key=ptid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Auth.%20code&value=123456&key=authCode",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Tender&value=93yV001571057440002&key=txRef",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Reference&value=00025002&key=mref",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Type&value=GOODS_SERVICES&key=txtype",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=TOTAL&value=%e2%82%ac%2017.98&key=totalAmount",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=APPROVED&key=approved",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    }
+                  ],
+                  "OutputFormat": "Text"
+                },
+                "DocumentQualifier": "CashierReceipt",
+                "RequiredSignatureFlag": false
+              },
+              {
+                "OutputContent": {
+                  "OutputText": [
+                    {
+                      "Text": "key=header1",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=header2",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=CARDHOLDER%20COPY&key=cardholderHeader",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Date&value=14%2f10%2f2019&key=txdate",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Time&value=14%3a50%3a40&key=txtime",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Card&value=%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a%2a3511&key=pan",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Pref.%20name&value=MCC%20351%20v1%202&key=preferredName",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Card%20type&value=mc&key=cardType",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Payment%20method&value=mc&key=paymentMethod",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Payment%20variant&value=mc&key=paymentMethodVariant",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Entry%20mode&value=Contactless%20swipe&key=posEntryMode",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=AID&value=A0000000041010&key=aid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=MID&value=1000&key=mid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=TID&value=V400m-346489243&key=tid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=PTID&value=46489243&key=ptid",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Auth.%20code&value=123456&key=authCode",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Tender&value=93yV001571057440002&key=txRef",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Reference&value=00025002&key=mref",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Type&value=GOODS_SERVICES&key=txtype",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=TOTAL&value=%e2%82%ac%2017.98&key=totalAmount",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=APPROVED&key=approved",
+                      "CharacterStyle": "Bold",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "key=filler",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Please%20retain%20for%20your%20records&key=retain",
+                      "EndOfLineFlag": true
+                    },
+                    {
+                      "Text": "name=Thank%20you&key=thanks",
+                      "EndOfLineFlag": true
+                    }
+                  ],
+                  "OutputFormat": "Text"
+                },
+                "DocumentQualifier": "CustomerReceipt",
+                "RequiredSignatureFlag": false
+              }
+            ]
+          }
+        },
+        "MessageHeader": {
+          "ProtocolVersion": "3.0",
+          "MessageClass": "Service",
+          "MessageCategory": "Payment",
+          "MessageType": "Response",
+          "ServiceID": "1057439341",
+          "SaleID": "electronics",
+          "POIID": "V400m-346489243"
+        }
+      }
+    }
+  }
+}

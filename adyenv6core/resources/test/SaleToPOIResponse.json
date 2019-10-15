@@ -1,0 +1,65 @@
+{
+   "SaleToPOIResponse" : {
+      "PaymentResponse" : {
+         "Response" : {
+            "AdditionalResponse" : "applicationLabel=MCNL&cardHolderVerificationMethodResults=1E0000&AID=A000000004101001&applicationPreferredName=mc%20nl&tid=12000000&merchantReference=A574E345-9AF5-4653-A1F9-F4D56CD2558B&tc=E891E*****0747AD&txdate=04-10-2017&paymentMethod=eftpos_australia&transactionReferenceNumber=9815071072212937&transactionType=GOODS_SERVICES&cardType=mc&offline=false&cardScheme=eftpos_australia&mid=1009&txtime=08%3a53%3a29&cardHolderName=TC02_MC_Approved",
+            "Result" : "Success"
+         },
+         "PaymentResult" : {
+            "PaymentInstrumentData" : {
+               "PaymentInstrumentType" : "Card",
+               "CardData" : {
+                  "SensitiveCardData" : {
+                     "ExpiryDate" : "0228",
+                     "CardSeqNumb" : "53"
+                  },
+                  "CardCountryCode" : "056",
+                  "PaymentBrand" : "eftpos_australia",
+                  "MaskedPan" : "541333 **** 9999",
+                  "PaymentToken" : {
+                     "TokenValue" : "K722246565280932",
+                     "TokenRequestedType" : "Customer"
+                  },
+                  "EntryMode" : [
+                     "ICC"
+                  ]
+               }
+            },
+            "AmountsResp" : {
+               "Currency" : "EUR",
+               "AuthorizedAmount" : 5
+            },
+            "PaymentAcquirerData" : {
+               "AcquirerPOIID" : "MX925-260193322",
+               "MerchantID" : "TestMerchantPOS",
+               "AcquirerTransactionID" : {
+                  "TimeStamp" : "2017-10-04T08:53:29.000Z",
+                  "TransactionID" : "9815071072212937"
+               }
+            }
+         },
+         "SaleData" : {
+            "SaleTransactionID" : {
+               "TimeStamp" : "2017-10-04T08:53:28.278Z",
+               "TransactionID" : "A574E345-9AF5-4653-A1F9-F4D56CD2558B"
+            },
+            "SaleReferenceID" : "Ref123"
+         },
+         "POIData" : {
+            "POITransactionID" : {
+               "TimeStamp" : "2017-10-04T08:53:29.000Z",
+               "TransactionID" : "oLkO001507107209001.9815071072212937"
+            }
+         }
+      },
+      "MessageHeader" : {
+         "POIID" : "VX820-123456789",
+         "MessageType" : "Response",
+         "SaleID" : "John",
+         "MessageClass" : "Service",
+         "ServiceID" : "33191",
+         "MessageCategory" : "Payment",
+         "ProtocolVersion" : "3.0"
+      }
+   }
+}
