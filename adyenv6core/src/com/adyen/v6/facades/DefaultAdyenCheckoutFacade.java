@@ -1082,7 +1082,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String serviceId = request.getAttribute("originalServiceId").toString();
         TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosPaymentRequest(cartData, customer, serviceId);
-        ResultType resultType = TerminalAPIUtil.getPaymentResult(terminalApiResponse);
+        ResultType resultType = TerminalAPIUtil.getPaymentResultFromStatusOrPaymentResponse(terminalApiResponse);
 
         if (ResultType.SUCCESS == resultType) {
             PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
@@ -1103,12 +1103,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String originalServiceId = request.getAttribute("originalServiceId").toString();
         TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosStatusRequest(cartData, originalServiceId);
-        ResultType statusResult = TerminalAPIUtil.getStatusResult(terminalApiResponse);
+        ResultType statusResult = TerminalAPIUtil.getStatusResultFromStatusResponse(terminalApiResponse);
 
         if (statusResult != null) {
             if (statusResult == ResultType.SUCCESS) {
                 //this will be success even if payment is failed. because this belongs to status call not payment call
-                ResultType paymentResult = TerminalAPIUtil.getPaymentResult(terminalApiResponse);
+                ResultType paymentResult = TerminalAPIUtil.getPaymentResultFromStatusOrPaymentResponse(terminalApiResponse);
                 if (paymentResult == ResultType.SUCCESS) {
                     PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
                     String posReceipt = TerminalAPIUtil.getReceiptFromStatusResponse(terminalApiResponse);
@@ -1120,7 +1120,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                     throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
             } else {
-                ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForStatus(terminalApiResponse);
+                ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForStatusFromStatusResponse(terminalApiResponse);
                 //If transaction is still in progress, keep retrying in 5 seconds.
                 if (errorCondition == ErrorConditionType.IN_PROGRESS) {
                     TimeUnit.SECONDS.sleep(5);

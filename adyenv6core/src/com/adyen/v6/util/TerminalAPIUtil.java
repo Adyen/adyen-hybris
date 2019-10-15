@@ -16,29 +16,51 @@ import com.google.common.base.Splitter;
 public class TerminalAPIUtil {
     public static final Logger LOGGER = Logger.getLogger(TerminalAPIUtil.class);
 
-    public static ResultType getStatusResult(TerminalAPIResponse terminalApiResponse) {
-        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+    public static ResultType getStatusResultFromStatusResponse(TerminalAPIResponse terminalApiResponse) {
+        if (terminalApiResponse.getSaleToPOIResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse() != null) {
+
             return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getResult();
         }
         return null;
     }
 
-    public static ErrorConditionType getErrorConditionForPayment(TerminalAPIResponse terminalApiResponse) {
-        return terminalApiResponse.getSaleToPOIResponse()
-                                  .getTransactionStatusResponse()
-                                  .getRepeatedMessageResponse()
-                                  .getRepeatedResponseMessageBody()
-                                  .getPaymentResponse()
-                                  .getResponse()
-                                  .getErrorCondition();
+    public static ErrorConditionType getErrorConditionForPaymentFromStatusResponse(TerminalAPIResponse terminalApiResponse) {
+        if (terminalApiResponse != null
+                && terminalApiResponse.getSaleToPOIResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse().getResponse() != null) {
+            return terminalApiResponse.getSaleToPOIResponse()
+                                      .getTransactionStatusResponse()
+                                      .getRepeatedMessageResponse()
+                                      .getRepeatedResponseMessageBody()
+                                      .getPaymentResponse()
+                                      .getResponse()
+                                      .getErrorCondition();
+        }
+        return null;
     }
 
     public static ErrorConditionType getErrorConditionForPaymentResponse(TerminalAPIResponse terminalApiResponse) {
-        return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+        if (terminalApiResponse != null
+                && terminalApiResponse.getSaleToPOIResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse() != null) {
+
+            return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
+        }
+        return null;
     }
 
-    public static ErrorConditionType getErrorConditionForStatus(TerminalAPIResponse terminalApiResponse) {
-        return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getErrorCondition();
+    public static ErrorConditionType getErrorConditionForStatusFromStatusResponse(TerminalAPIResponse terminalApiResponse) {
+        if (terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+            return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getErrorCondition();
+        }
+        return null;
     }
 
     /**
@@ -46,19 +68,28 @@ public class TerminalAPIUtil {
      * @return Result from payment response present in paymentResponse in terminalApiResponse for POS payment or POS status call, if present.
      * Otherwise returns Failure.
      */
-    public static ResultType getPaymentResult(TerminalAPIResponse terminalApiResponse) {
+    public static ResultType getPaymentResultFromStatusOrPaymentResponse(TerminalAPIResponse terminalApiResponse) {
 
         if (terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null) {
+
             if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
-                return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
+                if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse() != null) {
+                    return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
+                }
             } else if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
-                return terminalApiResponse.getSaleToPOIResponse()
-                                          .getTransactionStatusResponse()
-                                          .getRepeatedMessageResponse()
-                                          .getRepeatedResponseMessageBody()
-                                          .getPaymentResponse()
-                                          .getResponse()
-                                          .getResult();
+                if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null
+                        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody() != null
+                        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse() != null
+                        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse().getResponse()
+                        != null) {
+                    return terminalApiResponse.getSaleToPOIResponse()
+                                              .getTransactionStatusResponse()
+                                              .getRepeatedMessageResponse()
+                                              .getRepeatedResponseMessageBody()
+                                              .getPaymentResponse()
+                                              .getResponse()
+                                              .getResult();
+                }
             }
         }
         return ResultType.FAILURE;
@@ -66,7 +97,7 @@ public class TerminalAPIUtil {
 
     public static String getReceiptFromPaymentResponse(TerminalAPIResponse terminalApiResponse) {
         String posReceipt = null;
-        if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt() != null) {
+        if (terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
             posReceipt = TerminalAPIUtil.formatTerminalAPIReceipt(terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt());
         }
         return posReceipt;
@@ -75,7 +106,15 @@ public class TerminalAPIUtil {
     public static String getReceiptFromStatusResponse(TerminalAPIResponse terminalApiResponse) {
 
         String posReceipt = null;
-        if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse().getPaymentReceipt() != null) {
+
+        if (terminalApiResponse != null
+                && terminalApiResponse.getSaleToPOIResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody() != null
+                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse() != null) {
+
+
             posReceipt = formatTerminalAPIReceipt(terminalApiResponse.getSaleToPOIResponse()
                                                                      .getTransactionStatusResponse()
                                                                      .getRepeatedMessageResponse()
@@ -122,10 +161,8 @@ public class TerminalAPIUtil {
         if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
             ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForPaymentResponse(terminalApiResponse);
             errorMessage = TerminalAPIUtil.getErrorMessageByPosErrorCondition(errorCondition);
-        } else if (terminalApiResponse.getSaleToPOIResponse() != null
-                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
-                && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null) {
-            ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForPayment(terminalApiResponse);
+        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
+            ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForPaymentFromStatusResponse(terminalApiResponse);
             errorMessage = TerminalAPIUtil.getErrorMessageByPosErrorCondition(errorCondition);
         } else {
             // probably SaleToPOIRequest, that means terminal unreachable, return the response as error
@@ -170,7 +207,6 @@ public class TerminalAPIUtil {
             default:
                 errorMessage = "checkout.error.authorization.payment.error";
         }
-
         return errorMessage;
     }
 
