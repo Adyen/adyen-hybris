@@ -98,6 +98,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private static final String ADYEN_PAYLOAD = "payload";
     private static final String REDIRECT_RESULT = "redirectResult";
 
+    private static final int POS_TOTALTIMEOUT_DEFAULT = 130;
+    private static final String POS_TOTALTIMEOUT_KEY = "pos.totaltimeout";
+
     @Resource(name = "siteBaseUrlResolutionService")
     private SiteBaseUrlResolutionService siteBaseUrlResolutionService;
 
@@ -195,7 +198,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (SocketTimeoutException e) {
                 try {
                     LOGGER.debug("POS request timed out. Checking POS Payment status ");
-                    int totalTimeout = configurationService.getConfiguration().getInt("pos.totaltimeout");
+                    int totalTimeout = POS_TOTALTIMEOUT_DEFAULT;
+                    if(configurationService.getConfiguration().containsKey(POS_TOTALTIMEOUT_KEY)) {
+                        totalTimeout = configurationService.getConfiguration().getInt(POS_TOTALTIMEOUT_KEY);
+                    }
                     request.setAttribute("totalTimeout", totalTimeout);
 
                     OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
