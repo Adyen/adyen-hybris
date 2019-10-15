@@ -20,6 +20,28 @@
  */
 package com.adyen.v6.facades;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -46,6 +68,7 @@ import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.adyen.v6.util.TerminalAPIUtil;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -74,30 +97,6 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
@@ -690,7 +689,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
         orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
-        
+
+        orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
+
         return orderData;
     }
 
@@ -829,6 +830,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (baseStore.getAdyenBoleto() == null || ! baseStore.getAdyenBoleto()) {
             return false;
         }
+
         CartData cartData = getCheckoutFacade().getCheckoutCart();
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String country = cartData.getDeliveryAddress().getCountry().getIsocode();
@@ -850,6 +852,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public boolean showRememberDetails() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
         /*
          * The show remember me checkout should only be shown as the
          * user is logged in and the recurirng mode is set to ONECLICK or ONECLICK,RECURRING
@@ -860,6 +863,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1078,10 +1082,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String serviceId = request.getAttribute("originalServiceId").toString();
         TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosPaymentRequest(cartData, customer, serviceId);
-        ResultType resultType = getPaymentResult(terminalApiResponse);
+        ResultType resultType = TerminalAPIUtil.getPaymentResultFromStatusOrPaymentResponse(terminalApiResponse);
 
         if (ResultType.SUCCESS == resultType) {
             PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+            String posReceipt = TerminalAPIUtil.getReceiptFromPaymentResponse(terminalApiResponse);
+            if (StringUtils.isNotEmpty(posReceipt)) {
+                paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
+            }
             return createAuthorizedOrder(paymentsResponse);
         }
         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
@@ -1095,30 +1103,28 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         String originalServiceId = request.getAttribute("originalServiceId").toString();
         TerminalAPIResponse terminalApiResponse = getAdyenPaymentService().sendSyncPosStatusRequest(cartData, originalServiceId);
-        ResultType statusResult = getStatusResult(terminalApiResponse);
+        ResultType statusResult = TerminalAPIUtil.getStatusResultFromStatusResponse(terminalApiResponse);
 
         if (statusResult != null) {
             if (statusResult == ResultType.SUCCESS) {
                 //this will be success even if payment is failed. because this belongs to status call not payment call
-                ResultType paymentResult = getPaymentResult(terminalApiResponse);
+                ResultType paymentResult = TerminalAPIUtil.getPaymentResultFromStatusOrPaymentResponse(terminalApiResponse);
                 if (paymentResult == ResultType.SUCCESS) {
                     PaymentsResponse paymentsResponse = getPosPaymentResponseConverter().convert(terminalApiResponse.getSaleToPOIResponse());
+                    String posReceipt = TerminalAPIUtil.getReceiptFromStatusResponse(terminalApiResponse);
+                    if (StringUtils.isNotEmpty(posReceipt)) {
+                        paymentsResponse.putAdditionalDataItem("pos.receipt", posReceipt);
+                    }
                     return createAuthorizedOrder(paymentsResponse);
                 } else {
                     throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
-
             } else {
-                ErrorConditionType errorCondition = getErrorConditionForStatus(terminalApiResponse);
+                ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForStatusFromStatusResponse(terminalApiResponse);
                 //If transaction is still in progress, keep retrying in 5 seconds.
                 if (errorCondition == ErrorConditionType.IN_PROGRESS) {
                     TimeUnit.SECONDS.sleep(5);
-                    long currentTime = System.currentTimeMillis();
-                    long processStartTime = (long) request.getAttribute("paymentStartTime");
-                    int totalTimeout = ((int) request.getAttribute("totalTimeout")) * 1000;
-                    long timeDiff = currentTime - processStartTime;
-
-                    if (timeDiff >= totalTimeout) {
+                    if (isPosTimedOut(request)) {
                         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                     } else {
                         return checkPosPaymentStatus(request, cartData);
@@ -1131,51 +1137,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return null;
     }
 
-    /**
-     * @param terminalApiResponse
-     * @return Result from payment response present in paymentResponse in terminalApiResponse for POS payment or POS status call, if present.
-     * Otherwise returns Failure.
-     */
-    public static ResultType getPaymentResult(TerminalAPIResponse terminalApiResponse) {
-
-        if (terminalApiResponse != null && terminalApiResponse.getSaleToPOIResponse() != null) {
-            if (terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
-                return terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getResult();
-            } else if (terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
-                return terminalApiResponse.getSaleToPOIResponse()
-                                          .getTransactionStatusResponse()
-                                          .getRepeatedMessageResponse()
-                                          .getRepeatedResponseMessageBody()
-                                          .getPaymentResponse()
-                                          .getResponse()
-                                          .getResult();
-            }
+    private boolean isPosTimedOut(HttpServletRequest request) {
+        long currentTime = System.currentTimeMillis();
+        long processStartTime = (long) request.getAttribute("paymentStartTime");
+        int totalTimeout = ((int) request.getAttribute("totalTimeout")) * 1000;
+        long timeDiff = currentTime - processStartTime;
+        if (timeDiff >= totalTimeout) {
+            return true;
+        } else {
+            return false;
         }
-        return ResultType.FAILURE;
     }
-
-    public static ResultType getStatusResult(TerminalAPIResponse terminalApiResponse) {
-        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null) {
-            return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getResult();
-        }
-        return null;
-
-    }
-
-    private ErrorConditionType getErrorConditionForPayment(TerminalAPIResponse terminalApiResponse) {
-        return terminalApiResponse.getSaleToPOIResponse()
-                                  .getTransactionStatusResponse()
-                                  .getRepeatedMessageResponse()
-                                  .getRepeatedResponseMessageBody()
-                                  .getPaymentResponse()
-                                  .getResponse()
-                                  .getErrorCondition();
-    }
-
-    private ErrorConditionType getErrorConditionForStatus(TerminalAPIResponse terminalApiResponse) {
-        return terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse().getErrorCondition();
-    }
-
 
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;

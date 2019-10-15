@@ -47,6 +47,7 @@
         <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
         <property name="adyenMultibancoDeadline" type="java.lang.String" />
         <property name="adyenMultibancoReference" type="java.lang.String" />
+        <property name="adyenPosReceipt" type="java.lang.String" />
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
@@ -78,6 +79,7 @@
         <property name="adyenMultibancoAmount" type="java.math.BigDecimal" />
         <property name="adyenMultibancoDeadline" type="String" />
         <property name="adyenMultibancoReference" type="String" />
+        <property name="adyenPosReceipt" type="String" />
     </bean>
 
 </beans>

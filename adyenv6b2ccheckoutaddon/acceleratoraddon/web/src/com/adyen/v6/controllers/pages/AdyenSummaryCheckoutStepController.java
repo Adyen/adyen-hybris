@@ -20,15 +20,31 @@
  */
 package com.adyen.v6.controllers.pages;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.model.nexo.ErrorConditionType;
-import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
@@ -49,25 +65,6 @@ import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAYMENT_DATA;
@@ -206,7 +203,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     return redirectToOrderConfirmationPage(orderData);
                 } catch (AdyenNonAuthorizedPaymentException nx) {
                     LOGGER.debug("AdyenNonAuthorizedPaymentException", nx);
-                    errorMessage = handleNonAuthorizedPosPayment(nx.getTerminalApiResponse());
+                    errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(nx.getTerminalApiResponse());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -215,7 +212,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.error("API exception " + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
-                errorMessage = handleNonAuthorizedPosPayment(e.getTerminalApiResponse());
+                errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(e.getTerminalApiResponse());
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
@@ -534,69 +531,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return invalid;
     }
 
-    private String handleNonAuthorizedPosPayment(TerminalAPIResponse terminalApiResponse) {
-        String errorMessage;
-
-        if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getPaymentResponse() != null) {
-            ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse().getPaymentResponse().getResponse().getErrorCondition();
-            errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
-        } else if (terminalApiResponse.getSaleToPOIResponse() != null && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse() != null
-        && terminalApiResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse() != null) {
-            ErrorConditionType errorCondition = terminalApiResponse.getSaleToPOIResponse()
-                                                                   .getTransactionStatusResponse()
-                                                                   .getRepeatedMessageResponse()
-                                                                   .getRepeatedResponseMessageBody()
-                                                                   .getPaymentResponse()
-                                                                   .getResponse()
-                                                                   .getErrorCondition();
-            errorMessage = getErrorMessageByPosErrorCondition(errorCondition);
-        } else {
-            // probably SaleToPOIRequest, that means terminal unreachable, return the response as error
-            errorMessage = "checkout.error.authorization.pos.configuration";
-        }
-
-        return errorMessage;
-    }
-
-    private String getErrorMessageByPosErrorCondition(ErrorConditionType errorCondition) {
-        LOGGER.debug("getErrorMessageByPosErrorCondition: " + errorCondition);
-
-        String errorMessage;
-
-        switch (errorCondition) {
-            case ABORTED:
-            case CANCEL:
-                errorMessage = "checkout.error.authorization.payment.cancelled";
-                break;
-            case BUSY:
-            case IN_PROGRESS:
-                errorMessage = "checkout.error.authorization.pos.busy";
-                break;
-            case INVALID_CARD:
-            case NOT_ALLOWED:
-            case PAYMENT_RESTRICTION:
-                errorMessage = "checkout.error.authorization.transaction.not.permitted";
-                break;
-            case REFUSAL:
-                errorMessage = "checkout.error.authorization.payment.refused";
-                break;
-            case DEVICE_OUT:
-            case MESSAGE_FORMAT:
-            case NOT_FOUND:
-            case UNAVAILABLE_DEVICE:
-            case UNAVAILABLE_SERVICE:
-            case UNREACHABLE_HOST:
-                errorMessage = "checkout.error.authorization.pos.configuration";
-                break;
-            case WRONG_PIN:
-                errorMessage = "checkout.error.authorization.pos.pin";
-                break;
-            default:
-                errorMessage = "checkout.error.authorization.payment.error";
-        }
-
-        return errorMessage;
-    }
 
     @RequestMapping(value = "/back", method = RequestMethod.GET)
     @RequireHardLogIn
