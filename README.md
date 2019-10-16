@@ -136,7 +136,7 @@ https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment
 is3DS2allowed = false
 ```
 ## POS Timeout configuration
-POS timeout (time calcualted since initiating a payment) is max time to keep terminal connection open. It is set to 130 seconds by default already. If you want to change it, please add following property in local.properties file, build your environment and restart the server. (Change 130 to your desired time, in seconds).
+POS timeout (time calculated since initiating a payment) is max time to keep terminal connection open. It is set to 130 seconds by default already. If you want to change it, please add following property in local.properties file, build your environment and restart the server. (Change 130 to your desired time, in seconds).
 ```
 pos.totaltimeout = 130
 ```
