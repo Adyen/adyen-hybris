@@ -1134,7 +1134,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 }
             }
         }
-        return null;
+
+        //probably returned SaleToPOIRequest, that means terminal unreachable, return the response as error
+        throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
     }
 
     private boolean isPosTimedOut(HttpServletRequest request) {
