@@ -174,39 +174,42 @@ public class TerminalAPIUtil {
     public static String getErrorMessageByPosErrorCondition(ErrorConditionType errorCondition) {
         LOGGER.debug("getErrorMessageByPosErrorCondition: " + errorCondition);
 
-        String errorMessage;
+        String errorMessage = "checkout.error.authorization.payment.error";
 
-        switch (errorCondition) {
-            case ABORTED:
-            case CANCEL:
-                errorMessage = "checkout.error.authorization.payment.cancelled";
-                break;
-            case BUSY:
-            case IN_PROGRESS:
-                errorMessage = "checkout.error.authorization.pos.busy";
-                break;
-            case INVALID_CARD:
-            case NOT_ALLOWED:
-            case PAYMENT_RESTRICTION:
-                errorMessage = "checkout.error.authorization.transaction.not.permitted";
-                break;
-            case REFUSAL:
-                errorMessage = "checkout.error.authorization.payment.refused";
-                break;
-            case DEVICE_OUT:
-            case MESSAGE_FORMAT:
-            case NOT_FOUND:
-            case UNAVAILABLE_DEVICE:
-            case UNAVAILABLE_SERVICE:
-            case UNREACHABLE_HOST:
-                errorMessage = "checkout.error.authorization.pos.configuration";
-                break;
-            case WRONG_PIN:
-                errorMessage = "checkout.error.authorization.pos.pin";
-                break;
-            default:
-                errorMessage = "checkout.error.authorization.payment.error";
+        if (errorCondition != null) {
+            switch (errorCondition) {
+                case ABORTED:
+                case CANCEL:
+                    errorMessage = "checkout.error.authorization.payment.cancelled";
+                    break;
+                case BUSY:
+                case IN_PROGRESS:
+                    errorMessage = "checkout.error.authorization.pos.busy";
+                    break;
+                case INVALID_CARD:
+                case NOT_ALLOWED:
+                case PAYMENT_RESTRICTION:
+                    errorMessage = "checkout.error.authorization.transaction.not.permitted";
+                    break;
+                case REFUSAL:
+                    errorMessage = "checkout.error.authorization.payment.refused";
+                    break;
+                case DEVICE_OUT:
+                case MESSAGE_FORMAT:
+                case NOT_FOUND:
+                case UNAVAILABLE_DEVICE:
+                case UNAVAILABLE_SERVICE:
+                case UNREACHABLE_HOST:
+                    errorMessage = "checkout.error.authorization.pos.configuration";
+                    break;
+                case WRONG_PIN:
+                    errorMessage = "checkout.error.authorization.pos.pin";
+                    break;
+                default:
+                    errorMessage = "checkout.error.authorization.payment.error";
+            }
         }
+
         return errorMessage;
     }
 
