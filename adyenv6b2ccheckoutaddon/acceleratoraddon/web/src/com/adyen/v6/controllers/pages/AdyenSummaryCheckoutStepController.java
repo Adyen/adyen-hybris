@@ -203,7 +203,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                         totalTimeout = configurationService.getConfiguration().getInt(POS_TOTALTIMEOUT_KEY);
                     }
                     request.setAttribute("totalTimeout", totalTimeout);
-
                     OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
                     LOGGER.debug("Redirecting to confirmation!");
                     return redirectToOrderConfirmationPage(orderData);
