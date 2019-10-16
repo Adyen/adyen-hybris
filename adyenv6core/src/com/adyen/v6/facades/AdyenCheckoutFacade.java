@@ -210,7 +210,7 @@ public interface AdyenCheckoutFacade {
     PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 
     /**
-     * Ininiate POS Payment using Adyen Terminal API
+     * Initiate POS Payment using Adyen Terminal API
      */
     OrderData initiatePosPayment(HttpServletRequest request, CartData cartData) throws Exception;
 

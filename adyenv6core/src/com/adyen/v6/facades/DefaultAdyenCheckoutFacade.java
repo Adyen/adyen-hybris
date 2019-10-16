@@ -1070,7 +1070,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     /**
-     * Ininiate POS Payment using Adyen Terminal API
+     * Initiate POS Payment using Adyen Terminal API
      */
     @Override
     public OrderData initiatePosPayment(HttpServletRequest request, CartData cartData) throws Exception {
@@ -1096,7 +1096,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     /**
-     * Ininiate POS Payment using Adyen Terminal API
+     * Check POS Payment Status using Adyen Terminal API
      */
     @Override
     public OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception {

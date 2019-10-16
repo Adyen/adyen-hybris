@@ -49,8 +49,8 @@ var AdyenCheckoutHybris = (function () {
             }
 
             if ( paymentMethod === "pos" ) {
-                var terminalId = document.getElementById('p_method_adyen_hpp_pos_terminal').value;
-                if( terminalId === "" ) {
+                var terminalId = $( '#adyen_pos_terminal' );
+                if( terminalId.val() === "" ) {
                     window.alert("Please select a terminal");
                     return false;
                 }
@@ -98,7 +98,7 @@ var AdyenCheckoutHybris = (function () {
                 $( "#socialSecurityNumber" ).val( ssn.val() );
             }
 
-            var terminalId = $( '#p_method_adyen_hpp_' + paymentMethod + '_terminal' );
+            var terminalId = $( '#adyen_pos_terminal' );
             if ( terminalId ) {
                 $( "#terminalId" ).val( terminalId.val() );
             }

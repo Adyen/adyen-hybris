@@ -56,7 +56,7 @@
             <c:if test="${showTerminalList}">
                 <c:if test="${not empty connectedTerminalList}">
                     <label class="chckt-form-label chckt-form-label--full-width">
-                        <select class="chckt-select-box js-chckt-terminal-select-box" id="p_method_adyen_hpp_${brandCode}_terminal" name="${brandCode}">
+                        <select class="chckt-select-box js-chckt-terminal-select-box" id="adyen_pos_terminal" name="${brandCode}">
                             <option value="" label="SELECT YOUR TERMINAL"/>
                             <c:forEach items="${connectedTerminalList}" var="connectedTerminal">
                                 <option value="${connectedTerminal}">${connectedTerminal}</option>
