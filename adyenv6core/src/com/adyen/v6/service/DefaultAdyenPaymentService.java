@@ -425,7 +425,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     /**
-     * Send POS Payment Request using Adyen Terminal API
+     * Send POS Status Request using Adyen Terminal API
      */
     @Override
     public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String originalServiceId) throws Exception {
