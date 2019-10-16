@@ -207,10 +207,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     LOGGER.debug("Redirecting to confirmation!");
                     return redirectToOrderConfirmationPage(orderData);
                 } catch (AdyenNonAuthorizedPaymentException nx) {
-                    LOGGER.debug("AdyenNonAuthorizedPaymentException", nx);
+                    LOGGER.debug("AdyenNonAuthorizedPaymentException" , nx);
                     errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(nx.getTerminalApiResponse());
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error("Exception", ex);
                 }
 
             } catch (ApiException e) {
@@ -219,7 +219,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(e.getTerminalApiResponse());
             } catch (Exception e) {
-                LOGGER.error(ExceptionUtils.getStackTrace(e));
+                LOGGER.error("Exception", e);
             }
         } else {
             try {
