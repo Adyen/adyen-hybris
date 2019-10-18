@@ -873,7 +873,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartData cart = getCheckoutFacade().getCheckoutCart();
         final AddressData deliveryAddress = cart.getDeliveryAddress();
         String countryCode = deliveryAddress.getCountry().getIsocode();
-        if (cart.getAdyenPaymentMethod().equals(RATEPAY) && OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
+        if (RATEPAY.equals(cart.getAdyenPaymentMethod()) && OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
             showSocialSecurityNumber = true;
         }
         return showSocialSecurityNumber;
