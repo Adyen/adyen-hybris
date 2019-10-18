@@ -22,10 +22,12 @@ package com.adyen.v6.exceptions;
 
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.terminal.TerminalAPIResponse;
 
 public class AdyenNonAuthorizedPaymentException extends Exception {
     private PaymentResult paymentResult;
     private PaymentsResponse paymentsResponse;
+    private TerminalAPIResponse terminalApiResponse;
 
     public AdyenNonAuthorizedPaymentException(PaymentResult paymentResult) {
         this.paymentResult = paymentResult;
@@ -33,6 +35,10 @@ public class AdyenNonAuthorizedPaymentException extends Exception {
 
     public AdyenNonAuthorizedPaymentException(PaymentsResponse paymentsResponse) {
         this.paymentsResponse = paymentsResponse;
+    }
+
+    public AdyenNonAuthorizedPaymentException(TerminalAPIResponse terminalApiResponse) {
+        this.terminalApiResponse = terminalApiResponse;
     }
 
     public PaymentResult getPaymentResult() {
@@ -49,5 +55,13 @@ public class AdyenNonAuthorizedPaymentException extends Exception {
 
     public void setPaymentsResponse(PaymentsResponse paymentsResponse) {
         this.paymentsResponse = paymentsResponse;
+    }
+
+    public TerminalAPIResponse getTerminalApiResponse() {
+        return terminalApiResponse;
+    }
+
+    public void setTerminalApiResponse(TerminalAPIResponse terminalApiResponse) {
+        this.terminalApiResponse = terminalApiResponse;
     }
 }

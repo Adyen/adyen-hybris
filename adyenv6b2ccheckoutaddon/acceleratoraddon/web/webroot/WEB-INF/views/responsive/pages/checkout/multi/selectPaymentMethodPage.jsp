@@ -110,6 +110,7 @@
                             <form:hidden path="encryptedSecurityCode"/>
 
                             <form:hidden path="browserInfo"/>
+                            <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
@@ -150,6 +151,13 @@
                                             showFirstName="true"
                                             showLastName="true"
                                             countryCode="BR"
+                                    />
+                                </c:if>
+                                <c:if test="${not empty connectedTerminalList}">
+                                    <adyen:alternativeMethod
+                                            brandCode="pos"
+                                            name="POS"
+                                            showTerminalList="true"
                                     />
                                 </c:if>
                             </div>

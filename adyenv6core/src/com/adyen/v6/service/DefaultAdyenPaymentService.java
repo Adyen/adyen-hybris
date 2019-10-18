@@ -20,23 +20,6 @@
  */
 package com.adyen.v6.service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.Util.Util;
@@ -62,17 +45,44 @@ import com.adyen.model.recurring.DisableResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.terminal.ConnectedTerminalsRequest;
+import com.adyen.model.terminal.ConnectedTerminalsResponse;
+import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.Checkout;
 import com.adyen.service.CheckoutUtility;
 import com.adyen.service.Modification;
 import com.adyen.service.Payment;
+import com.adyen.service.PosPayment;
+import com.adyen.service.TerminalCloudAPI;
 import com.adyen.service.exception.ApiException;
+import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.v6.converters.PaymentMethodConverter;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
@@ -81,7 +91,12 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     private AdyenRequestFactory adyenRequestFactory;
     private Config config;
     private Client client;
+    private Config posConfig;
+    private Client posClient;
+
     private PaymentMethodConverter paymentMethodConverter;
+
+    private static final int POS_REQUEST_TIMEOUT = 25000;
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
 
@@ -100,7 +115,23 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
+        boolean isPosEnabled = baseStore.getAdyenPosEnabled();
+        if (isPosEnabled) {
+            String posApiKey = baseStore.getAdyenPosApiKey();
+            String posMerchantAccount = baseStore.getAdyenPosMerchantAccount();
+            posConfig = new Config();
+            posConfig.setApiKey(posApiKey);
+            posConfig.setMerchantAccount(posMerchantAccount);
+            posConfig.setReadTimeoutMillis(POS_REQUEST_TIMEOUT);
+            posConfig.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
+            posClient = new Client(posConfig);
 
+            if (isTestMode) {
+                posClient.setEnvironment(Environment.TEST, null);
+            } else {
+                posClient.setEnvironment(Environment.LIVE, null);
+            }
+        }
         Assert.notNull(merchantAccount);
 
         config = new Config();
@@ -134,6 +165,21 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         LOG.debug(paymentResult);
 
         return paymentResult;
+    }
+
+    @Override
+    public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
+        PosPayment posPayment = new PosPayment(posClient);
+        ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
+        connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
+        if (baseStore.getAdyenPosStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPosStoreId())) {
+            connectedTerminalsRequest.setStore(baseStore.getAdyenPosStoreId());
+        }
+        LOG.debug(connectedTerminalsRequest);
+        ConnectedTerminalsResponse connectedTerminalsResponse = posPayment.connectedTerminals(connectedTerminalsRequest);
+        LOG.debug(connectedTerminalsResponse);
+        return connectedTerminalsResponse;
+
     }
 
     @Override
@@ -359,6 +405,39 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         DateFormat df = new SimpleDateFormat("yyyyMMdd");
         Date today = Calendar.getInstance().getTime();
         return "https://live.adyen.com/hpp/js/df.js?v=" + df.format(today);
+    }
+
+    /**
+     * Send POS Payment Request using Adyen Terminal API
+     */
+    @Override
+    public TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception {
+        TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
+
+        RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosRecurringContractMode();
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartData, customer, recurringContractMode, serviceId);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
+        TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiResponse));
+        return terminalApiResponse;
+    }
+
+    /**
+     * Send POS Status Request using Adyen Terminal API
+     */
+    @Override
+    public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String originalServiceId) throws Exception {
+        TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
+
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartData, originalServiceId);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiRequest));
+        TerminalAPIResponse terminalApiResponse = terminalCloudAPI.sync(terminalApiRequest);
+
+        LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiResponse));
+        return terminalApiResponse;
     }
 
     public AdyenRequestFactory getAdyenRequestFactory() {
