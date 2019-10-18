@@ -1,0 +1,20 @@
+{
+  "SaleToPOIResponse": {
+    "MessageHeader": {
+      "ProtocolVersion": "3.0",
+      "MessageClass": "Service",
+      "MessageCategory": "TransactionStatus",
+      "MessageType": "Response",
+      "ServiceID": "1057464462",
+      "SaleID": "electronics",
+      "POIID": "V400m-346489243"
+    },
+    "TransactionStatusResponse": {
+      "Response": {
+        "AdditionalResponse": "status=Uncompleted%20transaction&tenderReference=93yV001571057440002&detailedStatus=TENDER_CREATED",
+        "Result": "Failure",
+        "ErrorCondition": "InProgress"
+      }
+    }
+  }
+}

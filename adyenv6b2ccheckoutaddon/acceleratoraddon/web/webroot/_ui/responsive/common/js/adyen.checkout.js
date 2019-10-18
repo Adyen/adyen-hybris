@@ -48,6 +48,14 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if ( paymentMethod === "pos" ) {
+                var terminalId = $( '#adyen_pos_terminal' );
+                if( terminalId.val() === "" ) {
+                    window.alert("Please select a terminal");
+                    return false;
+                }
+            }
+
             $( 'input[name="txvariant"]' ).remove();
 
             return true;
@@ -80,7 +88,6 @@ var AdyenCheckoutHybris = (function () {
          */
         setCustomPaymentMethodValues: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
-
             var dob = $( '#p_method_adyen_hpp_' + paymentMethod + '_dob' );
             if ( dob ) {
                 $( "#dob" ).val( dob.val() );
@@ -89,6 +96,11 @@ var AdyenCheckoutHybris = (function () {
             var ssn = $( '#p_method_adyen_hpp_' + paymentMethod + '_ssn' );
             if ( ssn ) {
                 $( "#socialSecurityNumber" ).val( ssn.val() );
+            }
+
+            var terminalId = $( '#adyen_pos_terminal' );
+            if ( terminalId ) {
+                $( "#terminalId" ).val( terminalId.val() );
             }
         },
 
@@ -189,6 +201,10 @@ var AdyenCheckoutHybris = (function () {
             } catch (e) {
                 console.log('Something went wrong trying to mount the iDEAL component: ${e}');
             }
+        },
+
+        showSpinner: function () {
+            document.getElementById("spinner_wrapper").style.display = "flex";
         }
     };
 })();

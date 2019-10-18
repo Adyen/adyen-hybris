@@ -20,22 +20,14 @@
  */
 package com.adyen.v6.factory;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
+import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
 import com.adyen.model.Address;
 import com.adyen.model.Amount;
-import com.adyen.model.Installments;
 import com.adyen.model.BrowserInfo;
+import com.adyen.model.Installments;
 import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
@@ -50,9 +42,18 @@ import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
+import com.adyen.model.nexo.AmountsReq;
+import com.adyen.model.nexo.DocumentQualifierType;
+import com.adyen.model.nexo.MessageCategoryType;
+import com.adyen.model.nexo.MessageReference;
+import com.adyen.model.nexo.PaymentTransaction;
+import com.adyen.model.nexo.SaleData;
+import com.adyen.model.nexo.TransactionIdentification;
+import com.adyen.model.nexo.TransactionStatusRequest;
 import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
+import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
@@ -64,13 +65,28 @@ import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
@@ -412,6 +428,69 @@ public class AdyenRequestFactory {
         abstractPaymentRequest.merchantAccount(merchantAccount).setBrowserInfoData(userAgent, acceptHeader).shopperIP(shopperIP);
 
         return abstractPaymentRequest;
+    }
+
+
+    public TerminalAPIRequest createTerminalAPIRequestForStatus(final CartData cartData, String originalServiceId) {
+        TransactionStatusRequest transactionStatusRequest = new TransactionStatusRequest();
+        transactionStatusRequest.setReceiptReprintFlag(true);
+
+        MessageReference messageReference = new MessageReference();
+        messageReference.setMessageCategory(MessageCategoryType.PAYMENT);
+        messageReference.setSaleID(cartData.getStore());
+        messageReference.setServiceID(originalServiceId);
+
+        transactionStatusRequest.setMessageReference(messageReference);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
+
+        String serviceId = Long.toString(System.currentTimeMillis() % 10000000000L);
+
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder(cartData.getStore(), serviceId, cartData.getAdyenTerminalId());
+        builder.withTransactionStatusRequest(transactionStatusRequest);
+
+        return builder.build();
+    }
+
+    public TerminalAPIRequest createTerminalAPIRequest(final CartData cartData, CustomerModel customer, RecurringContractMode recurringContractMode, String serviceId) throws Exception {
+        com.adyen.model.nexo.PaymentRequest paymentRequest = new com.adyen.model.nexo.PaymentRequest();
+
+        SaleData saleData = new SaleData();
+        TransactionIdentification transactionIdentification = new TransactionIdentification();
+        transactionIdentification.setTransactionID(cartData.getCode());
+        XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        transactionIdentification.setTimeStamp(timestamp);
+        saleData.setSaleTransactionID(transactionIdentification);
+
+        //Set recurring contract, if exists
+        if(customer != null) {
+            String shopperReference = customer.getCustomerID();
+            String shopperEmail = customer.getContactEmail();
+            Recurring recurringContract = getRecurringContractType(recurringContractMode);
+
+            if(recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
+                URIBuilder builder = new URIBuilder();
+                builder.addParameter("shopperEmail", shopperEmail);
+                builder.addParameter("shopperReference", shopperReference);
+                builder.addParameter("recurringContract", recurringContract.getContract().toString());
+                saleData.setSaleToAcquirerData(builder.build().getQuery());
+            }
+        }
+
+        paymentRequest.setSaleData(saleData);
+
+        PaymentTransaction paymentTransaction = new PaymentTransaction();
+        AmountsReq amountsReq = new AmountsReq();
+        amountsReq.setCurrency(cartData.getTotalPrice().getCurrencyIso());
+        amountsReq.setRequestedAmount(cartData.getTotalPrice().getValue());
+        paymentTransaction.setAmountsReq(amountsReq);
+
+        paymentRequest.setPaymentTransaction(paymentTransaction);
+
+        TerminalAPIRequestBuilder builder = new TerminalAPIRequestBuilder(cartData.getStore(), serviceId, cartData.getAdyenTerminalId());
+        builder.withPaymentRequest(paymentRequest);
+
+        return builder.build();
     }
 
     /**
