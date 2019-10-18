@@ -1,0 +1,67 @@
+{
+  "SaleToPOIResponse": {
+    "MessageHeader": {
+      "ProtocolVersion": "3.0",
+      "MessageClass": "Service",
+      "MessageCategory": "TransactionStatus",
+      "MessageType": "Response",
+      "ServiceID": "1058107493",
+      "SaleID": "electronics",
+      "POIID": "V400m-346489243"
+    },
+    "TransactionStatusResponse": {
+      "Response": {
+        "Result": "Success"
+      },
+      "MessageReference": {
+        "MessageCategory": "Payment",
+        "ServiceID": "1057984063",
+        "SaleID": "electronics"
+      },
+      "RepeatedMessageResponse": {
+        "RepeatedResponseMessageBody": {
+          "PaymentResponse": {
+            "Response": {
+              "AdditionalResponse": "tid=46489243&transactionType=GOODS_SERVICES&backendGiftcardIndicator=false&posadditionalamounts.originalAmountValue=800&posAmountGratuityValue=0&giftcardIndicator=false&store=MyStore&txtime=14%3a59%3a45&iso8601TxDate=2019-10-14T12%3a59%3a45.0000000%2b0000&posOriginalAmountValue=800&txdate=14-10-2019&shopperReference=16eebd8c-8c1b-48e3-b6e8-67734d960af5&shopperEmail=renato.martins%40adyen.com&merchantReference=00025003&pinBlockISOFormat=0&posadditionalamounts.originalAmountCurrency=EUR&posAuthAmountCurrency=EUR&message=126%20Shopper%20did%20not%20present%20card&posAmountCashbackValue=0&posAuthAmountValue=800",
+              "Result": "Failure",
+              "ErrorCondition": "Cancel"
+            },
+            "SaleData": {
+              "SaleTransactionID": {
+                "TransactionID": "00025003",
+                "TimeStamp": "2019-10-14T12:59:44.066Z"
+              }
+            },
+            "POIData": {
+              "POITransactionID": {
+                "TransactionID": "93yV001571057985004",
+                "TimeStamp": "2019-10-14T12:59:45.000Z"
+              },
+              "POIReconciliationID": "1000"
+            },
+            "PaymentResult": {
+              "PaymentInstrumentData": {
+                "CardData": {},
+                "PaymentInstrumentType": "Card"
+              },
+              "PaymentAcquirerData": {
+                "MerchantID": "TestMerchantRenatoTest",
+                "AcquirerPOIID": "V400m-346489243"
+              },
+              "OnlineFlag": true
+            }
+          }
+        },
+        "MessageHeader": {
+          "ProtocolVersion": "3.0",
+          "MessageClass": "Service",
+          "MessageCategory": "Payment",
+          "MessageType": "Response",
+          "ServiceID": "1057984063",
+          "SaleID": "electronics",
+          "POIID": "V400m-346489243"
+        }
+      }
+    }
+  }
+}

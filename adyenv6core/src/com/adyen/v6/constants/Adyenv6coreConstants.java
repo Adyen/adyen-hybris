@@ -31,7 +31,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "6.1.1";
+	public static final String PLUGIN_VERSION = "6.2.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
@@ -40,8 +40,8 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
 	final public static String PAYMENT_METHOD_BOLETO = "boleto";
 	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
-
 	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
+	final public static String PAYMENT_METHOD_POS = "pos";
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_AUTHORIZED = "AdyenAuthorized";

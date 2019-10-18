@@ -148,6 +148,9 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         paymentInfo.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         paymentInfo.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
 
+        //pos receipt
+        paymentInfo.setAdyenPosReceipt(paymentsResponse.getAdditionalDataByKey("pos.receipt"));
+
         modelService.save(paymentInfo);
 
         storeFraudReportFromPaymentsResponse(order, paymentsResponse);
