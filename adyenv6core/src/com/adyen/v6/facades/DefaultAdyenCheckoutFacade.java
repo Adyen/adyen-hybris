@@ -690,7 +690,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
         orderData.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
 
-        orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
+        if (paymentsResponse.getAdditionalData() != null) {
+            orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
+        }
 
         return orderData;
     }
