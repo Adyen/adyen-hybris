@@ -146,8 +146,15 @@ pos.totaltimeout = 130
  https://docs.adyen.com/developers/plugins/hybris
 
  ## Support
- You can create issues on our Magento Repository. In case of specific problems with your account, please contact
- support@adyen.com.
+ You can create issues in this repository. In case of specific problems with your account, please contact support@adyen.com.
+
+ ## Contributing
+ We strongly encourage you to join us in contributing to this repository so everyone can benefit from:
+ * New features and functionality
+ * Resolved bug fixes and issues
+ * Any general improvements
+
+ Read our [**contribution guidelines**](CONTRIBUTING.md) to find out how.
 
  ## License
  MIT license. For more information, see the LICENSE file.
