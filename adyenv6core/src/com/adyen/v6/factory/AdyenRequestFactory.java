@@ -89,6 +89,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
@@ -146,13 +147,13 @@ public class AdyenRequestFactory {
         }
 
         // OpenInvoice add required additional data
-        if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
+        if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())
+                || PAYMENT_METHOD_PAYPAL.contains(cartData.getAdyenPaymentMethod())) {
             paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
             setOpenInvoiceData(paymentRequest, cartData, customerModel);
 
             paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
         }
-
 
         //Set Paypal Express Checkout Shortcut parameters
         if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
@@ -361,6 +362,9 @@ public class AdyenRequestFactory {
             paymentMethod.setIssuer(cartData.getAdyenIssuerId());
         } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
             setOpenInvoiceData(paymentsRequest, cartData, customerModel);
+        } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
+            Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
+            paymentsRequest.setShopperName(shopperName);
         }
     }
 
@@ -529,8 +533,10 @@ public class AdyenRequestFactory {
             address.setPostalCode(addressData.getPostalCode());
         }
 
-        if (addressData.getRegion() != null && ! addressData.getRegion().getIsocode().isEmpty()) {
-            //State value will be updated later for boleto in boleto specific method.
+        //State value will be updated later for boleto in boleto specific method.
+        if (addressData.getRegion() != null && StringUtils.isNotEmpty(addressData.getRegion().getIsocodeShort())) {
+            address.setStateOrProvince(addressData.getRegion().getIsocodeShort());
+        } else if (addressData.getRegion() != null && StringUtils.isNotEmpty(addressData.getRegion().getIsocode())) {
             address.setStateOrProvince(addressData.getRegion().getIsocode());
         }
 
