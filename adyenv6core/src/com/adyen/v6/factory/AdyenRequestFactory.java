@@ -81,13 +81,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
+import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
@@ -357,8 +357,8 @@ public class AdyenRequestFactory {
         paymentsRequest.setPaymentMethod(paymentMethod);
         paymentMethod.setType(adyenPaymentMethod);
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
-        if (adyenPaymentMethod.equals(PAYMENT_METHOD_IDEAL)) {
-            paymentMethod.setIdealIssuer(cartData.getAdyenIssuerId());
+        if (ISSUER_PAYMENT_METHODS.contains(adyenPaymentMethod)) {
+            paymentMethod.setIssuer(cartData.getAdyenIssuerId());
         } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
             setOpenInvoiceData(paymentsRequest, cartData, customerModel);
         }

@@ -48,6 +48,14 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if ( ['eps','ideal'].includes(paymentMethod) ) {
+                var issuerIdField = document.getElementById('issuerId');
+                if( issuerIdField.value === "" ) {
+                    window.alert("Please select an issuer");
+                    return false;
+                }
+            }
+
             if ( paymentMethod === "pos" ) {
                 var terminalId = $( '#adyen_pos_terminal' );
                 if( terminalId.val() === "" ) {
@@ -200,6 +208,27 @@ var AdyenCheckoutHybris = (function () {
                 ideal.mount(idealNode);
             } catch (e) {
                 console.log('Something went wrong trying to mount the iDEAL component: ${e}');
+            }
+        },
+
+        initiateEps: function (epsDetails) {
+            var epsNode = document.getElementById('adyen_hpp_eps_container');
+            var eps = this.checkout.create('eps', {
+                details: epsDetails, // The array of issuers coming from the /paymentMethods api call
+                showImage: true, // Optional, defaults to true
+                onChange: handleOnChange // Gets triggered once the shopper selects an issuer
+            });
+
+            function handleOnChange(event) {
+                var issuerIdField = document.getElementById('issuerId');
+                var issuerId = event.data.paymentMethod.issuer;
+                issuerIdField.value = issuerId;
+            }
+
+            try {
+                eps.mount(epsNode);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the EPS component: ${e}');
             }
         },
 
