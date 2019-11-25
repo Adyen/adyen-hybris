@@ -1,5 +1,8 @@
 package com.adyen.v6.facade;
 
+import com.adyen.model.checkout.InputDetail;
+import com.adyen.model.checkout.Item;
+import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.ErrorConditionType;
@@ -15,6 +18,7 @@ import com.adyen.model.nexo.SaleToPOIResponse;
 import com.adyen.model.nexo.TransactionStatusResponse;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
+import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.DefaultAdyenCheckoutFacade;
@@ -27,6 +31,9 @@ import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.product.data.PriceData;
+import de.hybris.platform.commercefacades.user.data.AddressData;
+import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -34,6 +41,8 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import org.junit.Before;
@@ -42,12 +51,21 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_EPS;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -87,6 +105,10 @@ public class AdyenCheckoutFacadeTest {
     OrderRepository orderRepository;
     @Mock
     AdyenOrderService adyenOrderService;
+    @Mock
+    CommonI18NService commonI18NService;
+    @Mock
+    ModelService modelService;
 
     @Mock
     HttpServletRequest request;
@@ -96,6 +118,14 @@ public class AdyenCheckoutFacadeTest {
     PaymentsResponse paymentsResponse;
     @Mock
     OrderData orderData;
+    @Mock
+    BaseStoreModel baseStore;
+    @Mock
+    PriceData priceData;
+    @Mock
+    AddressData addressData;
+    @Mock
+    CountryData countryData;
 
     @Mock
     TerminalAPIResponse terminalApiResponse;
@@ -132,8 +162,48 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutCustomerStrategy.isAnonymousCheckout()).thenReturn(true);
         when(checkoutCustomerStrategy.getCurrentUserForCheckout()).thenReturn(new CustomerModel());
         when(request.getAttribute("originalServiceId")).thenReturn(SERVICE_ID);
-        when(baseStoreService.getCurrentBaseStore()).thenReturn(new BaseStoreModel());
+        when(baseStoreService.getCurrentBaseStore()).thenReturn(baseStore);
         when(adyenPaymentServiceFactory.createFromBaseStore(any())).thenReturn(adyenPaymentService);
+    }
+
+    @Test
+    public void testInitializeEpsCheckoutData() throws Exception {
+        when(checkoutFacade.getCheckoutCart()).thenReturn(cartData);
+        when(baseStore.getAdyenPosEnabled()).thenReturn(false);
+        when(cartData.getTotalPrice()).thenReturn(priceData);
+        when(priceData.getValue()).thenReturn(BigDecimal.TEN);
+        when(priceData.getCurrencyIso()).thenReturn("EUR");
+        when(cartData.getDeliveryAddress()).thenReturn(addressData);
+        when(addressData.getCountry()).thenReturn(countryData);
+        when(countryData.getIsocode()).thenReturn("NL");
+        when(commonI18NService.getCurrentLanguage()).thenReturn(null);
+        when(adyenPaymentService.getPaymentMethods(any(), any(), any(), any(), any())).thenReturn(Collections.singletonList(createEpsPaymentMethod()));
+        when(baseStore.getAdyenRecurringContractMode()).thenReturn(RecurringContractMode.NONE);
+        when(cartService.getSessionCart()).thenReturn(new CartModel());
+        when(cartData.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_EPS);
+
+        Model model = new ExtendedModelMap();
+        adyenCheckoutFacade.initializeCheckoutData(model);
+
+        verify(modelService).save(any());
+        assertTrue(model.containsAttribute(MODEL_SELECTED_PAYMENT_METHOD));
+        assertEquals(PAYMENT_METHOD_EPS, model.asMap().get(MODEL_SELECTED_PAYMENT_METHOD));
+        assertTrue(model.containsAttribute(MODEL_ISSUER_LISTS));
+        assertTrue(((Map<String, String>) model.asMap().get(MODEL_ISSUER_LISTS)).containsKey(PAYMENT_METHOD_EPS));
+    }
+
+    private PaymentMethod createEpsPaymentMethod() {
+        PaymentMethod paymentMethod = new PaymentMethod();
+        paymentMethod.setType(PAYMENT_METHOD_EPS);
+        InputDetail detail = new InputDetail();
+        detail.setKey("issuer");
+        detail.setType("select");
+        Item item = new Item();
+        item.setId(UUID.randomUUID().toString());
+        item.setName("FakeIssuer");
+        detail.addItemsItem(item);
+        paymentMethod.addDetailsItem(detail);
+        return paymentMethod;
     }
 
     @Test

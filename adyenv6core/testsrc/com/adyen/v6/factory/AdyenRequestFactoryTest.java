@@ -22,6 +22,7 @@ package com.adyen.v6.factory;
 
 import java.math.BigDecimal;
 
+import com.adyen.model.Name;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageHeader;
@@ -52,7 +53,9 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_EPS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -77,15 +80,21 @@ public class AdyenRequestFactoryTest {
     private static final String CURRENCY = "EUR";
     private static final String AMOUNT = "12.34";
     private static final String RECURRING_REFERENCE = "recurring_reference";
+    private static final String ISSUER_ID = "issuerId";
+    private static final String FIRST_NAME = "FirstName";
+    private static final String LAST_NAME = "LastName";
+    private static final String TITLE_CODE = "mr";
     //Request
     private static final String ACCEPT_HEADER = "Accept";
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static final String REMOTE_ADDRESS = "1.2.3.4";
     private static final String REQUEST_URL = "https://localhost:9002/electronics/en/checkout/multi/adyen/summary/placeOrder";
     private static final String REQUEST_URI = "/electronics/en/checkout/multi/adyen/summary/placeOrder";
+    private static final String RETURN_URL ="https://localhost:9002/electronics/en/checkout/multi/adyen/summary/hpp-adyen-response";
     //POS
     private static final String SERVICE_ID = "serviceId";
     private static final String TERMINAL_ID = "V400m-123456789";
+
 
     private AdyenRequestFactory adyenRequestFactory;
 
@@ -127,7 +136,6 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getCode()).thenReturn(CART_CODE);
         when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddressMock);
         when(cartDataMock.getPaymentInfo()).thenReturn(paymentInfoMock);
-        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
         when(cartDataMock.getStore()).thenReturn(STORE_NAME);
         when(cartDataMock.getAdyenTerminalId()).thenReturn(TERMINAL_ID);
 
@@ -158,8 +166,9 @@ public class AdyenRequestFactoryTest {
 
     @Test
     public void testAuthorise() throws Exception {
-        PaymentsRequest paymentsRequest;
+        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
+        PaymentsRequest paymentsRequest;
         //Test anonymous
         paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE);
 
@@ -202,7 +211,6 @@ public class AdyenRequestFactoryTest {
     }
 
     private void testRecurringOption(final RecurringContractMode recurringContractModeSetting, final Recurring.ContractEnum expectedRecurringContractMode) {
-
         PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest(MERCHANT_ACCOUNT, cartDataMock, requestMock, customerModelMock, recurringContractModeSetting);
 
         if (expectedRecurringContractMode == null) {
@@ -214,6 +222,41 @@ public class AdyenRequestFactoryTest {
         //when customer is set, shopperReference and Email should be set as well
         assertEquals(CUSTOMER_ID, paymentRequest.getShopperReference());
         assertEquals(CUSTOMER_EMAIL, paymentRequest.getShopperEmail());
+    }
+
+    @Test
+    public void testEpsPaymentRequest() throws Exception {
+        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_EPS);
+        when(cartDataMock.getAdyenReturnUrl()).thenReturn(RETURN_URL);
+        when(cartDataMock.getAdyenIssuerId()).thenReturn(ISSUER_ID);
+
+        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+
+        assertNotNull(paymentsRequest);
+        assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
+        assertNotNull(paymentsRequest.getPaymentMethod());
+        assertEquals(PAYMENT_METHOD_EPS, paymentsRequest.getPaymentMethod().getType());
+        assertEquals(ISSUER_ID, ((DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod()).getIssuer());
+    }
+
+    @Test
+    public void testPaypalPaymentRequest() throws Exception {
+        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_PAYPAL);
+        when(cartDataMock.getAdyenReturnUrl()).thenReturn(RETURN_URL);
+        when(deliveryAddressMock.getFirstName()).thenReturn(FIRST_NAME);
+        when(deliveryAddressMock.getLastName()).thenReturn(LAST_NAME);
+        when(deliveryAddressMock.getTitleCode()).thenReturn(TITLE_CODE);
+
+        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+
+        assertNotNull(paymentsRequest);
+        assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
+        assertNotNull(paymentsRequest.getPaymentMethod());
+        assertEquals(PAYMENT_METHOD_PAYPAL, paymentsRequest.getPaymentMethod().getType());
+        assertNotNull(paymentsRequest.getShopperName());
+        assertEquals(FIRST_NAME, paymentsRequest.getShopperName().getFirstName());
+        assertEquals(LAST_NAME, paymentsRequest.getShopperName().getLastName());
+        assertEquals(Name.GenderEnum.MALE, paymentsRequest.getShopperName().getGender());
     }
 
     @Test
