@@ -95,7 +95,7 @@
                 </div>
                 <multiCheckout:checkoutSteps checkoutSteps="${checkoutSteps}" progressBarId="${progressBarId}">
                     <jsp:body>
-                        <form:form method="post" commandName="adyenPaymentForm"
+                        <form:form method="post" modelAttribute="adyenPaymentForm"
                                    class="create_update_payment_form"
                                    id="adyen-encrypted-form" action="${selectPaymentMethod}">
 
