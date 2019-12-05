@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="place-order-form hidden-xs">
-                    <form:form action="${placeOrderUrl}" id="placeOrderForm1" modelAttribute="splaceOrderForm">
+                    <form:form action="${placeOrderUrl}" id="placeOrderForm1" modelAttribute="placeOrderForm">
                         <div class="checkbox">
                             <label> <form:checkbox id="Terms1" path="termsCheck" />
                                 <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
