@@ -36,13 +36,15 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
 	final public static String PAYMENT_METHOD_CC = "adyen_cc";
+	final public static String PAYMENT_METHOD_EPS = "eps";
 	final public static String PAYMENT_METHOD_IDEAL = "ideal";
 	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
 	final public static String PAYMENT_METHOD_BOLETO = "boleto";
 	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
 	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
 	final public static String PAYMENT_METHOD_POS = "pos";
-
+	final public static String PAYMENT_METHOD_PAYPAL = "paypal";
+	
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_AUTHORIZED = "AdyenAuthorized";
 	public static final String PROCESS_EVENT_ADYEN_REFUNDED = "AdyenRefunded";
@@ -81,5 +83,10 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(COUNTRY_CODE_DENMARK);
 		add(COUNTRY_CODE_FINLAND);
 		add(COUNTRY_CODE_NORWAY);
+	}});
+
+	public static final List<String> ISSUER_PAYMENT_METHODS = Collections.unmodifiableList(new ArrayList<String>() {{
+		add(PAYMENT_METHOD_IDEAL);
+		add(PAYMENT_METHOD_EPS);
 	}});
 }

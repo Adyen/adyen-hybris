@@ -20,18 +20,18 @@
  */
 package com.adyen.v6.security;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.http.HTTPException;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.Charset;
+import java.util.Base64;
 
 /**
  * Authenticates a request that is using Basic Authentication

@@ -20,28 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -97,6 +75,31 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
@@ -116,13 +119,13 @@ import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
 import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
 import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
+import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
@@ -183,7 +186,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_SHOW_COMBO_CARD = "showComboCard";
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
-    public static final String MODEL_IDEAL_ISSUER_LIST = "iDealissuerList";
+    public static final String MODEL_ISSUER_LISTS = "issuerLists";
     public static final String MODEL_CONNECTED_TERMINAL_LIST = "connectedTerminalList";
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
 
@@ -722,26 +725,28 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Set APMs from Adyen HPP Directory Lookup
         List<PaymentMethod> alternativePaymentMethods = new ArrayList<>();
-        String iDealissuerList = null;
+        Map<String, String> issuerLists = new HashMap<>();
         List<String> connectedTerminalList = null;
 
         try {
+            if (showPos()) {
+                connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
+            }
+
             alternativePaymentMethods = adyenPaymentService.getPaymentMethods(cartData.getTotalPrice().getValue(),
                                                                               cartData.getTotalPrice().getCurrencyIso(),
                                                                               cartData.getDeliveryAddress().getCountry().getIsocode(),
                                                                               getShopperLocale(),
                                                                               null);
-            PaymentMethod idealPaymentMethod = alternativePaymentMethods.stream()
-                                                                        .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && PAYMENT_METHOD_IDEAL.equals(paymentMethod.getType()))
-                                                                        .findFirst()
-                                                                        .orElse(null);
-            if (showPos()) {
-                connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
-            }
-
-            if (idealPaymentMethod != null) {
+            List<PaymentMethod> issuerPaymentMethods = alternativePaymentMethods.stream()
+                                                                        .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                                                                                && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
+                                                                        .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(issuerPaymentMethods)) {
                 Gson gson = new Gson();
-                iDealissuerList = gson.toJson(idealPaymentMethod.getDetails());
+                for (PaymentMethod paymentMethod : issuerPaymentMethods) {
+                    issuerLists.put(paymentMethod.getType(), gson.toJson(paymentMethod.getDetails()));
+                }
             }
 
             //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
@@ -810,8 +815,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_SHOW_POS, showPos());
         //Include connnected terminal List for POS
         model.addAttribute(MODEL_CONNECTED_TERMINAL_LIST, connectedTerminalList);
-        //Include Issuer List for iDEAL
-        model.addAttribute(MODEL_IDEAL_ISSUER_LIST, iDealissuerList);
+        //Include Issuer Lists
+        model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
         modelService.save(cartModel);
     }
 
@@ -822,9 +827,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 || paymentMethodType.equals("scheme")
                 || paymentMethodType.equals("bcmc")
                 || paymentMethodType.equals("bcmc_mobile_QR")
-                || paymentMethodType.equals(PAYMENT_METHOD_IDEAL)
                 || (paymentMethodType.contains("wechatpay") && ! paymentMethodType.equals("wechatpayWeb"))
-                || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO)) {
+                || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO)
+                || ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
         return false;

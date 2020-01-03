@@ -60,8 +60,12 @@
             AdyenCheckoutHybris.createDfValue();
 
 
-            <c:if test="${not empty iDealissuerList}">
-            AdyenCheckoutHybris.initiateIdeal(${iDealissuerList});
+            <c:if test="${not empty issuerLists['ideal']}">
+            AdyenCheckoutHybris.initiateIdeal(${issuerLists['ideal']});
+            </c:if>
+
+            <c:if test="${not empty issuerLists['eps']}">
+            AdyenCheckoutHybris.initiateEps(${issuerLists['eps']});
             </c:if>
 
             <c:forEach items="${storedCards}" var="storedCard">
@@ -91,7 +95,7 @@
                 </div>
                 <multiCheckout:checkoutSteps checkoutSteps="${checkoutSteps}" progressBarId="${progressBarId}">
                     <jsp:body>
-                        <form:form method="post" commandName="adyenPaymentForm"
+                        <form:form method="post" modelAttribute="adyenPaymentForm"
                                    class="create_update_payment_form"
                                    id="adyen-encrypted-form" action="${selectPaymentMethod}">
 
@@ -139,10 +143,17 @@
                                     />
                                 </c:forEach>
 
-                                <c:if test="${not empty iDealissuerList}">
+                                <c:if test="${not empty issuerLists['ideal']}">
                                     <adyen:alternativeMethod
                                             brandCode="ideal"
                                             name="iDEAL"
+                                    />
+                                </c:if>
+
+                                <c:if test="${not empty issuerLists['eps']}">
+                                    <adyen:alternativeMethod
+                                            brandCode="eps"
+                                            name="EPS"
                                     />
                                 </c:if>
 

@@ -82,14 +82,15 @@ import java.util.List;
 
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
+import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_IDEAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
@@ -148,13 +149,13 @@ public class AdyenRequestFactory {
         }
 
         // OpenInvoice add required additional data
-        if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())) {
+        if (OPENINVOICE_METHODS_API.contains(cartData.getAdyenPaymentMethod())
+                || PAYMENT_METHOD_PAYPAL.contains(cartData.getAdyenPaymentMethod())) {
             paymentRequest.selectedBrand(cartData.getAdyenPaymentMethod());
             setOpenInvoiceData(paymentRequest, cartData, customerModel);
 
             paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
         }
-
 
         //Set Paypal Express Checkout Shortcut parameters
         if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
@@ -397,10 +398,13 @@ public class AdyenRequestFactory {
         paymentsRequest.setPaymentMethod(paymentMethod);
         paymentMethod.setType(adyenPaymentMethod);
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
-        if (adyenPaymentMethod.equals(PAYMENT_METHOD_IDEAL)) {
-            paymentMethod.setIdealIssuer(cartData.getAdyenIssuerId());
+        if (ISSUER_PAYMENT_METHODS.contains(adyenPaymentMethod)) {
+            paymentMethod.setIssuer(cartData.getAdyenIssuerId());
         } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
             setOpenInvoiceData(paymentsRequest, cartData, customerModel);
+        } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
+            Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
+            paymentsRequest.setShopperName(shopperName);
         }
     }
 
@@ -569,8 +573,10 @@ public class AdyenRequestFactory {
             address.setPostalCode(addressData.getPostalCode());
         }
 
-        if (addressData.getRegion() != null && ! addressData.getRegion().getIsocode().isEmpty()) {
-            //State value will be updated later for boleto in boleto specific method.
+        //State value will be updated later for boleto in boleto specific method.
+        if (addressData.getRegion() != null && StringUtils.isNotEmpty(addressData.getRegion().getIsocodeShort())) {
+            address.setStateOrProvince(addressData.getRegion().getIsocodeShort());
+        } else if (addressData.getRegion() != null && StringUtils.isNotEmpty(addressData.getRegion().getIsocode())) {
             address.setStateOrProvince(addressData.getRegion().getIsocode());
         }
 
