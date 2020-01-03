@@ -81,6 +81,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
+import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
@@ -100,6 +101,7 @@ public class AdyenRequestFactory {
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
+    private static final String OVERWRITE_BRAND_PROPERTY = "overwriteBrand";
 
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
         return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
@@ -199,7 +201,12 @@ public class AdyenRequestFactory {
 
         //For credit cards
         if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
-            updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
+            if (CARD_TYPE_DEBIT.equals(cartData.getAdyenCardType())) {
+                updatePaymentRequestForDC(paymentsRequest, cartData, recurringContractMode);
+            }
+            else {
+                updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
+            }
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
@@ -349,6 +356,39 @@ public class AdyenRequestFactory {
             DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
             paymentMethodDetails.setStoreDetails(true);
         }
+    }
+
+    private void updatePaymentRequestForDC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
+
+        Recurring recurringContract = getRecurringContractType(recurringContractMode);
+        Recurring.ContractEnum contractEnum = null;
+        if (recurringContract != null) {
+            contractEnum = recurringContract.getContract();
+        }
+
+        paymentsRequest.setEnableRecurring(false);
+        paymentsRequest.setEnableOneClick(false);
+
+        String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
+        String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
+        String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
+        if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) {
+            paymentsRequest.setEnableOneClick(true);
+        }
+        if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
+            paymentsRequest.addEncryptedCardData(encryptedCardNumber, encryptedExpiryMonth, encryptedExpiryYear, cartData.getAdyenEncryptedSecurityCode(), cartData.getAdyenCardHolder());
+        }
+
+        // Set storeDetails parameter when shopper selected to have his card details stored
+        if (cartData.getAdyenRememberTheseDetails()) {
+            DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
+            paymentMethodDetails.setStoreDetails(true);
+        }
+
+        String cardBrand = cartData.getAdyenCardBrand();
+        paymentsRequest.putAdditionalDataItem(OVERWRITE_BRAND_PROPERTY, "true");
+        paymentsRequest.setSelectedBrand(cardBrand);
+        paymentsRequest.getPaymentMethod().setType(cardBrand);
     }
 
     private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData, CustomerModel customerModel) {
