@@ -808,8 +808,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Include Boleto banks
         model.addAttribute(MODEL_SHOW_BOLETO, showBoleto());
 
+        //Enable combo card flag
         model.addAttribute(MODEL_SHOW_COMBO_CARD, showComboCard());
-
 
         //Include POS Enable configuration
         model.addAttribute(MODEL_SHOW_POS, showPos());
