@@ -107,6 +107,7 @@
                             <form:hidden path="dfValue"/>
                             <form:hidden path="cardHolder"/>
                             <form:hidden path="cardBrand"/>
+                            <form:hidden path="cardType"/>
 
                             <form:hidden path="encryptedCardNumber"/>
                             <form:hidden path="encryptedExpiryMonth"/>
@@ -127,7 +128,9 @@
                                 </c:forEach>
 
                                 <c:if test="${not empty allowedCards}">
-                                    <adyen:securedFieldsMethod showRememberTheseDetails="${showRememberTheseDetails}"/>
+                                    <adyen:securedFieldsMethod
+                                            showRememberTheseDetails="${showRememberTheseDetails}"
+                                            showComboCard="${showComboCard}"/>
                                 </c:if>
 
                                     <%--to-do populate issuers and rest of items via checkout components--%>
