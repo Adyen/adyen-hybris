@@ -183,6 +183,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_SHOW_SOCIAL_SECURITY_NUMBER = "showSocialSecurityNumber";
     public static final String MODEL_SHOW_BOLETO = "showBoleto";
     public static final String MODEL_SHOW_POS = "showPos";
+    public static final String MODEL_SHOW_COMBO_CARD = "showComboCard";
     public static final String CHECKOUT_SHOPPER_HOST_TEST = "checkoutshopper-test.adyen.com";
     public static final String CHECKOUT_SHOPPER_HOST_LIVE = "checkoutshopper-live.adyen.com";
     public static final String MODEL_ISSUER_LISTS = "issuerLists";
@@ -806,6 +807,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include Boleto banks
         model.addAttribute(MODEL_SHOW_BOLETO, showBoleto());
+
+        //Enable combo card flag
+        model.addAttribute(MODEL_SHOW_COMBO_CARD, showComboCard());
+
         //Include POS Enable configuration
         model.addAttribute(MODEL_SHOW_POS, showPos());
         //Include connnected terminal List for POS
@@ -846,6 +851,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return "BRL".equals(currency) && "BR".equals(country);
     }
 
+    @Override
+    public boolean showComboCard() {
+        CartData cartData = getCheckoutFacade().getCheckoutCart();
+        String currency = cartData.getTotalPrice().getCurrencyIso();
+        return "BRL".equals(currency);
+    }
     @Override
     public boolean showPos() {
         BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
@@ -921,6 +932,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //pos field(s)
         paymentInfo.setAdyenTerminalId(adyenPaymentForm.getTerminalId());
+
+        //combo card fields
+        paymentInfo.setCardType(adyenPaymentForm.getCardType());
+        paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
 
         modelService.save(paymentInfo);
 

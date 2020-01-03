@@ -48,7 +48,7 @@ public class AdyenPaymentForm {
     private String encryptedSecurityCode;
     private String cardBrand;
     private String cardHolder;
-
+    private String cardType;
     private String selectedReference;
     private int installments;
 
@@ -252,6 +252,14 @@ public class AdyenPaymentForm {
         this.terminalId = terminalId;
     }
 
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -263,6 +271,7 @@ public class AdyenPaymentForm {
         sb.append("    encryptedExpiryYear isEmpty?: ").append(StringUtils.isEmpty(encryptedExpiryYear)).append("\n");
         sb.append("    encryptedSecurityCode isEmpty?: ").append(StringUtils.isEmpty(encryptedSecurityCode)).append("\n");
         sb.append("    cardHolder: ").append(Util.toIndentedString(cardHolder)).append("\n");
+        sb.append("    cardType: ").append(Util.toIndentedString(cardType)).append("\n");
         sb.append("    installments: ").append(Util.toIndentedString(installments)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");

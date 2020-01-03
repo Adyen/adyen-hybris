@@ -1,5 +1,15 @@
 var AdyenCheckoutHybris = (function () {
     'use strict';
+
+    var CardBrand = {
+        Visa: 'visa',
+        MasterCard: 'mc',
+        Elo: 'elo',
+        Maestro: 'maestro',
+        Electron: 'electron',
+        EloDebit: 'elodebit'
+    };
+
     return {
         oneClickForms: [],
         dobDateFormat: "yy-mm-dd",
@@ -15,6 +25,34 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( browserData ) );
         },
 
+        convertCardBrand: function () {
+            var cardBrand = this.card.state.brand;
+
+            if ( cardBrand === CardBrand.Visa ) {
+                return CardBrand.Electron;
+            }
+
+            if ( cardBrand === CardBrand.MasterCard ) {
+                return CardBrand.Maestro;
+            }
+            if ( cardBrand === CardBrand.Elo ) {
+                return CardBrand.EloDebit;
+            }
+        },
+
+        isValidBrandType: function () {
+            var cardBrand = this.card.state.brand;
+            return cardBrand === CardBrand.Visa || cardBrand === CardBrand.MasterCard || cardBrand === CardBrand.Elo;
+        },
+
+        getCardType: function () {
+            return $( '#adyen_combo_card_type' ).val();
+        },
+
+        isDebitCard: function () {
+            return this.getCardType() === 'debit';
+        },
+
         validateForm: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
 
@@ -25,8 +63,11 @@ var AdyenCheckoutHybris = (function () {
 
             // Check if it is a valid card and encrypt
             if ( paymentMethod === "adyen_cc" ) {
-                if (!this.card.isValid) {
-                    window.alert('This credit card is not allowed');
+                var isInvalidCard = !this.card.isValid ||
+                    (this.isDebitCard() && !this.isValidBrandType());
+
+                if ( isInvalidCard ) {
+                    window.alert( 'This ' + this.getCardType() + ' card is not allowed' );
                     return false;
                 }
                 this.copyCardData();
@@ -79,6 +120,10 @@ var AdyenCheckoutHybris = (function () {
             if(this.card.data.storePaymentMethod!=null){
             $( 'input[name="rememberTheseDetails"]' ).val( this.card.data.storePaymentMethod );}
 
+            if ( this.isDebitCard() ) {
+                $( 'input[name="cardBrand"]' ).val( this.convertCardBrand() );
+                $( 'input[name="cardType"]' ).val( this.getCardType() );
+            }
         },
 
         copyOneClickCardData: function ( recurringReference, cvc ) {

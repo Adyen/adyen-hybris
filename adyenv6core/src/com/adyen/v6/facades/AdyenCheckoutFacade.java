@@ -179,6 +179,7 @@ public interface AdyenCheckoutFacade {
      */
     boolean showBoleto();
 
+    boolean showComboCard();
     /**
      * Returns whether POS should be shown as an available payment method on the checkout page
      */
