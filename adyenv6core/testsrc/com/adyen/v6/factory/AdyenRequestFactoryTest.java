@@ -26,9 +26,9 @@ import com.adyen.model.Name;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageHeader;
-import com.adyen.model.nexo.MessageReference;
 import com.adyen.model.nexo.SaleData;
 import com.adyen.model.nexo.TransactionStatusRequest;
+import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -274,10 +274,10 @@ public class AdyenRequestFactoryTest {
 
         assertNotNull(terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData());
 
-        String saleToAcquirerData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData();
-        assertTrue(saleToAcquirerData.contains("recurringContract=" + Recurring.ContractEnum.ONECLICK_RECURRING.toString()));
-        assertTrue(saleToAcquirerData.contains("shopperEmail=" + CUSTOMER_EMAIL));
-        assertTrue(saleToAcquirerData.contains("shopperReference=" + CUSTOMER_ID));
+        SaleToAcquirerData saleToAcquirerData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData();
+        assertTrue(saleToAcquirerData.getRecurringContract().equals( Recurring.ContractEnum.ONECLICK_RECURRING.toString()));
+        assertTrue(saleToAcquirerData.getShopperEmail().equals(CUSTOMER_EMAIL));
+        assertTrue(saleToAcquirerData.getShopperReference().equals(CUSTOMER_ID));
     }
 
     private void validateTerminalApiPaymentRequest(TerminalAPIRequest terminalApiRequest) {
