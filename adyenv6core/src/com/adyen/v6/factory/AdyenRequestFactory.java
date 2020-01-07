@@ -53,6 +53,7 @@ import com.adyen.model.nexo.TransactionStatusRequest;
 import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
+import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -67,7 +68,6 @@ import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -513,11 +513,12 @@ public class AdyenRequestFactory {
             Recurring recurringContract = getRecurringContractType(recurringContractMode);
 
             if(recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
-                URIBuilder builder = new URIBuilder();
-                builder.addParameter("shopperEmail", shopperEmail);
-                builder.addParameter("shopperReference", shopperReference);
-                builder.addParameter("recurringContract", recurringContract.getContract().toString());
-                saleData.setSaleToAcquirerData(builder.build().getQuery());
+                SaleToAcquirerData saleToAcquirerData = new SaleToAcquirerData();
+                saleToAcquirerData.setShopperEmail(shopperEmail);
+                saleToAcquirerData.setShopperReference(shopperReference);
+                saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
+                saleData.setSaleToAcquirerData(saleToAcquirerData);
+
             }
         }
 
