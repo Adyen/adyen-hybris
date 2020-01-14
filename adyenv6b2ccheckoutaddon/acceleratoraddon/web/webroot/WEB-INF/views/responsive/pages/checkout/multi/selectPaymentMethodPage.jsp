@@ -40,7 +40,6 @@
                     return false;
                 }
                 AdyenCheckoutHybris.setCustomPaymentMethodValues();
-                AdyenCheckoutHybris.setBrowserData();
 
                 $( "#adyen-encrypted-form" ).submit();
             } );
