@@ -511,15 +511,15 @@ public class AdyenRequestFactory {
             String shopperReference = customer.getCustomerID();
             String shopperEmail = customer.getContactEmail();
             Recurring recurringContract = getRecurringContractType(recurringContractMode);
+            SaleToAcquirerData saleToAcquirerData = new SaleToAcquirerData();
 
-            if(recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
-                SaleToAcquirerData saleToAcquirerData = new SaleToAcquirerData();
+            if (recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
                 saleToAcquirerData.setShopperEmail(shopperEmail);
                 saleToAcquirerData.setShopperReference(shopperReference);
                 saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
-                saleData.setSaleToAcquirerData(saleToAcquirerData);
-
             }
+            updateApplicationInfo(saleToAcquirerData.getApplicationInfo());
+            saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 
         paymentRequest.setSaleData(saleData);

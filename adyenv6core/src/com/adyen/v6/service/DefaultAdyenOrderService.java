@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.log4j.Logger;
 import com.adyen.model.FraudCheckResult;
 import com.adyen.model.FraudResult;
 import com.adyen.model.PaymentResult;
+import com.adyen.model.checkout.CheckoutPaymentsAction;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import de.hybris.platform.basecommerce.enums.FraudStatus;
@@ -142,11 +144,15 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         paymentInfo.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
         paymentInfo.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
 
-        //Multibanco data
-        paymentInfo.setAdyenMultibancoEntity(paymentsResponse.getMultibancoEntity());
-        paymentInfo.setAdyenMultibancoAmount(paymentsResponse.getMultibancoAmount());
-        paymentInfo.setAdyenMultibancoDeadline(paymentsResponse.getMultibancoDeadline());
-        paymentInfo.setAdyenMultibancoReference(paymentsResponse.getMultibancoReference());
+        CheckoutPaymentsAction action = paymentsResponse.getAction();
+
+        if(action!=null) {
+            //Multibanco data
+            paymentInfo.setAdyenMultibancoEntity(action.getEntity());
+            paymentInfo.setAdyenMultibancoAmount(BigDecimal.valueOf(action.getInitialAmount().getValue()));
+            paymentInfo.setAdyenMultibancoDeadline(action.getExpiresAt());
+            paymentInfo.setAdyenMultibancoReference(action.getReference());
+        }
 
         //pos receipt
         paymentInfo.setAdyenPosReceipt(paymentsResponse.getAdditionalDataByKey("pos.receipt"));

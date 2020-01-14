@@ -303,6 +303,13 @@ public class AdyenRequestFactoryTest {
         AmountsReq amountsReq = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getPaymentTransaction().getAmountsReq();
         assertEquals(CURRENCY, amountsReq.getCurrency());
         assertEquals(AMOUNT, amountsReq.getRequestedAmount().toString());
+
+        SaleToAcquirerData saleToAcquirerData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData();
+        assertNotNull(saleToAcquirerData.getApplicationInfo());
+        assertTrue("adyen-java-api-library".equals(saleToAcquirerData.getApplicationInfo().getAdyenLibrary().getName()));
+        assertTrue("adyen-hybris".equals(saleToAcquirerData.getApplicationInfo().getAdyenPaymentSource().getName()));
+        assertTrue("Hybris".equals(saleToAcquirerData.getApplicationInfo().getExternalPlatform().getName()));
+
     }
 
     @Test

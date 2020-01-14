@@ -30,7 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.StoredPaymentMethod;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
@@ -77,6 +79,8 @@ public interface AdyenPaymentService {
      * Get payment methods using /paymentMethods - Checkout API
      */
     List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference) throws IOException, ApiException;
+
+    PaymentMethodsResponse getPaymentMethodsResponse(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference) throws IOException, ApiException;
 
     /**
      * @deprecated use getPaymentMethods including shopperReference instead {@link #getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference)

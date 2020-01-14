@@ -17,9 +17,9 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.js"></script>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.css"/>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.css"/>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${originKey}" );
@@ -70,16 +70,21 @@
 
             <c:forEach items="${storedCards}" var="storedCard">
 
-            //convert java stored card object to javascript object
-            var storedCardJS= {
-                    type: "${storedCard.variant}",
-                    reference: "${storedCard.recurringDetailReference}",
-                    number: "${storedCard.card.number}",
-                    expiryMonth: "${storedCard.card.expiryMonth}",
-                    expiryYear: "${storedCard.card.expiryYear}"
+            var storedCardJS=
+                {
+                    storedPaymentMethodId: "${storedCard.id}",
+                    name: "${storedCard.name}",
+                    type: "${storedCard.type}",
+                    brand: "${storedCard.brand}",
+                    lastFour: "${storedCard.lastFour}",
+                    expiryMonth: "${storedCard.expiryMonth}",
+                    expiryYear: "${storedCard.expiryYear}",
+                    holderName: "${storedCard.holderName}",
+                    supportedShopperInteractions: "${storedCard.supportedShopperInteractions}",
+                    shopperEmail: "${storedCard.shopperEmail}"
                 };
-
             AdyenCheckoutHybris.initiateOneClickCard(storedCardJS);
+
             </c:forEach>
 
 
@@ -121,9 +126,9 @@
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">
                                     <adyen:storedCardMethod
-                                            variant="${storedCard.variant}"
-                                            cardReference="${storedCard.recurringDetailReference}"
-                                            cardNumber="${storedCard.card.number}"
+                                            variant="${storedCard.brand}"
+                                            cardReference="${storedCard.id}"
+                                            cardNumber="${storedCard.lastFour}"
                                     />
                                 </c:forEach>
 
