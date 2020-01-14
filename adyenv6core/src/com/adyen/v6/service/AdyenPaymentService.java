@@ -90,7 +90,9 @@ public interface AdyenPaymentService {
 
     /**
      * Retrieve stored cards from recurring contracts via Adyen API
+     * @deprecated use getPaymentMethodsResponse instead {@link #getPaymentMethodsResponse(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference)} ()
      */
+    @Deprecated
     List<RecurringDetail> getStoredCards(String customerId) throws IOException, ApiException;
 
     /**

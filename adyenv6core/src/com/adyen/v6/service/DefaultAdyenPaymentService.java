@@ -282,10 +282,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                  final String countryCode,
                                                  final String shopperLocale,
                                                  final String shopperReference) throws IOException, ApiException {
-        Checkout checkout = new Checkout(client);
 
         PaymentMethodsResponse response =getPaymentMethodsResponse(amount,currency, countryCode, shopperLocale, shopperReference);
-
         return response.getPaymentMethods();
     }
 
@@ -296,7 +294,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                  final String shopperLocale,
                                                  final String shopperReference) throws IOException, ApiException {
         Checkout checkout = new Checkout(client);
-
         PaymentMethodsRequest request = new PaymentMethodsRequest();
         request.merchantAccount(client.getConfig().getMerchantAccount()).amount(Util.createAmount(amount, currency)).countryCode(countryCode);
 
@@ -331,6 +328,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    @Deprecated
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
         if (customerId == null) {
             return new ArrayList<>();
