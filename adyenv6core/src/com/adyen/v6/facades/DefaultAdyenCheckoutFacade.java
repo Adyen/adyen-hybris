@@ -820,9 +820,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
-        if (paymentMethodType == null || paymentMethodType.isEmpty() || paymentMethodType.equals("scheme") || paymentMethodType.equals("bcmc") || paymentMethodType.equals("bcmc_mobile_QR") || (
-                paymentMethodType.contains("wechatpay")
-                        && ! paymentMethodType.equals("wechatpayWeb")) || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) || ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
+        if (paymentMethodType == null || paymentMethodType.isEmpty() ||
+                paymentMethodType.equals("scheme") ||
+                paymentMethodType.equals("bcmc") ||
+                paymentMethodType.equals("bcmc_mobile_QR") ||
+                (paymentMethodType.contains("wechatpay")
+                        && ! paymentMethodType.equals("wechatpayWeb")) ||
+                paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
+                ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
         return false;
