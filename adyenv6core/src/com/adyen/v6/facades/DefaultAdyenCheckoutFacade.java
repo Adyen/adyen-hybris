@@ -820,6 +820,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
+
         if (paymentMethodType == null || paymentMethodType.isEmpty() ||
                 paymentMethodType.equals("scheme") ||
                 paymentMethodType.equals("bcmc") ||
