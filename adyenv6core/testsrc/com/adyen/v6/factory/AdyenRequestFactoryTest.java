@@ -261,7 +261,7 @@ public class AdyenRequestFactoryTest {
 
     @Test
     public void testTerminalApiPaymentRequestAnonymous() throws Exception {
-        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, null, null, SERVICE_ID);
+        TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequest(cartDataMock, customerModelMock, null, SERVICE_ID);
 
         validateTerminalApiPaymentRequest(terminalApiRequest);
     }
@@ -307,7 +307,7 @@ public class AdyenRequestFactoryTest {
         SaleToAcquirerData saleToAcquirerData = terminalApiRequest.getSaleToPOIRequest().getPaymentRequest().getSaleData().getSaleToAcquirerData();
         assertNotNull(saleToAcquirerData.getApplicationInfo());
         assertTrue("adyen-java-api-library".equals(saleToAcquirerData.getApplicationInfo().getAdyenLibrary().getName()));
-        assertTrue("adyen-hybris".equals(saleToAcquirerData.getApplicationInfo().getAdyenPaymentSource().getName()));
+        assertTrue("adyen-hybris".equals(saleToAcquirerData.getApplicationInfo().getMerchantApplication().getName()));
         assertTrue("Hybris".equals(saleToAcquirerData.getApplicationInfo().getExternalPlatform().getName()));
 
     }

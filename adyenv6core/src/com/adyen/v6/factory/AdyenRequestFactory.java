@@ -237,7 +237,7 @@ public class AdyenRequestFactory {
             updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
         }
 
-        ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
+        ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
         return paymentsRequest;
     }
@@ -262,6 +262,28 @@ public class AdyenRequestFactory {
         return browserInfo;
     }
 
+    public ApplicationInfo updateApplicationInfoEcom(ApplicationInfo applicationInfo) {
+        updateApplicationInfo(applicationInfo);
+
+        CommonField adyenPaymentSource = new CommonField();
+        adyenPaymentSource.setName(PLUGIN_NAME);
+        adyenPaymentSource.setVersion(PLUGIN_VERSION);
+        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
+
+        return applicationInfo;
+    }
+
+    public ApplicationInfo updateApplicationInfoPos(ApplicationInfo applicationInfo) {
+        updateApplicationInfo(applicationInfo);
+
+        CommonField merchantApplication = new CommonField();
+        merchantApplication.setName(PLUGIN_NAME);
+        merchantApplication.setVersion(PLUGIN_VERSION);
+        applicationInfo.setMerchantApplication(merchantApplication);
+
+        return applicationInfo;
+    }
+
     public ApplicationInfo updateApplicationInfo(ApplicationInfo applicationInfo) {
         if (applicationInfo == null) {
             applicationInfo = new ApplicationInfo();
@@ -270,11 +292,6 @@ public class AdyenRequestFactory {
         externalPlatform.setName(PLATFORM_NAME);
         externalPlatform.setVersion(getPlatformVersion());
         applicationInfo.setExternalPlatform(externalPlatform);
-
-        CommonField adyenPaymentSource = new CommonField();
-        adyenPaymentSource.setName(PLUGIN_NAME);
-        adyenPaymentSource.setVersion(PLUGIN_VERSION);
-        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
 
         return applicationInfo;
     }
@@ -435,13 +452,13 @@ public class AdyenRequestFactory {
                                                      .merchantAccount(merchantAccount)
                                                      .originalReference(authReference)
                                                      .reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
     public CancelOrRefundRequest createCancelOrRefundRequest(final String merchantAccount, final String authReference, final String merchantReference) {
         CancelOrRefundRequest request = new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
@@ -450,7 +467,7 @@ public class AdyenRequestFactory {
                                                    .merchantAccount(merchantAccount)
                                                    .originalReference(authReference)
                                                    .reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
@@ -518,7 +535,7 @@ public class AdyenRequestFactory {
                 saleToAcquirerData.setShopperReference(shopperReference);
                 saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
             }
-            updateApplicationInfo(saleToAcquirerData.getApplicationInfo());
+            updateApplicationInfoPos(saleToAcquirerData.getApplicationInfo());
             saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 
