@@ -274,8 +274,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return modificationResult;
     }
 
-
-
     @Override
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
                                                  final String currency,
