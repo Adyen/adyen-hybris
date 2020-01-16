@@ -37,6 +37,7 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.fraud.model.FraudReportModel;
 import de.hybris.platform.fraud.model.FraudSymptomScoringModel;
 import de.hybris.platform.servicelayer.model.ModelService;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
 public class DefaultAdyenOrderService implements AdyenOrderService {
@@ -146,7 +147,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         CheckoutPaymentsAction action = paymentsResponse.getAction();
 
-        if(action!=null) {
+        if (action != null && PAYMENT_METHOD_MULTIBANCO.equals(action.getPaymentMethodType())) {
             //Multibanco data
             paymentInfo.setAdyenMultibancoEntity(action.getEntity());
             paymentInfo.setAdyenMultibancoAmount(BigDecimal.valueOf(action.getInitialAmount().getValue()));

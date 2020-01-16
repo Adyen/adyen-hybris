@@ -130,6 +130,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_AP
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
@@ -694,7 +695,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderData.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
 
         CheckoutPaymentsAction action = paymentsResponse.getAction();
-        if (action != null) {
+        if (action != null && PAYMENT_METHOD_MULTIBANCO.equals(action.getPaymentMethodType())) {
             orderData.setAdyenMultibancoEntity(action.getEntity());
             orderData.setAdyenMultibancoAmount(BigDecimal.valueOf(action.getInitialAmount().getValue()));
             orderData.setAdyenMultibancoDeadline(action.getExpiresAt());

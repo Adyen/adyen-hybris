@@ -263,8 +263,7 @@ public class AdyenRequestFactory {
     }
 
     public ApplicationInfo updateApplicationInfoEcom(ApplicationInfo applicationInfo) {
-        updateApplicationInfo(applicationInfo);
-
+        updateApplicationInfoPos(applicationInfo);
         CommonField adyenPaymentSource = new CommonField();
         adyenPaymentSource.setName(PLUGIN_NAME);
         adyenPaymentSource.setVersion(PLUGIN_VERSION);
@@ -274,17 +273,6 @@ public class AdyenRequestFactory {
     }
 
     public ApplicationInfo updateApplicationInfoPos(ApplicationInfo applicationInfo) {
-        updateApplicationInfo(applicationInfo);
-
-        CommonField merchantApplication = new CommonField();
-        merchantApplication.setName(PLUGIN_NAME);
-        merchantApplication.setVersion(PLUGIN_VERSION);
-        applicationInfo.setMerchantApplication(merchantApplication);
-
-        return applicationInfo;
-    }
-
-    public ApplicationInfo updateApplicationInfo(ApplicationInfo applicationInfo) {
         if (applicationInfo == null) {
             applicationInfo = new ApplicationInfo();
         }
@@ -292,6 +280,11 @@ public class AdyenRequestFactory {
         externalPlatform.setName(PLATFORM_NAME);
         externalPlatform.setVersion(getPlatformVersion());
         applicationInfo.setExternalPlatform(externalPlatform);
+
+        CommonField merchantApplication = new CommonField();
+        merchantApplication.setName(PLUGIN_NAME);
+        merchantApplication.setVersion(PLUGIN_VERSION);
+        applicationInfo.setMerchantApplication(merchantApplication);
 
         return applicationInfo;
     }
