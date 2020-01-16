@@ -3,8 +3,8 @@
 <html>
 <head>
 
-    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.js"></script>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.0.0/adyen.css"/>
+    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.js"></script>
+    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.css"/>
 
     <script type="text/javascript">
 

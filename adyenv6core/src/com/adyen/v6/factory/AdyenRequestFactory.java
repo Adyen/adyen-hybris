@@ -237,7 +237,7 @@ public class AdyenRequestFactory {
             updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
         }
 
-        ApplicationInfo applicationInfo = updateApplicationInfo(paymentsRequest.getApplicationInfo());
+        ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
         return paymentsRequest;
     }
@@ -262,7 +262,17 @@ public class AdyenRequestFactory {
         return browserInfo;
     }
 
-    public ApplicationInfo updateApplicationInfo(ApplicationInfo applicationInfo) {
+    public ApplicationInfo updateApplicationInfoEcom(ApplicationInfo applicationInfo) {
+        updateApplicationInfoPos(applicationInfo);
+        CommonField adyenPaymentSource = new CommonField();
+        adyenPaymentSource.setName(PLUGIN_NAME);
+        adyenPaymentSource.setVersion(PLUGIN_VERSION);
+        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
+
+        return applicationInfo;
+    }
+
+    public ApplicationInfo updateApplicationInfoPos(ApplicationInfo applicationInfo) {
         if (applicationInfo == null) {
             applicationInfo = new ApplicationInfo();
         }
@@ -271,10 +281,10 @@ public class AdyenRequestFactory {
         externalPlatform.setVersion(getPlatformVersion());
         applicationInfo.setExternalPlatform(externalPlatform);
 
-        CommonField adyenPaymentSource = new CommonField();
-        adyenPaymentSource.setName(PLUGIN_NAME);
-        adyenPaymentSource.setVersion(PLUGIN_VERSION);
-        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
+        CommonField merchantApplication = new CommonField();
+        merchantApplication.setName(PLUGIN_NAME);
+        merchantApplication.setVersion(PLUGIN_VERSION);
+        applicationInfo.setMerchantApplication(merchantApplication);
 
         return applicationInfo;
     }
@@ -435,13 +445,13 @@ public class AdyenRequestFactory {
                                                      .merchantAccount(merchantAccount)
                                                      .originalReference(authReference)
                                                      .reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
     public CancelOrRefundRequest createCancelOrRefundRequest(final String merchantAccount, final String authReference, final String merchantReference) {
         CancelOrRefundRequest request = new CancelOrRefundRequest().merchantAccount(merchantAccount).originalReference(authReference).reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
@@ -450,7 +460,7 @@ public class AdyenRequestFactory {
                                                    .merchantAccount(merchantAccount)
                                                    .originalReference(authReference)
                                                    .reference(merchantReference);
-        updateApplicationInfo(request.getApplicationInfo());
+        updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
 
@@ -511,15 +521,15 @@ public class AdyenRequestFactory {
             String shopperReference = customer.getCustomerID();
             String shopperEmail = customer.getContactEmail();
             Recurring recurringContract = getRecurringContractType(recurringContractMode);
+            SaleToAcquirerData saleToAcquirerData = new SaleToAcquirerData();
 
-            if(recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
-                SaleToAcquirerData saleToAcquirerData = new SaleToAcquirerData();
+            if (recurringContract != null && StringUtils.isNotEmpty(shopperReference) && StringUtils.isNotEmpty(shopperEmail)) {
                 saleToAcquirerData.setShopperEmail(shopperEmail);
                 saleToAcquirerData.setShopperReference(shopperReference);
                 saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
-                saleData.setSaleToAcquirerData(saleToAcquirerData);
-
             }
+            updateApplicationInfoPos(saleToAcquirerData.getApplicationInfo());
+            saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 
         paymentRequest.setSaleData(saleData);

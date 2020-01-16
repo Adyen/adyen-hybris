@@ -19,14 +19,10 @@ var AdyenCheckoutHybris = (function () {
         checkout: null,
         card: null,
         oneClickCards: {},
-
-        setBrowserData: function () {
-            var browserData = ThreedDS2Utils.getBrowserInfo();
-            $( 'input[name="browserInfo"]' ).val( JSON.stringify( browserData ) );
-        },
+        selectedCardBrand: null,
 
         convertCardBrand: function () {
-            var cardBrand = this.card.state.brand;
+            var cardBrand = this.selectedCardBrand;
 
             if ( cardBrand === CardBrand.Visa ) {
                 return CardBrand.Electron;
@@ -41,7 +37,7 @@ var AdyenCheckoutHybris = (function () {
         },
 
         isValidBrandType: function () {
-            var cardBrand = this.card.state.brand;
+            var cardBrand = this.selectedCardBrand;
             return cardBrand === CardBrand.Visa || cardBrand === CardBrand.MasterCard || cardBrand === CardBrand.Elo;
         },
 
@@ -81,7 +77,7 @@ var AdyenCheckoutHybris = (function () {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
-                if ( (oneClickCard.props.type == "bcmc") ) {
+                if ( (oneClickCard.props.brand == "bcmc") ) {
                     this.copyOneClickCardDataBCMC( recurringReference )
                 }
                 else {
@@ -124,16 +120,19 @@ var AdyenCheckoutHybris = (function () {
                 $( 'input[name="cardBrand"]' ).val( this.convertCardBrand() );
                 $( 'input[name="cardType"]' ).val( this.getCardType() );
             }
+                 $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
         copyOneClickCardData: function ( recurringReference, cvc ) {
             $( "#selectedReference" ).val( recurringReference );
             $( 'input[name="encryptedSecurityCode"]' ).val( cvc );
+            $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
 
         },
         copyOneClickCardDataBCMC: function ( recurringReference ) {
             $( "#selectedReference" ).val( recurringReference );
             $( 'input[name="cardBrand"]' ).val( "bcmc" );
+            $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
         /**
@@ -195,42 +194,29 @@ var AdyenCheckoutHybris = (function () {
             this.checkout = new AdyenCheckout( configuration );
         },
 
-        initiateOneClickCard: function(card) {
-            var oneClickCardNode = document.getElementById("one-click-card_" + card.reference);
-            var details = [{
-                key: "cardDetails.cvc",
-                type: "cvc"
-            }];
 
-            if(card.type=== "bcmc" )
-            {
-                details =[];
-            }
-            var oneClickCard = this.checkout.create('card', {
-                details: details,
-                storedDetails: {
-                    card: {
-                        expiryMonth: card.expiryMonth,
-                        expiryYear: card.expiryYear,
-                        number: card.number
-                    }
-                },
-                type: card.type
-            });
-
+    initiateOneClickCard: function(storedCard) {
+            var oneClickCardNode = document.getElementById("one-click-card_" + storedCard.storedPaymentMethodId);
+            var oneClickCard = this.checkout.create('card', storedCard);
             oneClickCard.mount(oneClickCardNode);
-            this.oneClickCards[card.reference] = oneClickCard;
+            this.oneClickCards[storedCard.storedPaymentMethodId] = oneClickCard;
         },
 
         initiateCard: function (allowedCards) {
+            var context = this;
             this.card = this.checkout.create( 'card', {
                 type: 'card',
                 hasHolderName: true,
                 holderNameRequired: true,
                 enableStoreDetails: true,
-                groupTypes: allowedCards
+                groupTypes: allowedCards,
+                onBrand: copyCardBrand
 
             });
+
+            function copyCardBrand(event) {
+                context.selectedCardBrand = event.brand;
+            }
 
             this.card.mount(document.getElementById('card-div'));
         },
