@@ -21,6 +21,7 @@
 package com.adyen.v6.model;
 
 import javax.servlet.http.HttpServletRequest;
+import com.adyen.model.applicationinfo.ApplicationInfo;
 
 public class RequestInfo {
 

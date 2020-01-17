@@ -34,6 +34,7 @@ import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.StoredPaymentMethod;
 import com.adyen.model.checkoututility.OriginKeysRequest;
 import com.adyen.model.checkoututility.OriginKeysResponse;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -279,8 +280,18 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                  final String countryCode,
                                                  final String shopperLocale,
                                                  final String shopperReference) throws IOException, ApiException {
-        Checkout checkout = new Checkout(client);
 
+        PaymentMethodsResponse response =getPaymentMethodsResponse(amount,currency, countryCode, shopperLocale, shopperReference);
+        return response.getPaymentMethods();
+    }
+
+    @Override
+    public PaymentMethodsResponse getPaymentMethodsResponse(final BigDecimal amount,
+                                                 final String currency,
+                                                 final String countryCode,
+                                                 final String shopperLocale,
+                                                 final String shopperReference) throws IOException, ApiException {
+        Checkout checkout = new Checkout(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
         request.merchantAccount(client.getConfig().getMerchantAccount()).amount(Util.createAmount(amount, currency)).countryCode(countryCode);
 
@@ -296,7 +307,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         PaymentMethodsResponse response = checkout.paymentMethods(request);
         LOG.debug(response);
 
-        return response.getPaymentMethods();
+        return response;
     }
 
     @Override
@@ -315,6 +326,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    @Deprecated
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
         if (customerId == null) {
             return new ArrayList<>();
