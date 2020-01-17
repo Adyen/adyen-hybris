@@ -265,7 +265,11 @@
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="cardBrand" type="java.lang.String">
-                    <description>Credit Card Type</description>
+                    <description>Card Brand Name</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="cardType" type="java.lang.String">
+                    <description>Card Type Credit or Debit </description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenBrowserInfo" type="java.lang.String">
