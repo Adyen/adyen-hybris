@@ -11,6 +11,13 @@
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
+<div id="spinner_wrapper" style="display: none">
+    <div id="spinner"></div>
+    <div id="spinner_text">
+        <p>Please wait while your payment is processed. Do not click back or refresh the page.</p>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-sm-6">
     	<div class="checkout-headline">
@@ -25,15 +32,15 @@
                     </div>
                 </div>
                 <div class="place-order-form hidden-xs">
-                    <form:form action="${placeOrderUrl}" id="placeOrderForm1" commandName="placeOrderForm">
+                    <form:form action="${placeOrderUrl}" id="placeOrderForm1" modelAttribute="placeOrderForm">
                         <div class="checkbox">
                             <label> <form:checkbox id="Terms1" path="termsCheck" />
                                 <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
                             </label>
                         </div>
 
-                        <button id="placeOrder" type="submit" class="btn btn-primary btn-place-order btn-block">
-                            <spring:theme code="checkout.summary.placeOrder" text="Place Order"/>
+                        <button id="placeOrder" type="submit" class="btn btn-primary btn-place-order btn-block" onclick="AdyenCheckoutHybris.showSpinner()">
+                            <spring:theme code="checkout.summary.placeOrder" text="Place Order" />
                         </button>
                     </form:form>
                 </div>

@@ -179,6 +179,12 @@ public interface AdyenCheckoutFacade {
      */
     boolean showBoleto();
 
+    boolean showComboCard();
+    /**
+     * Returns whether POS should be shown as an available payment method on the checkout page
+     */
+    boolean showPos();
+
     /**
      * Returns whether CC can be stored depending on the recurring contract settings
      */
@@ -203,4 +209,14 @@ public interface AdyenCheckoutFacade {
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
 
     PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
+
+    /**
+     * Initiate POS Payment using Adyen Terminal API
+     */
+    OrderData initiatePosPayment(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Check POS Payment status using Adyen Terminal API
+     */
+    OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
 }

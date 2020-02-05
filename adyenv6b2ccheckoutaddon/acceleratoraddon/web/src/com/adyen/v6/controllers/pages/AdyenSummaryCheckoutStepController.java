@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.controllers.pages;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
@@ -61,7 +63,7 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
-import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
@@ -78,9 +80,10 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTS
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
-import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_POS;
+import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
 
@@ -95,6 +98,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private static final String ADYEN_PAYLOAD = "payload";
     private static final String REDIRECT_RESULT = "redirectResult";
 
+    private static final int POS_TOTALTIMEOUT_DEFAULT = 130;
+    private static final String POS_TOTALTIMEOUT_KEY = "pos.totaltimeout";
+
     @Resource(name = "siteBaseUrlResolutionService")
     private SiteBaseUrlResolutionService siteBaseUrlResolutionService;
 
@@ -106,6 +112,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @Resource(name = "orderFacade")
     private OrderFacade orderFacade;
+
+    @Resource(name = "configurationService")
+    private ConfigurationService configurationService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
@@ -144,8 +153,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm,
                              final Model model,
                              final HttpServletRequest request,
-                             final RedirectAttributes redirectModel) throws CMSItemNotFoundException, // NOSONAR
-            InvalidCartException, CommerceCartModificationException {
+                             final RedirectAttributes redirectModel) throws CMSItemNotFoundException, CommerceCartModificationException {
         if (validateOrderForm(placeOrderForm, model)) {
             return enterStep(model, redirectModel);
         }
@@ -177,6 +185,43 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 }
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
+            }
+        } else if (PAYMENT_METHOD_POS.equals(adyenPaymentMethod)) {
+            try {
+                String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
+                request.setAttribute("originalServiceId", originalServiceId);
+                Long paymentStartTime = System.currentTimeMillis();
+                request.setAttribute("paymentStartTime", paymentStartTime);
+                OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
+                LOGGER.debug("Redirecting to confirmation!");
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (SocketTimeoutException e) {
+                try {
+                    LOGGER.debug("POS request timed out. Checking POS Payment status ");
+                    int totalTimeout = POS_TOTALTIMEOUT_DEFAULT;
+                    if(configurationService.getConfiguration().containsKey(POS_TOTALTIMEOUT_KEY)) {
+                        totalTimeout = configurationService.getConfiguration().getInt(POS_TOTALTIMEOUT_KEY);
+                    }
+                    request.setAttribute("totalTimeout", totalTimeout);
+                    OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
+                    LOGGER.debug("Redirecting to confirmation!");
+                    return redirectToOrderConfirmationPage(orderData);
+                } catch (AdyenNonAuthorizedPaymentException nx) {
+                    LOGGER.debug("AdyenNonAuthorizedPaymentException", nx);
+                    errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(nx.getTerminalApiResponse());
+                } catch (SocketTimeoutException to) {
+                    LOGGER.debug("POS Status request timed out. Returning error message.");
+                    errorMessage = "checkout.error.authorization.pos.configuration";
+                } catch (Exception ex) {
+                    LOGGER.error("Exception", ex);
+                }
+            } catch (ApiException e) {
+                LOGGER.error("API exception " + e.getError(), e);
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
+                errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(e.getTerminalApiResponse());
+            } catch (Exception e) {
+                LOGGER.error("Exception", e);
             }
         } else {
             try {
@@ -492,6 +537,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         return invalid;
     }
+
 
     @RequestMapping(value = "/back", method = RequestMethod.GET)
     @RequireHardLogIn

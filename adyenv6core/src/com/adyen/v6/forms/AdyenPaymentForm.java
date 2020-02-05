@@ -48,7 +48,7 @@ public class AdyenPaymentForm {
     private String encryptedSecurityCode;
     private String cardBrand;
     private String cardHolder;
-
+    private String cardType;
     private String selectedReference;
     private int installments;
 
@@ -71,6 +71,9 @@ public class AdyenPaymentForm {
 
     //3DS 2.0
     private String browserInfo;
+
+    //POS
+    private String terminalId;
 
     public String getBrowserInfo() {
         return browserInfo;
@@ -241,6 +244,22 @@ public class AdyenPaymentForm {
         this.installments = installments;
     }
 
+    public String getTerminalId() {
+        return terminalId;
+    }
+
+    public void setTerminalId(String terminalId) {
+        this.terminalId = terminalId;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -252,6 +271,7 @@ public class AdyenPaymentForm {
         sb.append("    encryptedExpiryYear isEmpty?: ").append(StringUtils.isEmpty(encryptedExpiryYear)).append("\n");
         sb.append("    encryptedSecurityCode isEmpty?: ").append(StringUtils.isEmpty(encryptedSecurityCode)).append("\n");
         sb.append("    cardHolder: ").append(Util.toIndentedString(cardHolder)).append("\n");
+        sb.append("    cardType: ").append(Util.toIndentedString(cardType)).append("\n");
         sb.append("    installments: ").append(Util.toIndentedString(installments)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
@@ -262,6 +282,7 @@ public class AdyenPaymentForm {
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");
         sb.append("    dfValue: ").append(Util.toIndentedString(dfValue)).append("\n");
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
+        sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
         sb.append("}");
         return sb.toString();

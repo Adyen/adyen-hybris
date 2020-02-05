@@ -135,13 +135,26 @@ https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment
 ```
 is3DS2allowed = false
 ```
+## POS Timeout configuration
+POS timeout (time calculated since initiating a payment) is max time to keep terminal connection open. It is set to 130 seconds by default already. If you want to change it, please add following property in local.properties file, build your environment and restart the server. (Change 130 to your desired time, in seconds).
+```
+pos.totaltimeout = 130
+```
+
 
  ## Documentation
  https://docs.adyen.com/developers/plugins/hybris
 
  ## Support
- You can create issues on our Magento Repository. In case of specific problems with your account, please contact
- support@adyen.com.
+ You can create issues in this repository. In case of specific problems with your account, please contact support@adyen.com.
+
+ ## Contributing
+ We strongly encourage you to join us in contributing to this repository so everyone can benefit from:
+ * New features and functionality
+ * Resolved bug fixes and issues
+ * Any general improvements
+
+ Read our [**contribution guidelines**](CONTRIBUTING.md) to find out how.
 
  ## License
  MIT license. For more information, see the LICENSE file.
