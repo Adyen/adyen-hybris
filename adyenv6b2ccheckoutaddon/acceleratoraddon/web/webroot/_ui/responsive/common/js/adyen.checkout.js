@@ -221,6 +221,37 @@ var AdyenCheckoutHybris = (function () {
             this.card.mount(document.getElementById('card-div'));
         },
 
+        initiateGenericCard: function (locale, originKey) {
+            var testResponse = JSON.stringify({"groups":[{"name":"Credit Card","types":["mc","visa","elo","amex","hipercard","maestro","diners","discover","cup","hiper","jcb"]}],"paymentMethods":[{"brands":["mc","visa","elo","amex","hipercard","maestro","diners","discover","cup","hiper","jcb"],"details":[{"key":"number","type":"text"},{"key":"expiryMonth","type":"text"},{"key":"expiryYear","type":"text"},{"key":"cvc","type":"text"},{"key":"holderName","optional":true,"type":"text"}],"name":"Credit Card","type":"scheme"},{"name":"Boleto","supportsRecurring":true,"type":"boleto"},{"name":"Boleto Bancario","supportsRecurring":true,"type":"boletobancario"},{"details":[{"key":"number","type":"text"},{"key":"expiryMonth","type":"text"},{"key":"expiryYear","type":"text"},{"key":"cvc","type":"text"},{"key":"holderName","optional":true,"type":"text"},{"key":"telephoneNumber","optional":true,"type":"text"}],"name":"ExpressPay","supportsRecurring":true,"type":"cup"},{"name":"Direct Debit Brazil - Bradesco","supportsRecurring":true,"type":"directdebit_BR_bradesco"},{"name":"Mercado Pago","supportsRecurring":true,"type":"mercadopago"},{"details":[{"key":"paywithgoogle.token","type":"payWithGoogleToken"}],"name":"Google Pay","supportsRecurring":true,"type":"paywithgoogle"},{"name":"UnionPay","supportsRecurring":true,"type":"unionpay"}]});
+            var cardConfiguration = JSON.stringify({
+                card: {
+                    type: 'card',
+                    hasHolderName: true,
+                    holderNameRequired: true,
+                    enableStoreDetails: true
+                },
+            });
+            var node = `
+                <adyen-checkout
+                    origin-key="${originKey}"
+                    locale="${locale}"
+                    environment="test"
+                    payment-methods='${testResponse}'
+                   payment-methods-configuration='${cardConfiguration}'        
+              >
+                    <adyen-payment-method-card></adyen-payment-method-card>
+                </adyen-checkout>
+            `;
+            $('#generic-component-div').append(node);
+            var cardComponent = document.querySelector('adyen-payment-method-card');
+
+            cardComponent.addEventListener('adyenChange', (function (event) {
+                this.card = event.detail.state;
+                console.log(this.card);
+            }).bind(this))
+
+        },
+
         initiateIdeal: function (idealDetails) {
             var idealNode = document.getElementById('adyen_hpp_ideal_container');
             var ideal = this.checkout.create('ideal', {

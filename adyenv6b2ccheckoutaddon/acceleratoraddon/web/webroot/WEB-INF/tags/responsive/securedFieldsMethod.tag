@@ -49,6 +49,7 @@
                 </div>
             </c:if>
             <div id="card-div"></div>
+            <div id="generic-component-div"></div>
         </div>
     </div>
 </div>

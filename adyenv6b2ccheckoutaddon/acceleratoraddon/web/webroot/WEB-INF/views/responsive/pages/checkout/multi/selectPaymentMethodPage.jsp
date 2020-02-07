@@ -20,9 +20,12 @@
         <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
         <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.css"/>
+        <script type="module" src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.esm.js"></script>
+              <script nomodule src="https://unpkg.com/generic-component@latest/dist/adyen-checkout/adyen-checkout.js"></script>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${originKey}" );
+            AdyenCheckoutHybris.initiateGenericCard("${shopperLocale}","${originKey}");
 
             <c:if test="${not empty allowedCards}">
             //Set the allowed cards
