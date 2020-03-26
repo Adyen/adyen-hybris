@@ -281,11 +281,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public void lockSessionCart() {
         getSessionService().setAttribute(SESSION_LOCKED_CART, cartService.getSessionCart());
         getSessionService().removeAttribute(SESSION_CART_PARAMETER_NAME);
-
-        //Refresh session for registered users
-        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
-            getCartService().getSessionCart();
-        }
     }
 
     @Override

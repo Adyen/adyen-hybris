@@ -48,6 +48,9 @@
 
 	<!--To support hasNoPaymentInfo for non credit cards-->
 	<alias name="adyenCheckoutFlowFacade" alias="checkoutFlowFacade"/>
-	<bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" />
+	<bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" >
+		<property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
+		<property name="cartConverter" ref="cartConverter"/>
+	</bean>
 
 	</beans>
