@@ -27,7 +27,7 @@ Required for the notifications:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
 ```
 
-Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe for 6.x OR b2c_b2b_acc_oms receipe for 1905) :
+Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe for 6.x and b2c_b2b_acc_oms receipe for 1905) :
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6ordermanagement"/>
 ```
