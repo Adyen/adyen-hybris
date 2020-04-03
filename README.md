@@ -8,7 +8,7 @@ The SAP Commerce integrates Adyen Checkout for all card payments and local/redir
 Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
 
 ## Requirements
-SAP Commerce (Hybris) version 6.x
+SAP Commerce (Hybris) version 6.x or 1905
 
 ## Installation
 
@@ -27,12 +27,12 @@ Required for the notifications:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
 ```
 
-Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe):
+Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe for 6.x and b2c_b2b_acc_oms recipe for 1905) :
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6ordermanagement"/>
 ```
 
-Additionally, required when using yacceleratorfulfilment (b2c_acc recipe):
+Additionally, required when using yacceleratorfulfilment (b2c_acc recipe for 6.x and b2c_acc_plus for 1905):
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6fulfilmentprocess"/>
 ```
