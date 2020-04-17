@@ -49,6 +49,7 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMe
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.core.model.user.AddressModel;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -120,6 +121,18 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    @Valid final AdyenPaymentForm adyenPaymentForm,
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
+
+        //todo add the model from the UI
+        AddressModel addressModel = new AddressModel();
+        addressModel.setFirstname("dummydata");
+        addressModel.setLastname("dummydata");
+        addressModel.setCompany("dummydata");
+        addressModel.setLine1("dummydata");
+        addressModel.setLine2("dummydata");
+        addressModel.setTown("dummydata");
+        addressModel.setPostalcode("dummydata");
+        addressModel.setPhone1("dummydata");
+        adyenPaymentForm.setAdyenBillingAddress(addressModel);
 
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
         if (bindingResult.hasErrors()) {

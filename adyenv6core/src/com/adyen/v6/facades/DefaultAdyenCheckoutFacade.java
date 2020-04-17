@@ -905,12 +905,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-        // Clone DeliveryAdress to BillingAddress
-        final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
-        clonedAddress.setBillingAddress(true);
-        clonedAddress.setOwner(paymentInfo);
-        paymentInfo.setBillingAddress(clonedAddress);
-
+        final AddressModel billingAddress = adyenPaymentForm.getAdyenBillingAddress();
+        billingAddress.setBillingAddress(true);
+        billingAddress.setOwner(paymentInfo);
+        paymentInfo.setBillingAddress(billingAddress);
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
 

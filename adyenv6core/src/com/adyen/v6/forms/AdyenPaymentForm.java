@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
+import de.hybris.platform.core.model.user.AddressModel;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 
@@ -74,6 +75,9 @@ public class AdyenPaymentForm {
 
     //POS
     private String terminalId;
+
+    //Billing address
+    private AddressModel adyenBillingAddress;
 
     public String getBrowserInfo() {
         return browserInfo;
@@ -260,6 +264,14 @@ public class AdyenPaymentForm {
         this.cardType = cardType;
     }
 
+    public AddressModel getAdyenBillingAddress() {
+        return adyenBillingAddress;
+    }
+
+    public void setAdyenBillingAddress(AddressModel adyenBillingAddress) {
+        this.adyenBillingAddress = adyenBillingAddress;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -284,6 +296,7 @@ public class AdyenPaymentForm {
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
+        sb.append("    billingAddress: ").append(Util.toIndentedString(adyenBillingAddress)).append("\n");
         sb.append("}");
         return sb.toString();
     }
