@@ -79,3 +79,17 @@ div#spinner_text p {
     width: 50%;
     padding: 20px;
 }
+.grid_block_a {
+    margin-right: 0;
+}
+
+div#section_break {
+    border-top: 1px solid #3276c7;
+    background: none repeat scroll 0 0 #0958bd;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px;
+    margin: 10px 0 5px;
+    clear: both;
+}

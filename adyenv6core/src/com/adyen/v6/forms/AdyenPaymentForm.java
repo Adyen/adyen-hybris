@@ -75,6 +75,9 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
+    private Boolean useDeliveryAddress;
+    private AddressForm billingAddress;
+
     public String getBrowserInfo() {
         return browserInfo;
     }
@@ -141,6 +144,22 @@ public class AdyenPaymentForm {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public AddressForm getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(AddressForm billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public Boolean getUseDeliveryAddress() {
+        return useDeliveryAddress;
+    }
+
+    public void setUseDeliveryAddress(Boolean useDeliveryAddress) {
+        this.useDeliveryAddress = useDeliveryAddress;
     }
 
     public Date getDob() {
@@ -284,6 +303,8 @@ public class AdyenPaymentForm {
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
+        sb.append("    useDeliveryAddress: ").append(Util.toIndentedString(useDeliveryAddress)).append("\n");
+        sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
         sb.append("}");
         return sb.toString();
     }

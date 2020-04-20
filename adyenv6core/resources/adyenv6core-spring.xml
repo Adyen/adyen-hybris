@@ -180,9 +180,20 @@
         <property name="adyenNotificationService" ref="adyenNotificationService" />
     </bean>
 
+    <alias name="defaultCountryConverter" alias="countryConverter"/>
+    <bean id="defaultCountryConverter" parent="abstractPopulatingConverter">
+        <property name="targetClass" value="de.hybris.platform.commercefacades.user.data.CountryData"/>
+        <property name="populators">
+            <list>
+                <ref bean="countryPopulator"/>
+            </list>
+        </property>
+    </bean>
+
 
     <alias name="defaultAdyenCheckoutFacade" alias="adyenCheckoutFacade" />
     <bean id="defaultAdyenCheckoutFacade" class="com.adyen.v6.facades.DefaultAdyenCheckoutFacade">
+        <property name="countryConverter" ref="countryConverter"/>
         <property name="baseStoreService" ref="baseStoreService"/>
         <property name="sessionService" ref="sessionService"/>
         <property name="cartService" ref="cartService"/>
