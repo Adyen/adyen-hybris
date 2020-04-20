@@ -42,6 +42,7 @@ import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
 import com.adyen.v6.model.RequestInfo;
@@ -52,6 +53,7 @@ import com.adyen.v6.service.AdyenTransactionService;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
+import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -62,6 +64,7 @@ import de.hybris.platform.commercefacades.user.data.RegionData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
+import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -81,6 +84,7 @@ import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -93,6 +97,7 @@ import java.math.BigDecimal;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -157,6 +162,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private FlexibleSearchService flexibleSearchService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private PosPaymentResponseConverter posPaymentResponseConverter;
+    private Converter<CountryModel, CountryData> countryConverter;
 
 
     @Resource(name = "i18NFacade")
@@ -822,14 +828,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
 
-        if (paymentMethodType == null || paymentMethodType.isEmpty() ||
-                paymentMethodType.equals("scheme") ||
-                paymentMethodType.equals("bcmc") ||
-                paymentMethodType.equals("bcmc_mobile_QR") ||
-                (paymentMethodType.contains("wechatpay")
-                        && ! paymentMethodType.equals("wechatpayWeb")) ||
-                paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
-                ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
+        if (paymentMethodType == null || paymentMethodType.isEmpty() || paymentMethodType.equals("scheme") || paymentMethodType.equals("bcmc") || paymentMethodType.equals("bcmc_mobile_QR") || (
+                paymentMethodType.contains("wechatpay")
+                        && ! paymentMethodType.equals("wechatpayWeb")) || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) || ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
         return false;
@@ -900,16 +901,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public PaymentInfoModel createPaymentInfo(final CartModel cartModel, AdyenPaymentForm adyenPaymentForm) {
+
         final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
         paymentInfo.setUser(cartModel.getUser());
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-        // Clone DeliveryAdress to BillingAddress
-        final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
-        clonedAddress.setBillingAddress(true);
-        clonedAddress.setOwner(paymentInfo);
-        paymentInfo.setBillingAddress(clonedAddress);
+        if (adyenPaymentForm.getUseDeliveryAddress() == true) {
+            // Clone DeliveryAdress to BillingAddress
+            final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
+            clonedAddress.setBillingAddress(true);
+            clonedAddress.setOwner(paymentInfo);
+            paymentInfo.setBillingAddress(clonedAddress);
+        } else {
+            AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
+            paymentInfo.setBillingAddress(billingAddress);
+            billingAddress.setOwner(paymentInfo);
+        }
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
@@ -938,7 +946,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
 
-        modelService.save(paymentInfo);
+        // modelService.save(paymentInfo);
 
         return paymentInfo;
     }
@@ -965,6 +973,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setOwner(cartModel.getOwner());
         paymentInfo.setAdyenTerminalId(paymentDetails.getTerminalId());
         paymentInfo.setAdyenInstallments(paymentDetails.getInstallments());
+        //   paymentInfo.setBillingAddress(paymentDetails.getBillingAddress());
         return paymentInfo;
     }
 
@@ -1009,6 +1018,44 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
         cartModel.setPaymentInfo(paymentInfo);
         modelService.save(cartModel);
+    }
+
+    @Override
+    public List<CountryData> getBillingCountries() {
+        final List<CountryData> countries = getCountryConverter().convertAll(getCommonI18NService().getAllCountries());
+        Collections.sort(countries, CountryComparator.INSTANCE);
+        return countries;
+    }
+
+    public AddressModel convertToAddressModel(final AddressForm addressForm) {
+        final AddressData addressData = new AddressData();
+        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIso());
+        addressData.setTitleCode(addressForm.getTitleCode());
+        addressData.setFirstName(addressForm.getFirstName());
+        addressData.setLastName(addressForm.getLastName());
+        addressData.setLine1(addressForm.getLine1());
+        addressData.setLine2(addressForm.getLine2());
+        addressData.setTown(addressForm.getTownCity());
+        addressData.setPostalCode(addressForm.getPostcode());
+        addressData.setBillingAddress(true);
+        addressData.setCountry(countryData);
+        // TODO: Region specific display of state or province
+        //   addressData.setPhone(addressForm.getPhone());
+
+        //        if (addressForm.getCountryIso() != null)
+        //        {
+        //            final CountryData countryData1 = getI18NFacade().getCountryForIsocode(countryData);
+        //            addressData.setCountry(countryData1);
+        //        }
+        //        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
+        //        {
+        //            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
+        //            addressData.setRegion(regionData);
+        //        }
+        final AddressModel billingAddress = getModelService().create(AddressModel.class);
+        getAddressReverseConverter().convert(addressData, billingAddress);
+
+        return billingAddress;
     }
 
     @Override
@@ -1324,5 +1371,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setPosPaymentResponseConverter(PosPaymentResponseConverter posPaymentResponseConverter) {
         this.posPaymentResponseConverter = posPaymentResponseConverter;
+    }
+
+    protected Converter<CountryModel, CountryData> getCountryConverter() {
+        return countryConverter;
+    }
+
+    @Required
+    public void setCountryConverter(final Converter<CountryModel, CountryData> countryConverter) {
+        this.countryConverter = countryConverter;
     }
 }

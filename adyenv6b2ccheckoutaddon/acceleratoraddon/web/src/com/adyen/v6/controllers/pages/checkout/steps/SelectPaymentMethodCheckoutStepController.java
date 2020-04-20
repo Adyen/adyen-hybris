@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.service.exception.ApiException;
@@ -49,6 +51,7 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMe
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.user.data.CountryData;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -58,6 +61,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(value = "/checkout/multi/adyen/select-payment-method")
 public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(SelectPaymentMethodCheckoutStepController.class);
+
+    @ModelAttribute("billingCountries")
+    public Collection<CountryData> getBillingCountries()
+    {
+        return getCheckoutFacade().getBillingCountries();
+    }
 
     protected static final String PAYMENT_METHOD_STEP_NAME = "payment-method";
 
