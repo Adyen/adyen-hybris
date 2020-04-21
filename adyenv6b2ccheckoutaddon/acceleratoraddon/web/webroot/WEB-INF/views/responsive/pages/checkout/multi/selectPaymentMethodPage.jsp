@@ -135,6 +135,12 @@
                             </c:if>
                             <div class="form">
                                 <dl>
+                                    <dt><label for="address.titleCode"><spring:message text="Title"/></label></dt>
+                                    <dd><form:select id="address.titleCode" path="billingAddress.titleCode" tabindex="13">
+                                        <option value="" disabled="disabled"><spring:message text="Please select a title"/></option>
+                                        <form:options items="${titles}" itemValue="code" itemLabel="name"/>
+                                    </form:select></dd>
+
                                     <dt>
                                         <label for="address.firstName" class="required"><spring:message text="First Name"/></label>
                                         <label for="address.lastName" class="required"><spring:message text="Last Name"/></label>
@@ -178,8 +184,8 @@
                                         </form:select>
                                     </dd>
 
-<%--                                    <dt><label for="address.phoneNumber"><spring:message code="address.phoneNumber"/></label></dt>--%>
-<%--                                    <dd><form:input id="address.phoneNumber" path="billingAddress.phoneNumber" tabindex="18"/></dd>--%>
+                                    <dt><label for="address.phoneNumber"><spring:message code="address.phoneNumber"/></label></dt>
+                                    <dd><form:input id="address.phoneNumber" path="billingAddress.phoneNumber" tabindex="18"/></dd>
 
 <%--                                    <dt><label for="address.emailAddress"><spring:message code="address.emailAddress"/></label></dt>--%>
 <%--                                    <dd><form:input id="address.emailAddress" path="billingAddress.emailAddress" tabindex="19"/></dd>--%>
