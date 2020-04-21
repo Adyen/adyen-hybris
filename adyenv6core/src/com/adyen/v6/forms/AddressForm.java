@@ -10,6 +10,7 @@ public class AddressForm
 	private String townCity;
 	private String postcode;
 	private String countryIso;
+	private String phoneNumber;
 
 	public String getTitleCode()
 	{
@@ -91,6 +92,14 @@ public class AddressForm
 		this.countryIso = countryIso;
 	}
 
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "AddressForm{"
@@ -118,6 +127,8 @@ public class AddressForm
 				+ ", countryIso='"
 				+ countryIso
 				+ '\''
+				+ ", phoneNumber='"
+				+ phoneNumber
 				+ '}';
 	}
 }
