@@ -11,6 +11,7 @@ public class AddressForm
 	private String postcode;
 	private String countryIso;
 	private String phoneNumber;
+	private String state;
 
 	public String getTitleCode()
 	{
@@ -98,6 +99,14 @@ public class AddressForm
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	@Override
