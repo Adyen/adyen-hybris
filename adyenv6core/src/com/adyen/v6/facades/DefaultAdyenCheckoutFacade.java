@@ -1039,18 +1039,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setBillingAddress(true);
         addressData.setCountry(countryData);
         addressData.setPhone(addressForm.getPhoneNumber());
-        // TODO: Region specific display of state or province
-
-        //        if (addressForm.getCountryIso() != null)
-        //        {
-        //            final CountryData countryData1 = getI18NFacade().getCountryForIsocode(countryData);
-        //            addressData.setCountry(countryData1);
-        //        }
-        //        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
-        //        {
-        //            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
-        //            addressData.setRegion(regionData);
-        //        }
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
         getAddressReverseConverter().convert(addressData, billingAddress);
 
