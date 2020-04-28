@@ -89,7 +89,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -1039,6 +1038,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setPostalCode(addressForm.getPostcode());
         addressData.setBillingAddress(true);
         addressData.setCountry(countryData);
+        addressData.setPhone(addressForm.getPhoneNumber());
         // TODO: Region specific display of state or province
         //   addressData.setPhone(addressForm.getPhone());
 

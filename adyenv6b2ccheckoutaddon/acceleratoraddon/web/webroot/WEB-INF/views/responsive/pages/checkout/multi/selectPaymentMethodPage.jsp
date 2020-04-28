@@ -133,59 +133,19 @@
                                         labelKey="checkout.multi.sop.useMyDeliveryAddress"
                                         tabindex="11"/>
                             </c:if>
-                            <div class="form">
-                                <dl>
-                                    <dt>
-                                        <label for="address.firstName" class="required"><spring:message text="First Name"/></label>
-                                        <label for="address.lastName" class="required"><spring:message text="Last Name"/></label>
-                                    </dt>
-                                    <dd>
-                                        <div class="gridBreak">
-                                            <div class="grid_block_a">
-                                                <form:input id="address.firstName" path="billingAddress.firstName" tabindex="9"/>
-                                            </div>
-                                            <div class="grid_block_b">
-                                                <form:input id="address.lastName" path="billingAddress.lastName" tabindex="10"/>
-                                            </div>
-                                        </div>
-                                    </dd>
+                            <div id="newBillingAddressFields" class="cardForm">
 
-<%--                                    <dt><label for="address.company"><spring:message code="address.company"/></label></dt>--%>
-<%--                                    <dd><form:input id="address.company" path="billingAddress.company" tabindex="11"/></dd>--%>
+                                <formElement:formSelectBox idKey="address.titleCode" labelKey="address.title" path="billingAddress.titleCode" mandatory="true" skipBlank="false" skipBlankMessageKey="address.title.pleaseSelect" items="${titles}" tabindex="13"/>
+                                <formElement:formInputBox idKey="address.firstName" labelKey="address.firstName" path="billingAddress.firstName" inputCSS="text" mandatory="true" tabindex="11"/>
+                                <formElement:formInputBox idKey="address.surname" labelKey="address.surname" path="billingAddress.lastName" inputCSS="text" mandatory="true" tabindex="12"/>
+                                <formElement:formInputBox idKey="address.line1" labelKey="address.line1" path="billingAddress.line1" inputCSS="text" mandatory="true" tabindex="14"/>
+                                <formElement:formInputBox idKey="address.line2" labelKey="address.line2" path="billingAddress.line2" inputCSS="text" mandatory="false" tabindex="15"/>
+                                <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.townCity" inputCSS="text" mandatory="true" tabindex="16"/>
+                                <formElement:formInputBox idKey="address.postcode" labelKey="address.postcode" path="billingAddress.postcode" inputCSS="text" mandatory="true" tabindex="17"/>
+                                <formElement:formSelectBox idKey="address.country" labelKey="address.country" path="billingAddress.countryIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectCountry" items="${billingCountries}" itemValue="isocode" tabindex="18"/>
+                                <formElement:formInputBox idKey="address.phoneNumber" labelKey="Phone Number" path="billingAddress.phoneNumber" inputCSS="text" mandatory="false" tabindex="17"/>
 
-                                    <dt><label for="address.line1" class="required"><spring:message text="Street Address 1"/></label></dt>
-                                    <dd><form:input id="address.line1" path="billingAddress.line1" tabindex="12"/></dd>
-
-                                    <dt><label for="address.line2"><spring:message text="Street Address 2"/></label></dt>
-                                    <dd><form:input id="address.line2" path="billingAddress.line2" tabindex="13"/></dd>
-
-                                    <dt>
-                                        <label for="address.city" class="required"><spring:message text="City"/></label>/
-<%--                                        <label for="address.state"><spring:message code="address.state"/></label>/--%>
-                                        <label for="address.postCode" class="required"><spring:message text="Postal Code"/></label>
-                                    </dt>
-                                    <dd>
-                                        <form:input id="address.city" path="billingAddress.townCity" cssClass="cityInput" tabindex="14"/>
-<%--                                        <form:input id="address.state" path="billingAddress.state" cssClass="stateInput" tabindex="15"/>--%>
-                                        <form:input id="address.postCode" path="billingAddress.postcode" cssClass="postCodeInput" tabindex="16"/>
-                                    </dd>
-
-                                    <dt><label for="address.country" class="required"><spring:message text="Country"/></label></dt>
-                                    <dd>
-                                        <form:select id="address.country" path="billingAddress.countryIso" tabindex="17">
-                                            <option value="" disabled="disabled"><spring:message text="Please select a country"/></option>
-                                            <form:options items="${billingCountries}" itemValue="isocode" itemLabel="name"/>
-                                        </form:select>
-                                    </dd>
-
-<%--                                    <dt><label for="address.phoneNumber"><spring:message code="address.phoneNumber"/></label></dt>--%>
-<%--                                    <dd><form:input id="address.phoneNumber" path="billingAddress.phoneNumber" tabindex="18"/></dd>--%>
-
-<%--                                    <dt><label for="address.emailAddress"><spring:message code="address.emailAddress"/></label></dt>--%>
-<%--                                    <dd><form:input id="address.emailAddress" path="billingAddress.emailAddress" tabindex="19"/></dd>--%>
-                                </dl>
                             </div>
-
                             <%-- Billing Information end --%>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
