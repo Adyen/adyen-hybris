@@ -51,7 +51,9 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMe
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commercefacades.user.data.TitleData;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -68,6 +70,11 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return getCheckoutFacade().getBillingCountries();
     }
 
+    @ModelAttribute("titles")
+    public Collection<TitleData> getBillingTitleCodes() {
+        return getUserFacade().getTitles();
+    }
+
     protected static final String PAYMENT_METHOD_STEP_NAME = "payment-method";
 
     protected static final String CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB = "checkout.multi.paymentMethod.breadcrumb";
@@ -79,6 +86,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
+
+    @Resource(name = "userFacade")
+    private UserFacade userFacade;
+
+    protected UserFacade getUserFacade()
+    {
+        return userFacade;
+    }
 
     @Autowired
     private HttpServletRequest httpServletRequest;
