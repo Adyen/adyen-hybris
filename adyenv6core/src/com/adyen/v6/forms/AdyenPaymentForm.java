@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
+
 
 /**
  * Form for select payment method page
@@ -52,6 +54,7 @@ public class AdyenPaymentForm {
     private String selectedReference;
     private int installments;
 
+
     //Save card
     private boolean rememberTheseDetails;
 
@@ -75,7 +78,15 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
-    private Boolean useDeliveryAddress;
+    public Boolean getUseAdyenDeliveryAddress() {
+        return useAdyenDeliveryAddress;
+    }
+
+    public void setUseAdyenDeliveryAddress(Boolean useAdyenDeliveryAddress) {
+        this.useAdyenDeliveryAddress = useAdyenDeliveryAddress;
+    }
+
+    private Boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
 
     public String getBrowserInfo() {
@@ -152,14 +163,6 @@ public class AdyenPaymentForm {
 
     public void setBillingAddress(AddressForm billingAddress) {
         this.billingAddress = billingAddress;
-    }
-
-    public Boolean getUseDeliveryAddress() {
-        return useDeliveryAddress;
-    }
-
-    public void setUseDeliveryAddress(Boolean useDeliveryAddress) {
-        this.useDeliveryAddress = useDeliveryAddress;
     }
 
     public Date getDob() {
@@ -303,7 +306,7 @@ public class AdyenPaymentForm {
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
-        sb.append("    useDeliveryAddress: ").append(Util.toIndentedString(useDeliveryAddress)).append("\n");
+        sb.append("    useAdyenDeliveryAddress: ").append(Util.toIndentedString(useAdyenDeliveryAddress)).append("\n");
         sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
         sb.append("}");
         return sb.toString();

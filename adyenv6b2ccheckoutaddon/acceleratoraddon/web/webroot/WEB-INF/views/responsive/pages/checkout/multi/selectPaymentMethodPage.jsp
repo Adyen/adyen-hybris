@@ -133,6 +133,7 @@
                                         labelKey="checkout.multi.sop.useMyDeliveryAddress"
                                         tabindex="11"/>
                             </c:if>
+                            <address:billAddressFormSelector supportedCountries="${countries}" regions="${regions}" tabindex="12"/>
                             <div id="newBillingAddressFields" class="cardForm">
 
                                 <formElement:formSelectBox idKey="address.titleCode" labelKey="address.title" path="billingAddress.titleCode" mandatory="true" skipBlank="false" skipBlankMessageKey="address.title.pleaseSelect" items="${titles}" tabindex="13"/>
@@ -145,7 +146,11 @@
                                 <formElement:formSelectBox idKey="address.country" labelKey="address.country" path="billingAddress.countryIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectCountry" items="${billingCountries}" itemValue="isocode" tabindex="18"/>
                                 <formElement:formInputBox idKey="address.phoneNumber" labelKey="Phone Number" path="billingAddress.phoneNumber" inputCSS="text" mandatory="false" tabindex="17"/>
 
-                            </div>
+
+
+
+
+
                             <%-- Billing Information end --%>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
