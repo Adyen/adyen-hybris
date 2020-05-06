@@ -906,17 +906,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-        if (adyenPaymentForm.getUseDeliveryAddress() == true) {
+//        if (adyenPaymentForm.getUseDeliveryAddress() == true) {
             // Clone DeliveryAdress to BillingAddress
             final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
             clonedAddress.setBillingAddress(true);
             clonedAddress.setOwner(paymentInfo);
             paymentInfo.setBillingAddress(clonedAddress);
-        } else {
-            AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
-            paymentInfo.setBillingAddress(billingAddress);
-            billingAddress.setOwner(paymentInfo);
-        }
+//        } else {
+//            AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
+//            paymentInfo.setBillingAddress(billingAddress);
+//            billingAddress.setOwner(paymentInfo);
+//        }
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());

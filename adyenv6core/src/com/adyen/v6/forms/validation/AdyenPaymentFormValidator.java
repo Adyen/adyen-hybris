@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.adyen.v6.forms.AdyenPaymentForm;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 public class AdyenPaymentFormValidator implements Validator {
