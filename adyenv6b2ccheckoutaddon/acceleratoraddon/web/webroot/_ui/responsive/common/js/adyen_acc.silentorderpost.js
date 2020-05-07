@@ -1,137 +1,128 @@
-ACC.silentorderpost = {
+$(document).ready(function () {
 
-	spinner: $("<img src='" + ACC.config.commonResourcePath + "/images/spinner.gif' />"),
+	var spinner = $("<img src='" + ACC.config.commonResourcePath + "/images/spinner.gif' />");
 
-	bindUseDeliveryAddress: function ()
-	{
-		$('#useDeliveryAddress').on('change', function ()
+	function binduseAdyenDeliveryAddress() {
+		$('#useAdyenDeliveryAddress').on('change', function ()
 		{
-			if ($('#useDeliveryAddress').is(":checked"))
+			if ($('#useAdyenDeliveryAddress').is(":checked"))
 			{
-				var options = {'countryIsoCode': $('#useDeliveryAddressData').data('countryisocode'), 'useDeliveryAddress': true};
-				ACC.silentorderpost.enableAddressForm();
-				ACC.silentorderpost.displayCreditCardAddressForm(options, ACC.silentorderpost.useDeliveryAddressSelected);
-				ACC.silentorderpost.disableAddressForm();
+				var options = {'countryIsoCode': $('#useAdyenDeliveryAddressData').data('countryisocode'), 'useAdyenDeliveryAddress': true};
+				enableAddressForm();
+				displayAdyenCreditCardAddressForm(options, onDeliveryAddressToggle);
+				disableAddressForm();
 			}
 			else
 			{
-				ACC.silentorderpost.clearAddressForm();
-				ACC.silentorderpost.enableAddressForm();
+				clearAddressForm();
+				enableAddressForm();
 			}
 		});
 
-		if ($('#useDeliveryAddress').is(":checked"))
+		if ($('#useAdyenDeliveryAddress').is(":checked"))
 		{
-			var options = {'countryIsoCode': $('#useDeliveryAddressData').data('countryisocode'), 'useDeliveryAddress': true};
-			ACC.silentorderpost.enableAddressForm();
-			ACC.silentorderpost.displayCreditCardAddressForm(options, ACC.silentorderpost.useDeliveryAddressSelected);
-			ACC.silentorderpost.disableAddressForm();
+			var options = {'countryIsoCode': $('#useAdyenDeliveryAddressData').data('countryisocode'), 'useAdyenDeliveryAddress': true};
+			enableAddressForm();
+			displayAdyenCreditCardAddressForm(options, onDeliveryAddressToggle);
+			disableAddressForm();
 		}
-	},
+	}
 
-	bindSubmitSilentOrderPostForm: function ()
-	{
+	function bindSubmitSilentOrderPostForm() {
 		$('.submit_silentOrderPostForm').click(function ()
 		{
 			ACC.common.blockFormAndShowProcessingMessage($(this));
-			$('.billingAddressForm').filter(":hidden").remove();
-			ACC.silentorderpost.enableAddressForm();
+			$('.adyenBillingAddressForm').filter(":hidden").remove();
+			enableAddressForm();
 			$('#silentOrderPostForm').submit();
 		});
-	},
+	}
 
-	bindCycleFocusEvent: function ()
+	function bindCycleFocusEvent()
 	{
 		$('#lastInTheForm').blur(function ()
 		{
 			$('#silentOrderPostForm [tabindex$="10"]').focus();
 		})
-	},
+	}
 
-	isEmpty: function (obj)
+	function isEmpty(obj)
 	{
-		if (typeof obj == 'undefined' || obj === null || obj === '') return true;
-		return false;
-	},
+		return Boolean(typeof obj == 'undefined' || obj === null || obj === '');
+	}
 
-	disableAddressForm: function ()
+	function disableAddressForm()
 	{
 		$('input[id^="address\\."]').prop('disabled', true);
 		$('select[id^="address\\."]').prop('disabled', true);
-	},
+	}
 
-	enableAddressForm: function ()
+	function enableAddressForm()
 	{
 		$('input[id^="address\\."]').prop('disabled', false);
 		$('select[id^="address\\."]').prop('disabled', false);
-	},
+	}
 
-	clearAddressForm: function ()
+	function clearAddressForm()
 	{
 		$('input[id^="address\\."]').val("");
 		$('select[id^="address\\."]').val("");
-	},
+	}
 
-	useDeliveryAddressSelected: function ()
+	function onDeliveryAddressToggle()
 	{
-		if ($('#useDeliveryAddress').is(":checked"))
+		if ($('#useAdyenDeliveryAddress').is(":checked"))
 		{
-			$('#address\\.country').val($('#useDeliveryAddressData').data('countryisocode'));
-			ACC.silentorderpost.disableAddressForm();
+			$('#address\\.country').val($('#useAdyenDeliveryAddressData').data('countryisocode'));
+			disableAddressForm();
 		}
 		else
 		{
-			ACC.silentorderpost.clearAddressForm();
-			ACC.silentorderpost.enableAddressForm();
+			clearAddressForm();
+			enableAddressForm();
 		}
-	},
-	
-	
+	}
 
-	bindCreditCardAddressForm: function ()
+	function bindCreditCardAddressForm()
 	{
-		$('#billingCountrySelector :input').on("change", function ()
+		$('#billingAdyenCountrySelector :input').on("change", function ()
 		{
 			var countrySelection = $(this).val();
 			var options = {
 				'countryIsoCode': countrySelection,
-				'useDeliveryAddress': false
+				'useAdyenDeliveryAddress': false
 			};
-			ACC.silentorderpost.displayCreditCardAddressForm(options);
+			displayAdyenCreditCardAddressForm(options);
 		})
-	},
+	}
 
-	displayCreditCardAddressForm: function (options, callback)
+	function displayAdyenCreditCardAddressForm(options, callback)
 	{
-		$.ajax({ 
-			url: ACC.config.encodedContextPath + '/checkout/multi/sop/billingaddressform',
+		const form = $("#adyenBillingAddressForm");
+		$.ajax({
+			url: ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/billingaddressform',
 			async: true,
 			data: options,
 			dataType: "html",
 			beforeSend: function ()
 			{
-				$('#billingAddressForm').html(ACC.silentorderpost.spinner);
+				form.html(spinner);
 			}
-		}).done(function (data)
-				{
-					$("#billingAddressForm").html(data);
-					if (typeof callback == 'function')
-					{
-						callback.call();
-					}
-				});
-	}
-}
+		}).done(function (data){
+			form.html(data);
 
-$(document).ready(function ()
-{
-	with (ACC.silentorderpost)
-	{
-		bindUseDeliveryAddress()
-		bindSubmitSilentOrderPostForm();
-		bindCreditCardAddressForm();
+			if (typeof callback === 'function') {
+				callback();
+			}
+		});
 	}
+
+
+	binduseAdyenDeliveryAddress();
+	bindSubmitSilentOrderPostForm();
+	bindCreditCardAddressForm();
 
 	// check the checkbox
-	$("#useDeliveryAddress").click();
+	$("#useAdyenDeliveryAddress").click();
+
 });

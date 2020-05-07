@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 /**
  */
-public class AddressForm1
+public class AddressForm
 {
 	private String addressId;
 	private String titleCode;
