@@ -122,7 +122,4 @@ $(document).ready(function () {
 	bindSubmitSilentOrderPostForm();
 	bindCreditCardAddressForm();
 
-	// check the checkbox
-	$("#useAdyenDeliveryAddress").click();
-
 });
