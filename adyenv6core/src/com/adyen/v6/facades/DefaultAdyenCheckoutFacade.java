@@ -42,6 +42,7 @@ import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
@@ -94,7 +95,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -138,6 +138,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBA
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
+
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -906,17 +907,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-//        if (adyenPaymentForm.getUseDeliveryAddress() == true) {
+        if (adyenPaymentForm.getUseAdyenDeliveryAddress() == true) {
             // Clone DeliveryAdress to BillingAddress
             final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
             clonedAddress.setBillingAddress(true);
             clonedAddress.setOwner(paymentInfo);
             paymentInfo.setBillingAddress(clonedAddress);
-//        } else {
-//            AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
-//            paymentInfo.setBillingAddress(billingAddress);
-//            billingAddress.setOwner(paymentInfo);
-//        }
+        } else {
+            AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
+            paymentInfo.setBillingAddress(billingAddress);
+            billingAddress.setOwner(paymentInfo);
+        }
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
         paymentInfo.setAdyenIssuerId(adyenPaymentForm.getIssuerId());
@@ -1028,7 +1029,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public AddressModel convertToAddressModel(final AddressForm addressForm) {
         final AddressData addressData = new AddressData();
-        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIso());
+        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIsoCode());
         addressData.setTitleCode(addressForm.getTitleCode());
         addressData.setFirstName(addressForm.getFirstName());
         addressData.setLastName(addressForm.getLastName());
@@ -1039,19 +1040,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setBillingAddress(true);
         addressData.setCountry(countryData);
         addressData.setPhone(addressForm.getPhoneNumber());
-        // TODO: Region specific display of state or province
-        //   addressData.setPhone(addressForm.getPhone());
 
-        //        if (addressForm.getCountryIso() != null)
-        //        {
-        //            final CountryData countryData1 = getI18NFacade().getCountryForIsocode(countryData);
-        //            addressData.setCountry(countryData1);
-        //        }
-        //        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
-        //        {
-        //            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
-        //            addressData.setRegion(regionData);
-        //        }
+        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
+        {
+            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
+            addressData.setRegion(regionData);
+        }
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
         getAddressReverseConverter().convert(addressData, billingAddress);
 

@@ -26,9 +26,9 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
-import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
 
 
 /**
@@ -69,6 +69,16 @@ public class AdyenPaymentForm {
     private String firstName;
     private String lastName;
 
+    public String getTrial() {
+        return trial;
+    }
+
+    public void setTrial(String trial) {
+        this.trial = trial;
+    }
+
+    private String trial;
+
     // used in openinvoice and boleto
     private String socialSecurityNumber;
 
@@ -78,15 +88,15 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
-    public Boolean getUseAdyenDeliveryAddress() {
+    public boolean getUseAdyenDeliveryAddress() {
         return useAdyenDeliveryAddress;
     }
 
-    public void setUseAdyenDeliveryAddress(Boolean useAdyenDeliveryAddress) {
+    public void setUseAdyenDeliveryAddress(boolean useAdyenDeliveryAddress) {
         this.useAdyenDeliveryAddress = useAdyenDeliveryAddress;
     }
 
-    private Boolean useAdyenDeliveryAddress;
+    private boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
 
     public String getBrowserInfo() {

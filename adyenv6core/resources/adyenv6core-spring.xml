@@ -144,6 +144,38 @@
         <property name="commonI18NService" ref="commonI18NService" />
     </bean>
 
+    <alias name="defaultAdyenPaymentAddressValidator" alias="paymentAddressValidator"/>
+    <bean id="defaultAdyenPaymentAddressValidator"
+          class="de.hybris.platform.webservicescommons.validators.CompositeValidator">
+        <property name="validators">
+            <list>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
+                    <property name="fieldPath" value="billingAddress.titleCode"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
+                    <property name="fieldPath" value="billingAddress.firstName"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
+                    <property name="fieldPath" value="billingAddress.lastName"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
+                    <property name="fieldPath" value="billingAddress.line1"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyValidator">
+                    <property name="fieldPath" value="billingAddress.town"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyOrTooLongValidator">
+                    <property name="fieldPath" value="billingAddress.postalCode"/>
+                    <property name="maxLength" value="10"/>
+                </bean>
+                <bean class="de.hybris.platform.webservicescommons.validators.FieldNotEmptyOrTooLongValidator">
+                    <property name="fieldPath" value="billingAddress.country.isocode"/>
+                    <property name="maxLength" value="2"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <alias name="defaultAdyenNotificationService" alias="adyenNotificationService"/>
     <bean id="defaultAdyenNotificationService" class="com.adyen.v6.service.DefaultAdyenNotificationService">
         <property name="modelService" ref="modelService" />

@@ -36,6 +36,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.model.PaymentResult;
@@ -44,6 +45,8 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.forms.AddressForm;
+import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
@@ -62,6 +65,7 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
+import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
@@ -78,6 +82,7 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGE
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
+import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -86,6 +91,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_POS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
+
 
 @Controller
 @RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
@@ -115,6 +121,49 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @Resource(name = "configurationService")
     private ConfigurationService configurationService;
+
+
+    @RequestMapping(value = "/billingaddressform", method = RequestMethod.GET)
+    public String getCountryAddressForm(@RequestParam("countryIsoCode") final String countryIsoCode,
+                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress, final Model model)
+    {
+
+        model.addAttribute("supportedCountries", getCountries());
+        model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(countryIsoCode));
+        model.addAttribute("country", countryIsoCode);
+
+        final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
+        AddressForm addressForm = adyenPaymentForm.getBillingAddress();
+        if(addressForm==null)
+        {
+            addressForm= new AddressForm();
+        }
+
+        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
+        if (useAdyenDeliveryAddress)
+        {
+            final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+
+            if (deliveryAddress.getRegion() != null && !StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode()))
+            {
+                addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
+            }
+
+            addressForm.setTitleCode(deliveryAddress.getTitleCode());
+
+            addressForm.setTitleCode(deliveryAddress.getTitleCode());
+            addressForm.setFirstName(deliveryAddress.getFirstName());
+            addressForm.setLastName(deliveryAddress.getLastName());
+            addressForm.setLine1(deliveryAddress.getLine1());
+            addressForm.setLine2(deliveryAddress.getLine2());
+            addressForm.setTownCity(deliveryAddress.getTown());
+            addressForm.setPostcode(deliveryAddress.getPostalCode());
+            addressForm.setCountryIso(deliveryAddress.getCountry().getIsocode());
+            addressForm.setPhoneNumber(deliveryAddress.getPhone());
+        }
+        adyenPaymentForm.setBillingAddress(addressForm);
+        return BillingAddressformPage;
+    }
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
