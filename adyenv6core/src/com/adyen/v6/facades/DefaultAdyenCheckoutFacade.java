@@ -20,31 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -67,10 +42,10 @@ import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
-import com.adyen.v6.forms.validation.BillingAddressValidator;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenOrderService;
@@ -107,6 +82,32 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
@@ -137,6 +138,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBA
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
+
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -905,7 +907,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setSaved(false);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
 
-        if (adyenPaymentForm.getUseDeliveryAddress() == true) {
+        if (adyenPaymentForm.getUseAdyenDeliveryAddress() == true) {
             // Clone DeliveryAdress to BillingAddress
             final AddressModel clonedAddress = modelService.clone(cartModel.getDeliveryAddress());
             clonedAddress.setBillingAddress(true);
@@ -984,8 +986,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, showSocialSecurityNumber);
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
-        BillingAddressValidator billingAddressValidator = new BillingAddressValidator();
-        billingAddressValidator.validate(adyenPaymentForm.getBillingAddress(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             return;
@@ -1029,7 +1029,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public AddressModel convertToAddressModel(final AddressForm addressForm) {
         final AddressData addressData = new AddressData();
-        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIso());
+        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIsoCode());
         addressData.setTitleCode(addressForm.getTitleCode());
         addressData.setFirstName(addressForm.getFirstName());
         addressData.setLastName(addressForm.getLastName());
@@ -1040,19 +1040,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setBillingAddress(true);
         addressData.setCountry(countryData);
         addressData.setPhone(addressForm.getPhoneNumber());
-        // TODO: Region specific display of state or province
-        //   addressData.setPhone(addressForm.getPhone());
 
-        //        if (addressForm.getCountryIso() != null)
-        //        {
-        //            final CountryData countryData1 = getI18NFacade().getCountryForIsocode(countryData);
-        //            addressData.setCountry(countryData1);
-        //        }
-        //        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
-        //        {
-        //            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
-        //            addressData.setRegion(regionData);
-        //        }
+        if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
+        {
+            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
+            addressData.setRegion(regionData);
+        }
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
         getAddressReverseConverter().convert(addressData, billingAddress);
 

@@ -8,7 +8,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="formElement" tagdir="/WEB-INF/tags/responsive/formElement" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ taglib prefix="address" tagdir="/WEB-INF/tags/responsive/address" %>
+<%@ taglib prefix="address" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 
@@ -33,6 +33,7 @@
             AdyenCheckoutHybris.initiateCard(allowedCards);
 
             </c:if>
+
 
             //Handle form submission
             $( ".submit_silentOrderPostForm" ).click( function ( event ) {
@@ -122,32 +123,36 @@
                             <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
 
+<%--                            <form:input path="trial" value="${fn:escapeXml(useDeliveryAddress)}"/>--%>
+
 
                             <%-- Billing Information --%>
                             <div class="section_break"><spring:message text="Billing Information"/></div>
                             <c:if test="${cartData.deliveryItemsQuantity > 0}">
+                                <div id="useAdyenDeliveryAddressData"
+                                     data-titlecode="${fn:escapeXml(deliveryAddress.titleCode)}"
+                                     data-firstname="${fn:escapeXml(deliveryAddress.firstName)}"
+                                     data-lastname="${fn:escapeXml(deliveryAddress.lastName)}"
+                                     data-line1="${fn:escapeXml(deliveryAddress.line1)}"
+                                     data-line2="${fn:escapeXml(deliveryAddress.line2)}"
+                                     data-town="${fn:escapeXml(deliveryAddress.town)}"
+                                     data-postalcode="${fn:escapeXml(deliveryAddress.postalCode)}"
+                                     data-countryisocode="${fn:escapeXml(deliveryAddress.country.isocode)}"
+                                     data-regionisocode="${fn:escapeXml(deliveryAddress.region.isocodeShort)}"
+                                     data-address-id="${fn:escapeXml(deliveryAddress.id)}"
+                                ></div>
 
                                 <formElement:formCheckbox
-                                        path="useDeliveryAddress"
-                                        idKey="useDeliveryAddress"
+                                        path="useAdyenDeliveryAddress"
+                                        idKey="useAdyenDeliveryAddress"
                                         labelKey="checkout.multi.sop.useMyDeliveryAddress"
                                         tabindex="11"/>
+
                             </c:if>
-                            <div id="newBillingAddressFields" class="cardForm">
 
-                                <formElement:formSelectBox idKey="address.titleCode" labelKey="address.title" path="billingAddress.titleCode" mandatory="true" skipBlank="false" skipBlankMessageKey="address.title.pleaseSelect" items="${titles}" tabindex="13"/>
-                                <formElement:formInputBox idKey="address.firstName" labelKey="address.firstName" path="billingAddress.firstName" inputCSS="text" mandatory="true" tabindex="11"/>
-                                <formElement:formInputBox idKey="address.surname" labelKey="address.surname" path="billingAddress.lastName" inputCSS="text" mandatory="true" tabindex="12"/>
-                                <formElement:formInputBox idKey="address.line1" labelKey="address.line1" path="billingAddress.line1" inputCSS="text" mandatory="true" tabindex="14"/>
-                                <formElement:formInputBox idKey="address.line2" labelKey="address.line2" path="billingAddress.line2" inputCSS="text" mandatory="false" tabindex="15"/>
-                                <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.townCity" inputCSS="text" mandatory="true" tabindex="16"/>
-                                <formElement:formInputBox idKey="address.postcode" labelKey="address.postcode" path="billingAddress.postcode" inputCSS="text" mandatory="true" tabindex="17"/>
-                                <formElement:formSelectBox idKey="address.country" labelKey="address.country" path="billingAddress.countryIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectCountry" items="${billingCountries}" itemValue="isocode" tabindex="18"/>
-                                <formElement:formInputBox idKey="address.phoneNumber" labelKey="Phone Number" path="billingAddress.phoneNumber" inputCSS="text" mandatory="false" tabindex="17"/>
+                            <address:billAddressFormSelector supportedCountries="${countries}" regions="${regions}" tabindex="12"/>
 
-                            </div>
                             <%-- Billing Information end --%>
-
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">
                                     <adyen:storedCardMethod

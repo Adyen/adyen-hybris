@@ -43,6 +43,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
@@ -58,6 +59,7 @@ import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 
 @Controller
 @RequestMapping(value = "/checkout/multi/adyen/select-payment-method")
@@ -106,15 +108,19 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @RequireHardLogIn
     //    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
     public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
+
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         model.addAttribute("metaRobots", "noindex,nofollow");
         model.addAttribute("hasNoPaymentInfo", getCheckoutFlowFacade().hasNoPaymentInfo());
         model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
+
+        if(!model.containsAttribute(ADYEN_PAYMENT_FORM))
         model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
 
         model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
+        model.addAttribute("deliveryAddress", cartData.getDeliveryAddress());
         model.addAttribute("expiryYears", getExpiryYears());
 
         try {
@@ -137,6 +143,20 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.SelectPaymentMethod;
     }
 
+
+//    protected void prepareErrorView(final Model model, final AdyenPaymentForm adyenPaymentForm) throws CMSItemNotFoundException {
+//        final AddressForm billingAddress = adyenPaymentForm.getBillingAddress();
+////        if (billingAddress != null) {
+////            prepareRegionsAttribute(model, billingAddress.getCountryIso());
+////        }
+//        //final List<CCPaymentInfoData> paymentInfos = getUserFacade().getCCPaymentInfos(true);
+//        //setupAddPaymentPage(model);
+//       // model.addAttribute(PAYMENT_INFOS, paymentInfos);
+//
+//        model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
+//    }
+
+
     @RequestMapping(value = "", method = POST)
     @RequireHardLogIn
     public String setPaymentMethod(final Model model,
@@ -145,17 +165,63 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
+       // getAddressValidator().validate(adyenPaymentForm.getBillingAddress(), bindingResult);
+
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
-        if (bindingResult.hasErrors()) {
+
+        if (bindingResult.hasGlobalErrors()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
+            model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
             return enterStep(model, redirectAttributes);
         }
+        else
+        if (bindingResult.hasErrors()) {
+
+            ///======================
+
+            if(adyenPaymentForm.getBillingAddress()!=null)
+                model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
+            GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.sop.invalid.billTo_city");
+
+
+            final CartData cartData = getCheckoutFacade().getCheckoutCart();
+            model.addAttribute("metaRobots", "noindex,nofollow");
+            model.addAttribute("hasNoPaymentInfo", getCheckoutFlowFacade().hasNoPaymentInfo());
+            model.addAttribute("useAdyenDeliveryAddress", adyenPaymentForm.getUseAdyenDeliveryAddress());
+            model.addAttribute("_useAdyenDeliveryAddress", adyenPaymentForm.getUseAdyenDeliveryAddress());
+
+            model.addAttribute("billingAddress", adyenPaymentForm.getBillingAddress());
+            model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
+
+            model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
+            model.addAttribute(CART_DATA_ATTR, cartData);
+            model.addAttribute("deliveryAddress", cartData.getDeliveryAddress());
+            model.addAttribute("expiryYears", getExpiryYears());
+
+            try {
+                model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
+            } catch (IOException e) {
+                LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
+            } catch (ApiException e) {
+                LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
+            }
+
+            super.prepareDataForPage(model);
+
+            final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
+            super.storeCmsPageInModel(model, contentPage);
+            super.setUpMetaDataForContentPage(model, contentPage);
+            super.setCheckoutStepLinksForModel(model, getCheckoutStep());
+
+            return AdyenControllerConstants.Views.Pages.MultiStepCheckout.SelectPaymentMethod;
+            }
 
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         return getCheckoutStep().nextStep();
     }
+
 
     private String fromCalendar(final Calendar calendar) {
         final Date date = calendar.getTime();

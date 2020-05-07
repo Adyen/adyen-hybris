@@ -26,8 +26,10 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+
 
 /**
  * Form for select payment method page
@@ -52,6 +54,7 @@ public class AdyenPaymentForm {
     private String selectedReference;
     private int installments;
 
+
     //Save card
     private boolean rememberTheseDetails;
 
@@ -66,6 +69,16 @@ public class AdyenPaymentForm {
     private String firstName;
     private String lastName;
 
+    public String getTrial() {
+        return trial;
+    }
+
+    public void setTrial(String trial) {
+        this.trial = trial;
+    }
+
+    private String trial;
+
     // used in openinvoice and boleto
     private String socialSecurityNumber;
 
@@ -75,7 +88,15 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
-    private Boolean useDeliveryAddress;
+    public boolean getUseAdyenDeliveryAddress() {
+        return useAdyenDeliveryAddress;
+    }
+
+    public void setUseAdyenDeliveryAddress(boolean useAdyenDeliveryAddress) {
+        this.useAdyenDeliveryAddress = useAdyenDeliveryAddress;
+    }
+
+    private boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
 
     public String getBrowserInfo() {
@@ -152,14 +173,6 @@ public class AdyenPaymentForm {
 
     public void setBillingAddress(AddressForm billingAddress) {
         this.billingAddress = billingAddress;
-    }
-
-    public Boolean getUseDeliveryAddress() {
-        return useDeliveryAddress;
-    }
-
-    public void setUseDeliveryAddress(Boolean useDeliveryAddress) {
-        this.useDeliveryAddress = useDeliveryAddress;
     }
 
     public Date getDob() {
@@ -303,7 +316,7 @@ public class AdyenPaymentForm {
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
-        sb.append("    useDeliveryAddress: ").append(Util.toIndentedString(useDeliveryAddress)).append("\n");
+        sb.append("    useAdyenDeliveryAddress: ").append(Util.toIndentedString(useAdyenDeliveryAddress)).append("\n");
         sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
         sb.append("}");
         return sb.toString();
