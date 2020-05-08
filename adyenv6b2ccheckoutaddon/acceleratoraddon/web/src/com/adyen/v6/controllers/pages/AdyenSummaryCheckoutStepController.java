@@ -62,7 +62,6 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
-import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
@@ -79,7 +78,6 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGE
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
-import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
