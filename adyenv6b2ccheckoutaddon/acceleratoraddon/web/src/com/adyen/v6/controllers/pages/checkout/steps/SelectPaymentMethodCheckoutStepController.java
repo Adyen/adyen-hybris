@@ -31,6 +31,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
@@ -53,8 +56,10 @@ import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.UserFacade;
+import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.TitleData;
+import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -144,17 +149,47 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     }
 
 
-//    protected void prepareErrorView(final Model model, final AdyenPaymentForm adyenPaymentForm) throws CMSItemNotFoundException {
-//        final AddressForm billingAddress = adyenPaymentForm.getBillingAddress();
-////        if (billingAddress != null) {
-////            prepareRegionsAttribute(model, billingAddress.getCountryIso());
-////        }
-//        //final List<CCPaymentInfoData> paymentInfos = getUserFacade().getCCPaymentInfos(true);
-//        //setupAddPaymentPage(model);
-//       // model.addAttribute(PAYMENT_INFOS, paymentInfos);
-//
-//        model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
-//    }
+    @RequestMapping(value = "/billingaddressform", method = RequestMethod.GET)
+    public String getCountryAddressForm(@RequestParam("countryIsoCode") final String countryIsoCode,
+                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress, final Model model)
+    {
+
+        model.addAttribute("supportedCountries", getCountries());
+        model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(countryIsoCode));
+        model.addAttribute("country", countryIsoCode);
+
+        final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
+        AddressForm addressForm = adyenPaymentForm.getBillingAddress();
+        if(addressForm==null)
+        {
+            addressForm= new AddressForm();
+        }
+
+        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
+        if (useAdyenDeliveryAddress)
+        {
+            final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+
+            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode()))
+            {
+                addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
+            }
+
+            addressForm.setTitleCode(deliveryAddress.getTitleCode());
+
+            addressForm.setTitleCode(deliveryAddress.getTitleCode());
+            addressForm.setFirstName(deliveryAddress.getFirstName());
+            addressForm.setLastName(deliveryAddress.getLastName());
+            addressForm.setLine1(deliveryAddress.getLine1());
+            addressForm.setLine2(deliveryAddress.getLine2());
+            addressForm.setTownCity(deliveryAddress.getTown());
+            addressForm.setPostcode(deliveryAddress.getPostalCode());
+            addressForm.setCountryIso(deliveryAddress.getCountry().getIsocode());
+            addressForm.setPhoneNumber(deliveryAddress.getPhone());
+        }
+        adyenPaymentForm.setBillingAddress(addressForm);
+        return BillingAddressformPage;
+    }
 
 
     @RequestMapping(value = "", method = POST)
