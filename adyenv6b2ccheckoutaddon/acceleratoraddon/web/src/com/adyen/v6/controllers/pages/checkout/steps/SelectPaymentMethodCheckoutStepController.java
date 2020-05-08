@@ -65,15 +65,13 @@ import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConst
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-
 @Controller
 @RequestMapping(value = "/checkout/multi/adyen/select-payment-method")
 public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(SelectPaymentMethodCheckoutStepController.class);
 
     @ModelAttribute("billingCountries")
-    public Collection<CountryData> getBillingCountries()
-    {
+    public Collection<CountryData> getBillingCountries() {
         return getCheckoutFacade().getBillingCountries();
     }
 
@@ -97,8 +95,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "userFacade")
     private UserFacade userFacade;
 
-    protected UserFacade getUserFacade()
-    {
+    protected UserFacade getUserFacade() {
         return userFacade;
     }
 
@@ -113,16 +110,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @RequireHardLogIn
     //    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
     public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
-
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         model.addAttribute("metaRobots", "noindex,nofollow");
         model.addAttribute("hasNoPaymentInfo", getCheckoutFlowFacade().hasNoPaymentInfo());
         model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
-
-        if(!model.containsAttribute(ADYEN_PAYMENT_FORM))
-        model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
-
+        if (! model.containsAttribute(ADYEN_PAYMENT_FORM)) {
+            model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
+        }
         model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
         model.addAttribute("deliveryAddress", cartData.getDeliveryAddress());
@@ -151,8 +146,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     @RequestMapping(value = "/billingaddressform", method = RequestMethod.GET)
     public String getCountryAddressForm(@RequestParam("countryIsoCode") final String countryIsoCode,
-                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress, final Model model)
-    {
+                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress,
+                                        final Model model) {
 
         model.addAttribute("supportedCountries", getCountries());
         model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(countryIsoCode));
@@ -160,22 +155,17 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
         AddressForm addressForm = adyenPaymentForm.getBillingAddress();
-        if(addressForm==null)
-        {
-            addressForm= new AddressForm();
+        if (addressForm == null) {
+            addressForm = new AddressForm();
         }
 
         model.addAttribute("adyenPaymentForm", adyenPaymentForm);
-        if (useAdyenDeliveryAddress)
-        {
+        if (useAdyenDeliveryAddress) {
             final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
 
-            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode()))
-            {
+            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
                 addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
             }
-
-            addressForm.setTitleCode(deliveryAddress.getTitleCode());
 
             addressForm.setTitleCode(deliveryAddress.getTitleCode());
             addressForm.setFirstName(deliveryAddress.getFirstName());
@@ -200,63 +190,23 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
-       // getAddressValidator().validate(adyenPaymentForm.getBillingAddress(), bindingResult);
-
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
-        if (bindingResult.hasGlobalErrors()) {
+        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
-            model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
+            if (adyenPaymentForm.getBillingAddress() != null) {
+                AdyenPaymentForm newPaymentForm = new AdyenPaymentForm();
+                newPaymentForm.setBillingAddress(adyenPaymentForm.getBillingAddress());
+                model.addAttribute(ADYEN_PAYMENT_FORM, newPaymentForm);
+            }
             return enterStep(model, redirectAttributes);
         }
-        else
-        if (bindingResult.hasErrors()) {
-
-            ///======================
-
-            if(adyenPaymentForm.getBillingAddress()!=null)
-                model.addAttribute(ADYEN_PAYMENT_FORM, adyenPaymentForm);
-            GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.sop.invalid.billTo_city");
-
-
-            final CartData cartData = getCheckoutFacade().getCheckoutCart();
-            model.addAttribute("metaRobots", "noindex,nofollow");
-            model.addAttribute("hasNoPaymentInfo", getCheckoutFlowFacade().hasNoPaymentInfo());
-            model.addAttribute("useAdyenDeliveryAddress", adyenPaymentForm.getUseAdyenDeliveryAddress());
-            model.addAttribute("_useAdyenDeliveryAddress", adyenPaymentForm.getUseAdyenDeliveryAddress());
-
-            model.addAttribute("billingAddress", adyenPaymentForm.getBillingAddress());
-            model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
-
-            model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
-            model.addAttribute(CART_DATA_ATTR, cartData);
-            model.addAttribute("deliveryAddress", cartData.getDeliveryAddress());
-            model.addAttribute("expiryYears", getExpiryYears());
-
-            try {
-                model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
-            } catch (IOException e) {
-                LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
-            } catch (ApiException e) {
-                LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
-            }
-
-            super.prepareDataForPage(model);
-
-            final ContentPageModel contentPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
-            super.storeCmsPageInModel(model, contentPage);
-            super.setUpMetaDataForContentPage(model, contentPage);
-            super.setCheckoutStepLinksForModel(model, getCheckoutStep());
-
-            return AdyenControllerConstants.Views.Pages.MultiStepCheckout.SelectPaymentMethod;
-            }
 
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         return getCheckoutStep().nextStep();
     }
-
 
     private String fromCalendar(final Calendar calendar) {
         final Date date = calendar.getTime();

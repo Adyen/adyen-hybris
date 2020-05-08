@@ -90,16 +90,14 @@ public class AdyenPaymentFormValidator implements Validator {
                 errors.reject("checkout.error.paymentethod.dob.invalid");
             }
         }
-       // if (editMode || Boolean.TRUE.equals(form.getNewBillingAddress())) {
-        if(!form.getUseAdyenDeliveryAddress() )
+        if (form.getUseAdyenDeliveryAddress() == false && form.getBillingAddress()!=null) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.titleCode", "address.title.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.firstName", "address.firstName.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.lastName", "address.lastName.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.line1", "address.line1.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.townCity", "address.townCity.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.postcode", "address.postcode.invalid");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.countryIso", "address.country.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.countryIsoCode", "address.country.invalid");
         }
-
-
+    }
 }
