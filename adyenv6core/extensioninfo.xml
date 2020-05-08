@@ -18,7 +18,6 @@
       <!-- <requires-extension name="cms"/> -->
       <requires-extension name="addonsupport"/>
       <requires-extension name="payment"/>
-      <requires-extension name="acceleratorstorefrontcommons"/>
 
       <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6coreManager" packageroot="com.adyen.v6"/>
    </extension>

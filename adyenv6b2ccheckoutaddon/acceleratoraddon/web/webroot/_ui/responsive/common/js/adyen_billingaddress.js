@@ -90,7 +90,6 @@ $( document ).ready( function () {
             }
         } ).done( function ( data ) {
             form.html( data );
-
             if ( typeof callback === 'function' ) {
                 callback();
             }
@@ -101,4 +100,4 @@ $( document ).ready( function () {
     bindSubmitSilentOrderPostForm();
     bindCreditCardAddressForm();
 
-});
+} );

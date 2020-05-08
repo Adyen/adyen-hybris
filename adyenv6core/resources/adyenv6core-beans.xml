@@ -52,8 +52,6 @@
         <property name="adyenPosReceipt" type="java.lang.String" />
     </bean>
 
-
-
     <bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
         <property name="taxValues" type="java.util.Collection&lt;de.hybris.platform.util.TaxValue>"/>
     </bean>
