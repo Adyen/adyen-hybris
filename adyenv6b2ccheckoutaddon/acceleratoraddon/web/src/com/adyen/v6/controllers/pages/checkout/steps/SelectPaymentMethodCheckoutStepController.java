@@ -70,16 +70,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(SelectPaymentMethodCheckoutStepController.class);
 
-    @ModelAttribute("billingCountries")
-    public Collection<CountryData> getBillingCountries() {
-        return getCheckoutFacade().getBillingCountries();
-    }
-
-    @ModelAttribute("titles")
-    public Collection<TitleData> getBillingTitleCodes() {
-        return getUserFacade().getTitles();
-    }
-
     protected static final String PAYMENT_METHOD_STEP_NAME = "payment-method";
 
     protected static final String CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB = "checkout.multi.paymentMethod.breadcrumb";
@@ -94,6 +84,16 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     @Resource(name = "userFacade")
     private UserFacade userFacade;
+
+    @ModelAttribute("billingCountries")
+    public Collection<CountryData> getBillingCountries() {
+        return getCheckoutFacade().getBillingCountries();
+    }
+
+    @ModelAttribute("titles")
+    public Collection<TitleData> getBillingTitleCodes() {
+        return getUserFacade().getTitles();
+    }
 
     protected UserFacade getUserFacade() {
         return userFacade;
@@ -174,7 +174,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             addressForm.setLine2(deliveryAddress.getLine2());
             addressForm.setTownCity(deliveryAddress.getTown());
             addressForm.setPostcode(deliveryAddress.getPostalCode());
-            addressForm.setCountryIso(deliveryAddress.getCountry().getIsocode());
+            addressForm.setCountryIsoCode(deliveryAddress.getCountry().getIsocode());
             addressForm.setPhoneNumber(deliveryAddress.getPhone());
         }
         adyenPaymentForm.setBillingAddress(addressForm);
