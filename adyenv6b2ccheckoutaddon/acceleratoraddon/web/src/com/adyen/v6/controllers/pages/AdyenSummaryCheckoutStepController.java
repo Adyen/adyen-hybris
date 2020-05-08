@@ -123,47 +123,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private ConfigurationService configurationService;
 
 
-    @RequestMapping(value = "/billingaddressform", method = RequestMethod.GET)
-    public String getCountryAddressForm(@RequestParam("countryIsoCode") final String countryIsoCode,
-                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress, final Model model)
-    {
 
-        model.addAttribute("supportedCountries", getCountries());
-        model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(countryIsoCode));
-        model.addAttribute("country", countryIsoCode);
-
-        final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
-        AddressForm addressForm = adyenPaymentForm.getBillingAddress();
-        if(addressForm==null)
-        {
-            addressForm= new AddressForm();
-        }
-
-        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
-        if (useAdyenDeliveryAddress)
-        {
-            final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-
-            if (deliveryAddress.getRegion() != null && !StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode()))
-            {
-                addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
-            }
-
-            addressForm.setTitleCode(deliveryAddress.getTitleCode());
-
-            addressForm.setTitleCode(deliveryAddress.getTitleCode());
-            addressForm.setFirstName(deliveryAddress.getFirstName());
-            addressForm.setLastName(deliveryAddress.getLastName());
-            addressForm.setLine1(deliveryAddress.getLine1());
-            addressForm.setLine2(deliveryAddress.getLine2());
-            addressForm.setTownCity(deliveryAddress.getTown());
-            addressForm.setPostcode(deliveryAddress.getPostalCode());
-            addressForm.setCountryIso(deliveryAddress.getCountry().getIsocode());
-            addressForm.setPhoneNumber(deliveryAddress.getPhone());
-        }
-        adyenPaymentForm.setBillingAddress(addressForm);
-        return BillingAddressformPage;
-    }
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
