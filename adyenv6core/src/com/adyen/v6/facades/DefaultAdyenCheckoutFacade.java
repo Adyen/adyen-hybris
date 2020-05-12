@@ -1043,7 +1043,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (addressForm.getRegionIso() != null && ! org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso()))
         {
-            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
+            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIsoCode(), addressForm.getRegionIso());
             addressData.setRegion(regionData);
         }
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
