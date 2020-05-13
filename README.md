@@ -146,7 +146,7 @@ pos.totaltimeout = 130
  https://docs.adyen.com/developers/plugins/hybris
 
  ## Support
- You can create issues in this repository. In case of specific problems with your account, please contact support@adyen.com.
+If you have a feature request, or spotted a bug or a technical problem, create a GitHub issue. For other questions, contact our [support team](https://support.adyen.com/hc/en-us/requests/new?ticket_form_id=360000705420).
 
  ## Contributing
  We strongly encourage you to join us in contributing to this repository so everyone can benefit from:
