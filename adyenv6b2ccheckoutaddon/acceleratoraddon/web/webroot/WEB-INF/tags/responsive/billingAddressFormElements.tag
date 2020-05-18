@@ -29,7 +29,7 @@
         <formElement:formInputBox idKey="address.surname" labelKey="address.surname" path="billingAddress.lastName" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 3}"/>
         <formElement:formInputBox idKey="address.line1" labelKey="address.line1" path="billingAddress.line1" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 4}"/>
         <formElement:formInputBox idKey="address.line2" labelKey="address.line2" path="billingAddress.line2" inputCSS="form-control" mandatory="false" tabindex="${tabindex + 5}"/>
-        <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.city" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 6}"/>
+        <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.townCity" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 6}"/>
         <formElement:formSelectBox idKey="address.region" labelKey="address.province" path="billingAddress.regionIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectProvince"
                                    items="${regions}" itemValue="isocodeShort" tabindex="${tabindex + 7}" selectCSSClass="form-control"/>
         <formElement:formInputBox idKey="address.postcode" labelKey="address.postcode" path="billingAddress.postcode" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 8}"/>
@@ -39,7 +39,7 @@
         <formElement:formInputBox idKey="address.postcode" labelKey="address.postcode" path="billingAddress.postcode" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 2}"/>
         <formElement:formSelectBox idKey="address.region" labelKey="address.province" path="billingAddress.regionIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectProvince"
                                    items="${regions}" itemValue="isocodeShort" tabindex="${tabindex + 3}" selectCSSClass="form-control"/>
-        <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.city" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 4}"/>
+        <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.townCity" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 4}"/>
         <formElement:formInputBox idKey="address.line1" labelKey="address.district_and_street" path="billingAddress.line1" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 5}"/>
         <formElement:formInputBox idKey="address.line2" labelKey="address.building_and_room" path="billingAddress.line2" inputCSS="form-control" mandatory="false" tabindex="${tabindex + 6}"/>
         <formElement:formInputBox idKey="address.surname" labelKey="address.surname" path="billingAddress.lastName" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 7}"/>
@@ -56,7 +56,7 @@
         <formElement:formInputBox idKey="address.postcode" labelKey="address.postcodeJP" path="billingAddress.postcode" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 4}"/>
         <formElement:formSelectBox idKey="address.region" labelKey="address.prefecture" path="billingAddress.regionIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectPrefecture"
                                    items="${regions}" itemValue="isocodeShort" tabindex="${tabindex + 5}" selectCSSClass="form-control"/>
-        <formElement:formInputBox idKey="address.townCity" labelKey="address.townJP" path="billingAddress.city" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 6}"/>
+        <formElement:formInputBox idKey="address.townCity" labelKey="address.townJP" path="billingAddress.townCity" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 6}"/>
         <formElement:formInputBox idKey="address.line2" labelKey="address.subarea" path="billingAddress.line2" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 7}"/>
         <formElement:formInputBox idKey="address.line1" labelKey="address.furtherSubarea" path="billingAddress.line1" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 8}"/>
         <formElement:formInputBox idKey="address.phone" labelKey="address.phone" path="billingAddress.phoneNumber" inputCSS="form-control" mandatory="false" tabindex="${tabindex + 9}"/>
