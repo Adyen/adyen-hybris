@@ -154,19 +154,13 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute("country", countryIsoCode);
 
         final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
-        AddressForm addressForm = adyenPaymentForm.getBillingAddress();
-        if (addressForm == null) {
-            addressForm = new AddressForm();
-        }
+        AddressForm addressForm = new AddressForm();
 
-        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
         if (useAdyenDeliveryAddress) {
             final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-
             if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
                 addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
             }
-
             addressForm.setTitleCode(deliveryAddress.getTitleCode());
             addressForm.setFirstName(deliveryAddress.getFirstName());
             addressForm.setLastName(deliveryAddress.getLastName());
@@ -178,6 +172,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             addressForm.setPhoneNumber(deliveryAddress.getPhone());
         }
         adyenPaymentForm.setBillingAddress(addressForm);
+        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
         return BillingAddressformPage;
     }
 

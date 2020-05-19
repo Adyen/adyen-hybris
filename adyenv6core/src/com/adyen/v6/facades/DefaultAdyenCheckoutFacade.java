@@ -42,7 +42,6 @@ import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
@@ -828,9 +827,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
 
-        if (paymentMethodType == null || paymentMethodType.isEmpty() || paymentMethodType.equals("scheme") || paymentMethodType.equals("bcmc") || paymentMethodType.equals("bcmc_mobile_QR") || (
-                paymentMethodType.contains("wechatpay")
-                        && ! paymentMethodType.equals("wechatpayWeb")) || paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) || ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
+        if (paymentMethodType == null || paymentMethodType.isEmpty() ||
+                paymentMethodType.equals("scheme") ||
+                paymentMethodType.equals("bcmc") ||
+                paymentMethodType.equals("bcmc_mobile_QR") ||
+                (paymentMethodType.contains("wechatpay")
+                        && ! paymentMethodType.equals("wechatpayWeb")) ||
+                paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
+                ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
         return false;
@@ -901,7 +905,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public PaymentInfoModel createPaymentInfo(final CartModel cartModel, AdyenPaymentForm adyenPaymentForm) {
-
         final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
         paymentInfo.setUser(cartModel.getUser());
         paymentInfo.setSaved(false);
@@ -917,6 +920,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             AddressModel billingAddress = convertToAddressModel(adyenPaymentForm.getBillingAddress());
             paymentInfo.setBillingAddress(billingAddress);
             billingAddress.setOwner(paymentInfo);
+            paymentInfo.setBillingAddress(billingAddress);
         }
 
         paymentInfo.setAdyenPaymentMethod(adyenPaymentForm.getPaymentMethod());
@@ -946,7 +950,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
 
-        // modelService.save(paymentInfo);
+         modelService.save(paymentInfo);
 
         return paymentInfo;
     }
