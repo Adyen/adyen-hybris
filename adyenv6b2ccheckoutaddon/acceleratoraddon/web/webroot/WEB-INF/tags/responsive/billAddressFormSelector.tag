@@ -8,7 +8,6 @@
 
 <div id="billingAdyenCountrySelector" data-address-code="${fn:escapeXml(cartData.deliveryAddress.id)}" data-country-iso-code="${fn:escapeXml(cartData.deliveryAddress.country.isocode)}"
      data-display-title="false" class="clearfix">
-    <%--	<input type="hidden" value="${fn:escapeXml(silentOrderPageData.parameters['billTo_email'])}" class="text" name="billTo_email" id="billTo_email">--%>
     <formElement:formSelectBox idKey="address.country"
                                labelKey="address.country"
                                path="billingAddress.countryIsoCode"
