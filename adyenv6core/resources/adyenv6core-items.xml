@@ -145,7 +145,11 @@
             <attributes>
                 <attribute qualifier="adyenAPIKey" type="java.lang.String">
                     <description>System User API Key</description>
-                    <persistence type="property"/>
+                    <persistence type="property">
+                        <columntype>
+                            <value>varchar(1024)</value>
+                        </columntype>
+                    </persistence>
                     <modifiers encrypted="true"/>
                 </attribute>
                 <attribute qualifier="adyenNotificationUsername" type="java.lang.String">
@@ -215,7 +219,11 @@
                 </attribute>
                 <attribute qualifier="adyenPosApiKey" type="java.lang.String">
                     <description>POS API Key</description>
-                    <persistence type="property"/>
+                    <persistence type="property">
+                        <columntype>
+                            <value>varchar(1024)</value>
+                        </columntype>
+                    </persistence>
                     <modifiers encrypted="true" optional="true"/>
                 </attribute>
                 <attribute qualifier="adyenPosStoreId" type="java.lang.String">
