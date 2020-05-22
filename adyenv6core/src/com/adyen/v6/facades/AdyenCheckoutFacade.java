@@ -23,6 +23,7 @@ package com.adyen.v6.facades;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
@@ -207,6 +209,8 @@ public interface AdyenCheckoutFacade {
      * Updates BindingResult
      */
     void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+
+    List<CountryData> getBillingCountries();
 
     PaymentDetailsListWsDTO getPaymentDetails(String userId) throws IOException, ApiException;
 
