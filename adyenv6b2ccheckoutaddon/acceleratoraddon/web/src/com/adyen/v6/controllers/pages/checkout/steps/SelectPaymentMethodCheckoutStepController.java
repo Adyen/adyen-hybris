@@ -190,9 +190,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
-            if (adyenPaymentForm.getBillingAddress() == null) {
-                AdyenPaymentForm newPaymentForm = new AdyenPaymentForm();
-                model.addAttribute(ADYEN_PAYMENT_FORM, newPaymentForm);
+            if (adyenPaymentForm.getBillingAddress() != null) {
+               adyenPaymentForm.resetFormExceptBillingAddress();
             }
             return enterStep(model, redirectAttributes);
         }
