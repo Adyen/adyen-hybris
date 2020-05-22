@@ -281,6 +281,31 @@ public class AdyenPaymentForm {
         this.cardType = cardType;
     }
 
+    public void resetFormExceptBillingAddress(){
+        this.paymentMethod = null;
+        this.cseToken = null;
+        this.encryptedCardNumber = null;
+        this.encryptedExpiryMonth = null;
+        this.encryptedExpiryYear = null;
+        this.encryptedSecurityCode = null;
+        this.cardBrand = null;
+        this.cardHolder = null;
+        this.cardType = null;
+        this.selectedReference = null;
+        this.installments = 0;
+        this.rememberTheseDetails = false;
+        this.issuerId = null;
+        this.dob = null;
+        this.dfValue = null;
+        this.firstName = null;
+        this.lastName = null;
+        this.socialSecurityNumber = null;
+        this.browserInfo = null;
+        this.terminalId = null;
+        this.useAdyenDeliveryAddress = false;
+        this.billingAddress = billingAddress;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
