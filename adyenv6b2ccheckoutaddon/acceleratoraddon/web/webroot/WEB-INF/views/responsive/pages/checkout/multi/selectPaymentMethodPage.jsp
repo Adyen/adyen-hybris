@@ -8,7 +8,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="formElement" tagdir="/WEB-INF/tags/responsive/formElement" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ taglib prefix="address" tagdir="/WEB-INF/tags/responsive/address" %>
+<%@ taglib prefix="address" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 
@@ -22,7 +22,7 @@
         <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.css"/>
 
         <script type="text/javascript">
-            AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${originKey}" );
+            AdyenCheckoutHybris.initiateCheckout( "${shopperLocale}", "${environmentMode}", "${originKey}" );
 
             <c:if test="${not empty allowedCards}">
             //Set the allowed cards
@@ -30,7 +30,7 @@
             <c:forEach items="${allowedCards}" var="allowedCard">
             allowedCards.push( "${allowedCard.code}" );
             </c:forEach>
-            AdyenCheckoutHybris.initiateCard(allowedCards);
+            AdyenCheckoutHybris.initiateCard( allowedCards );
 
             </c:if>
 
@@ -46,7 +46,7 @@
 
             <c:if test="${not empty selectedPaymentMethod}">
             AdyenCheckoutHybris.togglePaymentMethod( "${selectedPaymentMethod}" );
-            $( 'input[type=radio][name=paymentMethod][value="${selectedPaymentMethod}"]' ).prop("checked", true);
+            $( 'input[type=radio][name=paymentMethod][value="${selectedPaymentMethod}"]' ).prop( "checked", true );
             </c:if>
 
             // Toggle payment method specific areas (credit card form and issuers list)
@@ -55,21 +55,21 @@
                 AdyenCheckoutHybris.togglePaymentMethod( paymentMethod );
             } );
 
-            AdyenCheckoutHybris.createDobDatePicker("p_method_adyen_hpp_dob");
+            AdyenCheckoutHybris.createDobDatePicker( "p_method_adyen_hpp_dob" );
             AdyenCheckoutHybris.createDfValue();
 
 
             <c:if test="${not empty issuerLists['ideal']}">
-            AdyenCheckoutHybris.initiateIdeal(${issuerLists['ideal']});
+            AdyenCheckoutHybris.initiateIdeal( ${issuerLists['ideal']} );
             </c:if>
 
             <c:if test="${not empty issuerLists['eps']}">
-            AdyenCheckoutHybris.initiateEps(${issuerLists['eps']});
+            AdyenCheckoutHybris.initiateEps( ${issuerLists['eps']} );
             </c:if>
 
             <c:forEach items="${storedCards}" var="storedCard">
 
-            var storedCardJS=
+            var storedCardJS =
                 {
                     storedPaymentMethodId: "${storedCard.id}",
                     name: "${storedCard.name}",
@@ -82,7 +82,7 @@
                     supportedShopperInteractions: "${storedCard.supportedShopperInteractions}",
                     shopperEmail: "${storedCard.shopperEmail}"
                 };
-            AdyenCheckoutHybris.initiateOneClickCard(storedCardJS);
+            AdyenCheckoutHybris.initiateOneClickCard( storedCardJS );
 
             </c:forEach>
 
@@ -121,6 +121,36 @@
                             <form:hidden path="browserInfo"/>
                             <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
+
+                            <%-- Billing Information --%>
+                            <div class="headline"><spring:message text="Billing Information"/></div>
+
+                            <c:if test="${cartData.deliveryItemsQuantity > 0}">
+                                <div id="useAdyenDeliveryAddressData"
+                                     data-titlecode="${fn:escapeXml(deliveryAddress.titleCode)}"
+                                     data-firstname="${fn:escapeXml(deliveryAddress.firstName)}"
+                                     data-lastname="${fn:escapeXml(deliveryAddress.lastName)}"
+                                     data-line1="${fn:escapeXml(deliveryAddress.line1)}"
+                                     data-line2="${fn:escapeXml(deliveryAddress.line2)}"
+                                     data-town="${fn:escapeXml(deliveryAddress.town)}"
+                                     data-postalcode="${fn:escapeXml(deliveryAddress.postalCode)}"
+                                     data-countryisocode="${fn:escapeXml(deliveryAddress.country.isocode)}"
+                                     data-regionisocode="${fn:escapeXml(deliveryAddress.region.isocodeShort)}"
+                                     data-address-id="${fn:escapeXml(deliveryAddress.id)}"
+                                ></div>
+
+                                <formElement:formCheckbox
+                                        path="useAdyenDeliveryAddress"
+                                        idKey="useAdyenDeliveryAddress"
+                                        labelKey="checkout.multi.sop.useMyDeliveryAddress"
+                                        tabindex="11"/>
+                            </c:if>
+
+                            <address:billAddressFormSelector supportedCountries="${countries}" regions="${regions}" tabindex="12"/>
+
+                            <%-- Billing Information end --%>
+
+                            <div class="headline"><spring:message text="Payment Information"/></div>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">

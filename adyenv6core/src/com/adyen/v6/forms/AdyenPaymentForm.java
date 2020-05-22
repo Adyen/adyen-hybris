@@ -75,6 +75,19 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
+    //Billing address related fields
+    private boolean useAdyenDeliveryAddress;
+    private AddressForm billingAddress;
+
+
+    public boolean getUseAdyenDeliveryAddress() {
+        return useAdyenDeliveryAddress;
+    }
+
+    public void setUseAdyenDeliveryAddress(boolean useAdyenDeliveryAddress) {
+        this.useAdyenDeliveryAddress = useAdyenDeliveryAddress;
+    }
+
     public String getBrowserInfo() {
         return browserInfo;
     }
@@ -141,6 +154,14 @@ public class AdyenPaymentForm {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public AddressForm getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(AddressForm billingAddress) {
+        this.billingAddress = billingAddress;
     }
 
     public Date getDob() {
@@ -260,6 +281,31 @@ public class AdyenPaymentForm {
         this.cardType = cardType;
     }
 
+    public void resetFormExceptBillingAddress(){
+        this.paymentMethod = null;
+        this.cseToken = null;
+        this.encryptedCardNumber = null;
+        this.encryptedExpiryMonth = null;
+        this.encryptedExpiryYear = null;
+        this.encryptedSecurityCode = null;
+        this.cardBrand = null;
+        this.cardHolder = null;
+        this.cardType = null;
+        this.selectedReference = null;
+        this.installments = 0;
+        this.rememberTheseDetails = false;
+        this.issuerId = null;
+        this.dob = null;
+        this.dfValue = null;
+        this.firstName = null;
+        this.lastName = null;
+        this.socialSecurityNumber = null;
+        this.browserInfo = null;
+        this.terminalId = null;
+        this.useAdyenDeliveryAddress = false;
+        this.billingAddress = billingAddress;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -284,6 +330,8 @@ public class AdyenPaymentForm {
         sb.append("    cardBrand: ").append(Util.toIndentedString(cardBrand)).append("\n");
         sb.append("    terminalId: ").append(Util.toIndentedString(terminalId)).append("\n");
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
+        sb.append("    useAdyenDeliveryAddress: ").append(Util.toIndentedString(useAdyenDeliveryAddress)).append("\n");
+        sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
         sb.append("}");
         return sb.toString();
     }

@@ -36,6 +36,7 @@
         <property name="adyenReturnUrl" type="java.lang.String"/>
         <property name="adyenTerminalId" type="java.lang.String"/>
         <property name="adyenBrowserInfo" type="java.lang.String"/>
+        <property name="adyenBillingAddress" type="de.hybris.platform.commercefacades.user.data.AddressData"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
@@ -68,6 +69,7 @@
         <property name="installments" type="Integer" />
         <property name="terminalId" type="String" />
         <property name="adyenLastName" type="String" />
+        <property name="adyenBillingAddress" type="de.hybris.platform.commercewebservicescommons.dto.user.AddressWsDTO"/>
     </bean>
 
     <bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">

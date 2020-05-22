@@ -23,9 +23,9 @@ package com.adyen.v6.forms.validation;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import com.adyen.v6.forms.AdyenPaymentForm;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 public class AdyenPaymentFormValidator implements Validator {
@@ -89,6 +89,15 @@ public class AdyenPaymentFormValidator implements Validator {
             if (form.getDob() == null) {
                 errors.reject("checkout.error.paymentethod.dob.invalid");
             }
+        }
+        if (form.getUseAdyenDeliveryAddress() == false && form.getBillingAddress()!=null) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.titleCode", "address.title.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.firstName", "address.firstName.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.lastName", "address.lastName.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.line1", "address.line1.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.townCity", "address.townCity.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.postcode", "address.postcode.invalid");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.countryIsoCode", "address.country.invalid");
         }
     }
 }
