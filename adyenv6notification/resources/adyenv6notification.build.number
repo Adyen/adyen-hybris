@@ -5,5 +5,5 @@ description=adyenv6notification
 name=adyenv6notification
 releasedate=20170803 1323
 vendor=adyen
-version=6.4.0
-version.api=6.4.0
+version=6.5.0
+version.api=6.5.0
