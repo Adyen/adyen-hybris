@@ -355,8 +355,10 @@ public class AdyenRequestFactory {
         }
         if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum) {
             paymentsRequest.setEnableRecurring(true);
-            paymentsRequest.setEnableOneClick(true);
-        } else if (Recurring.ContractEnum.ONECLICK == contractEnum) {
+            if(cartData.getAdyenRememberTheseDetails()) {
+                paymentsRequest.setEnableOneClick(true);
+            }
+        } else if (Recurring.ContractEnum.ONECLICK == contractEnum && cartData.getAdyenRememberTheseDetails() ) {
             paymentsRequest.setEnableOneClick(true);
         } else if (Recurring.ContractEnum.RECURRING == contractEnum) {
             paymentsRequest.setEnableRecurring(true);
@@ -383,7 +385,7 @@ public class AdyenRequestFactory {
         String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
         String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
         String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
-        if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) {
+        if ((Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) && cartData.getAdyenRememberTheseDetails()) {
             paymentsRequest.setEnableOneClick(true);
         }
         if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
