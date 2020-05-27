@@ -32,16 +32,6 @@ $( document ).ready( function () {
         } );
     }
 
-    function bindCycleFocusEvent () {
-        $( '#lastInTheForm' ).blur( function () {
-            $( '#silentOrderPostForm [tabindex$="10"]' ).focus();
-        } )
-    }
-
-    function isEmpty ( obj ) {
-        return Boolean( typeof obj == 'undefined' || obj === null || obj === '' );
-    }
-
     function disableAddressForm () {
         $( 'input[id^="address\\."]' ).prop( 'disabled', true );
         $( 'select[id^="address\\."]' ).prop( 'disabled', true );
