@@ -24,23 +24,29 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
@@ -49,6 +55,11 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMe
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.user.UserFacade;
+import de.hybris.platform.commercefacades.user.data.AddressData;
+import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commercefacades.user.data.TitleData;
+import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -71,6 +82,23 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
+    @Resource(name = "userFacade")
+    private UserFacade userFacade;
+
+    @ModelAttribute("billingCountries")
+    public Collection<CountryData> getBillingCountries() {
+        return getCheckoutFacade().getBillingCountries();
+    }
+
+    @ModelAttribute("titles")
+    public Collection<TitleData> getBillingTitleCodes() {
+        return getUserFacade().getTitles();
+    }
+
+    protected UserFacade getUserFacade() {
+        return userFacade;
+    }
+
     @Autowired
     private HttpServletRequest httpServletRequest;
 
@@ -87,10 +115,12 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         model.addAttribute("metaRobots", "noindex,nofollow");
         model.addAttribute("hasNoPaymentInfo", getCheckoutFlowFacade().hasNoPaymentInfo());
         model.addAttribute(BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(CHECKOUT_MULTI_PAYMENT_METHOD_BREADCRUMB));
-        model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
-
+        if (! model.containsAttribute(ADYEN_PAYMENT_FORM)) {
+            model.addAttribute(ADYEN_PAYMENT_FORM, new AdyenPaymentForm());
+        }
         model.addAttribute(CSE_GENERATION_TIME, fromCalendar(Calendar.getInstance()));
         model.addAttribute(CART_DATA_ATTR, cartData);
+        model.addAttribute("deliveryAddress", cartData.getDeliveryAddress());
         model.addAttribute("expiryYears", getExpiryYears());
 
         try {
@@ -113,6 +143,40 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.SelectPaymentMethod;
     }
 
+
+    @RequestMapping(value = "/billingaddressform", method = RequestMethod.GET)
+    public String getCountryAddressForm(@RequestParam("countryIsoCode") final String countryIsoCode,
+                                        @RequestParam("useAdyenDeliveryAddress") final boolean useAdyenDeliveryAddress,
+                                        final Model model) {
+
+        model.addAttribute("supportedCountries", getCountries());
+        model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(countryIsoCode));
+        model.addAttribute("country", countryIsoCode);
+
+        final AdyenPaymentForm adyenPaymentForm = new AdyenPaymentForm();
+        AddressForm addressForm = new AddressForm();
+
+        if (useAdyenDeliveryAddress) {
+            final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
+                addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
+            }
+            addressForm.setTitleCode(deliveryAddress.getTitleCode());
+            addressForm.setFirstName(deliveryAddress.getFirstName());
+            addressForm.setLastName(deliveryAddress.getLastName());
+            addressForm.setLine1(deliveryAddress.getLine1());
+            addressForm.setLine2(deliveryAddress.getLine2());
+            addressForm.setTownCity(deliveryAddress.getTown());
+            addressForm.setPostcode(deliveryAddress.getPostalCode());
+            addressForm.setCountryIsoCode(deliveryAddress.getCountry().getIsocode());
+            addressForm.setPhoneNumber(deliveryAddress.getPhone());
+        }
+        adyenPaymentForm.setBillingAddress(addressForm);
+        model.addAttribute("adyenPaymentForm", adyenPaymentForm);
+        return BillingAddressformPage;
+    }
+
+
     @RequestMapping(value = "", method = POST)
     @RequireHardLogIn
     public String setPaymentMethod(final Model model,
@@ -122,9 +186,13 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
-        if (bindingResult.hasErrors()) {
+
+        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
+            if (adyenPaymentForm.getBillingAddress() != null) {
+               adyenPaymentForm.resetFormExceptBillingAddress();
+            }
             return enterStep(model, redirectAttributes);
         }
 
