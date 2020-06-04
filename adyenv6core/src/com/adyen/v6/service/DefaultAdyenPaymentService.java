@@ -29,6 +29,7 @@ import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsRequest;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
@@ -82,6 +83,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
@@ -193,6 +195,23 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                                                          customerModel,
                                                                                          baseStore.getAdyenRecurringContractMode());
 
+
+        LOG.debug(paymentsRequest);
+        PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
+        LOG.debug(paymentsResponse);
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+        Checkout checkout = new Checkout(client);
+
+        PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
+                cartData,
+                paymentMethodDetails,
+                requestInfo,
+                customerModel);
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
@@ -377,7 +396,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details, String paymentData) throws Exception {
+    public PaymentsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception {
         Checkout checkout = new Checkout(client);
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
         paymentsDetailsRequest.setDetails(details);
