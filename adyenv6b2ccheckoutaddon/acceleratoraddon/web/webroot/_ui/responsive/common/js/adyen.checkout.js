@@ -263,6 +263,76 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
+        initiatePaypal: function (amount) {
+            var paypalNode = document.getElementById('adyen_hpp_paypal_container');
+
+            var paypalComponent = this.checkout.create("paypal", {
+                environment: "test", // Change this to "live" when you're ready to accept live PayPal payments
+                countryCode: "NL", // Only needed for test. This will be automatically retrieved when you are in production.
+                amount: {
+                    currency: amount.currency,
+                    value: amount.value
+                },
+                intent: "capture", // Change this to "authorize" if the payments should not be captured immediately. Contact Support to enable this flow.
+                //merchantId: "YOUR_PAYPAL_MERCHANT_ID",  // Your PayPal Merchant ID. Required for accepting live payments.
+                onSubmit: (state, component) => {
+                    // Your function calling your server to make the /payments request.
+                    this.makePayment(state.data.paymentMethod, component);
+                },
+                onCancel: (data, component) => {
+                    // Sets your prefered status of the component when a PayPal payment is cancelled. In this example, return to the initial state.
+                    component.setStatus('ready');
+                },
+                onError: (error, component) => {
+                    // Sets your prefered status of the component when an error occurs. In this example, return to the initial state.
+                    component.setStatus('ready');
+                },
+                onAdditionalDetails: (state, component) => {
+                    this.submitDetails(state.data);
+                }
+            });
+
+            try {
+                paypalComponent.mount(paypalNode);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the PayPal component: ' + e);
+            }
+        },
+
+        makePayment: function (data, component) {
+            $.ajax({
+                url: ACC.config.encodedContextPath + '/adyen/component/paypal-payment',
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if(data.action) {
+                        component.handleAction(data.action)
+                    }
+                }
+            })
+                .fail(function(xhr, textStatus) {
+                    console.log('Something went wrong trying to makePayment from component: ' + textStatus);
+                })
+        },
+
+        submitDetails: function (data) {
+            $.ajax({
+                url: ACC.config.encodedContextPath + '/adyen/component/submit-details',
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if(data) {
+                        console.log(data);
+                    }
+                }
+            })
+                .fail(function(xhr, textStatus) {
+                    console.log('Something went wrong trying to submitDetails from component: ' + textStatus);
+                })
+        },
+
         showSpinner: function () {
             document.getElementById("spinner_wrapper").style.display = "flex";
         }

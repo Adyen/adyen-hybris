@@ -28,6 +28,7 @@ import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.CheckoutPaymentsAction;
 import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.StoredPaymentMethod;
@@ -199,6 +200,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_ISSUER_LISTS = "issuerLists";
     public static final String MODEL_CONNECTED_TERMINAL_LIST = "connectedTerminalList";
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
+    public static final String MODEL_AMOUNT = "amount";
+
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -516,6 +519,36 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
+    @Override
+    public PaymentsResponse componentPayment(final HttpServletRequest request, final CartData cartData, final PaymentMethodDetails paymentMethodDetails) throws Exception {
+        CustomerModel customer = null;
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        updateCartWithSessionData(cartData);
+
+        RequestInfo requestInfo = new RequestInfo(request);
+        requestInfo.setShopperLocale(getShopperLocale());
+
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse componentDetails(final HttpServletRequest request, final Map<String, String> details, final String paymentData) throws Exception {
+
+        PaymentsResponse response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, paymentData);
+
+        CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if (!cartData.getCode().equals(response.getMerchantReference())) {
+            throw new InvalidCartException("Merchant reference doesn't match cart's code");
+        }
+
+        return response;
+    }
+
     private void updateCartWithSessionData(CartData cartData) {
         cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
         cartData.setAdyenEncryptedCardNumber(getSessionService().getAttribute(SESSION_SF_CARD_NUMBER));
@@ -787,6 +820,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         }
 
+        Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
+
         // current selected PaymentMethod
         model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, cartData.getAdyenPaymentMethod());
 
@@ -821,6 +856,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CONNECTED_TERMINAL_LIST, connectedTerminalList);
         //Include Issuer Lists
         model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
+
+        //Include Amount for components
+        model.addAttribute(MODEL_AMOUNT, amount);
+
         modelService.save(cartModel);
     }
 

@@ -17,9 +17,9 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.js"></script>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.8.1/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.4.0/adyen.css"/>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.8.1/adyen.css"/>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout( "${shopperLocale}", "${environmentMode}", "${originKey}" );
@@ -84,6 +84,17 @@
                 };
             AdyenCheckoutHybris.initiateOneClickCard( storedCardJS );
 
+            </c:forEach>
+
+            <c:forEach items="${paymentMethods}" var="paymentMethod">
+                <c:if test="${paymentMethod.type eq 'paypal'}">
+                var amountJS =
+                    {
+                        value: "${amount.value}",
+                        currency: "${amount.currency}"
+                    };
+                AdyenCheckoutHybris.initiatePaypal(amountJS);
+                </c:if>
             </c:forEach>
 
 
