@@ -263,20 +263,18 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        initiatePaypal: function (amount) {
+        initiatePaypal: function (amount, isImmediateCapture) {
             var paypalNode = document.getElementById('adyen_hpp_paypal_container');
 
             var paypalComponent = this.checkout.create("paypal", {
-                environment: "test", // Change this to "live" when you're ready to accept live PayPal payments
-                countryCode: "NL", // Only needed for test. This will be automatically retrieved when you are in production.
+                environment: this.checkout.options.environment,
                 amount: {
                     currency: amount.currency,
                     value: amount.value
                 },
-                intent: "capture", // Change this to "authorize" if the payments should not be captured immediately. Contact Support to enable this flow.
+                intent: isImmediateCapture ? "capture" : "authorize",
                 //merchantId: "YOUR_PAYPAL_MERCHANT_ID",  // Your PayPal Merchant ID. Required for accepting live payments.
                 onSubmit: (state, component) => {
-                    // Your function calling your server to make the /payments request.
                     this.makePayment(state.data.paymentMethod, component);
                 },
                 onCancel: (data, component) => {
