@@ -93,7 +93,7 @@
                         value: "${amount.value}",
                         currency: "${amount.currency}"
                     };
-                AdyenCheckoutHybris.initiatePaypal(amountJS);
+                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}");
                 </c:if>
             </c:forEach>
 

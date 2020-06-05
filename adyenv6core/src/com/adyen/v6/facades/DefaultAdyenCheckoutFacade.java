@@ -201,6 +201,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_CONNECTED_TERMINAL_LIST = "connectedTerminalList";
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
     public static final String MODEL_AMOUNT = "amount";
+    public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
+
 
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
@@ -857,8 +859,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Include Issuer Lists
         model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
 
-        //Include Amount for components
+        //Include information for components
         model.addAttribute(MODEL_AMOUNT, amount);
+        model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
 
         modelService.save(cartModel);
     }
@@ -1255,6 +1258,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isImmediateCapture() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        if (baseStore.getAdyenImmediateCapture() == null) {
+            return true;
+        }
+        return baseStore.getAdyenImmediateCapture();
     }
 
     public BaseStoreService getBaseStoreService() {

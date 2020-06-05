@@ -249,4 +249,9 @@ public interface AdyenCheckoutFacade {
      * Check POS Payment status using Adyen Terminal API
      */
     OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Returns whether payments have Immediate Capture or not
+     */
+    boolean isImmediateCapture();
 }
