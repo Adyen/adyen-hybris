@@ -301,7 +301,7 @@ public class AdyenPaymentForm {
         this.cardType = cardType;
     }
 
-    public void resetFormExceptBillingAddress(){
+    public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
         this.encryptedCardNumber = null;
@@ -323,6 +323,8 @@ public class AdyenPaymentForm {
         this.browserInfo = null;
         this.terminalId = null;
         this.useAdyenDeliveryAddress = false;
+        this.sepaIbanNumber = null;
+        this.sepaOwnerName = null;
         this.billingAddress = billingAddress;
     }
 
