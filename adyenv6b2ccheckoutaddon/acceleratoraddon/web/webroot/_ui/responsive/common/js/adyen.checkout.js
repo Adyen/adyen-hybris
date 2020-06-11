@@ -103,6 +103,19 @@ var AdyenCheckoutHybris = (function () {
 
             $( 'input[name="txvariant"]' ).remove();
 
+            if( paymentMethod === "sepadirectdebit" ){
+                var sepaOwnerNameField = document.getElementById('sepaOwnerName');
+                var sepaIbanNumberField = document.getElementById('sepaIbanNumber');
+                if( sepaOwnerNameField.value === "" ) {
+                    window.alert("Please enter Owner Name");
+                    return false;
+                }
+                if( sepaIbanNumberField.value === "" ) {
+                    window.alert("Please enter IBAN Number");
+                    return false;
+                }
+            }
+
             return true;
         },
 
@@ -240,6 +253,25 @@ var AdyenCheckoutHybris = (function () {
             } catch (e) {
                 console.log('Something went wrong trying to mount the iDEAL component: ${e}');
             }
+        },
+
+        initiateSepaDirectDebit: function () {
+            var sepaDirectDebitNode = document.getElementById( 'adyen_hpp_sepadirectdebit_container' );
+            var sepaDirectDebit = this.checkout.create( 'sepadirectdebit', {
+                onChange: handleOnChange
+            } );
+
+            function handleOnChange ( event ) {
+                var sepaOwnerNameField = document.getElementById( 'sepaOwnerName' );
+                var sepaIbanNumberField = document.getElementById( 'sepaIbanNumber' );
+
+                var sepaOwnerName = event.data.paymentMethod[ "sepa.ownerName" ]
+                var sepaIbanNumber = event.data.paymentMethod[ "sepa.ibanNumber" ]
+
+                sepaOwnerNameField.value = sepaOwnerName;
+                sepaIbanNumberField.value = sepaIbanNumber;
+            }
+            sepaDirectDebit.mount( sepaDirectDebitNode );
         },
 
         initiateEps: function (epsDetails) {
