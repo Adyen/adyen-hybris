@@ -108,16 +108,6 @@ var AdyenCheckoutHybris = (function () {
                     window.alert("Invalid SEPA Owner Name and IBAN number");
                     return false;
                 }
-                var sepaOwnerNameField = document.getElementById('sepaOwnerName');
-                var sepaIbanNumberField = document.getElementById('sepaIbanNumber');
-                if( sepaOwnerNameField.value === "" ) {
-                    window.alert("Please enter Owner Name");
-                    return false;
-                }
-                if( sepaIbanNumberField.value === "" ) {
-                    window.alert("Please enter IBAN Number");
-                    return false;
-                }
             }
 
             return true;
