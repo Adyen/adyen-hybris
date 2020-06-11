@@ -20,6 +20,7 @@ var AdyenCheckoutHybris = (function () {
         card: null,
         oneClickCards: {},
         selectedCardBrand: null,
+        sepaDirectDebit:null,
 
         convertCardBrand: function () {
             var cardBrand = this.selectedCardBrand;
@@ -84,6 +85,7 @@ var AdyenCheckoutHybris = (function () {
                     this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
                 }
             }
+            $( 'input[name="txvariant"]' ).remove();
 
             if ( ['eps','ideal'].includes(paymentMethod) ) {
                 var issuerIdField = document.getElementById('issuerId');
@@ -101,7 +103,12 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
-            $( 'input[name="txvariant"]' ).remove();
+            if( paymentMethod === "sepadirectdebit" ){
+                if( !this.sepaDirectDebit.state.isValid ) {
+                    window.alert("Invalid SEPA Owner Name and IBAN number");
+                    return false;
+                }
+            }
 
             return true;
         },
@@ -221,6 +228,27 @@ var AdyenCheckoutHybris = (function () {
             this.card.mount(document.getElementById('card-div'));
         },
 
+        initiateSepaDirectDebit: function () {
+            var context = this;
+            var sepaDirectDebitNode = document.getElementById( 'adyen_hpp_sepadirectdebit_container' );
+            this.sepaDirectDebit = this.checkout.create( 'sepadirectdebit', {
+                onChange: handleOnChange
+            } );
+
+            function handleOnChange ( event ) {
+                var sepaOwnerNameField = document.getElementById( 'sepaOwnerName' );
+                var sepaIbanNumberField = document.getElementById( 'sepaIbanNumber' );
+
+                var sepaOwnerName = event.data.paymentMethod[ "sepa.ownerName" ]
+                var sepaIbanNumber = event.data.paymentMethod[ "sepa.ibanNumber" ]
+
+                sepaOwnerNameField.value = sepaOwnerName;
+                sepaIbanNumberField.value = sepaIbanNumber;
+            }
+            this.sepaDirectDebit.mount( sepaDirectDebitNode );
+        },
+
+
         initiateIdeal: function (idealDetails) {
             var idealNode = document.getElementById('adyen_hpp_ideal_container');
             var ideal = this.checkout.create('ideal', {
@@ -241,6 +269,7 @@ var AdyenCheckoutHybris = (function () {
                 console.log('Something went wrong trying to mount the iDEAL component: ${e}');
             }
         },
+
 
         initiateEps: function (epsDetails) {
             var epsNode = document.getElementById('adyen_hpp_eps_container');

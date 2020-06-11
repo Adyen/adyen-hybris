@@ -67,6 +67,10 @@
             AdyenCheckoutHybris.initiateEps( ${issuerLists['eps']} );
             </c:if>
 
+            <c:if test="${sepadirectdebit}">
+            AdyenCheckoutHybris.initiateSepaDirectDebit( );
+            </c:if>
+
             <c:forEach items="${storedCards}" var="storedCard">
 
             var storedCardJS =
@@ -121,6 +125,8 @@
                             <form:hidden path="browserInfo"/>
                             <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
+                            <form:hidden path="sepaOwnerName"/>
+                            <form:hidden path="sepaIbanNumber"/>
 
                             <%-- Billing Information --%>
                             <div class="headline"><spring:message text="Billing Information"/></div>
@@ -188,6 +194,13 @@
                                     <adyen:alternativeMethod
                                             brandCode="eps"
                                             name="EPS"
+                                    />
+                                </c:if>
+
+                                <c:if test="${sepadirectdebit}">
+                                    <adyen:alternativeMethod
+                                            brandCode="sepadirectdebit"
+                                            name="SEPA Direct Debit"
                                     />
                                 </c:if>
 
