@@ -845,7 +845,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 (paymentMethodType.contains("wechatpay")
                         && ! paymentMethodType.equals("wechatpayWeb")) ||
                 paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
-                paymentMethodType.contains("sepadirectdebit") ||
+                paymentMethodType.contains(PAYMENT_METHOD_SEPA_DIRECTDEBIT) ||
                 ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
