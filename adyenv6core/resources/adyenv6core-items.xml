@@ -317,6 +317,14 @@
                     <description>Shopper's social security number (applicable for openinvoice methods)</description>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="adyenSepaOwnerName" type="java.lang.String">
+                    <description>Shopper's name on the SEPA bank account</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenSepaIbanNumber" type="java.lang.String">
+                    <description>Shopper's IBAN Number of the SEPA bank account</description>
+                    <persistence type="property"/>
+                </attribute>
                 <attribute qualifier="adyenFirstName" type="java.lang.String">
                     <description>Shopper's first name (applicable for Boleto)</description>
                     <persistence type="property"/>
