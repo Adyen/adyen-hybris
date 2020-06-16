@@ -59,16 +59,16 @@
             AdyenCheckoutHybris.createDfValue();
 
 
+            <c:if test="${sepadirectdebit}">
+            AdyenCheckoutHybris.initiateSepaDirectDebit( );
+            </c:if>
+
             <c:if test="${not empty issuerLists['ideal']}">
             AdyenCheckoutHybris.initiateIdeal( ${issuerLists['ideal']} );
             </c:if>
 
             <c:if test="${not empty issuerLists['eps']}">
             AdyenCheckoutHybris.initiateEps( ${issuerLists['eps']} );
-            </c:if>
-
-            <c:if test="${sepadirectdebit}">
-            AdyenCheckoutHybris.initiateSepaDirectDebit( );
             </c:if>
 
             <c:forEach items="${storedCards}" var="storedCard">
@@ -183,6 +183,13 @@
                                     />
                                 </c:forEach>
 
+                                <c:if test="${sepadirectdebit}">
+                                    <adyen:alternativeMethod
+                                            brandCode="sepadirectdebit"
+                                            name="SEPA Direct Debit"
+                                    />
+                                </c:if>
+
                                 <c:if test="${not empty issuerLists['ideal']}">
                                     <adyen:alternativeMethod
                                             brandCode="ideal"
@@ -194,13 +201,6 @@
                                     <adyen:alternativeMethod
                                             brandCode="eps"
                                             name="EPS"
-                                    />
-                                </c:if>
-
-                                <c:if test="${sepadirectdebit}">
-                                    <adyen:alternativeMethod
-                                            brandCode="sepadirectdebit"
-                                            name="SEPA Direct Debit"
                                     />
                                 </c:if>
 
