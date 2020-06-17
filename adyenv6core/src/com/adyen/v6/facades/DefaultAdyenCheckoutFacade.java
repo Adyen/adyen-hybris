@@ -32,6 +32,7 @@ import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.StoredPaymentMethod;
+import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.model.nexo.ErrorConditionType;
 import com.adyen.model.nexo.ResultType;
 import com.adyen.model.recurring.Recurring;
@@ -53,6 +54,8 @@ import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -82,6 +85,7 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -94,6 +98,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -534,6 +539,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
+        if(PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+        }
+
+        //Lock the cart to prevent changes while the payment is pending
+        lockSessionCart();
 
         return paymentsResponse;
     }
@@ -543,10 +554,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentsResponse response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, paymentData);
 
+        restoreSessionCart();
         CartData cartData = getCheckoutFacade().getCheckoutCart();
         if (!cartData.getCode().equals(response.getMerchantReference())) {
             throw new InvalidCartException("Merchant reference doesn't match cart's code");
         }
+
+        //Lock cart again to be handled on results call
+        lockSessionCart();
 
         return response;
     }
@@ -1268,6 +1283,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         return baseStore.getAdyenImmediateCapture();
     }
+
+    @Override
+    public OrderData handleComponentResult(String resultJson) throws Exception {
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        PaymentsResponse paymentsResponse = gson.fromJson(resultJson, new TypeToken<PaymentsResponse>() {
+        }.getType());
+
+        restoreSessionCart();
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            return createAuthorizedOrder(paymentsResponse);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+    }
+
 
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;

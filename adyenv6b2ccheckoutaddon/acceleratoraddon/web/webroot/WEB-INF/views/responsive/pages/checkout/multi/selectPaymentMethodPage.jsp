@@ -14,6 +14,7 @@
 
 <c:url value="${currentStepUrl}" var="choosePaymentMethodUrl"/>
 <c:url value="/checkout/multi/adyen/select-payment-method" var="selectPaymentMethod"/>
+<c:url value="/checkout/multi/adyen/select-payment-method/component-result" var="handleComponentResult"/>
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
@@ -133,6 +134,8 @@
                             <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
 
+                            <form:hidden path="componentData"/>
+
                             <%-- Billing Information --%>
                             <div class="headline"><spring:message text="Billing Information"/></div>
 
@@ -220,6 +223,14 @@
                                     />
                                 </c:if>
                             </div>
+                        </form:form>
+
+                        <form:form id="handleComponentResultForm"
+                                   class="create_update_payment_form"
+                                   action="${handleComponentResult}"
+                                   method="post">
+                            <input type="hidden" id="resultData" name="resultData"/>
+                            <input type="hidden" id="resultIsError" name="resultIsError" value="false"/>
                         </form:form>
 
                         <button type="button"

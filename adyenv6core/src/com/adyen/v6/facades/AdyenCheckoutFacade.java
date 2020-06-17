@@ -20,17 +20,7 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import javax.servlet.http.HttpServletRequest;
-
 import com.adyen.model.checkout.PaymentMethodDetails;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -42,6 +32,16 @@ import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsD
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -254,4 +254,10 @@ public interface AdyenCheckoutFacade {
      * Returns whether payments have Immediate Capture or not
      */
     boolean isImmediateCapture();
+
+    /**
+     * Handles payment result from component
+     * Validates the result and updates the cart based on it
+     */
+    OrderData handleComponentResult(String resultJson) throws Exception;
 }
