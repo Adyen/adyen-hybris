@@ -59,6 +59,10 @@ public class AdyenPaymentForm {
     //HPP
     private String issuerId;
 
+    //SEPA direct debit fields
+    private String sepaOwnerName;
+    private String sepaIbanNumber;
+
     // openinvoice fields
     private String dob;
     private String dfValue;
@@ -165,6 +169,22 @@ public class AdyenPaymentForm {
 
     public void setBillingAddress(AddressForm billingAddress) {
         this.billingAddress = billingAddress;
+    }
+
+    public String getSepaOwnerName() {
+        return sepaOwnerName;
+    }
+
+    public void setSepaOwnerName(String sepaOwnerName) {
+        this.sepaOwnerName = sepaOwnerName;
+    }
+
+    public String getSepaIbanNumber() {
+        return sepaIbanNumber;
+    }
+
+    public void setSepaIbanNumber(String sepaIbanNumber) {
+        this.sepaIbanNumber = sepaIbanNumber;
     }
 
     public Date getDob() {
@@ -296,7 +316,7 @@ public class AdyenPaymentForm {
         return PAYMENT_METHOD_PAYPAL.equals(paymentMethod);
     }
 
-    public void resetFormExceptBillingAddress(){
+    public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
         this.encryptedCardNumber = null;
@@ -318,7 +338,10 @@ public class AdyenPaymentForm {
         this.browserInfo = null;
         this.terminalId = null;
         this.useAdyenDeliveryAddress = false;
+        this.sepaIbanNumber = null;
+        this.sepaOwnerName = null;
         this.componentData = null;
+        this.billingAddress = billingAddress;
     }
 
     @Override
@@ -335,6 +358,8 @@ public class AdyenPaymentForm {
         sb.append("    cardType: ").append(Util.toIndentedString(cardType)).append("\n");
         sb.append("    installments: ").append(Util.toIndentedString(installments)).append("\n");
         sb.append("    issuerId: ").append(Util.toIndentedString(issuerId)).append("\n");
+        sb.append("    sepaOwnerName: ").append(Util.toIndentedString(sepaOwnerName)).append("\n");
+        sb.append("    sepaIbanNumber: ").append(Util.toIndentedString(sepaIbanNumber)).append("\n");
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
         sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
