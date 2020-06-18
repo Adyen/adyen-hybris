@@ -334,10 +334,6 @@ var AdyenCheckoutHybris = (function () {
                     }
                 }
             })
-                .fail(function (xhr, textStatus) {
-                    console.log('Something went wrong trying to makePayment from component: ' + textStatus);
-                    handleResult(ErrorMessages.PaymentError, true);
-                })
         },
 
         submitDetails: function (data, handleResult) {
@@ -369,10 +365,6 @@ var AdyenCheckoutHybris = (function () {
                     }
                 }
             })
-                .fail(function (xhr, textStatus) {
-                    console.log('Something went wrong trying to submitDetails from component: ' + textStatus);
-                    handleResult(ErrorMessages.PaymentError, true);
-                })
         },
 
         handleResult: function (data, error) {
