@@ -17,7 +17,7 @@
         <formElement:formInputBox idKey="address.line1" labelKey="address.line1" path="billingAddress.line1" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 4}"/>
         <formElement:formInputBox idKey="address.line2" labelKey="address.line2" path="billingAddress.line2" inputCSS="form-control" mandatory="false" tabindex="${tabindex + 5}"/>
         <formElement:formInputBox idKey="address.townCity" labelKey="address.townCity" path="billingAddress.townCity" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 6}"/>
-        <formElement:formSelectBox idKey="address.region" labelKey="address.regionIso" path="billingAddress.regionIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectState"
+        <formElement:formSelectBox idKey="address.region" labelKey="address.state" path="billingAddress.regionIso" mandatory="true" skipBlank="false" skipBlankMessageKey="address.selectState"
                                    items="${regions}" itemValue="isocodeShort" tabindex="${tabindex + 7}" selectCSSClass="form-control"/>
         <formElement:formInputBox idKey="address.postcode" labelKey="address.postcode" path="billingAddress.postcode" inputCSS="form-control" mandatory="true" tabindex="${tabindex + 8}"/>
         <formElement:formInputBox idKey="address.phone" labelKey="address.phone" path="billingAddress.phoneNumber" inputCSS="form-control" mandatory="false" tabindex="${tabindex + 9}"/>
