@@ -23,6 +23,7 @@ package com.adyen.v6.controllers.pages;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.service.exception.ApiException;
+import com.adyen.v6.exceptions.AdyenComponentException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -36,7 +37,6 @@ import de.hybris.platform.acceleratorfacades.order.AcceleratorCheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.order.InvalidCartException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -48,11 +48,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -78,21 +79,21 @@ public class AdyenComponentController {
     public String componentPayment(final Model model,
                                 final HttpServletRequest request,
                                 @Valid final AdyenPaymentForm adyenPaymentForm,
-                                final BindingResult bindingResult) throws AdyenNonAuthorizedPaymentException, InvalidCartException {
-        try {
-            LOGGER.debug("Component paymentForm: " + adyenPaymentForm);
+                                final BindingResult bindingResult) throws AdyenComponentException {
+        LOGGER.debug("Component paymentForm: " + adyenPaymentForm);
 
-            //Save payment information
-            getAdyenCheckoutFacade().handlePaymentForm(adyenPaymentForm, bindingResult);
-            if (bindingResult.hasGlobalErrors() || bindingResult.hasErrors()) {
-                LOGGER.debug(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
-                if (adyenPaymentForm.getBillingAddress() != null) {
-                    adyenPaymentForm.resetFormExceptBillingAddress();
-                }
-                throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
+        //Save payment information
+        getAdyenCheckoutFacade().handlePaymentForm(adyenPaymentForm, bindingResult);
+        if (bindingResult.hasGlobalErrors() || bindingResult.hasErrors()) {
+            LOGGER.debug(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
+            if (adyenPaymentForm.getBillingAddress() != null) {
+                adyenPaymentForm.resetFormExceptBillingAddress();
             }
+            throw new AdyenComponentException("checkout.error.paymentethod.formentry.invalid");
+        }
 
-            validateOrderForm(model);
+        try {
+            validateOrderForm();
 
             //Make payment request
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -104,19 +105,20 @@ public class AdyenComponentController {
             PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, payPalDetails);
             return gson.toJson(paymentsResponse);
         } catch (InvalidCartException e) {
-            throw e;
+            LOGGER.error("InvalidCartException", e);
+            throw new AdyenComponentException(e.getMessage());
         } catch (AdyenNonAuthorizedPaymentException | ApiException e) {
             LOGGER.error("PaymentException", e);
-            throw new AdyenNonAuthorizedPaymentException("checkout.error.authorization.payment.refused");
+            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
             LOGGER.error("Exception", e);
-            throw new AdyenNonAuthorizedPaymentException("checkout.error.authorization.payment.error");
+            throw new AdyenComponentException("checkout.error.authorization.payment.error");
         }
     }
 
     @RequestMapping(value = "/submit-details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String submitDetails(final HttpServletRequest request) throws AdyenNonAuthorizedPaymentException {
+    public String submitDetails(final HttpServletRequest request) throws AdyenComponentException {
         try {
             String requestJsonString = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
             JsonObject requestJson = new JsonParser().parse(requestJsonString).getAsJsonObject();
@@ -130,29 +132,28 @@ public class AdyenComponentController {
             return gson.toJson(paymentsResponse);
         } catch (ApiException e) {
             LOGGER.error("ApiException", e);
-            throw new AdyenNonAuthorizedPaymentException("checkout.error.authorization.payment.refused");
+            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
             LOGGER.error("Exception", e);
-            throw new AdyenNonAuthorizedPaymentException("checkout.error.authorization.payment.error");
+            throw new AdyenComponentException("checkout.error.authorization.payment.error");
         }
     }
 
-    @ExceptionHandler({InvalidCartException.class, AdyenNonAuthorizedPaymentException.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Error processing Adyen component payment")
-    public String handleAdyenNonAuthorizedPaymentException(Exception ex) {
-        if(StringUtils.isNotBlank(ex.getMessage())) {
-            return ex.getMessage();
-        }
-        return "checkout.error.authorization.payment.error";
+    @ExceptionHandler(value = AdyenComponentException.class)
+    public AdyenComponentException adyenComponentExceptionHandler(AdyenComponentException e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.getWriter().write(e.getMessage());
+        response.getWriter().flush();
+        response.getWriter().close();
+        return e;
     }
 
     /**
      * Validates the order form before to filter out invalid order states
      *
-     * @param model          A spring Model
      * @return True if the order form is invalid and false if everything is valid.
      */
-    protected void validateOrderForm(final Model model) throws InvalidCartException {
+    protected void validateOrderForm() throws InvalidCartException {
         if (getCheckoutFlowFacade().hasNoDeliveryAddress()) {
             throw new InvalidCartException("checkout.deliveryAddress.notSelected");
         }
