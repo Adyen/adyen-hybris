@@ -32,7 +32,6 @@ import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.StoredPaymentMethod;
-import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.model.nexo.ErrorConditionType;
 import com.adyen.model.nexo.ResultType;
 import com.adyen.model.recurring.Recurring;
@@ -85,7 +84,6 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -94,11 +92,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -144,7 +142,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLIC
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
-
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
  */
@@ -168,7 +165,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private PosPaymentResponseConverter posPaymentResponseConverter;
     private Converter<CountryModel, CountryData> countryConverter;
-
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -207,6 +203,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
     public static final String MODEL_AMOUNT = "amount";
     public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
+    public static final String MODEL_PAYPAL_MERCHANT_ID = "paypalMerchantId";
 
 
 
@@ -877,6 +874,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Include information for components
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
+        model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
 
         modelService.save(cartModel);
     }
