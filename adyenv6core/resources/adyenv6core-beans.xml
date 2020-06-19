@@ -28,6 +28,8 @@
         <property name="adyenIssuerId" type="java.lang.String"/>
         <property name="adyenDob" type="java.util.Date"/>
         <property name="adyenSocialSecurityNumber" type="java.lang.String"/>
+        <property name="adyenSepaOwnerName" type="java.lang.String"/>
+        <property name="adyenSepaIbanNumber" type="java.lang.String"/>
         <property name="adyenDfValue" type="java.lang.String"/>
         <property name="adyenFirstName" type="java.lang.String"/>
         <property name="adyenInstallments" type="java.lang.Integer"/>
@@ -65,6 +67,8 @@
         <property name="adyenPaymentMethod" type="String" />
         <property name="adyenSelectedReference" type="String" />
         <property name="adyenSocialSecurityNumber" type="String" />
+        <property name="adyenSepaOwnerName" type="java.lang.String"/>
+        <property name="adyenSepaIbanNumber" type="java.lang.String"/>
         <property name="adyenFirstName" type="String" />
         <property name="installments" type="Integer" />
         <property name="terminalId" type="String" />

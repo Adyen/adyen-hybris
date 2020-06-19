@@ -60,6 +60,10 @@
             AdyenCheckoutHybris.createDfValue();
 
 
+            <c:if test="${sepadirectdebit}">
+            AdyenCheckoutHybris.initiateSepaDirectDebit( );
+            </c:if>
+
             <c:if test="${not empty issuerLists['ideal']}">
             AdyenCheckoutHybris.initiateIdeal( ${issuerLists['ideal']} );
             </c:if>
@@ -133,6 +137,8 @@
                             <form:hidden path="browserInfo"/>
                             <form:hidden path="terminalId"/>
                             <form:hidden path="rememberTheseDetails" value="false"/>
+                            <form:hidden path="sepaOwnerName"/>
+                            <form:hidden path="sepaIbanNumber"/>
 
                             <form:hidden path="componentData"/>
 
@@ -190,6 +196,13 @@
                                             showSocialSecurityNumber="${showSocialSecurityNumber}"
                                     />
                                 </c:forEach>
+
+                                <c:if test="${sepadirectdebit}">
+                                    <adyen:alternativeMethod
+                                            brandCode="sepadirectdebit"
+                                            name="SEPA Direct Debit"
+                                    />
+                                </c:if>
 
                                 <c:if test="${not empty issuerLists['ideal']}">
                                     <adyen:alternativeMethod

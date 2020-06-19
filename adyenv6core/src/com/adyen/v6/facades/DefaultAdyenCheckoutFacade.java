@@ -104,6 +104,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -139,6 +140,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
@@ -817,6 +819,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
         }
 
+        Optional<PaymentMethod> sepaDirectDebit = alternativePaymentMethods.stream().
+                                                                            filter(paymentMethod -> ! paymentMethod.getType().isEmpty() &&
+                                                                                    PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst()
+                ;
+        if(sepaDirectDebit.isPresent())
+        {
+            model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, true);
+        }
+
         //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
         alternativePaymentMethods = alternativePaymentMethods.stream()
                                                              .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
@@ -889,6 +900,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 (paymentMethodType.contains("wechatpay")
                         && ! paymentMethodType.equals("wechatpayWeb")) ||
                 paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
+                paymentMethodType.contains(PAYMENT_METHOD_SEPA_DIRECTDEBIT) ||
                 ISSUER_PAYMENT_METHODS.contains(paymentMethodType)) {
             return true;
         }
@@ -989,6 +1001,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         paymentInfo.setAdyenSocialSecurityNumber(adyenPaymentForm.getSocialSecurityNumber());
 
+        paymentInfo.setAdyenSepaOwnerName(adyenPaymentForm.getSepaOwnerName());
+        paymentInfo.setAdyenSepaIbanNumber(adyenPaymentForm.getSepaIbanNumber());
+
         // Boleto fields
         paymentInfo.setAdyenFirstName(adyenPaymentForm.getFirstName());
         paymentInfo.setAdyenLastName(adyenPaymentForm.getLastName());
@@ -1027,6 +1042,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenPaymentMethod(paymentDetails.getAdyenPaymentMethod());
         paymentInfo.setAdyenSelectedReference(paymentDetails.getAdyenSelectedReference());
         paymentInfo.setAdyenSocialSecurityNumber(paymentDetails.getAdyenSocialSecurityNumber());
+        paymentInfo.setAdyenSepaOwnerName(paymentDetails.getAdyenSepaOwnerName());
+        paymentInfo.setAdyenSepaIbanNumber(paymentDetails.getAdyenSepaIbanNumber());
         paymentInfo.setAdyenFirstName(paymentDetails.getAdyenFirstName());
         paymentInfo.setAdyenLastName(paymentDetails.getAdyenLastName());
         paymentInfo.setOwner(cartModel.getOwner());
