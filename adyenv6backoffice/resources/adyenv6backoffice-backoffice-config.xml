@@ -49,6 +49,7 @@
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.advanced">
 					<editorArea:attribute qualifier="adyenBoleto"/>
+					<editorArea:attribute qualifier="adyenPaypalMerchantId"/>
 				</editorArea:section>
 			</editorArea:tab>
 		</editorArea:editorArea>

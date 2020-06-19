@@ -268,7 +268,7 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        initiatePaypal: function (amount, isImmediateCapture) {
+        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId) {
             var paypalNode = document.getElementById('adyen_hpp_paypal_container');
 
             var paypalComponent = this.checkout.create("paypal", {
@@ -278,7 +278,7 @@ var AdyenCheckoutHybris = (function () {
                     value: amount.value
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
-                //merchantId: "YOUR_PAYPAL_MERCHANT_ID",  // Your PayPal Merchant ID. Required for accepting live payments.
+                merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
                 onSubmit: (state, component) => {
                     if (!this.validateForm()) {
                         return false;
