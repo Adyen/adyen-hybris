@@ -24,6 +24,7 @@ import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
 import org.apache.log4j.Logger;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,32 @@ public class NotificationItemRepository extends AbstractRepository {
         LOG.debug(nonProcessedNotifications.size() + " items found ");
 
         return nonProcessedNotifications;
+    }
+
+    public  boolean isNewerNotificationExists(String merchantReference, Date eventDate, String merchantAccountCode)
+    {
+        final Map queryParams = new HashMap();
+        queryParams.put("merchantReference", merchantReference);
+        queryParams.put("eventDate", eventDate);
+        queryParams.put("merchantAccountCode", merchantAccountCode);
+
+        final FlexibleSearchQuery laterNotificationQuery = new FlexibleSearchQuery(
+                "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
+                        + " WHERE {" + NotificationItemModel.MERCHANTREFERENCE + "} = ?merchantReference"
+                        + " AND {" +  NotificationItemModel.EVENTDATE + "} > ?eventDate"
+                        + " AND {" +  NotificationItemModel.MERCHANTACCOUNTCODE + "} = ?merchantAccountCode"
+                        + " AND {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL "
+                        + "order by {eventDate} desc",
+                queryParams
+        );
+        LOG.debug("Checking if a newer notification already exists");
+        List newerNotificationList = flexibleSearchService
+                .search(laterNotificationQuery)
+                .getResult();
+        if(newerNotificationList!=null && newerNotificationList.size() > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
