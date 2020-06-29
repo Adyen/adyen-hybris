@@ -91,6 +91,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
@@ -232,6 +233,10 @@ public class AdyenRequestFactory {
         else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
             setBoletoData(paymentsRequest, cartData);
         }
+        else if (PAYMENT_METHOD_SEPA_DIRECTDEBIT.equals(cartData.getAdyenPaymentMethod())) {
+            setSepaDirectDebitData(paymentsRequest, cartData);
+        }
+
         //For alternate payment methods like iDeal, Paypal etc.
         else {
             updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
@@ -355,8 +360,10 @@ public class AdyenRequestFactory {
         }
         if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum) {
             paymentsRequest.setEnableRecurring(true);
-            paymentsRequest.setEnableOneClick(true);
-        } else if (Recurring.ContractEnum.ONECLICK == contractEnum) {
+            if(cartData.getAdyenRememberTheseDetails()) {
+                paymentsRequest.setEnableOneClick(true);
+            }
+        } else if (Recurring.ContractEnum.ONECLICK == contractEnum && cartData.getAdyenRememberTheseDetails() ) {
             paymentsRequest.setEnableOneClick(true);
         } else if (Recurring.ContractEnum.RECURRING == contractEnum) {
             paymentsRequest.setEnableRecurring(true);
@@ -383,7 +390,7 @@ public class AdyenRequestFactory {
         String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
         String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
         String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
-        if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) {
+        if ((Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) && cartData.getAdyenRememberTheseDetails()) {
             paymentsRequest.setEnableOneClick(true);
         }
         if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
@@ -905,6 +912,14 @@ public class AdyenRequestFactory {
     private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
         paymentRequest.selectedBrand(PAYPAL_ECS);
         paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
+    }
+
+    private void setSepaDirectDebitData(PaymentsRequest paymentRequest, CartData cartData) {
+        DefaultPaymentMethodDetails paymentMethodDetails = new DefaultPaymentMethodDetails();
+        paymentMethodDetails.setSepaOwnerName(cartData.getAdyenSepaOwnerName());
+        paymentMethodDetails.setSepaIbanNumber(cartData.getAdyenSepaIbanNumber());
+        paymentMethodDetails.setType(PAYMENT_METHOD_SEPA_DIRECTDEBIT);
+        paymentRequest.setPaymentMethod(paymentMethodDetails);
     }
 
     private String getPlatformVersion() {
