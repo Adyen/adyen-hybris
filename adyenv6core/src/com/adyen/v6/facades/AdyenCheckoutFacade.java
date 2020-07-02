@@ -223,4 +223,5 @@ public interface AdyenCheckoutFacade {
      * Check POS Payment status using Adyen Terminal API
      */
     OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
+
 }
