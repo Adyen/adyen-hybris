@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
@@ -246,6 +248,9 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         LOG.info("Saving transaction entry for resultCode " + resultCodeEnum + " with psp reference:" + pspReference);
         modelService.save(paymentTransactionEntryModel);
 
+        List<PaymentTransactionEntryModel> entries = new ArrayList<>();
+        entries.add(paymentTransactionEntryModel);
+        paymentTransactionModel.setEntries(entries);
         modelService.refresh(paymentTransactionModel); //refresh is needed by order-process
 
         return paymentTransactionModel;
