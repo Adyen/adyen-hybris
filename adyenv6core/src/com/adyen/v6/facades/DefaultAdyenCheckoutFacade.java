@@ -754,9 +754,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private OrderData placePendingOrder(PaymentsResponse.ResultCodeEnum resultCode) throws InvalidCartException {
-        final CartModel cartModel = cartService.getSessionCart();
-        final String merchantTransactionCode = cartModel.getCode();
-
         OrderData orderData = getCheckoutFacade().placeOrder();
 
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
