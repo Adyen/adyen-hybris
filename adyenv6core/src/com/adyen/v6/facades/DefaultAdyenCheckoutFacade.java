@@ -757,7 +757,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         OrderData orderData = getCheckoutFacade().placeOrder();
 
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
-        orderModel.setStatus(OrderStatus.ON_HOLD);
+        orderModel.setStatus(OrderStatus.PAYMENT_PENDING);
         orderModel.setStatusInfo(resultCode.getValue());
         getModelService().save(orderModel);
 
