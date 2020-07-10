@@ -37,6 +37,7 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -255,10 +256,10 @@ public class AdyenCheckoutFacadeTest {
 
         OrderData orderDataResult = adyenCheckoutFacade.initiatePosPayment(request, cartData);
         assertEquals(orderData, orderDataResult);
-        verify(adyenPaymentService, times(1)).sendSyncPosPaymentRequest(eq(cartData), any(), eq(SERVICE_ID));
-        verify(posPaymentResponseConverter, times(1)).convert(saleToPoiResponse);
-        verify(adyenTransactionService, times(1)).authorizeOrderModel(any(), any(), any());
-        verify(checkoutFacade, times(1)).placeOrder();
+        verify(adyenPaymentService).sendSyncPosPaymentRequest(eq(cartData), any(), eq(SERVICE_ID));
+        verify(posPaymentResponseConverter).convert(saleToPoiResponse);
+        verify(adyenTransactionService).authorizeOrderModel(any(), any(), any());
+        verify(checkoutFacade).placeOrder();
     }
 
     @Test
@@ -315,10 +316,10 @@ public class AdyenCheckoutFacadeTest {
 
         OrderData orderDataResult = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
         assertEquals(orderData, orderDataResult);
-        verify(adyenPaymentService, times(1)).sendSyncPosStatusRequest(cartData, SERVICE_ID);
-        verify(posPaymentResponseConverter, times(1)).convert(saleToPoiResponse);
-        verify(adyenTransactionService, times(1)).authorizeOrderModel(any(), any(), any());
-        verify(checkoutFacade, times(1)).placeOrder();
+        verify(adyenPaymentService).sendSyncPosStatusRequest(cartData, SERVICE_ID);
+        verify(posPaymentResponseConverter).convert(saleToPoiResponse);
+        verify(adyenTransactionService).authorizeOrderModel(any(), any(), any());
+        verify(checkoutFacade).placeOrder();
     }
 
     @Test
@@ -429,8 +430,9 @@ public class AdyenCheckoutFacadeTest {
             adyenCheckoutFacade.authorisePayment(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
-            verify(adyenPaymentService, times(1)).authorisePayment(eq(cartData), any(), any());
-            verify(checkoutFacade, times(1)).placeOrder();
+            verify(adyenPaymentService).authorisePayment(eq(cartData), any(), any());
+            verify(orderModel).setStatus(OrderStatus.PAYMENT_PENDING);
+            verify(checkoutFacade).placeOrder();
             assertNotNull(e.getPaymentsResponse());
             assertEquals(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER, e.getPaymentsResponse().getResultCode());
         }
@@ -454,9 +456,9 @@ public class AdyenCheckoutFacadeTest {
 
         OrderData orderDataResult = adyenCheckoutFacade.handle3DResponse(request);
         assertEquals(orderData, orderDataResult);
-        verify(adyenPaymentService, times(1)).authorise3DPayment(PAYMENT_DATA, PA_RES, MD);
-        verify(orderRepository, times(1)).getOrderModel(MERCHANT_REFERENCE);
-        verify(orderConverter, times(1)).convert(orderModel);
+        verify(adyenPaymentService).authorise3DPayment(PAYMENT_DATA, PA_RES, MD);
+        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
+        verify(orderConverter).convert(orderModel);
     }
 
     @Test
@@ -480,10 +482,10 @@ public class AdyenCheckoutFacadeTest {
             adyenCheckoutFacade.handle3DResponse(request);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
-            verify(adyenPaymentService, times(1)).authorise3DPayment(PAYMENT_DATA, PA_RES, MD);
+            verify(adyenPaymentService).authorise3DPayment(PAYMENT_DATA, PA_RES, MD);
             verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
-            verify(cartFactory, times(1)).createCart();
-            verify(cartService, times(1)).setSessionCart(cartModel);
+            verify(cartFactory).createCart();
+            verify(cartService).setSessionCart(cartModel);
         }
     }
 
@@ -517,8 +519,8 @@ public class AdyenCheckoutFacadeTest {
         PaymentsResponse paymentsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
         assertEquals(paymentsResponseReturned, paymentsResponse);
         assertEquals(PaymentsResponse.ResultCodeEnum.AUTHORISED, paymentsResponseReturned.getResultCode());
-        verify(adyenPaymentService, times(1)).getPaymentDetailsFromPayload(details);
-        verify(orderRepository, times(1)).getOrderModel(MERCHANT_REFERENCE);
+        verify(adyenPaymentService).getPaymentDetailsFromPayload(details);
+        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
     }
 
     @Test
@@ -539,7 +541,7 @@ public class AdyenCheckoutFacadeTest {
         PaymentsResponse paymentsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
         assertEquals(paymentsResponseReturned, paymentsResponse);
         assertEquals(PaymentsResponse.ResultCodeEnum.REFUSED, paymentsResponseReturned.getResultCode());
-        verify(adyenPaymentService, times(1)).getPaymentDetailsFromPayload(details);
+        verify(adyenPaymentService).getPaymentDetailsFromPayload(details);
         verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
     }
 }

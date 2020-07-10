@@ -444,15 +444,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             OrderModel orderModel = retrieveOrder(orderCode);
 
             if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
-                orderModel.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
-                orderModel.setStatusInfo(response.getPspReference());
+                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
             } else {
-                orderModel.setStatus(OrderStatus.CANCELLED);
-                orderModel.setStatusInfo(response.getPspReference() + " - " + response.getResultCode().getValue());
+                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
                 restoreCartFromOrder(orderCode);
             }
-
-            updateOrderPaymentInfo(response, orderModel);
 
             return response;
         } catch (Exception e) {
@@ -462,13 +458,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new IllegalArgumentException("Invalid payload");
     }
 
-    private void updateOrderPaymentInfo(PaymentsResponse paymentsResponse, OrderModel orderModel) {
-        adyenTransactionService.createPaymentTransactionFromResultCode(orderModel,
+    private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
+        //update status
+        orderModel.setStatus(newStatus);
+        orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
+        getModelService().save(orderModel);
+
+        //update payment info
+        getAdyenTransactionService().createPaymentTransactionFromResultCode(orderModel,
                 orderModel.getCode(),
                 paymentsResponse.getPspReference(),
                 paymentsResponse.getResultCode());
 
-        updateOrder(orderModel, paymentsResponse);
+        getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
     }
 
     @Override
@@ -562,36 +564,27 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String sessionMd = getSessionService().getAttribute(SESSION_MD);
         String sessionPaymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
-        try {
-            //Check if MD matches in order to avoid authorizing wrong order
-            if (sessionMd != null && ! sessionMd.equals(md)) {
-                throw new SignatureException("MD does not match!");
-            }
-
-            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
-
-            String orderCode = paymentsResponse.getMerchantReference();
-            OrderModel orderModel = retrieveOrder(orderCode);
-
-            updateOrderPaymentInfo(paymentsResponse, orderModel);
-
-            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-                orderModel.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
-                orderModel.setStatusInfo(paymentsResponse.getPspReference());
-                getModelService().save(orderModel);
-
-                OrderData orderData = getOrderConverter().convert(orderModel);
-                return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
-            }
-
-            orderModel.setStatus(OrderStatus.CANCELLED);
-            orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
-            getModelService().save(orderModel);
-            restoreCartFromOrder(orderCode);
-            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-        } catch (ApiException e) {
-            throw e;
+        //Check if MD matches in order to avoid authorizing wrong order
+        if (sessionMd != null && ! sessionMd.equals(md)) {
+            throw new SignatureException("MD does not match!");
         }
+
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
+
+        String orderCode = paymentsResponse.getMerchantReference();
+        OrderModel orderModel = retrieveOrder(orderCode);
+
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, paymentsResponse);
+
+            OrderData orderData = getOrderConverter().convert(orderModel);
+            return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+        }
+
+        updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, paymentsResponse);
+        restoreCartFromOrder(orderCode);
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
@@ -725,8 +718,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         LOGGER.debug("Create order from paymentsResponse: " + paymentsResponse.getPspReference());
 
         OrderData orderData = getCheckoutFacade().placeOrder();
+
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
-        updateOrder(orderModel, paymentsResponse);
+        getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
 
         return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
     }
@@ -770,14 +764,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private OrderData createOrderFromPaymentResult(final PaymentResult paymentResult) throws InvalidCartException {
         PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
         return createOrderFromPaymentsResponse(paymentsResponse);
-    }
-
-    private void updateOrder(final OrderModel orderModel, final PaymentsResponse paymentsResponse) {
-        try {
-            adyenOrderService.updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
     }
 
     @Override
