@@ -213,6 +213,7 @@
         <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
         <property name="orderConverter" ref="orderConverter" />
         <property name="cartFactory" ref="cartFactory" />
+        <property name="calculationService" ref="calculationService" />
     </bean>
 
     <alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
