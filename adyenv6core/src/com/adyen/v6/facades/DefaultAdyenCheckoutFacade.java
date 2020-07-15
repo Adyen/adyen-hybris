@@ -69,15 +69,18 @@ import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsLis
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
+import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
+import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
@@ -100,6 +103,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -171,6 +175,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<CountryModel, CountryData> countryConverter;
     private Converter<OrderModel, OrderData> orderConverter;
     private CartFactory cartFactory;
+    private CalculationService calculationService;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -1367,7 +1372,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderModel;
     }
 
-    private void restoreCartFromOrder(String orderCode) {
+    private void restoreCartFromOrder(String orderCode) throws CalculationException {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
         if (orderModel == null) {
             LOGGER.error("Could not restore cart to session, order not found!");
@@ -1376,14 +1381,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         CartModel cartModel = getCartFactory().createCart();
-        //TODO: PW-2530 - check how to copy entries correctly
-//        cartModel.setUser(orderModel.getUser());
-//        cartModel.setEntries(orderModel.getEntries());
-//        cartModel.setPaymentInfo(orderModel.getPaymentInfo());
-
-        getModelService().save(cartModel);
+        PaymentInfoModel clonedPaymentInfo = getModelService().clone(orderModel.getPaymentInfo());
+        cartModel.setPaymentInfo(clonedPaymentInfo);
+        AddressModel clonedDeliveryAddress = getModelService().clone(orderModel.getDeliveryAddress());
+        cartModel.setDeliveryAddress(clonedDeliveryAddress);
+        AddressModel clonedPaymentAddress = getModelService().clone(orderModel.getPaymentAddress());
+        cartModel.setPaymentAddress(clonedPaymentAddress);
+        cartModel.setStore(orderModel.getStore());
+        orderModel.getEntries().forEach(entryModel ->
+            getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit()));
 
         getCartService().setSessionCart(cartModel);
+        getCartService().changeCurrentCartUser(cartModel.getUser());
+
+        getCalculationService().recalculate(cartModel);
+        getModelService().save(cartModel);
 
         getSessionService().removeAttribute(SESSION_LOCKED_CART);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
@@ -1567,5 +1579,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setCartFactory(CartFactory cartFactory) {
         this.cartFactory = cartFactory;
+    }
+
+    public CalculationService getCalculationService() {
+        return calculationService;
+    }
+
+    public void setCalculationService(CalculationService calculationService) {
+        this.calculationService = calculationService;
     }
 }
