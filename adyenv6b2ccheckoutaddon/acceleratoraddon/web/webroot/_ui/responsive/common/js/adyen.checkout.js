@@ -353,9 +353,9 @@ var AdyenCheckoutHybris = (function () {
                         handleResult(ErrorMessages.PaymentError, true);
                     }
                 },
-                error: function (xhr, exception) {
-                    var responseMessage = xhr.responseText;
-                    if (xhr.status === 400) {
+                error: function (xmlHttpResponse, exception) {
+                    var responseMessage = xmlHttpResponse.responseText;
+                    if (xmlHttpResponse.status === 400) {
                         handleResult(responseMessage, true);
                     } else {
                         console.log('Error on makePayment: ' + responseMessage);

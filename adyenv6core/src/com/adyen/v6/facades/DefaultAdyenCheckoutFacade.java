@@ -539,6 +539,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
         if(PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
+            //TODO: Check about other status
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         }
 
@@ -1307,6 +1308,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         restoreSessionCart();
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            //TODO: Check for PENDING status.
             return createAuthorizedOrder(paymentsResponse);
         }
 
