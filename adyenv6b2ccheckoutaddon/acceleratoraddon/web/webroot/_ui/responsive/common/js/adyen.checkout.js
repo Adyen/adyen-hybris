@@ -10,6 +10,11 @@ var AdyenCheckoutHybris = (function () {
         EloDebit: 'elodebit'
     };
 
+    var ErrorMessages = {
+        PaymentCancelled: 'checkout.error.authorization.payment.cancelled',
+        PaymentError: 'checkout.error.authorization.payment.error'
+    };
+
     return {
         oneClickForms: [],
         dobDateFormat: "yy-mm-dd",
@@ -290,6 +295,115 @@ var AdyenCheckoutHybris = (function () {
             } catch (e) {
                 console.log('Something went wrong trying to mount the EPS component: ${e}');
             }
+        },
+
+        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId) {
+            var paypalNode = document.getElementById('adyen_hpp_paypal_container');
+
+            var paypalComponent = this.checkout.create("paypal", {
+                environment: this.checkout.options.environment,
+                amount: {
+                    currency: amount.currency,
+                    value: amount.value
+                },
+                intent: isImmediateCapture ? "capture" : "authorize",
+                merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                onSubmit: (state, component) => {
+                    if (!this.validateForm()) {
+                        return false;
+                    }
+                    document.querySelector("#componentData").value = JSON.stringify(state.data.paymentMethod);
+                    this.makePayment($('#adyen-encrypted-form'), component, this.handleResult);
+                },
+                onCancel: (data, component) => {
+                    // Sets your prefered status of the component when a PayPal payment is cancelled.
+                    this.handleResult(ErrorMessages.PaymentCancelled, true);
+                },
+                onError: (error, component) => {
+                    // Sets your prefered status of the component when an error occurs.
+                    this.handleResult(ErrorMessages.PaymentError, true);
+                },
+                onAdditionalDetails: (state, component) => {
+                    this.submitDetails(state.data, this.handleResult);
+                }
+            });
+
+            try {
+                paypalComponent.mount(paypalNode);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the PayPal component: ' + e);
+            }
+        },
+
+        makePayment: function (form, component, handleResult) {
+            $.ajax({
+                url: ACC.config.encodedContextPath + '/adyen/component/payment',
+                type: "POST",
+                data: form.serialize(),
+                success: function (data) {
+                    try {
+                        var response = JSON.parse(data);
+                        if (response.resultCode && response.resultCode === 'Pending' && response.action) {
+                            component.handleAction(response.action);
+                        } else {
+                            handleResult(ErrorMessages.PaymentError, true);
+                        }
+                    } catch (e) {
+                        console.log('Error parsing makePayment response: ' + data);
+                        handleResult(ErrorMessages.PaymentError, true);
+                    }
+                },
+                error: function (xmlHttpResponse, exception) {
+                    var responseMessage = xmlHttpResponse.responseText;
+                    if (xmlHttpResponse.status === 400) {
+                        handleResult(responseMessage, true);
+                    } else {
+                        console.log('Error on makePayment: ' + responseMessage);
+                        handleResult(ErrorMessages.PaymentError, true);
+                    }
+                }
+            })
+        },
+
+        submitDetails: function (data, handleResult) {
+            $.ajax({
+                url: ACC.config.encodedContextPath + '/adyen/component/submit-details',
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    try {
+                        var response = JSON.parse(data);
+                        if (response.resultCode) {
+                            handleResult(response, false);
+                        } else {
+                            handleResult(ErrorMessages.PaymentError, true);
+                        }
+                    } catch (e) {
+                        console.log('Error parsing submitDetails response: ' + data);
+                        handleResult(ErrorMessages.PaymentError, true);
+                    }
+                },
+                error: function (xhr, exception) {
+                    var responseMessage = xhr.responseText;
+                    if (xhr.status === 400) {
+                        handleResult(responseMessage, true);
+                    } else {
+                        console.log('Error on submitDetails: ' + responseMessage);
+                        handleResult(ErrorMessages.PaymentError, true);
+                    }
+                }
+            })
+        },
+
+        handleResult: function (data, error) {
+            if (error) {
+                document.querySelector("#resultData").value = data;
+                document.querySelector("#isResultError").value = error;
+            } else {
+                document.querySelector("#resultData").value = JSON.stringify(data);
+            }
+            document.querySelector("#handleComponentResultForm").submit();
         },
 
         showSpinner: function () {

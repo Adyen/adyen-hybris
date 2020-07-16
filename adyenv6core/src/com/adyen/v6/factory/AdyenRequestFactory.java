@@ -37,6 +37,7 @@ import com.adyen.model.applicationinfo.CommonField;
 import com.adyen.model.applicationinfo.ExternalPlatform;
 import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.LineItem;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -247,6 +248,22 @@ public class AdyenRequestFactory {
         return paymentsRequest;
     }
 
+    public PaymentsRequest createPaymentsRequest(final String merchantAccount,
+                                                 final CartData cartData,
+                                                 final PaymentMethodDetails paymentMethodDetails,
+                                                 final RequestInfo requestInfo,
+                                                 final CustomerModel customerModel) {
+        PaymentsRequest paymentsRequest = new PaymentsRequest();
+        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+
+        paymentsRequest.setPaymentMethod(paymentMethodDetails);
+
+        ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
+        paymentsRequest.setApplicationInfo(applicationInfo);
+
+        return paymentsRequest;
+    }
+
     public PaymentsRequest enhanceForThreeDS2(PaymentsRequest paymentsRequest, CartData cartData) {
         if (paymentsRequest.getAdditionalData() == null) {
             paymentsRequest.setAdditionalData(new HashMap<>());
@@ -301,7 +318,7 @@ public class AdyenRequestFactory {
         String currency = cartData.getTotalPrice().getCurrencyIso();
         String reference = cartData.getCode();
 
-        AddressData billingAddress = cartData.getPaymentInfo().getBillingAddress();
+        AddressData billingAddress = cartData.getPaymentInfo() != null ? cartData.getPaymentInfo().getBillingAddress() : null;
         AddressData deliveryAddress = cartData.getDeliveryAddress();
 
         //Get details from HttpServletRequest to set in PaymentRequest.
@@ -311,8 +328,14 @@ public class AdyenRequestFactory {
         String origin = requestInfo.getOrigin();
         String shopperLocale = requestInfo.getShopperLocale();
 
-        paymentsRequest.setAmountData(amount, currency).reference(reference).merchantAccount(merchantAccount).addBrowserInfoData(userAgent, acceptHeader).
-                shopperIP(shopperIP).origin(origin).shopperLocale(shopperLocale).setCountryCode(getCountryCode(cartData));
+        paymentsRequest.setAmountData(amount, currency)
+                .reference(reference)
+                .merchantAccount(merchantAccount)
+                .addBrowserInfoData(userAgent, acceptHeader)
+                .shopperIP(shopperIP)
+                .origin(origin)
+                .shopperLocale(shopperLocale)
+                .setCountryCode(getCountryCode(cartData));
 
         // set shopper details from CustomerModel.
         if (customerModel != null) {
@@ -428,7 +451,7 @@ public class AdyenRequestFactory {
     private String getCountryCode(CartData cartData) {
         //Identify country code based on shopper's delivery address
         String countryCode = "";
-        AddressData billingAddressData = cartData.getPaymentInfo().getBillingAddress();
+        AddressData billingAddressData = cartData.getPaymentInfo() != null ? cartData.getPaymentInfo().getBillingAddress() : null;
         if (billingAddressData != null) {
             CountryData billingCountry = billingAddressData.getCountry();
             if (billingCountry != null) {

@@ -28,6 +28,7 @@ import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.CheckoutPaymentsAction;
 import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.StoredPaymentMethod;
@@ -52,6 +53,8 @@ import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -89,6 +92,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -140,7 +144,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DI
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
-
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
  */
@@ -164,7 +167,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private PosPaymentResponseConverter posPaymentResponseConverter;
     private Converter<CountryModel, CountryData> countryConverter;
-
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -201,6 +203,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_ISSUER_LISTS = "issuerLists";
     public static final String MODEL_CONNECTED_TERMINAL_LIST = "connectedTerminalList";
     public static final String MODEL_ENVIRONMENT_MODE = "environmentMode";
+    public static final String MODEL_AMOUNT = "amount";
+    public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
+    public static final String MODEL_PAYPAL_MERCHANT_ID = "paypalMerchantId";
+
+
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -518,6 +525,47 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
+    @Override
+    public PaymentsResponse componentPayment(final HttpServletRequest request, final CartData cartData, final PaymentMethodDetails paymentMethodDetails) throws Exception {
+        CustomerModel customer = null;
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        }
+
+        updateCartWithSessionData(cartData);
+
+        RequestInfo requestInfo = new RequestInfo(request);
+        requestInfo.setShopperLocale(getShopperLocale());
+
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
+        if(PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
+            //TODO: Check about other status
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+        }
+
+        //Lock the cart to prevent changes while the payment is pending
+        lockSessionCart();
+
+        return paymentsResponse;
+    }
+
+    @Override
+    public PaymentsResponse componentDetails(final HttpServletRequest request, final Map<String, String> details, final String paymentData) throws Exception {
+
+        PaymentsResponse response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, paymentData);
+
+        restoreSessionCart();
+        CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if (!cartData.getCode().equals(response.getMerchantReference())) {
+            throw new InvalidCartException("Merchant reference doesn't match cart's code");
+        }
+
+        //Lock cart again to be handled on results call
+        lockSessionCart();
+
+        return response;
+    }
+
     private void updateCartWithSessionData(CartData cartData) {
         cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
         cartData.setAdyenEncryptedCardNumber(getSessionService().getAttribute(SESSION_SF_CARD_NUMBER));
@@ -798,6 +846,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         }
 
+        Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
+
         // current selected PaymentMethod
         model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, cartData.getAdyenPaymentMethod());
 
@@ -832,6 +882,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CONNECTED_TERMINAL_LIST, connectedTerminalList);
         //Include Issuer Lists
         model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
+
+        //Include information for components
+        model.addAttribute(MODEL_AMOUNT, amount);
+        model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
+        model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
+
         modelService.save(cartModel);
     }
 
@@ -1234,6 +1290,31 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return false;
         }
     }
+
+    @Override
+    public boolean isImmediateCapture() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        if (baseStore.getAdyenImmediateCapture() == null) {
+            return true;
+        }
+        return baseStore.getAdyenImmediateCapture();
+    }
+
+    @Override
+    public OrderData handleComponentResult(String resultJson) throws Exception {
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        PaymentsResponse paymentsResponse = gson.fromJson(resultJson, new TypeToken<PaymentsResponse>() {
+        }.getType());
+
+        restoreSessionCart();
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            //TODO: Check for PENDING status.
+            return createAuthorizedOrder(paymentsResponse);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+    }
+
 
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;

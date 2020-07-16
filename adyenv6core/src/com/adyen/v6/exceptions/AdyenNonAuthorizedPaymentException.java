@@ -41,6 +41,10 @@ public class AdyenNonAuthorizedPaymentException extends Exception {
         this.terminalApiResponse = terminalApiResponse;
     }
 
+    public AdyenNonAuthorizedPaymentException(String message) {
+        super(message);
+    }
+
     public PaymentResult getPaymentResult() {
         return paymentResult;
     }

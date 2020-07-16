@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import com.adyen.Util.Util;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
 
 /**
  * Form for select payment method page
@@ -83,6 +84,8 @@ public class AdyenPaymentForm {
     private boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
 
+    //Component
+    private String componentData;
 
     public boolean getUseAdyenDeliveryAddress() {
         return useAdyenDeliveryAddress;
@@ -301,6 +304,18 @@ public class AdyenPaymentForm {
         this.cardType = cardType;
     }
 
+    public String getComponentData() {
+        return componentData;
+    }
+
+    public void setComponentData(String componentData) {
+        this.componentData = componentData;
+    }
+
+    public boolean usesComponent() {
+        return PAYMENT_METHOD_PAYPAL.equals(paymentMethod);
+    }
+
     public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
@@ -325,6 +340,7 @@ public class AdyenPaymentForm {
         this.useAdyenDeliveryAddress = false;
         this.sepaIbanNumber = null;
         this.sepaOwnerName = null;
+        this.componentData = null;
         this.billingAddress = billingAddress;
     }
 
@@ -356,6 +372,7 @@ public class AdyenPaymentForm {
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
         sb.append("    useAdyenDeliveryAddress: ").append(Util.toIndentedString(useAdyenDeliveryAddress)).append("\n");
         sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
+        sb.append("    componentData: ").append(Util.toIndentedString(componentData)).append("\n");
         sb.append("}");
         return sb.toString();
     }

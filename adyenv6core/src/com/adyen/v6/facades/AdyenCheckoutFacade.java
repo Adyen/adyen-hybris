@@ -20,15 +20,7 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -40,6 +32,16 @@ import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsD
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -141,6 +143,30 @@ public interface AdyenCheckoutFacade {
     OrderData authorisePayment(CartData cartData) throws Exception;
 
     /**
+     * Creates a payment coming from an Adyen Checkout Component
+     * No session handling
+     *
+     * @param request               HTTP Request info
+     * @param cartData              cartData object
+     * @param paymentMethodDetails  paymentMethodDetails object
+     * @return PaymentsResponse
+     * @throws Exception In case payment failed
+     */
+    PaymentsResponse componentPayment(HttpServletRequest request, CartData cartData, PaymentMethodDetails paymentMethodDetails) throws Exception;
+
+    /**
+     * Submit details from a payment made on an Adyen Checkout Component
+     * No session handling
+     *
+     * @param request               HTTP Request info
+     * @param details               details
+     * @param paymentData           paymentData
+     * @return PaymentsResponse
+     * @throws Exception In case request failed
+     */
+    PaymentsResponse componentDetails(HttpServletRequest request, Map<String, String> details, String paymentData) throws Exception;
+
+    /**
      * Add payment details to cart
      */
     PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails);
@@ -223,4 +249,15 @@ public interface AdyenCheckoutFacade {
      * Check POS Payment status using Adyen Terminal API
      */
     OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Returns whether payments have Immediate Capture or not
+     */
+    boolean isImmediateCapture();
+
+    /**
+     * Handles payment result from component
+     * Validates the result and updates the cart based on it
+     */
+    OrderData handleComponentResult(String resultJson) throws Exception;
 }
