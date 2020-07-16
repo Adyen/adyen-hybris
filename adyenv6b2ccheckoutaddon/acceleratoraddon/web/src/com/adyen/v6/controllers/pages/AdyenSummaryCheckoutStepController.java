@@ -440,7 +440,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private String redirectToSummaryWithError(final RedirectAttributes redirectModel, final String messageKey) {
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
-        return REDIRECT_PREFIX + AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + "/view";
+        return REDIRECT_PREFIX + "/checkout/multi/adyen/select-payment-method";
     }
 
     private String getTermUrl() {
