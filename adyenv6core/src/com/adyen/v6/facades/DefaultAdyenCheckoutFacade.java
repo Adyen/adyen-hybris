@@ -61,6 +61,7 @@ import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.user.converters.populator.AddressPopulator;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
@@ -69,7 +70,6 @@ import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsLis
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
-import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -103,7 +103,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -176,6 +175,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<OrderModel, OrderData> orderConverter;
     private CartFactory cartFactory;
     private CalculationService calculationService;
+    private AddressPopulator addressPopulator;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -1380,22 +1380,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
+        //Create new cart and set in session
         CartModel cartModel = getCartFactory().createCart();
-        PaymentInfoModel clonedPaymentInfo = getModelService().clone(orderModel.getPaymentInfo());
-        cartModel.setPaymentInfo(clonedPaymentInfo);
-        AddressModel clonedDeliveryAddress = getModelService().clone(orderModel.getDeliveryAddress());
-        cartModel.setDeliveryAddress(clonedDeliveryAddress);
-        AddressModel clonedPaymentAddress = getModelService().clone(orderModel.getPaymentAddress());
-        cartModel.setPaymentAddress(clonedPaymentAddress);
         cartModel.setStore(orderModel.getStore());
-        orderModel.getEntries().forEach(entryModel ->
-            getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit()));
-
         getCartService().setSessionCart(cartModel);
-        getCartService().changeCurrentCartUser(cartModel.getUser());
-
-        getCalculationService().recalculate(cartModel);
+        //Populate user and cart entries
+        getCartService().changeCurrentCartUser(orderModel.getUser());
+        orderModel.getEntries().forEach(entryModel ->
+                getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit()));
         getModelService().save(cartModel);
+
+        //Populate delivery address and mode
+        AddressData deliveryAddressData = new AddressData();
+        getAddressPopulator().populate(orderModel.getDeliveryAddress().getOriginal(), deliveryAddressData);
+        getCheckoutFacade().setDeliveryAddress(deliveryAddressData);
+        getCheckoutFacade().setDeliveryMode(orderModel.getDeliveryMode().getCode());
+
+        getCalculationService().calculate(cartModel);
 
         getSessionService().removeAttribute(SESSION_LOCKED_CART);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
@@ -1587,5 +1588,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setCalculationService(CalculationService calculationService) {
         this.calculationService = calculationService;
+    }
+
+    public AddressPopulator getAddressPopulator() {
+        return addressPopulator;
+    }
+
+    public void setAddressPopulator(AddressPopulator addressPopulator) {
+        this.addressPopulator = addressPopulator;
     }
 }
