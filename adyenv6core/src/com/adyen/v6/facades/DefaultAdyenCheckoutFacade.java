@@ -1376,7 +1376,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
         if (orderModel == null) {
             LOGGER.error("Could not restore cart to session, order not found!");
-            getCartService().removeSessionCart();
             return;
         }
 
