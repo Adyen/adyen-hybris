@@ -338,7 +338,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.debug("Redirecting to final step of checkout");
-        return redirectToSummaryWithError(redirectModel, errorMessage);
+        return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
     }
 
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
@@ -368,11 +368,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     }
                     return redirectToOrderConfirmationPage(orderData);
                 case REFUSED:
-                    return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.refused");
+                    return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.refused");
                 case CANCELLED:
-                    return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.cancelled");
+                    return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.cancelled");
                 default:
-                    return redirectToSummaryWithError(redirectModel, "checkout.error.authorization.payment.error");
+                    return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.error");
             }
         } catch (Exception e) {
             LOGGER.error(e);
@@ -437,10 +437,16 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return apiPaymentMethods.contains(paymentMethod);
     }
 
+    private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
+        GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
+
+        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+    }
+
     private String redirectToSummaryWithError(final RedirectAttributes redirectModel, final String messageKey) {
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
-        return REDIRECT_PREFIX + "/checkout/multi/adyen/select-payment-method";
+        return REDIRECT_PREFIX + AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + "/view";
     }
 
     private String getTermUrl() {
