@@ -399,7 +399,7 @@ var AdyenCheckoutHybris = (function () {
         handleResult: function (data, error) {
             if (error) {
                 document.querySelector("#resultData").value = data;
-                document.querySelector("#resultIsError").value = error;
+                document.querySelector("#isResultError").value = error;
             } else {
                 document.querySelector("#resultData").value = JSON.stringify(data);
             }

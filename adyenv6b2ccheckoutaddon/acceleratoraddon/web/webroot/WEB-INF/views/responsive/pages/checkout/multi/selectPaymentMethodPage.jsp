@@ -243,7 +243,7 @@
                                    action="${handleComponentResult}"
                                    method="post">
                             <input type="hidden" id="resultData" name="resultData"/>
-                            <input type="hidden" id="resultIsError" name="resultIsError" value="false"/>
+                            <input type="hidden" id="isResultError" name="isResultError" value="false"/>
                         </form:form>
 
                         <button type="button"
