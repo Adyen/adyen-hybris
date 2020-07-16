@@ -213,13 +213,13 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                         final Model model,
                                         final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
         String resultData = request.getParameter("resultData");
-        String resultIsError = request.getParameter("resultIsError");
+        String isResultError = request.getParameter("isResultError");
 
-        LOGGER.debug("resultIsError=" + resultIsError + "\nresultData=" + resultData);
+        LOGGER.debug("isResultError=" + isResultError + "\nresultData=" + resultData);
 
         String errorMessageKey = "checkout.error.authorization.payment.error";
 
-        if (isValidResult(resultData, resultIsError)) {
+        if (isValidResult(resultData, isResultError)) {
             try {
                 OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
                 return redirectToOrderConfirmationPage(orderData);
@@ -258,8 +258,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return enterStep(model, redirectAttributes);
     }
 
-    private boolean isValidResult(String resultData, String resultIsError) {
-        return (StringUtils.isBlank(resultIsError) || !Boolean.parseBoolean(resultIsError))
+    private boolean isValidResult(String resultData, String isResultError) {
+        return (StringUtils.isBlank(isResultError) || !Boolean.parseBoolean(isResultError))
                 && StringUtils.isNotBlank(resultData);
     }
 
