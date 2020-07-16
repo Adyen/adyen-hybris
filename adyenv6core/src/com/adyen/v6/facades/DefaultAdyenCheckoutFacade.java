@@ -171,6 +171,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<CountryModel, CountryData> countryConverter;
     private Converter<OrderModel, OrderData> orderConverter;
     private CartFactory cartFactory;
+
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
 
@@ -1349,6 +1350,47 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
+
+    private OrderModel retrieveOrder(String orderCode) throws InvalidCartException {
+        OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
+        if (orderModel == null) {
+            //TODO change exception
+            throw new InvalidCartException("Order does not exist!");
+        }
+
+        getSessionService().removeAttribute(SESSION_LOCKED_CART);
+        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
+        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
+        getSessionService().removeAttribute(PAYMENT_METHOD);
+
+        return orderModel;
+    }
+
+    private void restoreCartFromOrder(String orderCode) {
+        OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
+        if (orderModel == null) {
+            LOGGER.error("Could not restore cart to session, order not found!");
+            getCartService().removeSessionCart();
+            return;
+        }
+
+        CartModel cartModel = getCartFactory().createCart();
+        //TODO: PW-2530 - check how to copy entries correctly
+//        cartModel.setUser(orderModel.getUser());
+//        cartModel.setEntries(orderModel.getEntries());
+//        cartModel.setPaymentInfo(orderModel.getPaymentInfo());
+
+        getModelService().save(cartModel);
+
+        getCartService().setSessionCart(cartModel);
+
+        getSessionService().removeAttribute(SESSION_LOCKED_CART);
+        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
+        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
+        getSessionService().removeAttribute(PAYMENT_METHOD);
+    }
 
     private OrderModel retrieveOrder(String orderCode) throws InvalidCartException {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
