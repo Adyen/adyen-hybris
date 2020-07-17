@@ -211,6 +211,8 @@
         <property name="flexibleSearchService" ref="flexibleSearchService"/>
         <property name="addressReverseConverter" ref="addressReverseConverter"/>
         <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
+        <property name="orderConverter" ref="orderConverter" />
+        <property name="cartFactory" ref="cartFactory" />
     </bean>
 
     <alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
