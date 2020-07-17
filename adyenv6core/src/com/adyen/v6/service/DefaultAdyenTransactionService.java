@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.service;
 
+import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
@@ -34,14 +35,16 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
 public class DefaultAdyenTransactionService implements AdyenTransactionService {
+    private static final Logger LOG = Logger.getLogger(DefaultAdyenTransactionService.class);
+
     private ModelService modelService;
     private CommonI18NService commonI18NService;
-
-    private static final Logger LOG = Logger.getLogger(DefaultAdyenTransactionService.class);
 
     @Override
     public PaymentTransactionEntryModel createCapturedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
@@ -180,7 +183,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(TransactionStatus.ACCEPTED.name());
         transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-        transactionEntryModel.setAmount(new BigDecimal(abstractOrderModel.getTotalPrice()));
+        transactionEntryModel.setAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
         transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
 
         return transactionEntryModel;
@@ -198,7 +201,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         paymentTransactionModel.setOrder(abstractOrderModel);
         paymentTransactionModel.setCurrency(abstractOrderModel.getCurrency());
         paymentTransactionModel.setInfo(abstractOrderModel.getPaymentInfo());
-        paymentTransactionModel.setPlannedAmount(new BigDecimal(abstractOrderModel.getTotalPrice()));
+        paymentTransactionModel.setPlannedAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
 
         return paymentTransactionModel;
     }
@@ -221,6 +224,75 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setCurrency(paymentTransaction.getCurrency());
 
         return transactionEntryModel;
+    }
+
+    @Override
+    public PaymentTransactionModel createPaymentTransactionFromResultCode(final AbstractOrderModel abstractOrderModel,
+                                                                   final String merchantTransactionCode,
+                                                                   final String pspReference,
+                                                                   final PaymentsResponse.ResultCodeEnum resultCodeEnum) {
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
+                merchantTransactionCode,
+                pspReference,
+                abstractOrderModel);
+
+        modelService.save(paymentTransactionModel);
+
+        PaymentTransactionEntryModel paymentTransactionEntryModel = createPaymentTransactionEntryModelFromResultCode(
+                paymentTransactionModel,
+                merchantTransactionCode,
+                abstractOrderModel,
+                resultCodeEnum
+        );
+
+        LOG.info("Saving transaction entry for resultCode " + resultCodeEnum + " with psp reference:" + pspReference);
+        modelService.save(paymentTransactionEntryModel);
+
+        List<PaymentTransactionEntryModel> entries = new ArrayList<>();
+        entries.add(paymentTransactionEntryModel);
+        paymentTransactionModel.setEntries(entries);
+        modelService.refresh(paymentTransactionModel); //refresh is needed by order-process
+
+        return paymentTransactionModel;
+    }
+
+    private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(
+            final PaymentTransactionModel paymentTransaction,
+            final String merchantCode,
+            final AbstractOrderModel abstractOrderModel,
+            final PaymentsResponse.ResultCodeEnum resultCode) {
+        final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
+
+        String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
+
+        transactionEntryModel.setType(PaymentTransactionType.AUTHORIZATION);
+        transactionEntryModel.setPaymentTransaction(paymentTransaction);
+        transactionEntryModel.setRequestId(paymentTransaction.getRequestId());
+        transactionEntryModel.setRequestToken(merchantCode);
+        transactionEntryModel.setCode(code);
+        transactionEntryModel.setTime(DateTime.now().toDate());
+        transactionEntryModel.setTransactionStatus(getTransactionStatusForResultCode(resultCode));
+        transactionEntryModel.setTransactionStatusDetails("ResultCode: " + resultCode.getValue());
+        transactionEntryModel.setAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
+        transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
+
+        return transactionEntryModel;
+    }
+
+    private String getTransactionStatusForResultCode(PaymentsResponse.ResultCodeEnum resultCode) {
+        switch (resultCode) {
+            case AUTHORISED:
+            case RECEIVED:
+                return TransactionStatus.ACCEPTED.name();
+            case REFUSED:
+            case CANCELLED:
+                return TransactionStatus.REJECTED.name();
+            case ERROR:
+                return TransactionStatus.ERROR.name();
+            default:
+                LOG.warn("Creating PaymentTransactionEntry for unexpected resultCode " + resultCode + ", saving as ERROR.");
+                return TransactionStatus.ERROR.name();
+        }
     }
 
     public ModelService getModelService() {
