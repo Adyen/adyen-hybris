@@ -1399,6 +1399,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         getSessionService().removeAttribute(SESSION_LOCKED_CART);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+        getSessionService().removeAttribute(SESSION_MD);
         getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
         getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
         getSessionService().removeAttribute(PAYMENT_METHOD);
