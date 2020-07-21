@@ -67,7 +67,6 @@ import de.hybris.platform.commercefacades.user.data.RegionData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
-import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -75,7 +74,6 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
-import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
@@ -169,8 +167,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private PosPaymentResponseConverter posPaymentResponseConverter;
     private Converter<CountryModel, CountryData> countryConverter;
-    private Converter<OrderModel, OrderData> orderConverter;
-    private CartFactory cartFactory;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -447,15 +443,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
             }
-
-            String orderCode = response.getMerchantReference();
-            OrderModel orderModel = retrieveOrder(orderCode);
+            restoreSessionCart();
+            CartData cartData = getCheckoutFacade().getCheckoutCart();
+            if (! cartData.getCode().equals(response.getMerchantReference())) {
+                throw new InvalidCartException("Merchant reference doesn't match cart's code");
+            }
 
             if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
-                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
-            } else {
-                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
-                restoreCartFromOrder(orderCode);
+                getCheckoutFacade().placeOrder();
             }
 
             return response;
@@ -464,21 +459,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         throw new IllegalArgumentException("Invalid payload");
-    }
-
-    private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
-        //update status
-        orderModel.setStatus(newStatus);
-        orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
-        getModelService().save(orderModel);
-
-        //update payment info
-        getAdyenTransactionService().createPaymentTransactionFromResultCode(orderModel,
-                orderModel.getCode(),
-                paymentsResponse.getPspReference(),
-                paymentsResponse.getResultCode());
-
-        getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
     }
 
     @Override
@@ -507,18 +487,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
-        PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
-        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
             return createAuthorizedOrder(paymentsResponse);
         }
-        if (PaymentsResponse.ResultCodeEnum.RECEIVED == resultCode) {
+        if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
-        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == resultCode) {
+        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsResponse.getResultCode()) {
             return createOrderFromPaymentsResponse(paymentsResponse);
         }
-        if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == resultCode) {
-            placePendingOrder(resultCode);
+        if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
             if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
@@ -527,22 +505,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 getSessionService().setAttribute(PAYMENT_METHOD, adyenPaymentMethod);
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
+            lockSessionCart();
         }
-        if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER == resultCode) {
-            placePendingOrder(resultCode);
+        if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER.equals(paymentsResponse.getResultCode())) {
             if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
+
             }
+            lockSessionCart();
         }
-        if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER == resultCode) {
-            placePendingOrder(resultCode);
+        if (PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER.equals(paymentsResponse.getResultCode())) {
             if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(THREEDS2_CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
                 getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
+            lockSessionCart();
         }
-
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
@@ -613,27 +592,21 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String sessionMd = getSessionService().getAttribute(SESSION_MD);
         String sessionPaymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
 
-        //Check if MD matches in order to avoid authorizing wrong order
-        if (sessionMd != null && ! sessionMd.equals(md)) {
-            throw new SignatureException("MD does not match!");
+        try {
+            //Check if MD matches in order to avoid authorizing wrong order
+            if (sessionMd != null && ! sessionMd.equals(md)) {
+                throw new SignatureException("MD does not match!");
+            }
+
+            restoreSessionCart();
+            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
+            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+                return createAuthorizedOrder(paymentsResponse);
+            }
+            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+        } catch (ApiException e) {
+            throw e;
         }
-
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
-
-        String orderCode = paymentsResponse.getMerchantReference();
-        OrderModel orderModel = retrieveOrder(orderCode);
-
-        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, paymentsResponse);
-
-            OrderData orderData = getOrderConverter().convert(orderModel);
-            return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
-        }
-
-        updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, paymentsResponse);
-        restoreCartFromOrder(orderCode);
-
-        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
@@ -767,14 +740,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         LOGGER.debug("Create order from paymentsResponse: " + paymentsResponse.getPspReference());
 
         OrderData orderData = getCheckoutFacade().placeOrder();
-
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
-        getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
+        updateOrder(orderModel, paymentsResponse);
 
-        return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
-    }
-
-    private OrderData fillOrderDataWithPaymentInfo(OrderData orderData, PaymentsResponse paymentsResponse) {
         orderData.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
         orderData.setAdyenBoletoData(paymentsResponse.getBoletoData());
         orderData.setAdyenBoletoBarCodeReference(paymentsResponse.getBoletoBarCodeReference());
@@ -792,20 +760,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (paymentsResponse.getAdditionalData() != null) {
             orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
         }
-
         return orderData;
     }
 
-    private OrderData placePendingOrder(PaymentsResponse.ResultCodeEnum resultCode) throws InvalidCartException {
-        OrderData orderData = getCheckoutFacade().placeOrder();
-
-        OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
-        orderModel.setStatus(OrderStatus.PAYMENT_PENDING);
-        orderModel.setStatusInfo(resultCode.getValue());
-        getModelService().save(orderModel);
-
-        return orderData;
-    }
 
     /**
      * Create order
@@ -813,6 +770,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private OrderData createOrderFromPaymentResult(final PaymentResult paymentResult) throws InvalidCartException {
         PaymentsResponse paymentsResponse = paymentsResponseConverter.convert(paymentResult);
         return createOrderFromPaymentsResponse(paymentsResponse);
+    }
+
+    private void updateOrder(final OrderModel orderModel, final PaymentsResponse paymentsResponse) {
+        try {
+            adyenOrderService.updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
     }
 
     @Override
@@ -1351,47 +1316,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
 
-    private OrderModel retrieveOrder(String orderCode) throws InvalidCartException {
-        OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
-        if (orderModel == null) {
-            //TODO change exception
-            throw new InvalidCartException("Order does not exist!");
-        }
-
-        getSessionService().removeAttribute(SESSION_LOCKED_CART);
-        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
-        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
-        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
-        getSessionService().removeAttribute(PAYMENT_METHOD);
-
-        return orderModel;
-    }
-
-    private void restoreCartFromOrder(String orderCode) {
-        OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
-        if (orderModel == null) {
-            LOGGER.error("Could not restore cart to session, order not found!");
-            getCartService().removeSessionCart();
-            return;
-        }
-
-        CartModel cartModel = getCartFactory().createCart();
-        //TODO: PW-2530 - check how to copy entries correctly
-//        cartModel.setUser(orderModel.getUser());
-//        cartModel.setEntries(orderModel.getEntries());
-//        cartModel.setPaymentInfo(orderModel.getPaymentInfo());
-
-        getModelService().save(cartModel);
-
-        getCartService().setSessionCart(cartModel);
-
-        getSessionService().removeAttribute(SESSION_LOCKED_CART);
-        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
-        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
-        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
-        getSessionService().removeAttribute(PAYMENT_METHOD);
-    }
-
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;
     }
@@ -1551,21 +1475,5 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Required
     public void setCountryConverter(final Converter<CountryModel, CountryData> countryConverter) {
         this.countryConverter = countryConverter;
-    }
-
-    public Converter<OrderModel, OrderData> getOrderConverter() {
-        return orderConverter;
-    }
-
-    public void setOrderConverter(Converter<OrderModel, OrderData> orderConverter) {
-        this.orderConverter = orderConverter;
-    }
-
-    public CartFactory getCartFactory() {
-        return cartFactory;
-    }
-
-    public void setCartFactory(CartFactory cartFactory) {
-        this.cartFactory = cartFactory;
     }
 }
