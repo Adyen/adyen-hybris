@@ -317,8 +317,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
     @RequireHardLogIn
-    public String authorise3DSecurePayment(final RedirectAttributes redirectModel,
-                                           final HttpServletRequest request) {
+    public String authorise3DSecurePayment(final Model model,
+                                           final RedirectAttributes redirectModel,
+                                           final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
         String errorMessage = "checkout.error.authorization.failed";
 
         try {
@@ -429,7 +430,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
      * Boleto
      */
     private boolean canUseAPI(String paymentMethod) {
-        Set<String> apiPaymentMethods = new HashSet<>();
+        Set<String> apiPaymentMethods = new HashSet<String>();
 
         apiPaymentMethods.add(PAYPAL_ECS);
         apiPaymentMethods.add(RATEPAY);

@@ -20,7 +20,6 @@
  */
 package com.adyen.v6.service;
 
-import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
@@ -88,9 +87,4 @@ public interface AdyenTransactionService {
      * Creates a PaymentTransactionEntryModel with type=CANCEL
      */
     PaymentTransactionEntryModel createCancellationTransaction(PaymentTransactionModel paymentTransaction, String merchantCode, String pspReference);
-
-    /**
-     * Creates a PaymentTransactionModel
-     */
-    PaymentTransactionModel createPaymentTransactionFromResultCode(AbstractOrderModel abstractOrderModel, String merchantTransactionCode, String pspReference, PaymentsResponse.ResultCodeEnum resultCodeEnum);
 }
