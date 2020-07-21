@@ -183,6 +183,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
+    public static final String SESSION_PENDING_ORDER_CODE = "adyen_pending_order_code";
     public static final String SESSION_MD = "adyen_md";
     public static final String SESSION_CSE_TOKEN = "adyen_cse_token";
     public static final String SESSION_SF_CARD_NUMBER = "encryptedCardNumber";
@@ -329,61 +330,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public OrderData handleHPPResponse(final HttpServletRequest request) throws SignatureException {
-        validateHPPResponse(request);
-
-        String merchantReference = request.getParameter(HPPConstants.Response.MERCHANT_REFERENCE);
-        String authResult = request.getParameter(HPPConstants.Response.AUTH_RESULT);
-
-        OrderData orderData = null;
-        //Restore the cart or find the created order
-        try {
-            restoreSessionCart();
-
-            CartData cartData = getCheckoutFacade().getCheckoutCart();
-            if (! cartData.getCode().equals(merchantReference)) {
-                throw new InvalidCartException("Merchant reference doesn't match cart's code");
-            }
-
-            if (HPPConstants.Response.AUTH_RESULT_AUTHORISED.equals(authResult) || HPPConstants.Response.AUTH_RESULT_PENDING.equals(authResult)) {
-                orderData = getCheckoutFacade().placeOrder();
-            }
-        } catch (InvalidCartException e) {
-            LOGGER.warn("InvalidCartException", e);
-            //Cart does not exist, retrieve order
-            orderData = getOrderFacade().getOrderDetailsForCode(merchantReference);
-        }
-
-        return orderData;
-    }
-
-    @Override
-    public OrderData authorisePayment(final CartData cartData) throws Exception {
-        CustomerModel customer = null;
-        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
-            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
-        }
-
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, RequestInfo.empty(), customer);
-
-        //In case of Authorized: create order and authorize it
-        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-            return createAuthorizedOrder(paymentsResponse);
-        }
-
-        //In case of Received: create order
-        if (PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
-            return createOrderFromPaymentsResponse(paymentsResponse);
-        }
-
-        if (PaymentsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsResponse.getResultCode()) {
-            return createOrderFromPaymentsResponse(paymentsResponse);
-        }
-
-        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-    }
-
-    @Override
     public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails) {
         CartModel cartModel = cartService.getSessionCart();
 
@@ -442,33 +388,33 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) {
-        try {
-            PaymentsResponse response;
-            String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
+    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) throws Exception {
+        PaymentsResponse response;
+        String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
+        try {
             if (paymentMethod != null && paymentMethod.startsWith(KLARNA)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
             } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
             }
-
-            String orderCode = response.getMerchantReference();
-            OrderModel orderModel = retrieveOrder(orderCode);
-
-            if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
-                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
-            } else {
-                updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
-                restoreCartFromOrder(orderCode);
-            }
-
-            return response;
         } catch (Exception e) {
-            LOGGER.warn(e);
+            LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
+            handleApiException();
+            throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
 
-        throw new IllegalArgumentException("Invalid payload");
+        String orderCode = response.getMerchantReference();
+        OrderModel orderModel = retrieveOrder(orderCode);
+
+        if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
+        } else {
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
+            restoreCartFromOrder(orderCode);
+        }
+
+        return response;
     }
 
     private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
@@ -623,7 +569,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new SignatureException("MD does not match!");
         }
 
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
+        PaymentsResponse paymentsResponse;
+        try {
+            paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
+        } catch (Exception e) {
+            LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
+            handleApiException();
+            throw new AdyenNonAuthorizedPaymentException(e.getMessage());
+        }
 
         String orderCode = paymentsResponse.getMerchantReference();
         OrderModel orderModel = retrieveOrder(orderCode);
@@ -660,27 +613,40 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         }
 
+        PaymentsResponse paymentsResponse;
         try {
-            PaymentsResponse paymentsResponse = getAdyenPaymentService().authorise3DS2Payment(paymentData, token, type);
-            if (paymentsResponse.getResultCode() != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER && paymentsResponse.getResultCode() != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
-                restoreSessionCart();
-            }
-            if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-
-                return createAuthorizedOrder(paymentsResponse);
-            }
-            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
-        } catch (ApiException e) {
+            paymentsResponse = getAdyenPaymentService().authorise3DS2Payment(paymentData, token, type);
+        } catch (Exception e) {
+            LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
             if (type.equals("challenge")) {
                 LOGGER.debug("Restoring cart because ApiException occurred after challengeResult ");
-                restoreSessionCart();
+                handleApiException();
             }
-            throw e;
+            throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
+
+        PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
+
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
+            String orderCode = paymentsResponse.getMerchantReference();
+            OrderModel orderModel = retrieveOrder(orderCode);
+
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, paymentsResponse);
+            OrderData orderData = getOrderConverter().convert(orderModel);
+            return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+        } else if (resultCode != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER && resultCode != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
+            String orderCode = paymentsResponse.getMerchantReference();
+            OrderModel orderModel = retrieveOrder(orderCode);
+
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, paymentsResponse);
+            restoreCartFromOrder(orderCode);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
-    public Map<String, String> initializeHostedPayment(final CartData cartData, final String redirectUrl) throws SignatureException, InvalidCartException {
+    public Map<String, String> initializeHostedPayment(final CartData cartData, final String redirectUrl) throws SignatureException {
         final String sessionValidity = Util.calculateSessionValidity();
         final SortedMap<String, String> hppFormData = new TreeMap<>();
 
@@ -808,6 +774,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         orderModel.setStatus(OrderStatus.PAYMENT_PENDING);
         orderModel.setStatusInfo(resultCode.getValue());
         getModelService().save(orderModel);
+
+        getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
 
         return orderData;
     }
@@ -1355,7 +1323,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
-
     private OrderModel retrieveOrder(String orderCode) throws InvalidCartException {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
         if (orderModel == null) {
@@ -1363,7 +1330,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             throw new InvalidCartException("Order does not exist!");
         }
 
-        getSessionService().removeAttribute(SESSION_LOCKED_CART);
+        getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
         getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
         getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
@@ -1375,7 +1342,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private void restoreCartFromOrder(String orderCode) throws CalculationException {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
         if (orderModel == null) {
-            LOGGER.error("Could not restore cart to session, order not found!");
+            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
             return;
         }
 
@@ -1397,12 +1364,22 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         getCalculationService().calculate(cartModel);
 
-        getSessionService().removeAttribute(SESSION_LOCKED_CART);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
         getSessionService().removeAttribute(SESSION_MD);
         getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
         getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
         getSessionService().removeAttribute(PAYMENT_METHOD);
+    }
+
+    private void handleApiException() throws InvalidCartException, CalculationException {
+        String orderCode = getSessionService().getAttribute(SESSION_PENDING_ORDER_CODE);
+        OrderModel orderModel = retrieveOrder(orderCode);
+
+        orderModel.setStatus(OrderStatus.CANCELLED);
+        orderModel.setStatusInfo("ApiException");
+        getModelService().save(orderModel);
+
+        restoreCartFromOrder(orderCode);
     }
 
     public BaseStoreService getBaseStoreService() {
