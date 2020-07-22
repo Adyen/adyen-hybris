@@ -388,7 +388,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) throws Exception {
+    public OrderData handleRedirectPayload(HashMap<String, String> details) throws Exception {
         PaymentsResponse response;
         String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
@@ -409,12 +409,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (PaymentsResponse.ResultCodeEnum.RECEIVED == response.getResultCode() || PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
             updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
+
+            OrderData orderData = getOrderConverter().convert(orderModel);
+            return fillOrderDataWithPaymentInfo(orderData, response);
         } else {
             updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
             restoreCartFromOrder(orderCode);
         }
 
-        return response;
+        throw new AdyenNonAuthorizedPaymentException(response);
     }
 
     private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
