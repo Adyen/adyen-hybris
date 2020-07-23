@@ -777,6 +777,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
 
+        //Set new cart in session to avoid bugs (like going "back" on browser)
+        CartModel cartModel = getCartFactory().createCart();
+        getCartService().setSessionCart(cartModel);
+
         return orderData;
     }
 
