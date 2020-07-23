@@ -255,8 +255,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (REFUSED == paymentsResponse.getResultCode()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
-                if ((CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode())
-                        && is3DSPaymentMethod(adyenPaymentMethod)) {
+                if (CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
                     return redirectTo3DS2Validation(model, paymentsResponse);
                 }
             } catch (Exception e) {
