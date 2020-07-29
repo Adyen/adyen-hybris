@@ -106,10 +106,9 @@ public interface AdyenCheckoutFacade {
      * In case of authorized, it places an order from cart
      *
      * @param details consisting of parameters present in response query string
-     * @return OrderData
-     * @throws Exception In case order failed to be created
+     * @return PaymentsResponse
      */
-    OrderData handleRedirectPayload(HashMap<String,String> details) throws Exception;
+    PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
