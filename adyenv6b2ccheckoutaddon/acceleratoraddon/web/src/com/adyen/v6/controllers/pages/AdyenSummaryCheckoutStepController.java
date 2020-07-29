@@ -289,7 +289,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         } catch (Exception e) {
             LOGGER.debug("Unexpected exception: " + e.getMessage(), e);
         }
-        LOGGER.debug("Redirecting to payment method with error: " + errorMessage);
+
         return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
     }
 
@@ -315,7 +315,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return REDIRECT_PREFIX + "/cart";
         }
 
-        LOGGER.debug("Redirecting to payment method with error: " + errorMessage);
         return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
     }
 
@@ -340,7 +339,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 case AUTHORISED:
                 case RECEIVED:
                     LOGGER.debug("Redirecting to order confirmation");
-                    OrderData orderData = orderFacade.getOrderDetailsForCode(response.getMerchantReference());
+                    OrderData orderData = orderFacade.getOrderDetailsForCodeWithoutUser(response.getMerchantReference());
                     if (orderData == null) {
                         throw new Exception("Order not found");
                     }
@@ -354,11 +353,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         } catch (Exception e) {
             LOGGER.error(e);
+            return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.error");
         }
-
-        LOGGER.debug("Redirecting to cart..");
-        GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, "checkout.error.authorization.payment.error");
-        return REDIRECT_PREFIX + "/cart";
     }
 
     /**
@@ -420,6 +416,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     }
 
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
+        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
         return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
