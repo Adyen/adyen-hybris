@@ -46,6 +46,8 @@ import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.ProductOption;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang.StringUtils;
@@ -286,11 +288,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
                 errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
+            return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
+        } catch (CalculationException | InvalidCartException e) {
+            LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {
-            LOGGER.debug("Unexpected exception: " + e.getMessage(), e);
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
-        return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
+        LOGGER.warn("Redirecting to cart page...");
+        return REDIRECT_PREFIX + "/cart";
     }
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
@@ -310,12 +316,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("AdyenNonAuthorizedPaymentException with paymentsResponse: " + paymentsResponse, e);
                 errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
+            return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
+        } catch (CalculationException | InvalidCartException e) {
+            LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
-            return REDIRECT_PREFIX + "/cart";
         }
 
-        return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
+        LOGGER.warn("Redirecting to cart page...");
+        return REDIRECT_PREFIX + "/cart";
     }
 
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
@@ -351,10 +360,14 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 default:
                     return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.error");
             }
+        } catch (CalculationException | InvalidCartException e) {
+            LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {
-            LOGGER.error(e);
-            return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.error");
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
+
+        LOGGER.warn("Redirecting to cart page...");
+        return REDIRECT_PREFIX + "/cart";
     }
 
     /**
