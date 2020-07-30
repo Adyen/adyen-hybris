@@ -231,61 +231,6 @@ public class AdyenCheckoutFacadeTest {
     }
 
     @Test
-    public void testHandleHPPResponse() throws InvalidCartException, SignatureException {
-        //Case no Cart in session
-        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(null);
-
-        javax.servlet.http.HttpServletRequest requestMock = mock(HttpServletRequest.class);
-        when(requestMock.getParameter(HPPConstants.Response.AUTH_RESULT)).thenReturn(HPPConstants.Response.AUTH_RESULT_AUTHORISED);
-        when(requestMock.getParameter(HPPConstants.Response.MERCHANT_REFERENCE)).thenReturn("code");
-        when(requestMock.getParameter(HPPConstants.Response.PAYMENT_METHOD)).thenReturn("paymentMethod");
-        when(requestMock.getParameter(HPPConstants.Response.PSP_REFERENCE)).thenReturn("pspReference");
-        when(requestMock.getParameter(HPPConstants.Response.SHOPPER_LOCALE)).thenReturn("shopperLocale");
-        when(requestMock.getParameter(HPPConstants.Response.SKIN_CODE)).thenReturn("skinCode");
-        when(requestMock.getParameter(HPPConstants.Response.MERCHANT_SIG)).thenReturn("merchantSig");
-
-        when(requestMock.getQueryString()).thenReturn(HPPConstants.Response.AUTH_RESULT
-                                                              + "="
-                                                              + HPPConstants.Response.AUTH_RESULT_AUTHORISED
-                                                              + "&"
-                                                              + HPPConstants.Response.PAYMENT_METHOD
-                                                              + "=code"
-                                                              + "&"
-                                                              + HPPConstants.Response.PSP_REFERENCE
-                                                              + "=paymentMethod"
-                                                              + "&"
-                                                              + HPPConstants.Response.SHOPPER_LOCALE
-                                                              + "=pspReference"
-                                                              + "&"
-                                                              + HPPConstants.Response.SKIN_CODE
-                                                              + "=skinCode"
-                                                              + "&"
-                                                              + HPPConstants.Response.MERCHANT_SIG
-                                                              + "=merchantSig");
-
-        OrderData existingOrderDataMock = mock(OrderData.class);
-        when(orderFacadeMock.getOrderDetailsForCode("code")).thenReturn(existingOrderDataMock);
-
-        OrderData newOrderDataMock = mock(OrderData.class);
-
-        OrderData orderData = adyenCheckoutFacade.handleHPPResponse(requestMock);
-        assertEquals(existingOrderDataMock, orderData);
-
-        //Case no order yet created
-        when(sessionServiceMock.getAttribute(SESSION_LOCKED_CART)).thenReturn(cartModelMock);
-        when(checkoutFacadeMock.placeOrder()).thenReturn(newOrderDataMock);
-
-        orderData = adyenCheckoutFacade.handleHPPResponse(requestMock);
-        assertEquals(newOrderDataMock, orderData);
-
-        //Case cancelled
-        when(requestMock.getParameter(HPPConstants.Response.AUTH_RESULT)).thenReturn(HPPConstants.Response.AUTH_RESULT_CANCELLED);
-
-        orderData = adyenCheckoutFacade.handleHPPResponse(requestMock);
-        assertEquals(null, orderData);
-    }
-
-    @Test
     public void testAuthorizeCardPayment() throws Exception {
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         CartData cartDataMock = mock(CartData.class);

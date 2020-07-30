@@ -18,6 +18,7 @@ import com.adyen.model.nexo.ResultType;
 import com.adyen.model.nexo.SaleToPOIResponse;
 import com.adyen.model.nexo.TransactionStatusResponse;
 import com.adyen.model.terminal.TerminalAPIResponse;
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -34,14 +35,19 @@ import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.product.data.PriceData;
+import de.hybris.platform.commercefacades.user.converters.populator.AddressPopulator;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
+import de.hybris.platform.core.model.order.CartEntryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
+import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
@@ -70,11 +76,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_EPS;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_MD;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_PAYMENT_DATA;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_PENDING_ORDER_CODE;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_MD;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.THREE_D_PARES;
 import static org.junit.Assert.assertEquals;
@@ -94,11 +103,15 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AdyenCheckoutFacadeTest {
 
+    private static final String DELIVERY_MODE = "deliveryMode";
+    private static final String EXCEPTION = "exception";
     private static final String MD = "md";
     private static final String MERCHANT_REFERENCE = "merchantReference";
     private static final String PA_RES = "paRes";
     private static final String PAYMENT_DATA = "paymentData";
     private static final String PAYMENT_METHOD = "paymentMethod";
+    private static final String PENDING_ORDER_CODE = "pendingOrder";
+    private static final String RESULT = "result";
     private static final String SERVICE_ID = "serviceId";
     private static final String URL = "url";
 
@@ -137,6 +150,10 @@ public class AdyenCheckoutFacadeTest {
     Converter<OrderModel, OrderData> orderConverter;
     @Mock
     CartFactory cartFactory;
+    @Mock
+    CalculationService calculationService;
+    @Mock
+    AddressPopulator addressPopulator;
 
     @Mock
     HttpServletRequest request;
@@ -157,7 +174,11 @@ public class AdyenCheckoutFacadeTest {
     @Mock
     AddressData addressData;
     @Mock
+    AddressModel addressModel;
+    @Mock
     CountryData countryData;
+    @Mock
+    DeliveryModeModel deliveryModeModel;
 
     @Mock
     TerminalAPIResponse terminalApiResponse;
@@ -477,6 +498,16 @@ public class AdyenCheckoutFacadeTest {
         doNothing().when(modelService).save(any());
         when(cartFactory.createCart()).thenReturn(cartModel);
         doNothing().when(cartService).setSessionCart(any());
+        doNothing().when(cartService).changeCurrentCartUser(any());
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(orderModel.getDeliveryAddress()).thenReturn(addressModel);
+        when(addressModel.getOriginal()).thenReturn(addressModel);
+        when(orderModel.getDeliveryMode()).thenReturn(deliveryModeModel);
+        when(deliveryModeModel.getCode()).thenReturn(DELIVERY_MODE);
+        doNothing().when(addressPopulator).populate(any(), any());
+        when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
+        when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
+        doNothing().when(calculationService).calculate(any());
 
         try {
             adyenCheckoutFacade.handle3DResponse(request);
@@ -486,6 +517,44 @@ public class AdyenCheckoutFacadeTest {
             verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
             verify(cartFactory).createCart();
             verify(cartService).setSessionCart(cartModel);
+            verify(calculationService).calculate(cartModel);
+        }
+    }
+
+    @Test
+    public void testHandle3DResponseThrowsApiException() throws Exception {
+        when(request.getParameter(THREE_D_PARES)).thenReturn(PA_RES);
+        when(request.getParameter(THREE_D_MD)).thenReturn(MD);
+        when(sessionService.getAttribute(SESSION_MD)).thenReturn(MD);
+        when(sessionService.getAttribute(SESSION_PAYMENT_DATA)).thenReturn(PAYMENT_DATA);
+        when(sessionService.getAttribute(SESSION_PENDING_ORDER_CODE)).thenReturn(PENDING_ORDER_CODE);
+        when(adyenPaymentService.authorise3DPayment(any(), any(), any())).thenThrow(new ApiException(EXCEPTION, 999));
+        when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
+        doNothing().when(sessionService).removeAttribute(any());
+        doNothing().when(modelService).save(any());
+        when(cartFactory.createCart()).thenReturn(cartModel);
+        doNothing().when(cartService).setSessionCart(any());
+        doNothing().when(cartService).changeCurrentCartUser(any());
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(orderModel.getDeliveryAddress()).thenReturn(addressModel);
+        when(addressModel.getOriginal()).thenReturn(addressModel);
+        when(orderModel.getDeliveryMode()).thenReturn(deliveryModeModel);
+        when(deliveryModeModel.getCode()).thenReturn(DELIVERY_MODE);
+        doNothing().when(addressPopulator).populate(any(), any());
+        when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
+        when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
+        doNothing().when(calculationService).calculate(any());
+
+        try {
+            adyenCheckoutFacade.handle3DResponse(request);
+            fail("Expected AdyenNonAuthorizedPaymentException");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            assertEquals(e.getMessage(), EXCEPTION);
+            verify(adyenPaymentService).authorise3DPayment(PAYMENT_DATA, PA_RES, MD);
+            verify(orderRepository, times(2)).getOrderModel(PENDING_ORDER_CODE);
+            verify(cartFactory).createCart();
+            verify(cartService).setSessionCart(cartModel);
+            verify(calculationService).calculate(cartModel);
         }
     }
 
@@ -501,6 +570,120 @@ public class AdyenCheckoutFacadeTest {
             fail("Expected SignatureException");
         } catch (SignatureException e) {
             assertEquals("MD does not match!", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testHandle3DS2ResponseAuthorised() throws Exception {
+        when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(null);
+        when(request.getParameter(CHALLENGE_RESULT)).thenReturn(RESULT);
+        when(sessionService.getAttribute(SESSION_PAYMENT_DATA)).thenReturn(PAYMENT_DATA);
+        when(adyenPaymentService.authorise3DS2Payment(any(), any(), any())).thenReturn(paymentsResponse);
+        when(paymentsResponse.getMerchantReference()).thenReturn(MERCHANT_REFERENCE);
+        when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
+        doNothing().when(sessionService).removeAttribute(any());
+        when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
+        doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
+        when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
+        doNothing().when(modelService).save(any());
+        when(orderConverter.convert(any())).thenReturn(orderData);
+
+        OrderData orderDataResult = adyenCheckoutFacade.handle3DS2Response(request);
+        assertEquals(orderData, orderDataResult);
+        verify(adyenPaymentService).authorise3DS2Payment(PAYMENT_DATA, RESULT, "challenge");
+        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
+        verify(orderConverter).convert(orderModel);
+    }
+
+    @Test
+    public void testHandle3DS2ResponseChallengeShopper() throws Exception {
+        when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(RESULT);
+        when(request.getParameter(CHALLENGE_RESULT)).thenReturn(null);
+        when(sessionService.getAttribute(SESSION_PAYMENT_DATA)).thenReturn(PAYMENT_DATA);
+        when(adyenPaymentService.authorise3DS2Payment(any(), any(), any())).thenReturn(paymentsResponse);
+        when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER);
+
+        try {
+            adyenCheckoutFacade.handle3DS2Response(request);
+            fail("Expected AdyenNonAuthorizedPaymentException");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            verify(adyenPaymentService).authorise3DS2Payment(PAYMENT_DATA, RESULT, "fingerprint");
+            assertNotNull(e.getPaymentsResponse());
+            assertEquals(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER, e.getPaymentsResponse().getResultCode());
+        }
+    }
+
+    @Test
+    public void testHandle3DS2ResponseError() throws Exception {
+        when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(null);
+        when(request.getParameter(CHALLENGE_RESULT)).thenReturn(RESULT);
+        when(sessionService.getAttribute(SESSION_PAYMENT_DATA)).thenReturn(PAYMENT_DATA);
+        when(adyenPaymentService.authorise3DS2Payment(any(), any(), any())).thenReturn(paymentsResponse);
+        when(paymentsResponse.getMerchantReference()).thenReturn(MERCHANT_REFERENCE);
+        when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
+        doNothing().when(sessionService).removeAttribute(any());
+        when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
+        doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
+        when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.REFUSED);
+        doNothing().when(modelService).save(any());
+        when(cartFactory.createCart()).thenReturn(cartModel);
+        doNothing().when(cartService).setSessionCart(any());
+        doNothing().when(cartService).changeCurrentCartUser(any());
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(orderModel.getDeliveryAddress()).thenReturn(addressModel);
+        when(addressModel.getOriginal()).thenReturn(addressModel);
+        when(orderModel.getDeliveryMode()).thenReturn(deliveryModeModel);
+        when(deliveryModeModel.getCode()).thenReturn(DELIVERY_MODE);
+        doNothing().when(addressPopulator).populate(any(), any());
+        when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
+        when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
+        doNothing().when(calculationService).calculate(any());
+
+        try {
+            adyenCheckoutFacade.handle3DS2Response(request);
+            fail("Expected AdyenNonAuthorizedPaymentException");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            verify(adyenPaymentService).authorise3DS2Payment(PAYMENT_DATA, RESULT, "challenge");
+            verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
+            verify(cartFactory).createCart();
+            verify(cartService).setSessionCart(cartModel);
+            verify(calculationService).calculate(cartModel);
+        }
+    }
+
+    @Test
+    public void testHandle3DS2ResponseThrowsApiException() throws Exception {
+        when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(null);
+        when(request.getParameter(CHALLENGE_RESULT)).thenReturn(RESULT);
+        when(sessionService.getAttribute(SESSION_PAYMENT_DATA)).thenReturn(PAYMENT_DATA);
+        when(sessionService.getAttribute(SESSION_PENDING_ORDER_CODE)).thenReturn(PENDING_ORDER_CODE);
+        when(adyenPaymentService.authorise3DS2Payment(any(), any(), any())).thenThrow(new ApiException(EXCEPTION, 999));
+        when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
+        doNothing().when(sessionService).removeAttribute(any());
+        doNothing().when(modelService).save(any());
+        when(cartFactory.createCart()).thenReturn(cartModel);
+        doNothing().when(cartService).setSessionCart(any());
+        doNothing().when(cartService).changeCurrentCartUser(any());
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(orderModel.getDeliveryAddress()).thenReturn(addressModel);
+        when(addressModel.getOriginal()).thenReturn(addressModel);
+        when(orderModel.getDeliveryMode()).thenReturn(deliveryModeModel);
+        when(deliveryModeModel.getCode()).thenReturn(DELIVERY_MODE);
+        doNothing().when(addressPopulator).populate(any(), any());
+        when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
+        when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
+        doNothing().when(calculationService).calculate(any());
+
+        try {
+            adyenCheckoutFacade.handle3DS2Response(request);
+            fail("Expected AdyenNonAuthorizedPaymentException");
+        } catch (AdyenNonAuthorizedPaymentException e) {
+            assertEquals(e.getMessage(), EXCEPTION);
+            verify(adyenPaymentService).authorise3DS2Payment(PAYMENT_DATA, RESULT, "challenge");
+            verify(orderRepository, times(2)).getOrderModel(PENDING_ORDER_CODE);
+            verify(cartFactory).createCart();
+            verify(cartService).setSessionCart(cartModel);
+            verify(calculationService).calculate(cartModel);
         }
     }
 
@@ -534,6 +717,16 @@ public class AdyenCheckoutFacadeTest {
         doNothing().when(modelService).save(any());
         when(cartFactory.createCart()).thenReturn(cartModel);
         doNothing().when(cartService).setSessionCart(any());
+        doNothing().when(cartService).changeCurrentCartUser(any());
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(orderModel.getDeliveryAddress()).thenReturn(addressModel);
+        when(addressModel.getOriginal()).thenReturn(addressModel);
+        when(orderModel.getDeliveryMode()).thenReturn(deliveryModeModel);
+        when(deliveryModeModel.getCode()).thenReturn(DELIVERY_MODE);
+        doNothing().when(addressPopulator).populate(any(), any());
+        when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
+        when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
+        doNothing().when(calculationService).calculate(any());
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
 
@@ -543,5 +736,8 @@ public class AdyenCheckoutFacadeTest {
         assertEquals(PaymentsResponse.ResultCodeEnum.REFUSED, paymentsResponseReturned.getResultCode());
         verify(adyenPaymentService).getPaymentDetailsFromPayload(details);
         verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
+        verify(cartFactory).createCart();
+        verify(cartService).setSessionCart(cartModel);
+        verify(calculationService).calculate(cartModel);
     }
 }
