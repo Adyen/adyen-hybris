@@ -20,23 +20,6 @@
  */
 package com.adyen.v6.controllers.pages;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adyen.constants.ApiConstants.RefusalReason;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
@@ -65,6 +48,24 @@ import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.site.BaseSiteService;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAYMENT_DATA;
@@ -241,7 +242,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("AdyenNonAuthorizedPaymentException", e);
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+                    if (is3DSPaymentMethod(adyenPaymentMethod)) {
                         final String termUrl = getTermUrl();
                         model.addAttribute("paReq", paymentsResponse.getRedirect().getData().get(PAREQ));
                         model.addAttribute("md", paymentsResponse.getRedirect().getData().get(MD));
@@ -254,25 +255,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 if (REFUSED == paymentsResponse.getResultCode()) {
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
-                if (IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
-                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
-                        model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                        model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
-                        model.addAttribute(FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
-                        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
-                    }
-                }
-                if (CHALLENGESHOPPER == paymentsResponse.getResultCode()) {
-                    if (adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-                        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
-                        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
-                        model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                        model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
-                        model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
-                        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
-                    }
+                if (CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
+                    return redirectTo3DS2Validation(model, paymentsResponse);
                 }
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -287,7 +271,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequireHardLogIn
     public String authorise3DS2Payment(final Model model,
                                        final RedirectAttributes redirectModel,
-                                       final HttpServletRequest request) throws CMSItemNotFoundException, CommerceCartModificationException, UnknownHostException {
+                                       final HttpServletRequest request) {
 
         String errorMessage = "checkout.error.authorization.failed";
         try {
@@ -296,23 +280,17 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
-            if (paymentsResponse != null && paymentsResponse.getResultCode() == CHALLENGESHOPPER) {
-                model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
-                model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
-                model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
-                model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
-                model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get("threeds2.challengeToken"));
-                return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
+            if (paymentsResponse != null && (paymentsResponse.getResultCode() == CHALLENGESHOPPER || paymentsResponse.getResultCode() == IDENTIFYSHOPPER)) {
+                return redirectTo3DS2Validation(model, paymentsResponse);
             }
             if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
                 errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
         } catch (Exception e) {
-            LOGGER.debug("Redirecting to summary" + errorMessage);
-            return redirectToSummaryWithError(redirectModel, errorMessage);
+            LOGGER.debug("Unexpected exception: " + e.getMessage(), e);
         }
-        LOGGER.debug("Redirecting to final step of checkout" + errorMessage);
-        return redirectToSummaryWithError(redirectModel, errorMessage);
+
+        return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
     }
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
@@ -337,7 +315,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             return REDIRECT_PREFIX + "/cart";
         }
 
-        LOGGER.debug("Redirecting to final step of checkout");
         return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
     }
 
@@ -362,7 +339,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 case AUTHORISED:
                 case RECEIVED:
                     LOGGER.debug("Redirecting to order confirmation");
-                    OrderData orderData = orderFacade.getOrderDetailsForCode(response.getMerchantReference());
+                    OrderData orderData = orderFacade.getOrderDetailsForCodeWithoutUser(response.getMerchantReference());
                     if (orderData == null) {
                         throw new Exception("Order not found");
                     }
@@ -376,11 +353,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         } catch (Exception e) {
             LOGGER.error(e);
+            return redirectToSelectPaymentMethodWithError(redirectModel, "checkout.error.authorization.payment.error");
         }
-
-        LOGGER.debug("Redirecting to cart..");
-        GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, "checkout.error.authorization.payment.error");
-        return REDIRECT_PREFIX + "/cart";
     }
 
     /**
@@ -437,16 +411,28 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return apiPaymentMethods.contains(paymentMethod);
     }
 
+    private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
+        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
+    }
+
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
+        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
         return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
     }
 
-    private String redirectToSummaryWithError(final RedirectAttributes redirectModel, final String messageKey) {
-        GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
-
-        return REDIRECT_PREFIX + AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + "/view";
+    private String redirectTo3DS2Validation(Model model, PaymentsResponse paymentsResponse) {
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, adyenCheckoutFacade.getEnvironmentMode());
+        model.addAttribute(SHOPPER_LOCALE, adyenCheckoutFacade.getShopperLocale());
+        model.addAttribute(PAYMENT_DATA, paymentsResponse.getPaymentData());
+        if (paymentsResponse.getResultCode() == CHALLENGESHOPPER) {
+            model.addAttribute(CHALLENGE_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_CHALLENGE_TOKEN));
+        } else {
+            model.addAttribute(FINGERPRINT_TOKEN, paymentsResponse.getAuthentication().get(THREEDS2_FINGERPRINT_TOKEN));
+        }
+        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
     }
 
     private String getTermUrl() {
