@@ -19,8 +19,24 @@
   ~  This file is open source and available under the MIT license.
   ~  See the LICENSE file for more info.
   -->
-<process xmlns="http://www.hybris.de/xsd/processdefinition" start="checkOrder"
+<process xmlns="http://www.hybris.de/xsd/processdefinition" start="checkNewOrder"
          name="order-process" processClass="de.hybris.platform.orderprocessing.model.OrderProcessModel">
+
+    <action id="checkNewOrder" bean="adyenCheckNewOrderAction">
+        <transition name="OK" to="checkOrder"/>
+        <transition name="NOK" to="error"/>
+        <transition name="WAIT" to="waitForAdyenPendingPayment"/>
+    </action>
+
+    <wait id="waitForAdyenPendingPayment" then="checkPendingOrder">
+        <event>AdyenAuthorized</event>
+        <timeout delay="PT10M" then="checkPendingOrder"/>
+    </wait>
+
+    <action id="checkPendingOrder" bean="adyenCheckPendingOrderAction">
+        <transition name="OK" to="checkOrder"/>
+        <transition name="NOK" to="error"/>
+    </action>
 
     <!-- Check Order -->
     <action id="checkOrder" bean="checkOrderAction">

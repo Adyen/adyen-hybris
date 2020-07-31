@@ -4,8 +4,16 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-	
+
 	<context:annotation-config/>
+
+	<!--Step of order-process that checks if new orders are already completed-->
+	<alias name="defaultAdyenCheckNewOrderAction" alias="adyenCheckNewOrderAction"/>
+	<bean id="defaultAdyenCheckNewOrderAction" class="com.adyen.v6.actions.order.AdyenCheckNewOrderAction" parent="abstractAction"/>
+
+	<!--Step of order-process that checks if order in pending status is already completed -->
+	<alias name="defaultAdyenCheckPendingOrderAction" alias="adyenCheckPendingOrderAction"/>
+	<bean id="defaultAdyenCheckPendingOrderAction" class="com.adyen.v6.actions.order.AdyenCheckPendingOrderAction" parent="abstractAction"/>
 
 	<!--Step of order-process that checks authorization completion-->
 	<alias name="defaultAdyenCheckAuthorizationAction" alias="adyenCheckAuthorizationAction"/>
