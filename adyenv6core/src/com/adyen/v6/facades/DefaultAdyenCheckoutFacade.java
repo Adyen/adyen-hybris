@@ -419,16 +419,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
-        //update status
-        orderModel.setStatus(newStatus);
-        orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
-        getModelService().save(orderModel);
-
         //update payment info
         getAdyenTransactionService().createPaymentTransactionFromResultCode(orderModel,
                 orderModel.getCode(),
                 paymentsResponse.getPspReference(),
                 paymentsResponse.getResultCode());
+
+        //update status
+        orderModel.setStatus(newStatus);
+        orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
+        getModelService().save(orderModel);
 
         getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
     }
@@ -769,18 +769,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private OrderData placePendingOrder(PaymentsResponse.ResultCodeEnum resultCode) throws InvalidCartException {
-        OrderData orderData = getCheckoutFacade().placeOrder();
+        CartModel cartModel = getCartService().getSessionCart();
+        cartModel.setStatus(OrderStatus.PAYMENT_PENDING);
+        cartModel.setStatusInfo(resultCode.getValue());
+        getModelService().save(cartModel);
 
-        OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
-        orderModel.setStatus(OrderStatus.PAYMENT_PENDING);
-        orderModel.setStatusInfo(resultCode.getValue());
-        getModelService().save(orderModel);
+        OrderData orderData = getCheckoutFacade().placeOrder();
 
         getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
 
         //Set new cart in session to avoid bugs (like going "back" on browser)
-        CartModel cartModel = getCartFactory().createCart();
-        getCartService().setSessionCart(cartModel);
+        CartModel newCartModel = getCartFactory().createCart();
+        getCartService().setSessionCart(newCartModel);
 
         return orderData;
     }
@@ -1337,6 +1337,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+        getSessionService().removeAttribute(SESSION_MD);
         getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
         getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
         getSessionService().removeAttribute(PAYMENT_METHOD);
@@ -1390,10 +1391,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String orderCode = getSessionService().getAttribute(SESSION_PENDING_ORDER_CODE);
         OrderModel orderModel = retrievePendingOrder(orderCode);
 
-        orderModel.setStatus(OrderStatus.CANCELLED);
+        orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
         orderModel.setStatusInfo("ApiException");
         getModelService().save(orderModel);
 
+        getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
         getSessionService().removeAttribute(SESSION_MD);
         getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);

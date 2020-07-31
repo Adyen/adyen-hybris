@@ -25,6 +25,12 @@
     <!-- Order Process Actions -->
 
     <!--Step of order-process that checks authorization completion-->
+    <alias name="defaultAdyenCheckNewOrderAction" alias="adyenCheckNewOrderAction"/>
+    <bean id="defaultAdyenCheckNewOrderAction" class="com.adyen.v6.actions.order.AdyenCheckNewOrderAction" parent="abstractAction"/>
+
+    <alias name="defaultAdyenCheckPendingOrderAction" alias="adyenCheckPendingOrderAction"/>
+    <bean id="defaultAdyenCheckPendingOrderAction" class="com.adyen.v6.actions.order.AdyenCheckPendingOrderAction" parent="abstractAction"/>
+
     <alias name="defaultAdyenCheckAuthorizationAction" alias="adyenCheckAuthorizationAction"/>
     <bean id="defaultAdyenCheckAuthorizationAction" class="com.adyen.v6.actions.order.AdyenCheckAuthorizationAction" parent="abstractAction"/>
 
