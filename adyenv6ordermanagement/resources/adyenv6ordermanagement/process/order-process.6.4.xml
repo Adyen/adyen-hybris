@@ -30,7 +30,7 @@
 
     <wait id="waitForAdyenPendingPayment" then="checkPendingOrder">
         <event>AdyenAuthorized</event>
-        <timeout delay="PT10M" then="checkPendingOrder"/>
+        <timeout delay="PT5M" then="checkPendingOrder"/>
     </wait>
 
     <action id="checkPendingOrder" bean="adyenCheckPendingOrderAction">
