@@ -401,7 +401,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
         } catch (Exception e) {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
-            handleApiException();
+            restoreCartFromOrderCodeInSession();
             throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
 
@@ -418,7 +418,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return response;
     }
 
-    private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
+    @Override
+    public void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse) {
         //update payment info
         getAdyenTransactionService().createPaymentTransactionFromResultCode(orderModel,
                 orderModel.getCode(),
@@ -511,13 +512,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
-        if(PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
-            //TODO: Check about other status
+        if (PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         }
 
         //Lock the cart to prevent changes while the payment is pending
-        lockSessionCart();
+        placePendingOrder(paymentsResponse.getResultCode());
 
         return paymentsResponse;
     }
@@ -527,14 +527,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentsResponse response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, paymentData);
 
-        restoreSessionCart();
-        CartData cartData = getCheckoutFacade().getCheckoutCart();
-        if (!cartData.getCode().equals(response.getMerchantReference())) {
-            throw new InvalidCartException("Merchant reference doesn't match cart's code");
-        }
+        String orderCode = response.getMerchantReference();
+        OrderModel orderModel = retrievePendingOrder(orderCode);
 
-        //Lock cart again to be handled on results call
-        lockSessionCart();
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == response.getResultCode()) {
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, response);
+        } else {
+            updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, response);
+            restoreCartFromOrder(orderCode);
+            throw new AdyenNonAuthorizedPaymentException(response);
+        }
 
         return response;
     }
@@ -575,7 +577,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             paymentsResponse = getAdyenPaymentService().authorise3DPayment(sessionPaymentData, paRes, md);
         } catch (Exception e) {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
-            handleApiException();
+            restoreCartFromOrderCodeInSession();
             throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
 
@@ -621,7 +623,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
             if (type.equals("challenge")) {
                 LOGGER.debug("Restoring cart because ApiException occurred after challengeResult ");
-                handleApiException();
+                restoreCartFromOrderCodeInSession();
             }
             throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
@@ -1319,33 +1321,53 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentsResponse paymentsResponse = gson.fromJson(resultJson, new TypeToken<PaymentsResponse>() {
         }.getType());
 
-        restoreSessionCart();
-        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-            //TODO: Check for PENDING status.
-            return createAuthorizedOrder(paymentsResponse);
-        }
+        String orderCode = paymentsResponse.getMerchantReference();
+        if(orderCode!=null) {
+            OrderModel orderModel = retrievePendingOrder(orderCode);
+            if (orderModel != null) {
+                if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
 
+
+                    updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.PAYMENT_AUTHORIZED, paymentsResponse);
+                    OrderData orderData = getOrderConverter().convert(orderModel);
+                    return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+                } else {
+                    updateOrderPaymentStatusAndInfo(orderModel, OrderStatus.CANCELLED, paymentsResponse);
+                    restoreCartFromOrder(orderCode);
+                    throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+                }
+            }
+        }
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
-    private OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
-        OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
-        if (orderModel == null) {
-            //TODO change exception
-            throw new InvalidCartException("Order '" + orderCode + "' does not exist!");
+    @Override
+    public OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
+        OrderModel orderModel;
+        if(orderCode!=null) {
+            orderModel = getOrderRepository().getOrderModel(orderCode);
+            if (orderModel == null) {
+                //TODO change exception
+                throw new InvalidCartException("Order '" + orderCode + "' does not exist!");
+            }
+
+            //Renato: do we not need to clean if we did not find order?
+            getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
+            getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
+            getSessionService().removeAttribute(SESSION_MD);
+            getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
+            getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
+            getSessionService().removeAttribute(PAYMENT_METHOD);
         }
-
-        getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
-        getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
-        getSessionService().removeAttribute(SESSION_MD);
-        getSessionService().removeAttribute(THREEDS2_FINGERPRINT_TOKEN);
-        getSessionService().removeAttribute(THREEDS2_CHALLENGE_TOKEN);
-        getSessionService().removeAttribute(PAYMENT_METHOD);
-
+        else {
+            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
+            return null;
+        }
         return orderModel;
     }
 
-    private void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException {
+    @Override
+    public void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException {
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
         if (orderModel == null) {
             LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
@@ -1387,9 +1409,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 || !orderModel.getStore().equals(cartModel.getStore());
     }
 
-    private void handleApiException() throws InvalidCartException, CalculationException {
+    @Override
+    public void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException {
         String orderCode = getSessionService().getAttribute(SESSION_PENDING_ORDER_CODE);
+        if (orderCode == null) {
+            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
+            return;
+        }
         OrderModel orderModel = retrievePendingOrder(orderCode);
+        if (orderModel == null) {
+            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
+            return;
+        }
+        //Renato: same here. do we need cleanup?
 
         orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
         orderModel.setStatusInfo("ApiException");
