@@ -1347,11 +1347,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if(orderCode!=null) {
             orderModel = getOrderRepository().getOrderModel(orderCode);
             if (orderModel == null) {
-                //TODO change exception
                 throw new InvalidCartException("Order '" + orderCode + "' does not exist!");
             }
 
-            //Renato: do we not need to clean if we did not find order?
             getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
             getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
             getSessionService().removeAttribute(SESSION_MD);
@@ -1421,7 +1419,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
             return;
         }
-        //Renato: same here. do we need cleanup?
 
         orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
         orderModel.setStatusInfo("ApiException");

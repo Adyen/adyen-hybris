@@ -69,6 +69,7 @@ import java.util.List;
 import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
+import static de.hybris.platform.addonsupport.controllers.AbstractAddOnController.REDIRECT_PREFIX;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -116,7 +117,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @RequestMapping(value = "", method = GET)
     @RequireHardLogIn
     //    @PreValidateCheckoutStep (checkoutStep = PAYMENT_METHOD_STEP_NAME)
-    public String enterStep(final Model model, final RedirectAttributes redirectAttributes) {
+    public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         model.addAttribute("metaRobots", "noindex,nofollow");
@@ -138,7 +139,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
         }
 
-        adyenCheckoutFacade.initializeCheckoutData(model);
+        if(isSessionCartInvalid())
+        {
+            LOGGER.debug("Invalid cart found in session");
+            GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
+        }
+        else {
+            adyenCheckoutFacade.initializeCheckoutData(model);
+        }
 
         super.prepareDataForPage(model);
 
@@ -192,7 +200,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
-        if (isSessionCartValid()) {
+        if (isSessionCartInvalid()) {
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             if (adyenPaymentForm.getBillingAddress() != null) {
                 adyenPaymentForm.resetFormExceptBillingAddress();
@@ -202,7 +210,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
-        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()|| isSessionCartValid()) {
+        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()|| isSessionCartInvalid()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             if (adyenPaymentForm.getBillingAddress() != null) {
@@ -323,9 +331,9 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         this.adyenCheckoutFacade = adyenCheckoutFacade;
     }
 
-    private boolean isSessionCartValid() {
+    private boolean isSessionCartInvalid() {
         CartData cart = getCheckoutFacade().getCheckoutCart();
         final AddressData deliveryAddress = cart.getDeliveryAddress();
-        return deliveryAddress == null || deliveryAddress.getCountry().getIsocode() == null;
+        return (deliveryAddress == null || deliveryAddress.getCountry()==null || deliveryAddress.getCountry().getIsocode() == null);
     }
 }
