@@ -29,9 +29,12 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.CartModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -109,6 +112,8 @@ public interface AdyenCheckoutFacade {
      * @return PaymentsResponse
      */
     PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
+
+    void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse);
 
     /**
      * Authorizes a payment using Adyen API
@@ -239,4 +244,10 @@ public interface AdyenCheckoutFacade {
      * Validates the result and updates the cart based on it
      */
     OrderData handleComponentResult(String resultJson) throws Exception;
+
+    OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException;
+
+    void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException;
+
+    void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 }
