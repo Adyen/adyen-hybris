@@ -318,7 +318,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
             return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
         } catch (CalculationException | InvalidCartException e) {
-            LOGGER.warn(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
