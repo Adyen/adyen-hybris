@@ -69,7 +69,6 @@ import java.util.List;
 import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
-import static de.hybris.platform.addonsupport.controllers.AbstractAddOnController.REDIRECT_PREFIX;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -243,8 +242,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             } catch (AdyenNonAuthorizedPaymentException e) {
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
-                    String orderCode = paymentsResponse.getMerchantReference();
-                    adyenCheckoutFacade.restoreCartFromOrder(orderCode);
                     switch (paymentsResponse.getResultCode()) {
                         case REFUSED:
                             errorMessageKey = "checkout.error.authorization.payment.refused";
@@ -256,6 +253,8 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                             break;
                     }
                 }
+            } catch (InvalidCartException e) {
+                LOGGER.error("Error retrieving order", e);
             } catch (Exception e) {
                 LOGGER.error("Unexpected error while validating component payment result", e);
             }

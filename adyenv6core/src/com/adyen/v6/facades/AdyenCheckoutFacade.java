@@ -113,8 +113,6 @@ public interface AdyenCheckoutFacade {
      */
     PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
 
-    void updateOrderPaymentStatusAndInfo(OrderModel orderModel, OrderStatus newStatus, PaymentsResponse paymentsResponse);
-
     /**
      * Authorizes a payment using Adyen API
      * In case of authorized, it places an order from cart
@@ -244,10 +242,6 @@ public interface AdyenCheckoutFacade {
      * Validates the result and updates the cart based on it
      */
     OrderData handleComponentResult(String resultJson) throws Exception;
-
-    OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException;
-
-    void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException;
 
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 }
