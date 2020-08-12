@@ -22,14 +22,13 @@ package com.adyen.v6.converters;
 
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.nexo.SaleToPOIResponse;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.core.convert.converter.Converter;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse, PaymentsResponse> {
@@ -78,16 +77,14 @@ public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse,
     }
 
     /*
-     * Parse additionalResponse with a query string format, i.e. "tid=123&AID=123&transactionType=GOODS_SERVICES&..."),
-     * and return as a name/value map
+     * Parse base64 encoded additionalResponse and return as a name/value map
      */
     private Map<String, String> parseAdditionalResponse(String additionalResponse) {
         Map<String, String> additionalData = new HashMap<>();
         if (StringUtils.isNotEmpty(additionalResponse)) {
-            List<NameValuePair> parsedNameValues = URLEncodedUtils.parse(additionalResponse, Charset.forName("UTF-8"));
-            for (NameValuePair nameValue : parsedNameValues) {
-                additionalData.put(nameValue.getName(), nameValue.getValue());
-            }
+            String decodedAdditionalResponse = new String(Base64.getDecoder().decode(additionalResponse), StandardCharsets.UTF_8);
+            Gson gson = new Gson();
+            additionalData = gson.fromJson(decodedAdditionalResponse, PaymentsResponse.class).getAdditionalData();
         }
         return additionalData;
     }
