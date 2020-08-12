@@ -116,8 +116,12 @@ public class AdyenComponentController {
         } catch (InvalidCartException e) {
             LOGGER.error("InvalidCartException", e);
             throw new AdyenComponentException(e.getMessage());
-        } catch (AdyenNonAuthorizedPaymentException | ApiException e) {
-            LOGGER.error("PaymentException", e);
+        }
+        catch ( ApiException e) {
+            LOGGER.error("ApiException", e);
+            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
+        }  catch (AdyenNonAuthorizedPaymentException  e) {
+            LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
             LOGGER.error("Exception", e);

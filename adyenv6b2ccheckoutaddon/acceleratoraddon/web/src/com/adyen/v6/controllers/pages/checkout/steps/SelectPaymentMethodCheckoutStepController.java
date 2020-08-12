@@ -241,6 +241,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
                 return redirectToOrderConfirmationPage(orderData);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("Handling AdyenNonAuthorizedPaymentException");
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
                     String orderCode = paymentsResponse.getMerchantReference();
