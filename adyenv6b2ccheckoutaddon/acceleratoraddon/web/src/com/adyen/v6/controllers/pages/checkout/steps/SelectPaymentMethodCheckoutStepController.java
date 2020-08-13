@@ -172,7 +172,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         if (useAdyenDeliveryAddress) {
             final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
+            if (deliveryAddress != null && deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
                 addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
             }
             addressForm.setTitleCode(deliveryAddress.getTitleCode());
