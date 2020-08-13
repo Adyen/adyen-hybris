@@ -38,6 +38,7 @@ import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
+import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -48,6 +49,7 @@ import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
+import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
@@ -177,6 +179,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private CartFactory cartFactory;
     private CalculationService calculationService;
     private AddressPopulator addressPopulator;
+    private AdyenBusinessProcessService adyenBusinessProcessService;
+
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -438,6 +442,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             orderModel.setStatusInfo(paymentsResponse.getPspReference() + " - " + paymentsResponse.getResultCode().getValue());
         }
         getModelService().save(orderModel);
+        getAdyenBusinessProcessService().triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_PAYMENT_RESULT);
 
         getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
     }
@@ -1404,8 +1409,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         OrderModel orderModel = retrievePendingOrder(orderCode);
 
         orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
-        orderModel.setStatusInfo("ApiException");
+        orderModel.setStatusInfo("AdyenException");
         getModelService().save(orderModel);
+        getAdyenBusinessProcessService().triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_PAYMENT_RESULT);
 
         getSessionService().removeAttribute(SESSION_PENDING_ORDER_CODE);
         getSessionService().removeAttribute(SESSION_PAYMENT_DATA);
@@ -1608,5 +1614,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAddressPopulator(AddressPopulator addressPopulator) {
         this.addressPopulator = addressPopulator;
+    }
+
+    public AdyenBusinessProcessService getAdyenBusinessProcessService() {
+        return adyenBusinessProcessService;
+    }
+
+    public void setAdyenBusinessProcessService(AdyenBusinessProcessService adyenBusinessProcessService) {
+        this.adyenBusinessProcessService = adyenBusinessProcessService;
     }
 }

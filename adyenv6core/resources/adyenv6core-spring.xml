@@ -215,6 +215,7 @@
         <property name="cartFactory" ref="cartFactory" />
         <property name="calculationService" ref="calculationService" />
         <property name="addressPopulator" ref="addressPopulator" />
+        <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService" />
     </bean>
 
     <alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />

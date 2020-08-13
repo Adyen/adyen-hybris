@@ -32,6 +32,8 @@ public class AdyenCheckPendingOrderAction extends AbstractSimpleDecisionAction<O
 
 	@Override
 	public Transition executeAction(OrderProcessModel process) {
+		LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+
 		final OrderModel order = process.getOrder();
 
 		if (order == null) {
@@ -39,7 +41,7 @@ public class AdyenCheckPendingOrderAction extends AbstractSimpleDecisionAction<O
 			return Transition.NOK;
 		}
 
-		if (OrderStatus.PAYMENT_PENDING.equals(order.getStatus())) {
+		if (OrderStatus.PAYMENT_PENDING.equals(order.getStatus()) && order.getPaymentTransactions().isEmpty()) {
 			LOG.debug("Process: " + process.getCode()
 					+ " Order still on Payment Pending, will update status to PROCESSING_ERROR...");
 			order.setStatus(OrderStatus.PROCESSING_ERROR);

@@ -28,8 +28,8 @@ name='adyen-order-process' processClass='de.hybris.platform.orderprocessing.mode
 </action>
 
 <wait id='waitForAdyenPendingPayment' then='checkPendingOrder'>
-   <event>AdyenAuthorized</event>
-   <timeout delay='PT5M' then='checkPendingOrder'/>
+    <event>AdyenPaymentResult</event>
+    <timeout delay='PT60M' then='checkPendingOrder'/>
 </wait>
 
 <action id='checkPendingOrder' bean='adyenCheckPendingOrderAction'>
@@ -52,7 +52,7 @@ name='adyen-order-process' processClass='de.hybris.platform.orderprocessing.mode
 
 <!--Check authorization completion-->
 <wait id='waitForAdyenAuthorization' then='adyenCheckAuthorization' prependProcessCode='true'>
-    <event>AdyenAuthorized</event>
+    <event>AdyenPaymentResult</event>
 </wait>
 
 <!-- Fraud Check -->
