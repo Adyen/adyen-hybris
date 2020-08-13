@@ -31,7 +31,7 @@
             <c:forEach items="${allowedCards}" var="allowedCard">
             allowedCards.push( "${allowedCard.code}" );
             </c:forEach>
-            AdyenCheckoutHybris.initiateCard( allowedCards );
+            AdyenCheckoutHybris.initiateCard( allowedCards, ${showRememberTheseDetails} );
 
             </c:if>
 
@@ -183,7 +183,6 @@
 
                                 <c:if test="${not empty allowedCards}">
                                     <adyen:securedFieldsMethod
-                                            showRememberTheseDetails="${showRememberTheseDetails}"
                                             showComboCard="${showComboCard}"/>
                                 </c:if>
 
