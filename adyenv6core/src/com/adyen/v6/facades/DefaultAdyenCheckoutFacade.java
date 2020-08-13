@@ -591,8 +591,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateOrderPaymentStatusAndInfo(orderModel, paymentsResponse);
 
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
-            OrderData orderData = getOrderConverter().convert(orderModel);
-            return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+            return getOrderConverter().convert(orderModel);
         }
 
         restoreCartFromOrder(orderCode);
@@ -638,8 +637,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             updateOrderPaymentStatusAndInfo(orderModel, paymentsResponse);
 
             if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
-                OrderData orderData = getOrderConverter().convert(orderModel);
-                return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+                return getOrderConverter().convert(orderModel);
             }
 
             restoreCartFromOrder(orderCode);
@@ -1326,8 +1324,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()
                 || PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
-            OrderData orderData = getOrderConverter().convert(orderModel);
-            return fillOrderDataWithPaymentInfo(orderData, paymentsResponse);
+            return getOrderConverter().convert(orderModel);
         }
 
         restoreCartFromOrder(orderCode);
