@@ -32,6 +32,8 @@ public class AdyenCheckNewOrderAction extends AbstractWaitableAction<OrderProces
 
 	@Override
 	public String execute(final OrderProcessModel process) {
+		LOG.debug("Process: " + process.getCode() + " in step " + getClass().getSimpleName());
+
 		final OrderModel order = process.getOrder();
 
 		if (order == null) {
