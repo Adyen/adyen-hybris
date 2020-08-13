@@ -628,7 +628,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
 
         if (resultCode != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER && resultCode != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
-            //payment is finished
             String orderCode = paymentsResponse.getMerchantReference();
             OrderModel orderModel = retrievePendingOrder(orderCode);
             updateOrderPaymentStatusAndInfo(orderModel, paymentsResponse);
