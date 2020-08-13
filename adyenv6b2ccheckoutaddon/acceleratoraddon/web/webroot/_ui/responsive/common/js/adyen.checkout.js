@@ -214,13 +214,13 @@ var AdyenCheckoutHybris = (function () {
             this.oneClickCards[storedCard.storedPaymentMethodId] = oneClickCard;
         },
 
-        initiateCard: function (allowedCards) {
+        initiateCard: function (allowedCards, showRememberDetails) {
             var context = this;
             this.card = this.checkout.create( 'card', {
                 type: 'card',
                 hasHolderName: true,
                 holderNameRequired: true,
-                enableStoreDetails: true,
+                enableStoreDetails: showRememberDetails,
                 groupTypes: allowedCards,
                 onBrand: copyCardBrand
 
