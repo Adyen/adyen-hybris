@@ -35,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorfacades.order.AcceleratorCheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.order.InvalidCartException;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -82,6 +83,14 @@ public class AdyenComponentController {
                                 final BindingResult bindingResult) throws AdyenComponentException {
         LOGGER.debug("Component paymentForm: " + adyenPaymentForm);
 
+        if(!isValidateSessionCart())
+        {
+            if (adyenPaymentForm.getBillingAddress() != null) {
+                adyenPaymentForm.resetFormExceptBillingAddress();
+            }
+            throw new AdyenComponentException("checkout.error.paymentethod.formentry.invalid");
+        }
+
         //Save payment information
         getAdyenCheckoutFacade().handlePaymentForm(adyenPaymentForm, bindingResult);
         if (bindingResult.hasGlobalErrors() || bindingResult.hasErrors()) {
@@ -107,8 +116,12 @@ public class AdyenComponentController {
         } catch (InvalidCartException e) {
             LOGGER.error("InvalidCartException", e);
             throw new AdyenComponentException(e.getMessage());
-        } catch (AdyenNonAuthorizedPaymentException | ApiException e) {
-            LOGGER.error("PaymentException", e);
+        }
+        catch ( ApiException e) {
+            LOGGER.error("ApiException", e);
+            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
+        }  catch (AdyenNonAuthorizedPaymentException  e) {
+            LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
             LOGGER.error("Exception", e);
@@ -201,5 +214,15 @@ public class AdyenComponentController {
 
     public void setCheckoutFacade(AcceleratorCheckoutFacade checkoutFacade) {
         this.checkoutFacade = checkoutFacade;
+    }
+
+    private boolean isValidateSessionCart() {
+        CartData cart = getCheckoutFacade().getCheckoutCart();
+        final AddressData deliveryAddress = cart.getDeliveryAddress();
+        if (deliveryAddress == null || deliveryAddress.getCountry() == null || deliveryAddress.getCountry().getIsocode() == null) {
+            return false;
+        }
+        return true;
+
     }
 }

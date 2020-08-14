@@ -40,6 +40,7 @@ import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.TitleData;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -137,7 +138,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
         }
 
-        adyenCheckoutFacade.initializeCheckoutData(model);
+        if(isSessionCartInvalid())
+        {
+            LOGGER.debug("Invalid cart found in session");
+            GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
+        }
+        else {
+            adyenCheckoutFacade.initializeCheckoutData(model);
+        }
 
         super.prepareDataForPage(model);
 
@@ -164,7 +172,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         if (useAdyenDeliveryAddress) {
             final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
+            if (deliveryAddress != null && deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
                 addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
             }
             addressForm.setTitleCode(deliveryAddress.getTitleCode());
@@ -191,9 +199,17 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
+        if (isSessionCartInvalid()) {
+            GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
+            if (adyenPaymentForm.getBillingAddress() != null) {
+                adyenPaymentForm.resetFormExceptBillingAddress();
+            }
+            return enterStep(model, redirectAttributes);
+        }
+
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
-        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()) {
+        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()|| isSessionCartInvalid()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             if (adyenPaymentForm.getBillingAddress() != null) {
@@ -211,7 +227,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
     @RequireHardLogIn
     public String handleComponentResult(final HttpServletRequest request,
                                         final Model model,
-                                        final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
+                                        final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException, InvalidCartException, CalculationException {
         String resultData = request.getParameter("resultData");
         String isResultError = request.getParameter("isResultError");
 
@@ -224,6 +240,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
                 return redirectToOrderConfirmationPage(orderData);
             } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("Handling AdyenNonAuthorizedPaymentException");
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
                     switch (paymentsResponse.getResultCode()) {
@@ -237,25 +254,21 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                             break;
                     }
                 }
+            } catch (InvalidCartException e) {
+                LOGGER.error("Error retrieving order", e);
             } catch (Exception e) {
                 LOGGER.error("Unexpected error while validating component payment result", e);
             }
         } else {
             if(StringUtils.isNotBlank(resultData)) {
                 errorMessageKey = resultData;
-            }
-
-            try {
-                //Restore cart to session before returning error
-                getAdyenCheckoutFacade().restoreSessionCart();
-            } catch (InvalidCartException e) {
-                LOGGER.debug("no cart in session!");
+                getAdyenCheckoutFacade().restoreCartFromOrderCodeInSession();
             }
         }
 
-        LOGGER.debug("Redirecting to 'payment method select' with error...");
-        GlobalMessages.addErrorMessage(model, errorMessageKey);
-        return enterStep(model, redirectAttributes);
+        LOGGER.debug("Redirecting to 'payment method select' with error..");
+        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, errorMessageKey);
+        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
     }
 
     private boolean isValidResult(String resultData, String isResultError) {
@@ -316,5 +329,11 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     public void setAdyenCheckoutFacade(AdyenCheckoutFacade adyenCheckoutFacade) {
         this.adyenCheckoutFacade = adyenCheckoutFacade;
+    }
+
+    private boolean isSessionCartInvalid() {
+        CartData cart = getCheckoutFacade().getCheckoutCart();
+        final AddressData deliveryAddress = cart.getDeliveryAddress();
+        return (deliveryAddress == null || deliveryAddress.getCountry()==null || deliveryAddress.getCountry().getIsocode() == null);
     }
 }
