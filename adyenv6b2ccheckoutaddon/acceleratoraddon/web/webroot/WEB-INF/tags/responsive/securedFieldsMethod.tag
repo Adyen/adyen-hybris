@@ -18,7 +18,6 @@
   ~  This file is open source and available under the MIT license.
   ~  See the LICENSE file for more info.
   --%>
-<%@ attribute name="showRememberTheseDetails" required="true" type="java.lang.Boolean" %>
 <%@ attribute name="showComboCard" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>

@@ -20,15 +20,7 @@
  */
 package com.adyen.v6.facades;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -37,9 +29,22 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.CartModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -100,23 +105,13 @@ public interface AdyenCheckoutFacade {
     CartModel restoreSessionCart() throws InvalidCartException;
 
     /**
-     * Handles an HPP response
-     * In case of authorized, it places an order from cart
-     *
-     * @param request Request object containing HPP data
-     * @return OrderData
-     * @throws SignatureException if signature doesn't match
-     */
-    OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
-
-    /**
      * Handles Adyen Redirect Response
      * In case of authorized, it places an order from cart
      *
      * @param details consisting of parameters present in response query string
      * @return PaymentsResponse
      */
-    PaymentsResponse handleRedirectPayload(HashMap<String,String> details);
+    PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -130,15 +125,28 @@ public interface AdyenCheckoutFacade {
     OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
 
     /**
-     * Authorizes a payment using Adyen API
-     * In case of authorized, it places an order from cart
+     * Creates a payment coming from an Adyen Checkout Component
      * No session handling
      *
-     * @param cartData cartData object
-     * @return OrderData
-     * @throws Exception In case order failed to be created
+     * @param request               HTTP Request info
+     * @param cartData              cartData object
+     * @param paymentMethodDetails  paymentMethodDetails object
+     * @return PaymentsResponse
+     * @throws Exception In case payment failed
      */
-    OrderData authorisePayment(CartData cartData) throws Exception;
+    PaymentsResponse componentPayment(HttpServletRequest request, CartData cartData, PaymentMethodDetails paymentMethodDetails) throws Exception;
+
+    /**
+     * Submit details from a payment made on an Adyen Checkout Component
+     * No session handling
+     *
+     * @param request               HTTP Request info
+     * @param details               details
+     * @param paymentData           paymentData
+     * @return PaymentsResponse
+     * @throws Exception In case request failed
+     */
+    PaymentsResponse componentDetails(HttpServletRequest request, Map<String, String> details, String paymentData) throws Exception;
 
     /**
      * Add payment details to cart
@@ -223,4 +231,17 @@ public interface AdyenCheckoutFacade {
      * Check POS Payment status using Adyen Terminal API
      */
     OrderData checkPosPaymentStatus(HttpServletRequest request, CartData cartData) throws Exception;
+
+    /**
+     * Returns whether payments have Immediate Capture or not
+     */
+    boolean isImmediateCapture();
+
+    /**
+     * Handles payment result from component
+     * Validates the result and updates the cart based on it
+     */
+    OrderData handleComponentResult(String resultJson) throws Exception;
+
+    void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 }

@@ -26,10 +26,12 @@ import java.security.SignatureException;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
+import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.StoredPaymentMethod;
@@ -51,6 +53,8 @@ public interface AdyenPaymentService {
     ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException ;
 
     PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+
+    PaymentsResponse componentPayment(CartData cartData, PaymentMethodDetails paymentMethodDetails, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
     /**
      * Performs 3D secure authorization request via Adyen API
@@ -103,7 +107,7 @@ public interface AdyenPaymentService {
     /**
      * Retrieves payment response from /payments/details for redirect methods like klarna
      */
-    PaymentsResponse getPaymentDetailsFromPayload( HashMap<String, String> details, String paymentData) throws Exception;
+    PaymentsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception;
 
     /**
      * Retrieves payment response from /payments/details

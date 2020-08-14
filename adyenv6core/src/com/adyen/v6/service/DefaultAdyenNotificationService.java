@@ -22,6 +22,8 @@ package com.adyen.v6.service;
 
 import java.util.Date;
 import java.util.UUID;
+
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import org.apache.log4j.Logger;
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
@@ -132,12 +134,8 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         String orderCode = notificationItemModel.getMerchantReference();
         OrderModel orderModel = orderRepository.getOrderModel(orderCode);
 
-        //Create order if it is successfuly authorized
-        if (orderModel == null && notificationItemModel.getSuccess()) {
-            orderModel = createOrder(orderCode);
-        }
-
         if (orderModel == null) {
+            LOG.warn("Order with orderCode: " + orderCode + " was not found!");
             return null;
         }
 
@@ -148,50 +146,10 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             paymentTransactionModel = adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
         }
 
-        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_AUTHORIZED);
-
+        adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_PAYMENT_RESULT);
         adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
+
         return paymentTransactionModel;
-    }
-
-    /**
-     * Create order from cart
-     *
-     * @param orderCode order code
-     * @return OrderModel or null
-     */
-    private OrderModel createOrder(String orderCode) {
-        LOG.debug("Order not found. Checking Cart..");
-        CartModel cartModel = cartRepository.getCart(orderCode);
-        if (cartModel == null) {
-            LOG.warn("Cart with orderCode: " + orderCode + " was not found!");
-            return null;
-        }
-
-        //place order similar to AcceleratorCheckoutFacade
-        CommerceCheckoutParameter parameter = new CommerceCheckoutParameter();
-        parameter.setEnableHooks(true);
-        parameter.setCart(cartModel);
-        parameter.setSalesApplication(SalesApplication.WEB);
-
-        //Set current baseSite and current language on session-level (to be used by commercePlaceOrderStrategy)
-        return sessionService.executeInLocalView(new SessionExecutionBody() {
-            @Override
-            public Object execute() {
-                //Used in DefaultBaseSiteService
-                sessionService.setAttribute("currentSite", cartModel.getSite());
-                //Used in DefaultCommonI18NService
-                sessionService.setAttribute(I18NConstants.LANGUAGE_SESSION_ATTR_KEY, cartModel.getSite().getDefaultLanguage());
-                try {
-                    LOG.debug("Placing order for: " + cartModel.getCode());
-                    CommerceOrderResult commerceOrderResult = commercePlaceOrderStrategy.placeOrder(parameter);
-                    return commerceOrderResult.getOrder();
-                } catch (InvalidCartException e) {
-                    LOG.error(e);
-                }
-                return null;
-            }
-        });
     }
 
     @Override
@@ -326,4 +284,5 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
     }
+
 }

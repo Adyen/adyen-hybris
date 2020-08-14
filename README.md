@@ -130,8 +130,8 @@ It returns an instance of OrderWSDTO obtained from OrderData of the placed order
 For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
 
- ## 3DS2 configuration
- By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
+## 3DS2 configuration
+By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
 ```
 is3DS2allowed = false
 ```
@@ -141,6 +141,24 @@ POS timeout (time calculated since initiating a payment) is max time to keep ter
 pos.totaltimeout = 130
 ```
 
+## Pending Order Timeout configuration
+By default, an order remains in PAYMENT_PENDING status in order management for 1 hour and it is configured in dynamic order process defintiion file. 
+Based on which extension you are using (fulfillment or ordermanangement) timeout value can be updated in corresponding order-process.xml file. 
+
+For example, following 2 files have 60 mins configuration under waitForAdyenPendingPayment process with delay value=PT60M
+
+Fulfillment extension file - resources/adyenv6fulfilmentprocess/process/order-process.xml
+
+OrderManagement extension file - resources/adyenv6ordermanagement/process/order-process.xml
+```
+<wait id="waitForAdyenPendingPayment" then="checkPendingOrder">
+        <event>AdyenPaymentResult</event>
+        <timeout delay="PT60M" then="checkPendingOrder"/>
+    </wait>
+```
+
+## PayPal configuration
+This plugin uses Adyen's Checkout Component for PayPal payments. To use that in a live environment, a PayPal Merchant Id is required [(check here how to get one)](https://docs.adyen.com/payment-methods/paypal/web-component#get-your-paypal-merchant-id). This id has to be provided when adding your Adyen credentials to the BaseStore via the backoffice [(installation step 5)](#installation).
 
  ## Documentation
  https://docs.adyen.com/developers/plugins/hybris

@@ -127,7 +127,9 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         PaymentInfoModel paymentInfo = order.getPaymentInfo();
 
-        paymentInfo.setAdyenPaymentMethod(paymentsResponse.getPaymentMethod());
+        if(paymentsResponse.getPaymentMethod()!=null && !paymentsResponse.getPaymentMethod().isEmpty()) {
+            paymentInfo.setAdyenPaymentMethod(paymentsResponse.getPaymentMethod());
+        }
 
         //Card specific data
         paymentInfo.setAdyenAuthCode(paymentsResponse.getAuthCode());
