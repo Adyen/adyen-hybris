@@ -46,6 +46,9 @@
             <value code="ONECLICK_RECURRING"/>
             <value code="RECURRING"/>
         </enumtype>
+        <enumtype code="OrderStatus" autocreate="false" generate="true" dynamic="true">
+            <value code="PAYMENT_PENDING"/>
+        </enumtype>
     </enumtypes>
 
     <itemtypes>

@@ -29,9 +29,12 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.CartModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -102,23 +105,13 @@ public interface AdyenCheckoutFacade {
     CartModel restoreSessionCart() throws InvalidCartException;
 
     /**
-     * Handles an HPP response
-     * In case of authorized, it places an order from cart
-     *
-     * @param request Request object containing HPP data
-     * @return OrderData
-     * @throws SignatureException if signature doesn't match
-     */
-    OrderData handleHPPResponse(HttpServletRequest request) throws SignatureException;
-
-    /**
      * Handles Adyen Redirect Response
      * In case of authorized, it places an order from cart
      *
      * @param details consisting of parameters present in response query string
      * @return PaymentsResponse
      */
-    PaymentsResponse handleRedirectPayload(HashMap<String,String> details);
+    PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -130,17 +123,6 @@ public interface AdyenCheckoutFacade {
      * @throws Exception In case order failed to be created
      */
     OrderData authorisePayment(HttpServletRequest request, CartData cartData) throws Exception;
-
-    /**
-     * Authorizes a payment using Adyen API
-     * In case of authorized, it places an order from cart
-     * No session handling
-     *
-     * @param cartData cartData object
-     * @return OrderData
-     * @throws Exception In case order failed to be created
-     */
-    OrderData authorisePayment(CartData cartData) throws Exception;
 
     /**
      * Creates a payment coming from an Adyen Checkout Component
@@ -260,4 +242,6 @@ public interface AdyenCheckoutFacade {
      * Validates the result and updates the cart based on it
      */
     OrderData handleComponentResult(String resultJson) throws Exception;
+
+    void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 }
