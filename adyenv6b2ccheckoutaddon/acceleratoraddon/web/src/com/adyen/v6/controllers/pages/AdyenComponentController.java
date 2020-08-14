@@ -219,7 +219,7 @@ public class AdyenComponentController {
     private boolean isValidateSessionCart() {
         CartData cart = getCheckoutFacade().getCheckoutCart();
         final AddressData deliveryAddress = cart.getDeliveryAddress();
-        if (deliveryAddress == null || deliveryAddress.getCountry().getIsocode() == null) {
+        if (deliveryAddress == null || deliveryAddress.getCountry() == null || deliveryAddress.getCountry().getIsocode() == null) {
             return false;
         }
         return true;
