@@ -27,6 +27,7 @@ import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.DefaultAdyenCheckoutFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
+import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
@@ -47,6 +48,7 @@ import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.core.model.user.UserModel;
 import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
@@ -154,6 +156,8 @@ public class AdyenCheckoutFacadeTest {
     CalculationService calculationService;
     @Mock
     AddressPopulator addressPopulator;
+    @Mock
+    AdyenBusinessProcessService adyenBusinessProcessService;
 
     @Mock
     HttpServletRequest request;
@@ -179,6 +183,10 @@ public class AdyenCheckoutFacadeTest {
     CountryData countryData;
     @Mock
     DeliveryModeModel deliveryModeModel;
+    @Mock
+    UserModel userModel;
+    @Mock
+    BaseStoreModel storeModel;
 
     @Mock
     TerminalAPIResponse terminalApiResponse;
@@ -446,13 +454,14 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutFacade.placeOrder()).thenReturn(orderData);
         when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
         doNothing().when(modelService).save(any());
+        when(cartService.getSessionCart()).thenReturn(cartModel);
 
         try {
             adyenCheckoutFacade.authorisePayment(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorisePayment(eq(cartData), any(), any());
-            verify(orderModel).setStatus(OrderStatus.PAYMENT_PENDING);
+            verify(cartModel).setStatus(OrderStatus.PAYMENT_PENDING);
             verify(checkoutFacade).placeOrder();
             assertNotNull(e.getPaymentsResponse());
             assertEquals(PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER, e.getPaymentsResponse().getResultCode());
@@ -474,6 +483,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         doNothing().when(modelService).save(any());
         when(orderConverter.convert(any())).thenReturn(orderData);
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
 
         OrderData orderDataResult = adyenCheckoutFacade.handle3DResponse(request);
         assertEquals(orderData, orderDataResult);
@@ -508,6 +518,11 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
         when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
         doNothing().when(calculationService).calculate(any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(orderModel.getUser()).thenReturn(userModel);
+        when(cartModel.getUser()).thenReturn(userModel);
+        when(orderModel.getStore()).thenReturn(storeModel);
+        when(cartModel.getStore()).thenReturn(storeModel);
 
         try {
             adyenCheckoutFacade.handle3DResponse(request);
@@ -544,6 +559,11 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
         when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
         doNothing().when(calculationService).calculate(any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(orderModel.getUser()).thenReturn(userModel);
+        when(cartModel.getUser()).thenReturn(userModel);
+        when(orderModel.getStore()).thenReturn(storeModel);
+        when(cartModel.getStore()).thenReturn(storeModel);
 
         try {
             adyenCheckoutFacade.handle3DResponse(request);
@@ -587,6 +607,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         doNothing().when(modelService).save(any());
         when(orderConverter.convert(any())).thenReturn(orderData);
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
 
         OrderData orderDataResult = adyenCheckoutFacade.handle3DS2Response(request);
         assertEquals(orderData, orderDataResult);
@@ -638,6 +659,11 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
         when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
         doNothing().when(calculationService).calculate(any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(orderModel.getUser()).thenReturn(userModel);
+        when(cartModel.getUser()).thenReturn(userModel);
+        when(orderModel.getStore()).thenReturn(storeModel);
+        when(cartModel.getStore()).thenReturn(storeModel);
 
         try {
             adyenCheckoutFacade.handle3DS2Response(request);
@@ -673,6 +699,11 @@ public class AdyenCheckoutFacadeTest {
         when(checkoutFacade.setDeliveryAddress(any())).thenReturn(true);
         when(checkoutFacade.setDeliveryMode(any())).thenReturn(true);
         doNothing().when(calculationService).calculate(any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(orderModel.getUser()).thenReturn(userModel);
+        when(cartModel.getUser()).thenReturn(userModel);
+        when(orderModel.getStore()).thenReturn(storeModel);
+        when(cartModel.getStore()).thenReturn(storeModel);
 
         try {
             adyenCheckoutFacade.handle3DS2Response(request);
@@ -697,6 +728,7 @@ public class AdyenCheckoutFacadeTest {
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
 
         HashMap<String, String> details = new HashMap<>();
         PaymentsResponse paymentsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
@@ -729,6 +761,11 @@ public class AdyenCheckoutFacadeTest {
         doNothing().when(calculationService).calculate(any());
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
+        doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(orderModel.getUser()).thenReturn(userModel);
+        when(cartModel.getUser()).thenReturn(userModel);
+        when(orderModel.getStore()).thenReturn(storeModel);
+        when(cartModel.getStore()).thenReturn(storeModel);
 
         HashMap<String, String> details = new HashMap<>();
         PaymentsResponse paymentsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
