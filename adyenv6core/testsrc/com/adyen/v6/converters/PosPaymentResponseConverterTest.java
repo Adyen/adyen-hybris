@@ -53,8 +53,8 @@ public class PosPaymentResponseConverterTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "tid=1234&expiryYear=2028&expiryDate=2%2f2028&cardHolderName=test&avsResult=0%20Unknown&authCode=1234", true, 6, "1234" },
-                { "authCode=1234", true, 1, "1234" },
+                { "ewogICJhZGRpdGlvbmFsRGF0YSI6IHsKICAgICJhdXRoQ29kZSI6ICIxMjM0IiwKICAgICJ0aWQiOiAiNDMyMSIsCiAgICAibWlkIjogIjEwMDAiLAogICAgInRyYW5zYWN0aW9uUmVmZXJlbmNlTnVtYmVyIjogIjg4MjU5NzQwMDQ5MDkyNUoiLAogICAgImV4cGlyeVllYXIiOiAiMjAyOCIsCiAgICAiYXZzUmVzdWx0IjogIjAgVW5rbm93biIKICB9LAogICJzdG9yZSI6ICJNeVN0b3JlIgp9", true, 6, "1234" },
+                { "ewogICJhZGRpdGlvbmFsRGF0YSI6IHsKICAgICJhdXRoQ29kZSI6ICIxMjM0IgogIH0sCiAgInN0b3JlIjogIk15U3RvcmUiCn0=", true, 1, "1234" },
                 { "", true, 0, null },
                 { null, false, null, null }
         });

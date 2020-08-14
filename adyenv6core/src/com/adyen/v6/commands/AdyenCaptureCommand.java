@@ -128,6 +128,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "cup":
             case "cartebancaire":
             case "visa":
+            case "visadankort":
             case "mc":
             case "uatp":
             case "amex":
@@ -139,15 +140,21 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "laser":
             case "paypal":
             case "klarna":
+            case "afterpay":
+            case "ratepay":
             case "afterpay_default":
             case "sepadirectdebit":
+            case "dankort":
+            case "elo":
+            case "hipercard":
+            case "mc_applepay":
+            case "visa_applepay":
+            case "amex_applepay":
+            case "discover_applepay":
+            case "maestro_applepay":
+            case "paywithgoogle":
                 return true;
         }
-
-        //        // To be sure check if it payment method starts with afterpay_ then manualCapture is allowed
-        //        if (strlen($this->_paymentMethod) >= 9 && substr($this->_paymentMethod, 0, 9) == "afterpay_") {
-        //            $manualCaptureAllowed = true;
-        //        }
 
         return false;
     }

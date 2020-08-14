@@ -18,8 +18,24 @@
 #  See the LICENSE file for more info.
 
 INSERT_UPDATE DynamicProcessDefinition;code[unique=true];active[unique=true];content
-;adyen-order-process;true;"<process xmlns='http://www.hybris.de/xsd/processdefinition' start='checkOrder'
+;adyen-order-process;true;"<process xmlns='http://www.hybris.de/xsd/processdefinition' start='checkNewOrder'
 name='adyen-order-process' processClass='de.hybris.platform.orderprocessing.model.OrderProcessModel'>
+
+<action id='checkNewOrder' bean='adyenCheckNewOrderAction'>
+   <transition name='OK' to='checkOrder'/>
+   <transition name='NOK' to='error'/>
+   <transition name='WAIT' to='waitForAdyenPendingPayment'/>
+</action>
+
+<wait id='waitForAdyenPendingPayment' then='checkPendingOrder'>
+    <event>AdyenPaymentResult</event>
+    <timeout delay='PT60M' then='checkPendingOrder'/>
+</wait>
+
+<action id='checkPendingOrder' bean='adyenCheckPendingOrderAction'>
+   <transition name='OK' to='checkOrder'/>
+   <transition name='NOK' to='error'/>
+</action>
 
 <!-- Check Order -->
 <action id='checkOrder' bean='checkOrderAction'>
@@ -36,7 +52,7 @@ name='adyen-order-process' processClass='de.hybris.platform.orderprocessing.mode
 
 <!--Check authorization completion-->
 <wait id='waitForAdyenAuthorization' then='adyenCheckAuthorization' prependProcessCode='true'>
-    <event>AdyenAuthorized</event>
+    <event>AdyenPaymentResult</event>
 </wait>
 
 <!-- Fraud Check -->

@@ -20,17 +20,27 @@
  */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.service.exception.ApiException;
+import com.adyen.v6.constants.AdyenControllerConstants;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.forms.AddressForm;
+import com.adyen.v6.forms.AdyenPaymentForm;
+import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
+import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
+import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
+import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
+import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
+import de.hybris.platform.cms2.model.pages.ContentPageModel;
+import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.user.UserFacade;
+import de.hybris.platform.commercefacades.user.data.AddressData;
+import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commercefacades.user.data.TitleData;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -43,22 +53,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.adyen.service.exception.ApiException;
-import com.adyen.v6.constants.AdyenControllerConstants;
-import com.adyen.v6.facades.AdyenCheckoutFacade;
-import com.adyen.v6.forms.AddressForm;
-import com.adyen.v6.forms.AdyenPaymentForm;
-import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
-import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
-import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
-import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
-import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
-import de.hybris.platform.cms2.model.pages.ContentPageModel;
-import de.hybris.platform.commercefacades.order.data.CartData;
-import de.hybris.platform.commercefacades.user.UserFacade;
-import de.hybris.platform.commercefacades.user.data.AddressData;
-import de.hybris.platform.commercefacades.user.data.CountryData;
-import de.hybris.platform.commercefacades.user.data.TitleData;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiStepCheckout.BillingAddressformPage;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
@@ -131,7 +138,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
         }
 
-        adyenCheckoutFacade.initializeCheckoutData(model);
+        if(isSessionCartInvalid())
+        {
+            LOGGER.debug("Invalid cart found in session");
+            GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
+        }
+        else {
+            adyenCheckoutFacade.initializeCheckoutData(model);
+        }
 
         super.prepareDataForPage(model);
 
@@ -158,7 +172,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         if (useAdyenDeliveryAddress) {
             final AddressData deliveryAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-            if (deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
+            if (deliveryAddress != null && deliveryAddress.getRegion() != null && ! StringUtils.isEmpty(deliveryAddress.getRegion().getIsocode())) {
                 addressForm.setRegionIso(deliveryAddress.getRegion().getIsocodeShort());
             }
             addressForm.setTitleCode(deliveryAddress.getTitleCode());
@@ -185,9 +199,17 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                                    final BindingResult bindingResult) throws CMSItemNotFoundException {
         LOGGER.debug("PaymentForm: " + adyenPaymentForm);
 
+        if (isSessionCartInvalid()) {
+            GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
+            if (adyenPaymentForm.getBillingAddress() != null) {
+                adyenPaymentForm.resetFormExceptBillingAddress();
+            }
+            return enterStep(model, redirectAttributes);
+        }
+
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
-        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()) {
+        if (bindingResult.hasGlobalErrors()|| bindingResult.hasErrors()|| isSessionCartInvalid()) {
             LOGGER.debug(bindingResult.getAllErrors().stream().map(error -> (error.getCode())).reduce((x, y) -> (x = x + y)));
             GlobalMessages.addErrorMessage(model, "checkout.error.paymentethod.formentry.invalid");
             if (adyenPaymentForm.getBillingAddress() != null) {
@@ -199,6 +221,59 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
         return getCheckoutStep().nextStep();
+    }
+
+    @RequestMapping(value = "/component-result", method = RequestMethod.POST)
+    @RequireHardLogIn
+    public String handleComponentResult(final HttpServletRequest request,
+                                        final Model model,
+                                        final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException, InvalidCartException, CalculationException {
+        String resultData = request.getParameter("resultData");
+        String isResultError = request.getParameter("isResultError");
+
+        LOGGER.debug("isResultError=" + isResultError + "\nresultData=" + resultData);
+
+        String errorMessageKey = "checkout.error.authorization.payment.error";
+
+        if (isValidResult(resultData, isResultError)) {
+            try {
+                OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("Handling AdyenNonAuthorizedPaymentException");
+                PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+                if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
+                    switch (paymentsResponse.getResultCode()) {
+                        case REFUSED:
+                            errorMessageKey = "checkout.error.authorization.payment.refused";
+                            break;
+                        case CANCELLED:
+                            errorMessageKey = "checkout.error.authorization.payment.cancelled";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } catch (InvalidCartException e) {
+                LOGGER.error("Error retrieving order", e);
+            } catch (Exception e) {
+                LOGGER.error("Unexpected error while validating component payment result", e);
+            }
+        } else {
+            if(StringUtils.isNotBlank(resultData)) {
+                errorMessageKey = resultData;
+                getAdyenCheckoutFacade().restoreCartFromOrderCodeInSession();
+            }
+        }
+
+        LOGGER.debug("Redirecting to 'payment method select' with error..");
+        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, errorMessageKey);
+        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+    }
+
+    private boolean isValidResult(String resultData, String isResultError) {
+        return (StringUtils.isBlank(isResultError) || !Boolean.parseBoolean(isResultError))
+                && StringUtils.isNotBlank(resultData);
     }
 
     private String fromCalendar(final Calendar calendar) {
@@ -254,5 +329,11 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     public void setAdyenCheckoutFacade(AdyenCheckoutFacade adyenCheckoutFacade) {
         this.adyenCheckoutFacade = adyenCheckoutFacade;
+    }
+
+    private boolean isSessionCartInvalid() {
+        CartData cart = getCheckoutFacade().getCheckoutCart();
+        final AddressData deliveryAddress = cart.getDeliveryAddress();
+        return (deliveryAddress == null || deliveryAddress.getCountry()==null || deliveryAddress.getCountry().getIsocode() == null);
     }
 }

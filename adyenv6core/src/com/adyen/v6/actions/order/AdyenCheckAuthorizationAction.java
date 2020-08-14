@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.actions.order;
 
+import com.adyen.v6.actions.AbstractWaitableAction;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -28,34 +29,13 @@ import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.processengine.action.AbstractAction;
 import org.apache.log4j.Logger;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Check if order is authorized
  */
-public class AdyenCheckAuthorizationAction extends AbstractAction<OrderProcessModel> {
+public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderProcessModel> {
     private static final Logger LOG = Logger.getLogger(AdyenCheckAuthorizationAction.class);
-
-    public enum Transition {
-        OK, NOK, WAIT;
-
-        public static Set<String> getStringValues() {
-            Set<String> res = new HashSet<>();
-            for (final Transition transitions : Transition.values()) {
-                res.add(transitions.toString());
-            }
-            return res;
-        }
-    }
-
-    @Override
-    public Set<String> getTransitions() {
-        return Transition.getStringValues();
-    }
 
     @Override
     public String execute(final OrderProcessModel process) {
