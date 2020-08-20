@@ -70,6 +70,7 @@ import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeFactory;
@@ -245,6 +246,9 @@ public class AdyenRequestFactory {
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
+        paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
+        paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.GET.toString());
+        paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
         return paymentsRequest;
     }
 

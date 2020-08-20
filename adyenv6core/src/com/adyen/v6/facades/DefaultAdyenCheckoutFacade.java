@@ -569,13 +569,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String paRes = request.getParameter(THREE_D_PARES);
         String md = request.getParameter(THREE_D_MD);
 
-        String sessionMd = getSessionService().getAttribute(SESSION_MD);
         String sessionPaymentData = getSessionService().getAttribute(SESSION_PAYMENT_DATA);
-
-        //Check if MD matches in order to avoid authorizing wrong order
-        if (sessionMd != null && ! sessionMd.equals(md)) {
-            throw new SignatureException("MD does not match!");
-        }
 
         PaymentsResponse paymentsResponse;
         try {
