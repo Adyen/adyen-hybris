@@ -82,7 +82,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
@@ -159,12 +158,6 @@ public class AdyenRequestFactory {
 
             paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
         }
-
-        //Set Paypal Express Checkout Shortcut parameters
-        if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
-            setPaypalEcsData(paymentRequest, cartData);
-        }
-
         return paymentRequest;
     }
 
@@ -931,14 +924,6 @@ public class AdyenRequestFactory {
                 paymentsRequest.getDeliveryAddress().setStateOrProvince(shortStateOrProvince);
             }
         }
-    }
-
-    /**
-     * Set Paypal ECS request data
-     */
-    private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
-        paymentRequest.selectedBrand(PAYPAL_ECS);
-        paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
     }
 
     private void setSepaDirectDebitData(PaymentsRequest paymentRequest, CartData cartData) {
