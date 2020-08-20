@@ -75,7 +75,6 @@ import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
-import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
@@ -172,8 +171,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         String errorMessage = "checkout.error.authorization.failed";
 
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-
-        if (canUseAPI(adyenPaymentMethod)) {
+        if (adyenPaymentMethod.equals(RATEPAY)) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
@@ -421,20 +419,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                                                + "</p>");
     }
 
-    /**
-     * Methods supported via API
-     * Credit Cards/OneClick
-     * OpenInvoice
-     * Boleto
-     */
-    private boolean canUseAPI(String paymentMethod) {
-        Set<String> apiPaymentMethods = new HashSet<>();
 
-        apiPaymentMethods.add(PAYPAL_ECS);
-        apiPaymentMethods.add(RATEPAY);
-
-        return apiPaymentMethods.contains(paymentMethod);
-    }
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
         return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
