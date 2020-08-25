@@ -138,12 +138,6 @@
     <bean id="adyenPosPaymentResponseConverter" class="com.adyen.v6.converters.PosPaymentResponseConverter" />
 
 
-    <alias name="defaultAdyenAddressDataFactory" alias="adyenAddressDataFactory"/>
-    <bean id="defaultAdyenAddressDataFactory" class="com.adyen.v6.factory.DefaultAdyenAddressDataFactory">
-        <property name="modelService" ref="modelService" />
-        <property name="commonI18NService" ref="commonI18NService" />
-    </bean>
-
     <alias name="defaultAdyenNotificationService" alias="adyenNotificationService"/>
     <bean id="defaultAdyenNotificationService" class="com.adyen.v6.service.DefaultAdyenNotificationService">
         <property name="modelService" ref="modelService" />
@@ -216,17 +210,6 @@
         <property name="calculationService" ref="calculationService" />
         <property name="addressPopulator" ref="addressPopulator" />
         <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService" />
-    </bean>
-
-    <alias name="defaultAdyenPaypalFacade" alias="adyenPaypalFacade" />
-    <bean id="defaultAdyenPaypalFacade" class="com.adyen.v6.facades.DefaultAdyenPaypalFacade">
-        <property name="adyenAddressDataFactory" ref="adyenAddressDataFactory"/>
-        <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
-        <property name="modelService" ref="modelService"/>
-        <property name="cartService" ref="cartService"/>
-        <property name="checkoutFacade" ref="checkoutFacade"/>
-        <property name="userFacade" ref="userFacade"/>
-        <property name="addressReverseConverter" ref="addressReverseConverter"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">

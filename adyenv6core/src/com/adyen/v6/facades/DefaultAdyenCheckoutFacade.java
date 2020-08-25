@@ -125,7 +125,6 @@ import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
-import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
 import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
 import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
@@ -457,7 +456,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         updateCartWithSessionData(cartData);
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
-        if (adyenPaymentMethod.equals(PAYPAL_ECS) || adyenPaymentMethod.startsWith(RATEPAY)) {
+        if (adyenPaymentMethod.startsWith(RATEPAY)) {
 
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
             if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
