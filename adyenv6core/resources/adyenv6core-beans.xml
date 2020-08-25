@@ -34,7 +34,6 @@
         <property name="adyenFirstName" type="java.lang.String"/>
         <property name="adyenInstallments" type="java.lang.Integer"/>
         <property name="adyenLastName" type="java.lang.String"/>
-        <property name="adyenPaymentToken" type="java.lang.String"/>
         <property name="adyenReturnUrl" type="java.lang.String"/>
         <property name="adyenTerminalId" type="java.lang.String"/>
         <property name="adyenBrowserInfo" type="java.lang.String"/>
