@@ -437,8 +437,10 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         if (ISSUER_PAYMENT_METHODS.contains(adyenPaymentMethod)) {
             paymentMethod.setIssuer(cartData.getAdyenIssuerId());
-        } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
-            setOpenInvoiceData(paymentsRequest, cartData, customerModel);
+        } else if (adyenPaymentMethod.startsWith(KLARNA)
+                || adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)
+                || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)) {
+            setOpenInvoiceData(paymentsRequest, cartData);
         } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
             Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
             paymentsRequest.setShopperName(shopperName);
@@ -803,7 +805,7 @@ public class AdyenRequestFactory {
     /*
      * Set the required fields for using the OpenInvoice API
      */
-    public void setOpenInvoiceData(PaymentsRequest paymentsRequest, CartData cartData, final CustomerModel customerModel) {
+    public void setOpenInvoiceData(PaymentsRequest paymentsRequest, CartData cartData) {
         paymentsRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
 
         // set date of birth
