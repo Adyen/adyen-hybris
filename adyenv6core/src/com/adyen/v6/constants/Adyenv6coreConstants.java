@@ -61,6 +61,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	//Prefix for Oney methods like facilpay_3x or facilpay_4x
 	public static final String PAYMENT_METHOD_FACILPAY_PREFIX = "facilypay";
 	public static final String CARD_TYPE_DEBIT = "debit";
+	public static final String AFFIRM = "affirm";
 
 	private Adyenv6coreConstants() {
 		//empty to avoid instantiating this constant class
@@ -74,7 +75,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(KLARNA);
 		add(RATEPAY);
 		add(KLARNA_SLICE);
-
+		add(AFFIRM);
 //		add(AFTERPAY); // not supported yet
 	}});
 
