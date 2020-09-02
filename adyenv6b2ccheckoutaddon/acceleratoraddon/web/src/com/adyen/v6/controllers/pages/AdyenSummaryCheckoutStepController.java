@@ -242,10 +242,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
-                    LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
                     if (is3DSPaymentMethod(adyenPaymentMethod)) {
+                        LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
                         return redirectTo3DSValidation(model, paymentsResponse);
                     }
+                    LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to local payment method page");
                     return REDIRECT_PREFIX + paymentsResponse.getRedirect().getUrl();
                 }
                 if (REFUSED == paymentsResponse.getResultCode()) {
