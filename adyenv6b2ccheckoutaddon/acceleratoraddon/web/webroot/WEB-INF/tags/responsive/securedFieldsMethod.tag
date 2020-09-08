@@ -18,6 +18,7 @@
   ~  This file is open source and available under the MIT license.
   ~  See the LICENSE file for more info.
   --%>
+<%@ attribute name="name" required="true" type="java.lang.String" %>
 <%@ attribute name="showComboCard" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
@@ -27,7 +28,7 @@
     <input type="hidden" name="txvariant" value="card">
     <div class="chckt-pm__header js-chckt-pm__header">
         <adyen:methodSelector name="adyen_cc"/>
-        <span class="chckt-pm__name js-chckt-pm__name">Credit Card</span>
+        <span class="chckt-pm__name js-chckt-pm__name">${name}</span>
         <span class="chckt-pm__image">
             <span id="cardLogos"></span>
             <span class="chckt-pm__image-border"></span>

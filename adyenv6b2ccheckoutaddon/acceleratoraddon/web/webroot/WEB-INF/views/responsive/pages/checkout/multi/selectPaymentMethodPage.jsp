@@ -183,6 +183,7 @@
 
                                 <c:if test="${not empty allowedCards}">
                                     <adyen:securedFieldsMethod
+                                            name="${cardsName}"
                                             showComboCard="${showComboCard}"/>
                                 </c:if>
 
