@@ -202,7 +202,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_PAYMENT_DATA = "adyen_payment_data";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
-    public static final String MODEL_CARDS_NAME = "cardsName";
+    public static final String MODEL_CREDIT_CARD_LABEL = "creditCardLabel";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
@@ -846,14 +846,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         baseStore = baseStoreService.getCurrentBaseStore();
 
         //Verify allowedCards
-        String cardsName = null;
+        String creditCardLabel = null;
         Set<AdyenCardTypeEnum> allowedCards = null;
         PaymentMethod cardsPaymentMethod = alternativePaymentMethods.stream()
                                                                     .filter(paymentMethod -> PAYMENT_METHOD_SCHEME.equals(paymentMethod.getType()))
                                                                     .findAny().orElse(null);
 
         if (cardsPaymentMethod != null) {
-            cardsName = cardsPaymentMethod.getName();
+            creditCardLabel = cardsPaymentMethod.getName();
             allowedCards = baseStore.getAdyenAllowedCards();
 
             List<String> cardBrands = cardsPaymentMethod.getBrands();
@@ -887,7 +887,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_PAYMENT_METHODS, alternativePaymentMethods);
 
         //Set allowed Credit Cards
-        model.addAttribute(MODEL_CARDS_NAME, cardsName);
+        model.addAttribute(MODEL_CREDIT_CARD_LABEL, creditCardLabel);
         model.addAttribute(MODEL_ALLOWED_CARDS, allowedCards);
 
         model.addAttribute(MODEL_REMEMBER_DETAILS, showRememberDetails());
