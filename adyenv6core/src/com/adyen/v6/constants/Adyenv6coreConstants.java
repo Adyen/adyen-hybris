@@ -45,6 +45,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
 	final public static String PAYMENT_METHOD_POS = "pos";
 	final public static String PAYMENT_METHOD_PAYPAL = "paypal";
+	final public static String PAYMENT_METHOD_SCHEME = "scheme";
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_PAYMENT_RESULT = "AdyenPaymentResult";
