@@ -41,6 +41,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
+import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
@@ -147,6 +148,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SCHEME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
@@ -200,6 +202,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_PAYMENT_DATA = "adyen_payment_data";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
+    public static final String MODEL_CREDIT_CARD_LABEL = "creditCardLabel";
     public static final String MODEL_ALLOWED_CARDS = "allowedCards";
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
@@ -833,11 +836,30 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         Optional<PaymentMethod> sepaDirectDebit = alternativePaymentMethods.stream().
                                                                             filter(paymentMethod -> ! paymentMethod.getType().isEmpty() &&
-                                                                                    PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst()
-                ;
+                                                                                    PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst();
+
         if(sepaDirectDebit.isPresent())
         {
             model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, true);
+        }
+
+        baseStore = baseStoreService.getCurrentBaseStore();
+
+        //Verify allowedCards
+        String creditCardLabel = null;
+        Set<AdyenCardTypeEnum> allowedCards = null;
+        PaymentMethod cardsPaymentMethod = alternativePaymentMethods.stream()
+                                                                    .filter(paymentMethod -> PAYMENT_METHOD_SCHEME.equals(paymentMethod.getType()))
+                                                                    .findAny().orElse(null);
+
+        if (cardsPaymentMethod != null) {
+            creditCardLabel = cardsPaymentMethod.getName();
+            allowedCards = baseStore.getAdyenAllowedCards();
+
+            List<String> cardBrands = cardsPaymentMethod.getBrands();
+            allowedCards = allowedCards.stream()
+                                       .filter(adyenCardTypeEnum -> cardBrands.contains(adyenCardTypeEnum.getCode()))
+                                       .collect(Collectors.toSet());
         }
 
         //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
@@ -845,7 +867,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                              .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
                                                              .collect(Collectors.toList());
 
-        baseStore = baseStoreService.getCurrentBaseStore();
         if (showRememberDetails()) {
             //Include stored cards
             storedPaymentMethodList = response.getStoredPaymentMethods();
@@ -866,7 +887,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_PAYMENT_METHODS, alternativePaymentMethods);
 
         //Set allowed Credit Cards
-        model.addAttribute(MODEL_ALLOWED_CARDS, baseStore.getAdyenAllowedCards());
+        model.addAttribute(MODEL_CREDIT_CARD_LABEL, creditCardLabel);
+        model.addAttribute(MODEL_ALLOWED_CARDS, allowedCards);
 
         model.addAttribute(MODEL_REMEMBER_DETAILS, showRememberDetails());
         model.addAttribute(MODEL_STORED_CARDS, storedPaymentMethodList);
