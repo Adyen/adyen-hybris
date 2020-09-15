@@ -24,10 +24,10 @@
 				<editorArea:section name="hmc.adyen.account">
 					<editorArea:attribute qualifier="adyenMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
-					<editorArea:attribute qualifier="adyenAllowedCards"/>
 					<editorArea:attribute qualifier="adyenRecurringContractMode"/>
-					<editorArea:attribute qualifier="adyenGuestUserTokenisation"/>
 					<editorArea:attribute qualifier="adyenTestMode"/>
+					<editorArea:attribute qualifier="adyenGuestUserTokenisation"/>
+					<editorArea:attribute qualifier="adyenAllowedCards"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.api">
 					<editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>

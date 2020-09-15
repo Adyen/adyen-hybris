@@ -189,6 +189,12 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.TRUE</defaultvalue>
                 </attribute>
+                <attribute qualifier="adyenGuestUserTokenisation" type="java.lang.boolean">
+                    <description>Enable guest checkout tokenisation</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                </attribute>
                 <attribute qualifier="adyenAPIEndpointPrefix" type="java.lang.String">
                     <description>API endpoint URL Prefix for Live</description>
                     <persistence type="property"/>
@@ -202,12 +208,6 @@
                     <modifiers optional="false"/>
                     <defaultvalue>em().getEnumerationValue("RecurringContractMode","ONECLICK")</defaultvalue>
                     <description>How the payment will be stored on Adyen</description>
-                </attribute>
-                <attribute qualifier="adyenGuestUserTokenisation" type="java.lang.boolean">
-                    <description>Enable guest checkout tokenisation</description>
-                    <persistence type="property"/>
-                    <modifiers optional="false"/>
-                    <defaultvalue>Boolean.FALSE</defaultvalue>
                 </attribute>
                 <attribute qualifier="adyenBoleto" type="java.lang.boolean">
                     <description>Enable Boleto</description>
