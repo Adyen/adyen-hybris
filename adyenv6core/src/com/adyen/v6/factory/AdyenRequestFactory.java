@@ -184,7 +184,8 @@ public class AdyenRequestFactory {
                                                  final CartData cartData,
                                                  final RequestInfo requestInfo,
                                                  final CustomerModel customerModel,
-                                                 final RecurringContractMode recurringContractMode) {
+                                                 final RecurringContractMode recurringContractMode,
+                                                 boolean isGuestUser) {
         PaymentsRequest paymentsRequest = new PaymentsRequest();
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
@@ -193,7 +194,7 @@ public class AdyenRequestFactory {
         }
         //Update payment request for generic information for all payment method types
 
-        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest, isGuestUser);
         Boolean is3DS2allowed = is3DS2Allowed();
 
         //For credit cards
@@ -249,9 +250,10 @@ public class AdyenRequestFactory {
                                                  final CartData cartData,
                                                  final PaymentMethodDetails paymentMethodDetails,
                                                  final RequestInfo requestInfo,
-                                                 final CustomerModel customerModel) {
+                                                 final CustomerModel customerModel,
+                                                 boolean isGuestCustomer) {
         PaymentsRequest paymentsRequest = new PaymentsRequest();
-        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest, isGuestCustomer);
 
         paymentsRequest.setPaymentMethod(paymentMethodDetails);
 
@@ -308,7 +310,7 @@ public class AdyenRequestFactory {
         return applicationInfo;
     }
 
-    private void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest) {
+    private void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest, boolean isGuestcustomer) {
 
         //Get details from CartData to set in PaymentRequest.
         String amount = String.valueOf(cartData.getTotalPrice().getValue());

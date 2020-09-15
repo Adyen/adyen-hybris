@@ -186,14 +186,15 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, boolean isGuestUser) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                                                                                          cartData,
                                                                                          requestInfo,
                                                                                          customerModel,
-                                                                                         baseStore.getAdyenRecurringContractMode());
+                                                                                         baseStore.getAdyenRecurringContractMode(),
+                                                                                         isGuestUser);
 
 
         LOG.debug(paymentsRequest);
@@ -204,14 +205,15 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+    public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel, boolean isGuestUser) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                 cartData,
                 paymentMethodDetails,
                 requestInfo,
-                customerModel);
+                customerModel,
+                                                                                         isGuestUser);
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
