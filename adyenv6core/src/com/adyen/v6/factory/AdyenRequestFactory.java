@@ -208,7 +208,7 @@ public class AdyenRequestFactory {
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
-            if (customerModel.getType() == CustomerType.GUEST) {
+            if (customerModel!=null && customerModel.getType() == CustomerType.GUEST) {
                 paymentsRequest.setEnableOneClick(false);
             }
         }
