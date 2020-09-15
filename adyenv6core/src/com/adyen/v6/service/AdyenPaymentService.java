@@ -52,9 +52,9 @@ public interface AdyenPaymentService {
 
     ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException ;
 
-    PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+    PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel,boolean isGuestUser) throws Exception;
 
-    PaymentsResponse componentPayment(CartData cartData, PaymentMethodDetails paymentMethodDetails, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+    PaymentsResponse componentPayment(CartData cartData, PaymentMethodDetails paymentMethodDetails, RequestInfo requestInfo, CustomerModel customerModel, boolean isGuestUser) throws Exception;
 
     /**
      * Performs 3D secure authorization request via Adyen API
