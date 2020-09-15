@@ -26,6 +26,7 @@
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
 					<editorArea:attribute qualifier="adyenAllowedCards"/>
 					<editorArea:attribute qualifier="adyenRecurringContractMode"/>
+					<editorArea:attribute qualifier="adyenGuestUserTokenisation"/>
 					<editorArea:attribute qualifier="adyenTestMode"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.api">

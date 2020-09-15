@@ -452,10 +452,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
-        CheckoutCustomerStrategy checkoutCustomerStrategy =getCheckoutCustomerStrategy();
-        CustomerModel customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
-        if (checkoutCustomerStrategy.isAnonymousCheckout()) {
-            customer.setType(CustomerType.GUEST);
+        CheckoutCustomerStrategy checkoutCustomerStrategy = getCheckoutCustomerStrategy();
+        CustomerModel customer = null;
+        if (! checkoutCustomerStrategy.isAnonymousCheckout()) {
+            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
         }
 
         updateCartWithSessionData(cartData);
@@ -475,8 +475,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
-
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer, isGuestCustomer);
+        if (customer == null && isGuestUserTokenisationEnabled()) {
+            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
+            customer.setType(CustomerType.GUEST);
+        }
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
             return createAuthorizedOrder(paymentsResponse);
@@ -516,19 +519,24 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
+    private boolean isGuestUserTokenisationEnabled() {
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        return baseStore.getAdyenGuestUserTokenisation();
+    }
+
     @Override
     public PaymentsResponse componentPayment(final HttpServletRequest request, final CartData cartData, final PaymentMethodDetails paymentMethodDetails) throws Exception {
         CustomerModel customer = null;
-        boolean isGuestCustomer =getCheckoutCustomerStrategy().isAnonymousCheckout();
+        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
-
+        }
 
         updateCartWithSessionData(cartData);
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
 
-        PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer, isGuestCustomer);
+        PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
         if (PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
             throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
         }
@@ -629,10 +637,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
 
-        if (resultCode == PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER) {
+        if(resultCode == PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER) {
             //3DS1 fallback, update payment data
             getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
-        } else if (resultCode != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER && resultCode != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
+        }
+        else if (resultCode != PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER
+                && resultCode != PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER) {
             String orderCode = paymentsResponse.getMerchantReference();
             OrderModel orderModel = retrievePendingOrder(orderCode);
             updateOrderPaymentStatusAndInfo(orderModel, paymentsResponse);
@@ -835,9 +845,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         Optional<PaymentMethod> sepaDirectDebit = alternativePaymentMethods.stream().
-                filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst();
+                                                                            filter(paymentMethod -> ! paymentMethod.getType().isEmpty() &&
+                                                                                    PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst();
 
-        if (sepaDirectDebit.isPresent()) {
+        if(sepaDirectDebit.isPresent())
+        {
             model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, true);
         }
 
@@ -846,14 +858,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Verify allowedCards
         String creditCardLabel = null;
         Set<AdyenCardTypeEnum> allowedCards = null;
-        PaymentMethod cardsPaymentMethod = alternativePaymentMethods.stream().filter(paymentMethod -> PAYMENT_METHOD_SCHEME.equals(paymentMethod.getType())).findAny().orElse(null);
+        PaymentMethod cardsPaymentMethod = alternativePaymentMethods.stream()
+                                                                    .filter(paymentMethod -> PAYMENT_METHOD_SCHEME.equals(paymentMethod.getType()))
+                                                                    .findAny().orElse(null);
 
         if (cardsPaymentMethod != null) {
             creditCardLabel = cardsPaymentMethod.getName();
             allowedCards = baseStore.getAdyenAllowedCards();
 
             List<String> cardBrands = cardsPaymentMethod.getBrands();
-            allowedCards = allowedCards.stream().filter(adyenCardTypeEnum -> cardBrands.contains(adyenCardTypeEnum.getCode())).collect(Collectors.toSet());
+            allowedCards = allowedCards.stream()
+                                       .filter(adyenCardTypeEnum -> cardBrands.contains(adyenCardTypeEnum.getCode()))
+                                       .collect(Collectors.toSet());
         }
 
         //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
