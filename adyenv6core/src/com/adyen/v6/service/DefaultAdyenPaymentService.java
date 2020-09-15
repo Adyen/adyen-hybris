@@ -35,7 +35,6 @@ import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.model.checkout.StoredPaymentMethod;
 import com.adyen.model.checkoututility.OriginKeysRequest;
 import com.adyen.model.checkoututility.OriginKeysResponse;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -186,15 +185,14 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, boolean isGuestUser) throws Exception {
+    public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                                                                                          cartData,
                                                                                          requestInfo,
                                                                                          customerModel,
-                                                                                         baseStore.getAdyenRecurringContractMode(),
-                                                                                         isGuestUser);
+                                                                                         baseStore.getAdyenRecurringContractMode());
 
 
         LOG.debug(paymentsRequest);
@@ -205,15 +203,14 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel, boolean isGuestUser) throws Exception {
+    public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
                 cartData,
                 paymentMethodDetails,
                 requestInfo,
-                customerModel,
-                                                                                         isGuestUser);
+                customerModel);
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
