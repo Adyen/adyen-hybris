@@ -475,7 +475,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
-        if (customer == null && isGuestUserTokenisationEnabled()) {
+        if (customer == null && isGuestUserTokenizationEnabled()) {
             customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
             customer.setType(CustomerType.GUEST);
         }
@@ -519,8 +519,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
-    private boolean isGuestUserTokenisationEnabled() {
-        return baseStoreService.getCurrentBaseStore().getAdyenGuestUserTokenisation();
+    private boolean isGuestUserTokenizationEnabled() {
+        return baseStoreService.getCurrentBaseStore().getAdyenGuestUserTokenization();
     }
 
     @Override
