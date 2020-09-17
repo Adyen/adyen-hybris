@@ -520,7 +520,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     private boolean isGuestUserTokenizationEnabled() {
-        return baseStoreService.getCurrentBaseStore().getAdyenGuestUserTokenization();
+        Boolean guestCheckoutFlag = baseStoreService.getCurrentBaseStore().getAdyenGuestUserTokenization();
+        if (guestCheckoutFlag == null) {
+            return false;
+        } else {
+            return guestCheckoutFlag;
+        }
     }
 
     @Override
