@@ -64,6 +64,7 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
@@ -206,6 +207,9 @@ public class AdyenRequestFactory {
             }
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
+            }
+            if (customerModel!=null && customerModel.getType() == CustomerType.GUEST) {
+                paymentsRequest.setEnableOneClick(false);
             }
         }
         //For one click

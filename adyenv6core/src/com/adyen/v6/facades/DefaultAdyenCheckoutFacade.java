@@ -68,6 +68,7 @@ import de.hybris.platform.commercefacades.user.converters.populator.AddressPopul
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
+import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
@@ -451,9 +452,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
+        CheckoutCustomerStrategy checkoutCustomerStrategy = getCheckoutCustomerStrategy();
         CustomerModel customer = null;
-        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
-            customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        if (! checkoutCustomerStrategy.isAnonymousCheckout()) {
+            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
         }
 
         updateCartWithSessionData(cartData);
@@ -473,7 +475,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
-
+        if (customer == null && isGuestUserTokenizationEnabled()) {
+            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
+            customer.setType(CustomerType.GUEST);
+        }
         PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
@@ -512,6 +517,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+    }
+
+    private boolean isGuestUserTokenizationEnabled() {
+        Boolean guestCheckoutFlag = baseStoreService.getCurrentBaseStore().getAdyenGuestUserTokenization();
+        if (guestCheckoutFlag == null) {
+            return false;
+        } else {
+            return guestCheckoutFlag;
+        }
     }
 
     @Override

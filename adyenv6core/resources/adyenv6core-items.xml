@@ -189,6 +189,12 @@
                     <modifiers optional="false"/>
                     <defaultvalue>Boolean.TRUE</defaultvalue>
                 </attribute>
+                <attribute qualifier="adyenGuestUserTokenization" type="java.lang.boolean">
+                    <description>Enable guest checkout tokenization</description>
+                    <persistence type="property"/>
+                    <modifiers optional="false"/>
+                    <defaultvalue>Boolean.FALSE</defaultvalue>
+                </attribute>
                 <attribute qualifier="adyenAPIEndpointPrefix" type="java.lang.String">
                     <description>API endpoint URL Prefix for Live</description>
                     <persistence type="property"/>
