@@ -143,7 +143,9 @@
                             <form:hidden path="componentData"/>
 
                             <%-- Billing Information --%>
-                            <div class="headline"><spring:message text="Billing Information"/></div>
+                            <div class="headline">
+                                <spring:theme code="payment.method.billing.information"/>
+                            </div>
 
                             <c:if test="${cartData.deliveryItemsQuantity > 0}">
                                 <div id="useAdyenDeliveryAddressData"
@@ -170,7 +172,9 @@
 
                             <%-- Billing Information end --%>
 
-                            <div class="headline"><spring:message text="Payment Information"/></div>
+                            <div class="headline">
+                                <spring:theme code="payment.method.payment.information"/>
+                            </div>
 
                             <div class="chckt-pm-list js-chckt-pm-list">
                                 <c:forEach items="${storedCards}" var="storedCard">
@@ -183,6 +187,7 @@
 
                                 <c:if test="${not empty allowedCards}">
                                     <adyen:securedFieldsMethod
+                                            creditCardLabel="${creditCardLabel}"
                                             showComboCard="${showComboCard}"/>
                                 </c:if>
 

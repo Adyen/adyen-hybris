@@ -30,6 +30,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <div class="chckt-pm chckt-pm-${brandCode} js-chckt-pm" data-pm="${brandCode}">
     <div class="chckt-pm__header js-chckt-pm__header">
@@ -45,7 +46,9 @@
             <c:if test="${not empty issuers}">
                 <label class="chckt-form-label chckt-form-label--full-width">
                     <select class="chckt-select-box js-chckt-issuer-select-box" id="p_method_adyen_hpp_${brandCode}_issuer" name="${brandCode}Issuer">
-                        <option value="" label="Please select Issuer"/>
+                        <option value="">
+                            <spring:theme code="payment.method.issuer.selector"/>
+                        </option>
                         <c:forEach items="${issuers}" var="issuer">
                             <option value="${issuer.issuerId}">${issuer.name}</option>
                         </c:forEach>
@@ -57,7 +60,9 @@
                 <c:if test="${not empty connectedTerminalList}">
                     <label class="chckt-form-label chckt-form-label--full-width">
                         <select class="chckt-select-box js-chckt-terminal-select-box" id="adyen_pos_terminal" name="${brandCode}">
-                            <option value="" label="SELECT YOUR TERMINAL"/>
+                            <option value="">
+                                <spring:theme code="payment.method.terminal.selector"/>
+                            </option>
                             <c:forEach items="${connectedTerminalList}" var="connectedTerminal">
                                 <option value="${connectedTerminal}">${connectedTerminal}</option>
                             </c:forEach>
@@ -68,7 +73,9 @@
 
             <c:if test="${showDob}">
                 <label for="p_method_adyen_hpp_${brandCode}_dob">
-                    <span>Date of birth</span>
+                    <span>
+                        <spring:theme code="payment.method.date.of.birth"/>
+                    </span>
                 </label>
                 <input id="p_method_adyen_hpp_${brandCode}_dob"
                        class="p_method_adyen_hpp_dob"
@@ -80,13 +87,17 @@
                 <c:choose>
                     <c:when test="${countryCode=='BR'}">
                         <label for="p_method_adyen_hpp_${brandCode}_ssn">
-                            <span>Social Security Number (CPF/CNPJ)</span>
+                            <span>
+                                <spring:theme code="payment.method.social.security.number"/>
+                            </span>
                         </label>
                         <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text">
                     </c:when>
                     <c:otherwise>
                         <label for="p_method_adyen_hpp_${brandCode}_ssn">
-                            <span>Personal Number (last 4 digits)</span>
+                            <span>
+                                <spring:theme code="payment.method.personal.number"/>
+                            </span>
                         </label>
                         <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text" size="4" title="personal number">
                     </c:otherwise>
@@ -95,7 +106,9 @@
 
             <c:if test="${showFirstName}">
                 <label for="p_method_adyen_hpp_${brandCode}_first_name">
-                    <span>First name</span>
+                    <span>
+                        <spring:theme code="payment.method.first.name"/>
+                    </span>
                 </label>
 
                 <input id="p_method_adyen_hpp_${brandCode}_first_name"
@@ -106,7 +119,9 @@
 
             <c:if test="${showLastName}">
                 <label for="p_method_adyen_hpp_${brandCode}_last_name">
-                    <span>Last name</span>
+                    <span>
+                        <spring:theme code="payment.method.last.name"/>
+                    </span>
                 </label>
 
                 <input id="p_method_adyen_hpp_${brandCode}_last_name"

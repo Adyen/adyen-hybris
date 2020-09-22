@@ -14,7 +14,9 @@
 <div id="spinner_wrapper" style="display: none">
     <div id="spinner"></div>
     <div id="spinner_text">
-        <p>Please wait while your payment is processed. Do not click back or refresh the page.</p>
+        <p>
+            <spring:theme code="checkout.summary.spinner.message"/>
+        </p>
     </div>
 </div>
 

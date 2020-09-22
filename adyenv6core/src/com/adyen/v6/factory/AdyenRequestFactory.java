@@ -64,12 +64,14 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
+import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeFactory;
@@ -81,7 +83,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
@@ -158,12 +159,6 @@ public class AdyenRequestFactory {
 
             paymentRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
         }
-
-        //Set Paypal Express Checkout Shortcut parameters
-        if (PAYPAL_ECS.equals(cartData.getAdyenPaymentMethod())) {
-            setPaypalEcsData(paymentRequest, cartData);
-        }
-
         return paymentRequest;
     }
 
@@ -213,6 +208,9 @@ public class AdyenRequestFactory {
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
+            if (customerModel!=null && customerModel.getType() == CustomerType.GUEST) {
+                paymentsRequest.setEnableOneClick(false);
+            }
         }
         //For one click
         else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
@@ -245,6 +243,9 @@ public class AdyenRequestFactory {
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
+        paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
+        paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.GET.toString());
+        paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
         return paymentsRequest;
     }
 
@@ -440,8 +441,10 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         if (ISSUER_PAYMENT_METHODS.contains(adyenPaymentMethod)) {
             paymentMethod.setIssuer(cartData.getAdyenIssuerId());
-        } else if (adyenPaymentMethod.startsWith(KLARNA)||adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)) {
-            setOpenInvoiceData(paymentsRequest, cartData, customerModel);
+        } else if (adyenPaymentMethod.startsWith(KLARNA)
+                || adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)
+                || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)) {
+            setOpenInvoiceData(paymentsRequest, cartData);
         } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
             Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
             paymentsRequest.setShopperName(shopperName);
@@ -806,7 +809,7 @@ public class AdyenRequestFactory {
     /*
      * Set the required fields for using the OpenInvoice API
      */
-    public void setOpenInvoiceData(PaymentsRequest paymentsRequest, CartData cartData, final CustomerModel customerModel) {
+    public void setOpenInvoiceData(PaymentsRequest paymentsRequest, CartData cartData) {
         paymentsRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
 
         // set date of birth
@@ -927,14 +930,6 @@ public class AdyenRequestFactory {
                 paymentsRequest.getDeliveryAddress().setStateOrProvince(shortStateOrProvince);
             }
         }
-    }
-
-    /**
-     * Set Paypal ECS request data
-     */
-    private void setPaypalEcsData(PaymentRequest paymentRequest, CartData cartData) {
-        paymentRequest.selectedBrand(PAYPAL_ECS);
-        paymentRequest.setPaymentToken(cartData.getAdyenPaymentToken());
     }
 
     private void setSepaDirectDebitData(PaymentsRequest paymentRequest, CartData cartData) {
