@@ -75,7 +75,6 @@ import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
-import static com.adyen.constants.BrandCodes.PAYPAL_ECS;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
@@ -172,8 +171,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         String errorMessage = "checkout.error.authorization.failed";
 
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-
-        if (canUseAPI(adyenPaymentMethod)) {
+        if (adyenPaymentMethod.equals(RATEPAY)) {
             try {
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 LOGGER.debug("Redirecting to confirmation!");
@@ -229,7 +227,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         } else {
             try {
-                cartData.setAdyenReturnUrl(getReturnUrl());
+                cartData.setAdyenReturnUrl(getReturnUrl(cartData.getAdyenPaymentMethod()));
                 OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
                 //In case of Boleto, show link to pdf
                 if (PAYMENT_METHOD_BOLETO.equals(cartData.getAdyenPaymentMethod())) {
@@ -244,15 +242,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.debug("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
-                    LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
                     if (is3DSPaymentMethod(adyenPaymentMethod)) {
-                        final String termUrl = getTermUrl();
-                        model.addAttribute("paReq", paymentsResponse.getRedirect().getData().get(PAREQ));
-                        model.addAttribute("md", paymentsResponse.getRedirect().getData().get(MD));
-                        model.addAttribute("issuerUrl", paymentsResponse.getRedirect().getUrl());
-                        model.addAttribute("termUrl", termUrl);
-                        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
+                        LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
+                        return redirectTo3DSValidation(model, paymentsResponse);
                     }
+                    LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to local payment method page");
                     return REDIRECT_PREFIX + paymentsResponse.getRedirect().getUrl();
                 }
                 if (REFUSED == paymentsResponse.getResultCode()) {
@@ -286,13 +280,19 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
-            if (paymentsResponse != null && (paymentsResponse.getResultCode() == CHALLENGESHOPPER || paymentsResponse.getResultCode() == IDENTIFYSHOPPER)) {
-                LOGGER.debug("PaymentResponse is "+paymentsResponse.getResultCode()+", redirecting to 3DS2 flow");
-                return redirectTo3DS2Validation(model, paymentsResponse);
-            }
-            if (paymentsResponse != null && paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
-                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
-                LOGGER.debug("PaymentResponse is REFUSED: " + errorMessage);
+            if(paymentsResponse != null) {
+                if (paymentsResponse.getResultCode() == CHALLENGESHOPPER || paymentsResponse.getResultCode() == IDENTIFYSHOPPER) {
+                    LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS2 flow");
+                    return redirectTo3DS2Validation(model, paymentsResponse);
+                }
+                if (paymentsResponse.getResultCode() == REDIRECTSHOPPER) {
+                    LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS flow");
+                    return redirectTo3DSValidation(model, paymentsResponse);
+                }
+                if (paymentsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
+                    errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
+                    LOGGER.debug("PaymentResponse is REFUSED: " + errorMessage);
+                }
             }
             return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
         } catch (CalculationException | InvalidCartException e) {
@@ -305,7 +305,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return REDIRECT_PREFIX + "/cart";
     }
 
-    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
+    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
     public String authorise3DSecurePayment(final RedirectAttributes redirectModel,
                                            final HttpServletRequest request) {
@@ -417,20 +417,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                                                + "</p>");
     }
 
-    /**
-     * Methods supported via API
-     * Credit Cards/OneClick
-     * OpenInvoice
-     * Boleto
-     */
-    private boolean canUseAPI(String paymentMethod) {
-        Set<String> apiPaymentMethods = new HashSet<>();
 
-        apiPaymentMethods.add(PAYPAL_ECS);
-        apiPaymentMethods.add(RATEPAY);
-
-        return apiPaymentMethods.contains(paymentMethod);
-    }
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
         return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
@@ -441,6 +428,16 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
         return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+    }
+
+    private String redirectTo3DSValidation(Model model, PaymentsResponse paymentsResponse) {
+        if (paymentsResponse.getRedirect() != null && paymentsResponse.getRedirect().getData() != null) {
+            model.addAttribute("termUrl", paymentsResponse.getRedirect().getData().get("TermUrl"));
+            model.addAttribute("paReq", paymentsResponse.getRedirect().getData().get(PAREQ));
+            model.addAttribute("md", paymentsResponse.getRedirect().getData().get(MD));
+            model.addAttribute("issuerUrl", paymentsResponse.getRedirect().getUrl());
+        }
+        return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DSecurePaymentPage;
     }
 
     private String redirectTo3DS2Validation(Model model, PaymentsResponse paymentsResponse) {
@@ -456,18 +453,13 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.Validate3DS2PaymentPage;
     }
 
-    private String getTermUrl() {
-        String authorise3DSecureUrl = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
-        BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
-
-        return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, authorise3DSecureUrl);
-    }
-
-    /**
-     * Construct the URL for HPP redirect
-     */
-    private String getReturnUrl() {
-        String url = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
+    private String getReturnUrl(String adyenPaymentMethod) {
+        String url;
+        if (is3DSPaymentMethod(adyenPaymentMethod)) {
+            url = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
+        } else {
+            url = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
+        }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
 
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);

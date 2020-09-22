@@ -31,7 +31,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "7.0.0";
+	public static final String PLUGIN_VERSION = "7.1.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
@@ -45,6 +45,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
 	final public static String PAYMENT_METHOD_POS = "pos";
 	final public static String PAYMENT_METHOD_PAYPAL = "paypal";
+	final public static String PAYMENT_METHOD_SCHEME = "scheme";
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_PAYMENT_RESULT = "AdyenPaymentResult";
@@ -61,6 +62,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	//Prefix for Oney methods like facilpay_3x or facilpay_4x
 	public static final String PAYMENT_METHOD_FACILPAY_PREFIX = "facilypay";
 	public static final String CARD_TYPE_DEBIT = "debit";
+	public static final String AFFIRM = "affirm";
 
 	private Adyenv6coreConstants() {
 		//empty to avoid instantiating this constant class
@@ -74,7 +76,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(KLARNA);
 		add(RATEPAY);
 		add(KLARNA_SLICE);
-
+		add(AFFIRM);
 //		add(AFTERPAY); // not supported yet
 	}});
 
