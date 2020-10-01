@@ -20,6 +20,67 @@
  */
 package com.adyen.v6.facades;
 
+import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
+import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
+import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
+import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
+import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
+import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
+import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
+import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
+import static com.adyen.constants.HPPConstants.Fields.RES_URL;
+import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
+import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
+import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
+import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
+import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
+import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
+import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SCHEME;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
+import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
+import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.security.SignatureException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+
 import com.adyen.Util.HMACValidator;
 import com.adyen.Util.Util;
 import com.adyen.constants.HPPConstants;
@@ -58,6 +119,7 @@ import com.adyen.v6.util.TerminalAPIUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
 import de.hybris.platform.commercefacades.i18n.I18NFacade;
 import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -72,6 +134,7 @@ import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
+import de.hybris.platform.converters.Populator;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
@@ -94,65 +157,6 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.ui.Model;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
-import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
-import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
-import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
-import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
-import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.constants.HPPConstants.Fields.RES_URL;
-import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
-import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
-import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
-import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
-import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SCHEME;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
-import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
-import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARAMETER_NAME;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -180,7 +184,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Converter<OrderModel, OrderData> orderConverter;
     private CartFactory cartFactory;
     private CalculationService calculationService;
-    private AddressPopulator addressPopulator;
+    private Populator<AddressModel, AddressData> addressPopulator;
     private AdyenBusinessProcessService adyenBusinessProcessService;
 
 
@@ -1638,11 +1642,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         this.calculationService = calculationService;
     }
 
-    public AddressPopulator getAddressPopulator() {
+    public Populator<AddressModel, AddressData> getAddressPopulator() {
         return addressPopulator;
     }
 
-    public void setAddressPopulator(AddressPopulator addressPopulator) {
+    public void setAddressPopulator(Populator<AddressModel, AddressData> addressPopulator) {
         this.addressPopulator = addressPopulator;
     }
 
