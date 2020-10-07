@@ -44,6 +44,8 @@ import de.hybris.platform.store.BaseStoreModel;
 public class AdyenCaptureCommand implements CaptureCommand {
     private static final Logger LOG = Logger.getLogger(AdyenCaptureCommand.class);
 
+    private final String CAPTURE_RECEIVED_RESPONSE = "[capture-received]";
+
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private OrderRepository orderRepository;
 
@@ -89,7 +91,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             try {
                 ModificationResult modificationResult = adyenPaymentService.capture(amount, currency, originalPSPReference, reference);
 
-                if (modificationResult.getResponse() == ModificationResult.ResponseEnum.CAPTURE_RECEIVED_) {
+                if (modificationResult.getResponse() == CAPTURE_RECEIVED_RESPONSE) {
                     result.setTransactionStatus(TransactionStatus.ACCEPTED);  //Accepted so that TakePaymentAction doesn't fail
                     result.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED);
                 } else {
