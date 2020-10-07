@@ -39,6 +39,8 @@ import de.hybris.platform.store.BaseStoreModel;
 public class AdyenVoidCommand implements VoidCommand {
     private static final Logger LOG = Logger.getLogger(AdyenVoidCommand.class);
 
+    private final String CANCELORREFUND_RECEIVED_RESPONSE = "[cancelOrRefund-received]";
+
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private BaseStoreRepository baseStoreRepository;
 
@@ -63,7 +65,7 @@ public class AdyenVoidCommand implements VoidCommand {
         try {
             ModificationResult modificationResult = adyenPaymentService.cancelOrRefund(authReference, reference);
 
-            if (ModificationResult.ResponseEnum.CANCELORREFUND_RECEIVED_.equals(modificationResult.getResponse())) {
+            if (CANCELORREFUND_RECEIVED_RESPONSE.equals(modificationResult.getResponse())) {
                 result.setTransactionStatus(TransactionStatus.ACCEPTED);
                 result.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED);
             } else {
