@@ -43,6 +43,8 @@ import static de.hybris.platform.payment.dto.TransactionStatusDetails.UNKNOWN_CO
 public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowOnRefundRequest> {
     private static final Logger LOG = Logger.getLogger(AdyenFollowOnRefundCommand.class);
 
+    private final String REFUND_RECEIVED_RESPONSE = "[refund-received]";
+
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private BaseStoreRepository baseStoreRepository;
 
@@ -76,7 +78,7 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
 
             LOG.debug("Refund response: " + modificationResult.getResponse());
             //change status to ACCEPTED if there is no error
-            if (modificationResult.getResponse() == ModificationResult.ResponseEnum.REFUND_RECEIVED_) {
+            if (modificationResult.getResponse() == REFUND_RECEIVED_RESPONSE) {
                 result.setTransactionStatus(ACCEPTED);
                 result.setTransactionStatusDetails(REVIEW_NEEDED);
             }
