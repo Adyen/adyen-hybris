@@ -100,7 +100,7 @@ public class AdyenCaptureCommandTest {
     public void testManualCaptureSuccess() throws Exception {
         ModificationResult modificationResult = new ModificationResult();
         modificationResult.setPspReference("1235");
-        modificationResult.setResponse(ModificationResult.ResponseEnum.CAPTURE_RECEIVED_);
+        modificationResult.setResponse("[capture-received]");
 
         when(adyenPaymentServiceMock.capture(captureRequest.getTotalAmount(), captureRequest.getCurrency(), captureRequest.getRequestId(), captureRequest.getRequestToken())).thenReturn(
                 modificationResult);

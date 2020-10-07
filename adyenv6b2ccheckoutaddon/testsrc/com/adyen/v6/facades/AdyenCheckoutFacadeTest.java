@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import com.adyen.Util.HMACValidator;
+import com.adyen.util.HMACValidator;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;

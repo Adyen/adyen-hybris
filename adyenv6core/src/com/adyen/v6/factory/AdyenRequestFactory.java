@@ -20,7 +20,7 @@
  */
 package com.adyen.v6.factory;
 
-import com.adyen.Util.Util;
+import com.adyen.util.Util;
 import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
