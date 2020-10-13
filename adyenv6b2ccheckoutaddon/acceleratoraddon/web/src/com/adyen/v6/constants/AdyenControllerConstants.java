@@ -26,6 +26,7 @@ public interface AdyenControllerConstants
 	String SELECT_PAYMENT_METHOD_PREFIX = "/checkout/multi/adyen/select-payment-method";
 	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
 	String COMPONENT_PREFIX = "/adyen/component";
+	String TRANSPARENT_REDIRECT_PREFIX = "/adyen/transparent/redirect";
 
 	/**
 	 * Class with view name constants
@@ -41,7 +42,7 @@ public interface AdyenControllerConstants
 				String CheckoutSummaryPage = ADDON_PREFIX + "pages/checkout/multi/checkoutSummaryPage";
 				String SelectPaymentMethod = ADDON_PREFIX + "pages/checkout/multi/selectPaymentMethodPage";
 				String Validate3DSecurePaymentPage = ADDON_PREFIX + "pages/checkout/multi/3d-secure-payment-validation";
-				String HppPaymentPage = ADDON_PREFIX + "pages/checkout/multi/hpp-payment";
+				String Redirect3DSecureResponse = ADDON_PREFIX + "pages/checkout/multi/3d-secure-response-redirect";
 				String Validate3DS2PaymentPage = ADDON_PREFIX + "pages/checkout/multi/3ds2_payment";
 				String BillingAddressformPage = ADDON_PREFIX + "pages/checkout/multi/billingAddressForm";
 			}
