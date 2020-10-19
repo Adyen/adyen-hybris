@@ -163,7 +163,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         //Validate the cart
         if (validateCart(redirectModel)) {
             // Invalid cart. Bounce back to the cart page.
-            return REDIRECT_PREFIX + "/cart";
+            return REDIRECT_PREFIX + AdyenControllerConstants.CART_PREFIX;
         }
 
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
@@ -302,7 +302,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + AdyenControllerConstants.CART_PREFIX;
     }
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.GET)
@@ -332,7 +332,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + AdyenControllerConstants.CART_PREFIX;
     }
 
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
@@ -375,7 +375,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + AdyenControllerConstants.CART_PREFIX;
     }
 
     /**
@@ -426,6 +426,11 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
         LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
+
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if(cartData.getDeliveryAddress() == null) {
+            return REDIRECT_PREFIX + AdyenControllerConstants.CART_PREFIX;
+        }
 
         return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
     }
