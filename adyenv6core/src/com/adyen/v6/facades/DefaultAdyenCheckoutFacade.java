@@ -453,16 +453,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public OrderData authorisePayment(final HttpServletRequest request, final CartData cartData) throws Exception {
         CheckoutCustomerStrategy checkoutCustomerStrategy = getCheckoutCustomerStrategy();
-        CustomerModel customer = null;
-        if (! checkoutCustomerStrategy.isAnonymousCheckout()) {
-            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
+
+        CustomerModel customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
+        if (isGuestUserTokenizationEnabled()) {
+            customer.setType(CustomerType.GUEST);
         }
 
         updateCartWithSessionData(cartData);
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
         if (adyenPaymentMethod.startsWith(RATEPAY)) {
-
             PaymentResult paymentResult = getAdyenPaymentService().authorise(cartData, request, customer);
             if (PaymentResult.ResultCodeEnum.AUTHORISED == paymentResult.getResultCode()) {
                 return createAuthorizedOrder(paymentResult);
@@ -475,10 +475,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());
-        if (customer == null && isGuestUserTokenizationEnabled()) {
-            customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
-            customer.setType(CustomerType.GUEST);
-        }
+
         PaymentsResponse paymentsResponse = getAdyenPaymentService().authorisePayment(cartData, requestInfo, customer);
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode) {
@@ -1404,7 +1401,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCartService().setSessionCart(cartModel);
         }
 
-        if(hasUserContextChanged(orderModel, cartModel)) {
+        Boolean isAnonymousCheckout = getCheckoutCustomerStrategy().isAnonymousCheckout();
+
+        if(!isAnonymousCheckout && hasUserContextChanged(orderModel, cartModel)) {
             throw new InvalidCartException("Cart from order '" + orderCode + "' not restored to session, since user or store in session changed.");
         }
 
@@ -1414,11 +1413,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         getModelService().save(cartModel);
 
-        //Populate delivery address and mode
-        AddressData deliveryAddressData = new AddressData();
-        getAddressPopulator().populate(orderModel.getDeliveryAddress().getOriginal(), deliveryAddressData);
-        getCheckoutFacade().setDeliveryAddress(deliveryAddressData);
-        getCheckoutFacade().setDeliveryMode(orderModel.getDeliveryMode().getCode());
+        if(!isAnonymousCheckout) {
+            //Populate delivery address and mode
+            AddressData deliveryAddressData = new AddressData();
+            getAddressPopulator().populate(orderModel.getDeliveryAddress().getOriginal(), deliveryAddressData);
+            getCheckoutFacade().setDeliveryAddress(deliveryAddressData);
+            getCheckoutFacade().setDeliveryMode(orderModel.getDeliveryMode().getCode());
+        }
 
         getCalculationService().calculate(cartModel);
     }

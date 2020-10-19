@@ -238,7 +238,7 @@ public class AdyenRequestFactory {
 
         //For alternate payment methods like iDeal, Paypal etc.
         else {
-            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
+            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData);
         }
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
@@ -433,7 +433,7 @@ public class AdyenRequestFactory {
         paymentsRequest.getPaymentMethod().setType(cardBrand);
     }
 
-    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData, CustomerModel customerModel) {
+    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData) {
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         DefaultPaymentMethodDetails paymentMethod = new DefaultPaymentMethodDetails();
         paymentsRequest.setPaymentMethod(paymentMethod);
