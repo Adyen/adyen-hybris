@@ -185,7 +185,8 @@ public class AdyenRequestFactory {
                                                  final CartData cartData,
                                                  final RequestInfo requestInfo,
                                                  final CustomerModel customerModel,
-                                                 final RecurringContractMode recurringContractMode) {
+                                                 final RecurringContractMode recurringContractMode,
+                                                 final Boolean guestUserTokenizationEnabled) {
         PaymentsRequest paymentsRequest = new PaymentsRequest();
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
@@ -208,7 +209,7 @@ public class AdyenRequestFactory {
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
-            if (customerModel!=null && customerModel.getType() == CustomerType.GUEST) {
+            if (customerModel != null && customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
                 paymentsRequest.setEnableOneClick(false);
             }
         }
