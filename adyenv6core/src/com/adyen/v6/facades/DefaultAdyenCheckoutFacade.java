@@ -20,8 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import com.adyen.util.HMACValidator;
-import com.adyen.util.Util;
 import com.adyen.constants.HPPConstants;
 import com.adyen.model.Amount;
 import com.adyen.model.Card;
@@ -38,6 +36,8 @@ import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
+import com.adyen.util.HMACValidator;
+import com.adyen.util.Util;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
@@ -68,7 +68,6 @@ import de.hybris.platform.commercefacades.user.converters.populator.AddressPopul
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
-import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
@@ -455,9 +454,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CheckoutCustomerStrategy checkoutCustomerStrategy = getCheckoutCustomerStrategy();
 
         CustomerModel customer = checkoutCustomerStrategy.getCurrentUserForCheckout();
-        if (isGuestUserTokenizationEnabled()) {
-            customer.setType(CustomerType.GUEST);
-        }
 
         updateCartWithSessionData(cartData);
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();

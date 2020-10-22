@@ -22,7 +22,6 @@ package com.adyen.v6.service;
 
 import com.adyen.Client;
 import com.adyen.Config;
-import com.adyen.util.Util;
 import com.adyen.enums.Environment;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentRequest;
@@ -58,6 +57,7 @@ import com.adyen.service.PosPayment;
 import com.adyen.service.TerminalCloudAPI;
 import com.adyen.service.exception.ApiException;
 import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
+import com.adyen.util.Util;
 import com.adyen.v6.converters.PaymentMethodConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
@@ -192,8 +192,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                                                          cartData,
                                                                                          requestInfo,
                                                                                          customerModel,
-                                                                                         baseStore.getAdyenRecurringContractMode());
-
+                                                                                         baseStore.getAdyenRecurringContractMode(),
+                                                                                         baseStore.getAdyenGuestUserTokenization());
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
