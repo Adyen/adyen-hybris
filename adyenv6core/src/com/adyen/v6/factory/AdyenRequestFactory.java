@@ -185,7 +185,8 @@ public class AdyenRequestFactory {
                                                  final CartData cartData,
                                                  final RequestInfo requestInfo,
                                                  final CustomerModel customerModel,
-                                                 final RecurringContractMode recurringContractMode) {
+                                                 final RecurringContractMode recurringContractMode,
+                                                 final Boolean guestUserTokenizationEnabled) {
         PaymentsRequest paymentsRequest = new PaymentsRequest();
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
@@ -208,7 +209,7 @@ public class AdyenRequestFactory {
             if (is3DS2allowed) {
                 paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
             }
-            if (customerModel!=null && customerModel.getType() == CustomerType.GUEST) {
+            if (customerModel != null && customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
                 paymentsRequest.setEnableOneClick(false);
             }
         }
@@ -238,7 +239,7 @@ public class AdyenRequestFactory {
 
         //For alternate payment methods like iDeal, Paypal etc.
         else {
-            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData, customerModel);
+            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData);
         }
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
@@ -433,7 +434,7 @@ public class AdyenRequestFactory {
         paymentsRequest.getPaymentMethod().setType(cardBrand);
     }
 
-    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData, CustomerModel customerModel) {
+    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData) {
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         DefaultPaymentMethodDetails paymentMethod = new DefaultPaymentMethodDetails();
         paymentsRequest.setPaymentMethod(paymentMethod);

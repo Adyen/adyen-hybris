@@ -65,8 +65,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
@@ -80,6 +78,9 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGE
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
+import static com.adyen.v6.constants.AdyenControllerConstants.CART_PREFIX;
+import static com.adyen.v6.constants.AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -90,7 +91,7 @@ import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHO
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
 
 @Controller
-@RequestMapping(value = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX)
+@RequestMapping(value = SUMMARY_CHECKOUT_PREFIX)
 public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepController {
     private static final Logger LOGGER = Logger.getLogger(AdyenSummaryCheckoutStepController.class);
 
@@ -163,7 +164,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         //Validate the cart
         if (validateCart(redirectModel)) {
             // Invalid cart. Bounce back to the cart page.
-            return REDIRECT_PREFIX + "/cart";
+            return REDIRECT_PREFIX + CART_PREFIX;
         }
 
         final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
@@ -302,7 +303,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + CART_PREFIX;
     }
 
     @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.GET)
@@ -332,7 +333,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + CART_PREFIX;
     }
 
     @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
@@ -375,7 +376,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         }
 
         LOGGER.warn("Redirecting to cart page...");
-        return REDIRECT_PREFIX + "/cart";
+        return REDIRECT_PREFIX + CART_PREFIX;
     }
 
     /**
@@ -427,7 +428,12 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
-        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if(cartData.getDeliveryAddress() == null) {
+            return REDIRECT_PREFIX + CART_PREFIX;
+        }
+
+        return REDIRECT_PREFIX + SELECT_PAYMENT_METHOD_PREFIX;
     }
 
     private String redirectTo3DSValidation(Model model, PaymentsResponse paymentsResponse) {
@@ -456,9 +462,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     private String getReturnUrl(String adyenPaymentMethod) {
         String url;
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
-            url = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
+            url = SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
         } else {
-            url = AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
+            url = SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
         }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
 

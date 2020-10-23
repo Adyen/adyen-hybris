@@ -170,7 +170,7 @@ public class AdyenRequestFactoryTest {
 
         PaymentsRequest paymentsRequest;
         //Test anonymous
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE, false);
 
         //use delivery/billing address from cart
         assertEquals(DELIVERY_TOWN, paymentsRequest.getDeliveryAddress().getCity());
@@ -204,7 +204,7 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
         when(cartDataMock.getAdyenSelectedReference()).thenReturn(RECURRING_REFERENCE);
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null, false);
 
         DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
         assertEquals(RECURRING_REFERENCE, paymentMethodDetails.getRecurringDetailReference());
@@ -230,7 +230,7 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getAdyenReturnUrl()).thenReturn(RETURN_URL);
         when(cartDataMock.getAdyenIssuerId()).thenReturn(ISSUER_ID);
 
-        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null, false);
 
         assertNotNull(paymentsRequest);
         assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
@@ -247,7 +247,7 @@ public class AdyenRequestFactoryTest {
         when(deliveryAddressMock.getLastName()).thenReturn(LAST_NAME);
         when(deliveryAddressMock.getTitleCode()).thenReturn(TITLE_CODE);
 
-        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null);
+        PaymentsRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null, false);
 
         assertNotNull(paymentsRequest);
         assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
