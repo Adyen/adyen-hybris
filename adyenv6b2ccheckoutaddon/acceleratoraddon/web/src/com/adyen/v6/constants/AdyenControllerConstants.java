@@ -23,6 +23,7 @@ package com.adyen.v6.constants;
 public interface AdyenControllerConstants
 {
 	String ADDON_PREFIX = "addon:/adyenv6b2ccheckoutaddon/";
+	String CART_PREFIX = "/cart";
 	String SELECT_PAYMENT_METHOD_PREFIX = "/checkout/multi/adyen/select-payment-method";
 	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
 	String COMPONENT_PREFIX = "/adyen/component";
