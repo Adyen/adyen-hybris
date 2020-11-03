@@ -440,14 +440,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     }
 
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
-        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
-        if(cartData.getDeliveryAddress() == null) {
+        if(cartData == null || cartData.getDeliveryAddress() == null) {
+            LOGGER.debug("Redirecting to cart with error: " + messageKey);
             return REDIRECT_PREFIX + CART_PREFIX;
         }
 
+        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         return REDIRECT_PREFIX + SELECT_PAYMENT_METHOD_PREFIX;
     }
 
@@ -567,7 +568,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @RequireHardLogIn
     public String handleComponentResult(final HttpServletRequest request,
                                         final Model model,
-                                        final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException, InvalidCartException, CalculationException, CommerceCartModificationException {
+                                        final RedirectAttributes redirectAttributes)
+            throws CMSItemNotFoundException, InvalidCartException, CalculationException, CommerceCartModificationException {
         String resultData = request.getParameter("resultData");
         String isResultError = request.getParameter("isResultError");
 
@@ -606,9 +608,20 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             }
         }
 
-        LOGGER.debug("Redirecting to 'payment method select' with error..");
-        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, errorMessageKey);
-        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
+        return redirectToOrderSummaryWithError(model, redirectAttributes, errorMessageKey);
+    }
+
+    private String redirectToOrderSummaryWithError(final Model model,
+                                                   final RedirectAttributes redirectAttributes,
+                                                   final String messageKey) throws CommerceCartModificationException, CMSItemNotFoundException {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if(cartData == null || cartData.getAdyenPaymentMethod() == null) {
+            return redirectToSelectPaymentMethodWithError(redirectAttributes, messageKey);
+        }
+
+        LOGGER.debug("Redirecting to summary view with error: " + messageKey);
+        GlobalMessages.addErrorMessage(model, messageKey);
+        return enterStep(model, redirectAttributes);
     }
 
     private boolean isValidResult(String resultData, String isResultError) {
