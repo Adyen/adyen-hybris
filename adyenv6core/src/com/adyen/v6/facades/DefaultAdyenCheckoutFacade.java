@@ -931,6 +931,26 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         modelService.save(cartModel);
     }
 
+    @Override
+    public void initializeSummaryData(Model model) {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        AdyenPaymentService adyenPaymentService = getAdyenPaymentService();
+        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
+
+        model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, cartData.getAdyenPaymentMethod());
+        model.addAttribute(MODEL_DF_URL, adyenPaymentService.getDeviceFingerprintUrl());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
+        model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
+
+        //Include information for components
+        model.addAttribute(MODEL_AMOUNT, amount);
+        model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
+        model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
+    }
+
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
 
@@ -1429,7 +1449,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException {
         String orderCode = getSessionService().getAttribute(SESSION_PENDING_ORDER_CODE);
         if (orderCode == null) {
-            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
+            LOGGER.debug("OrderCode not in session, no cart will be restored");
             return;
         }
 

@@ -259,6 +259,7 @@ public class AdyenRequestFactory {
         updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
 
         paymentsRequest.setPaymentMethod(paymentMethodDetails);
+        paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
