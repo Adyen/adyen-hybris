@@ -35,9 +35,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorfacades.order.AcceleratorCheckoutFacade;
+import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -51,8 +54,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -72,6 +73,12 @@ public class AdyenComponentController {
 
     @Resource(name = "acceleratorCheckoutFacade")
     private AcceleratorCheckoutFacade checkoutFacade;
+
+    @Resource(name = "siteBaseUrlResolutionService")
+    private SiteBaseUrlResolutionService siteBaseUrlResolutionService;
+
+    @Resource(name = "baseSiteService")
+    private BaseSiteService baseSiteService;
 
     @RequestMapping(value = "/payment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -100,7 +107,7 @@ public class AdyenComponentController {
                 throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
             }
 
-            cartData.setAdyenReturnUrl("https://www.adyen.com.br");//getReturnUrl(cartData.getAdyenPaymentMethod()));
+            cartData.setAdyenReturnUrl(getReturnUrl());
 
             PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, paymentMethodDetails);
             return gson.toJson(paymentsResponse);
@@ -178,6 +185,12 @@ public class AdyenComponentController {
             LOGGER.error(String.format("Cart %s has a calculated flag of FALSE, placement of order can't continue", cartData.getCode()));
             throw new InvalidCartException("checkout.error.cart.notcalculated");
         }
+    }
+
+    private String getReturnUrl() {
+        String url = COMPONENT_PREFIX + "/submit-details";
+        BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
+        return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
     }
 
     public AdyenCheckoutFacade getAdyenCheckoutFacade() {
