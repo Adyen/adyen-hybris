@@ -65,8 +65,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
 import static com.adyen.constants.ApiConstants.Redirect.Data.PAREQ;
@@ -305,7 +303,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return REDIRECT_PREFIX + "/cart";
     }
 
-    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.GET)
+    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
     @RequireHardLogIn
     public String authorise3DSecurePayment(final RedirectAttributes redirectModel,
                                            final HttpServletRequest request) {

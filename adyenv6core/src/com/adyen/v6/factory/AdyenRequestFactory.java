@@ -243,9 +243,11 @@ public class AdyenRequestFactory {
 
         ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setApplicationInfo(applicationInfo);
+
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
-        paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.GET.toString());
+        paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
         paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
+
         return paymentsRequest;
     }
 
