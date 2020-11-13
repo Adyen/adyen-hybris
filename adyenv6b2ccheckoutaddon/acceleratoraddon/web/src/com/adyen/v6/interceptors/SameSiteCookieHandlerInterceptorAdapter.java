@@ -30,9 +30,18 @@ import javax.servlet.http.HttpServletResponse;
 
 public class SameSiteCookieHandlerInterceptorAdapter extends HandlerInterceptorAdapter {
 
+    private SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils;
+
     @Override
     public void postHandle(HttpServletRequest servletRequest, HttpServletResponse servletResponse, Object handler, ModelAndView modelAndView) {
-        SameSiteCookieAttributeAppenderUtils.addSameSiteAttribute(servletRequest, servletResponse);
+        getSameSiteCookieAttributeAppenderUtils().addSameSiteAttribute(servletRequest, servletResponse);
     }
 
+    protected SameSiteCookieAttributeAppenderUtils getSameSiteCookieAttributeAppenderUtils() {
+        return sameSiteCookieAttributeAppenderUtils;
+    }
+
+    public void setSameSiteCookieAttributeAppenderUtils(SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils) {
+        this.sameSiteCookieAttributeAppenderUtils = sameSiteCookieAttributeAppenderUtils;
+    }
 }

@@ -161,25 +161,36 @@
 		<constructor-arg value="redirect:/checkout/multi/adyen/select-payment-method"/>
 	</bean>
 
+	<bean id="sameSiteCookieAttributeAppenderUtils" class="com.adyen.v6.utils.SameSiteCookieAttributeAppenderUtils" >
+		<property name="configurationService" ref="configurationService" />
+	</bean>
+
 	<!-- SameSite cookie Authentication Handler -->
 	<bean id="loginGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
 		<property name="authenticationSuccessHandler" ref="loginAuthenticationSuccessHandler" />
 		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
 	</bean>
 	<bean id="loginCheckoutGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
 		<property name="authenticationSuccessHandler" ref="loginCheckoutAuthenticationSuccessHandler" />
 		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
 	</bean>
 
 	<!-- SameSite cookie Filter -->
-	<bean id="sameSiteCookiePostProcessFilter" class="com.adyen.v6.filters.SameSiteCookiePostProcessFilter" />
+	<bean id="sameSiteCookiePostProcessFilter" class="com.adyen.v6.filters.SameSiteCookiePostProcessFilter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
 	<bean id="sameSiteCookiePostProcessFilterListMergeDirective" depends-on="defaultStorefrontTenantDefaultFilterChainList" parent="listMergeDirective">
 		<property name="add" ref="sameSiteCookiePostProcessFilter"/>
 	</bean>
 
 	<!-- SameSite cookie Handler Interceptor -->
+	<bean id="sameSiteCookieHandlerInterceptorAdapter" class="com.adyen.v6.interceptors.SameSiteCookieHandlerInterceptorAdapter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
 	<mvc:interceptors>
-		<bean class="com.adyen.v6.interceptors.SameSiteCookieHandlerInterceptorAdapter" />
+		<ref bean="sameSiteCookieHandlerInterceptorAdapter" />
 	</mvc:interceptors>
 
 </beans>
