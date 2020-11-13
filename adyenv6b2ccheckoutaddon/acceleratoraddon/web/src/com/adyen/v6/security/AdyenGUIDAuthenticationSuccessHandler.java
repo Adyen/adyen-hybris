@@ -39,6 +39,7 @@ public class AdyenGUIDAuthenticationSuccessHandler implements AuthenticationSucc
 {
 	private GUIDCookieStrategy guidCookieStrategy;
 	private AuthenticationSuccessHandler authenticationSuccessHandler;
+	private SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils;
 
 	@Override
 	public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -47,7 +48,7 @@ public class AdyenGUIDAuthenticationSuccessHandler implements AuthenticationSucc
 		getGuidCookieStrategy().setCookie(request, response);
 
 		// onAuthenticationSuccess will commit response, so we won't be able to change it, that's why we should execute filter before it.
-		SameSiteCookieAttributeAppenderUtils.addSameSiteAttribute(request, response);
+		getSameSiteCookieAttributeAppenderUtils().addSameSiteAttribute(request, response);
 
 		getAuthenticationSuccessHandler().onAuthenticationSuccess(request, response, authentication);
 	}
@@ -78,5 +79,13 @@ public class AdyenGUIDAuthenticationSuccessHandler implements AuthenticationSucc
 	public void setAuthenticationSuccessHandler(final AuthenticationSuccessHandler authenticationSuccessHandler)
 	{
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
+	}
+
+	protected SameSiteCookieAttributeAppenderUtils getSameSiteCookieAttributeAppenderUtils() {
+		return sameSiteCookieAttributeAppenderUtils;
+	}
+
+	public void setSameSiteCookieAttributeAppenderUtils(SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils) {
+		this.sameSiteCookieAttributeAppenderUtils = sameSiteCookieAttributeAppenderUtils;
 	}
 }

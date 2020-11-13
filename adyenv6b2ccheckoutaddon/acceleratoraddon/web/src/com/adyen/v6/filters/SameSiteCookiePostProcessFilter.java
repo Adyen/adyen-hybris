@@ -34,9 +34,19 @@ import java.io.IOException;
 
 public class SameSiteCookiePostProcessFilter extends GenericFilterBean {
 
+    private SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        SameSiteCookieAttributeAppenderUtils.addSameSiteAttribute((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+        getSameSiteCookieAttributeAppenderUtils().addSameSiteAttribute((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    protected SameSiteCookieAttributeAppenderUtils getSameSiteCookieAttributeAppenderUtils() {
+        return sameSiteCookieAttributeAppenderUtils;
+    }
+
+    public void setSameSiteCookieAttributeAppenderUtils(SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils) {
+        this.sameSiteCookieAttributeAppenderUtils = sameSiteCookieAttributeAppenderUtils;
     }
 }

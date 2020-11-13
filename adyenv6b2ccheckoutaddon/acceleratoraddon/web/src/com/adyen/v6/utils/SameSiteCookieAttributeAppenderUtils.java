@@ -22,25 +22,36 @@
 package com.adyen.v6.utils;
 
 import com.google.common.net.HttpHeaders;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.configuration.Configuration;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class SameSiteCookieAttributeAppenderUtils {
 
-    private SameSiteCookieAttributeAppenderUtils() {
-        // ! Util class must not be initialized
-    }
+    private ConfigurationService configurationService;
 
-    private static final List<String> COOKIES_WITH_FORCE_SAME_SITE_NONE = Arrays.asList("JSESSIONID", "acceleratorSecureGUID", "blogSsoLoginRememberMe");
+    private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
+    private static final String SAMESITE_COOKIE_HANDLER_ENABLED_PROPERTY = "adyen.samesitecookie.handler.enabled";
+    private static final List<String> SAP_VERSIONS_WITH_SAMESITE_FIX = Collections.singletonList("2005");
+    private static final List<String> COOKIES_WITH_FORCE_SAME_SITE_NONE = Arrays.asList("JSESSIONID", "acceleratorSecureGUID");
 
-    public static void addSameSiteAttribute(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+
+    public void addSameSiteAttribute(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+        // Do not modify cookies for SAP versions which already have SameSite cookies handler available
+        String platformVersion = getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
+        if(!isSameSiteCookieHandlingEnabled() && SAP_VERSIONS_WITH_SAMESITE_FIX.contains(platformVersion)) {
+            return;
+        }
+
         if (isNotCommittedResponse(servletResponse)) {
             Collection<String> headers = servletResponse.getHeaders(HttpHeaders.SET_COOKIE);
             if (CollectionUtils.isNotEmpty(headers)) {
@@ -52,7 +63,7 @@ public class SameSiteCookieAttributeAppenderUtils {
         }
     }
 
-    private static void addSameSiteNone(String sameSiteCookie, HttpServletResponse servletResponse, String userAgent) {
+    private void addSameSiteNone(String sameSiteCookie, HttpServletResponse servletResponse, String userAgent) {
         Collection<String> headers = servletResponse.getHeaders(HttpHeaders.SET_COOKIE);
 
         // Check if exists session set cookie header
@@ -73,8 +84,24 @@ public class SameSiteCookieAttributeAppenderUtils {
         }
     }
 
-    private static boolean isNotCommittedResponse(ServletResponse servletResponse) {
+    private boolean isNotCommittedResponse(ServletResponse servletResponse) {
         return !servletResponse.isCommitted();
     }
 
+    private Boolean isSameSiteCookieHandlingEnabled() {
+        Configuration configuration = getConfigurationService().getConfiguration();
+        boolean isSameSiteCookieHandlingEnabled = false;
+        if (configuration.containsKey(SAMESITE_COOKIE_HANDLER_ENABLED_PROPERTY)) {
+            isSameSiteCookieHandlingEnabled = configuration.getBoolean(SAMESITE_COOKIE_HANDLER_ENABLED_PROPERTY);
+        }
+        return isSameSiteCookieHandlingEnabled;
+    }
+
+    public ConfigurationService getConfigurationService() {
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
 }
