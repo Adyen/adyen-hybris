@@ -6,29 +6,23 @@
 
 <c:url value="/checkout/multi/adyen/summary/component-result" var="handleComponentResult"/>
 
-<c:choose>
-    <%-- Paypal button --%>
-    <c:when test="${selectedPaymentMethod eq 'paypal'}">
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="Terms1" />
-                <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
-            </label>
-        </div>
-        <div id="adyen-paypal-container"></div>
-    </c:when>
+<%-- Paypal button --%>
+<c:if test="${selectedPaymentMethod eq 'paypal'}">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="terms-conditions-check" />
+            <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
+        </label>
+    </div>
+    <div id="adyen-paypal-container"></div>
+</c:if>
 
-    <c:otherwise>
-        <div class="chckt-pm__header js-chckt-pm__header">
-            <span class="chckt-cp__image">
-                <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/img/pm/${paymentMethod}@2x.png" alt="">
-                <span class="chckt-cp__image-border"></span>
-            </span>
-            <spring:theme code="checkout.summary.component.payment"/>
-        </div>
-        <div id="adyen-component-container"></div>
-    </c:otherwise>
-</c:choose>
+<c:if test="${selectedPaymentMethod eq 'mbway'}">
+    <div class="chckt-pm__header js-chckt-pm__header">
+        <spring:theme code="checkout.summary.component.mbway.payment"/>
+    </div>
+    <div id="adyen-component-container"></div>
+</c:if>
 
 <form:form id="handleComponentResultForm"
            class="create_update_payment_form"

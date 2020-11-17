@@ -86,14 +86,9 @@ public class AdyenComponentController {
         try {
             String requestJsonString = IOUtils.toString(request.getInputStream(), String.valueOf(StandardCharsets.UTF_8));
             JsonObject requestJson = new JsonParser().parse(requestJsonString).getAsJsonObject();
-
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-            Boolean termsCheck = gson.fromJson(requestJson.get("termsCheck"), Boolean.class);
 
-            if(termsCheck == null || !termsCheck) {
-                throw new InvalidCartException("checkout.error.terms.not.accepted");
-            }
-            validateOrderForm();
+            validateOrderForm(requestJson);
 
             final CartData cartData = getCheckoutFlowFacade().getCheckoutCart();
             String paymentMethod = cartData.getAdyenPaymentMethod();
@@ -160,8 +155,16 @@ public class AdyenComponentController {
      * Validates the order form before to filter out invalid order states
      *
      * @return True if the order form is invalid and false if everything is valid.
+     * @param requestJson
      */
-    protected void validateOrderForm() throws InvalidCartException {
+    protected void validateOrderForm(JsonObject requestJson) throws InvalidCartException {
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        Boolean termsCheck = gson.fromJson(requestJson.get("termsCheck"), Boolean.class);
+
+        if(termsCheck == null || !termsCheck) {
+            throw new InvalidCartException("checkout.error.terms.not.accepted");
+        }
+
         if (getCheckoutFlowFacade().hasNoDeliveryAddress()) {
             throw new InvalidCartException("checkout.deliveryAddress.notSelected");
         }
