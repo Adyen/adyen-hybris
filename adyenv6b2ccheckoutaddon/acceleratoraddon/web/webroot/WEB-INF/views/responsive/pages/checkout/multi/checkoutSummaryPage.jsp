@@ -75,7 +75,7 @@
                         <c:if test="${selectedPaymentMethod ne 'paypal'}">
                             <form:form action="${placeOrderUrl}" id="placeOrderForm1" modelAttribute="placeOrderForm">
                                 <div class="checkbox">
-                                    <label> <form:checkbox id="Terms1" path="termsCheck" />
+                                    <label> <form:checkbox id="terms-conditions-check" path="termsCheck" />
                                         <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
                                     </label>
                                 </div>

@@ -392,7 +392,7 @@ var AdyenCheckoutHybris = (function () {
             $.ajax({
                 url: ACC.config.encodedContextPath + '/adyen/component/payment',
                 type: "POST",
-                data: JSON.stringify({paymentMethodDetails: data, termsCheck: document.getElementById('Terms1').checked}),
+                data: JSON.stringify({paymentMethodDetails: data, termsCheck: document.getElementById('terms-conditions-check').checked}),
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     try {
