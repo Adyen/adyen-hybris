@@ -38,6 +38,9 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+ * This class uses code written by Igor Zarvanskyi and published on https://clutcher.github.io/post/hybris/same_site_login_issue/
+ */
 public class SameSiteCookieAttributeAppenderUtils {
 
     private static final Logger LOG = Logger.getLogger(SameSiteCookieAttributeAppenderUtils.class);

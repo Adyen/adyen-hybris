@@ -28,6 +28,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/*
+ * This class uses code written by Igor Zarvanskyi and published on https://clutcher.github.io/post/hybris/same_site_login_issue/
+ */
 public class SameSiteCookieHandlerInterceptorAdapter extends HandlerInterceptorAdapter {
 
     private SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils;

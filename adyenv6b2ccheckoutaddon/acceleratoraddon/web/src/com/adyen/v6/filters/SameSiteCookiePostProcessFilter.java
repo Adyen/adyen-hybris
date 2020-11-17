@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/*
+ * This class uses code written by Igor Zarvanskyi and published on https://clutcher.github.io/post/hybris/same_site_login_issue/
+ */
 public class SameSiteCookiePostProcessFilter extends GenericFilterBean {
 
     private SameSiteCookieAttributeAppenderUtils sameSiteCookieAttributeAppenderUtils;
