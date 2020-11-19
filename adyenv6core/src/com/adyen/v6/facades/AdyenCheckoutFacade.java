@@ -183,6 +183,8 @@ public interface AdyenCheckoutFacade {
      */
     void initializeCheckoutData(Model model);
 
+    void initializeSummaryData(Model model);
+
     /**
      * Returns whether Boleto should be shown as an available payment method on the checkout page
      * Relevant for Brasil

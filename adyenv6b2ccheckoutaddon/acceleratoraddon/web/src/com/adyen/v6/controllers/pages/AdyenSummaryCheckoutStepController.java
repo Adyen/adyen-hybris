@@ -53,6 +53,7 @@ import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -62,6 +63,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -89,6 +91,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_POS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
+import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 
 @Controller
 @RequestMapping(value = SUMMARY_CHECKOUT_PREFIX)
@@ -119,6 +122,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     @Resource(name = "configurationService")
     private ConfigurationService configurationService;
 
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     @RequireHardLogIn
     @Override
@@ -147,6 +153,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         model.addAttribute(WebConstants.BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs("checkout.multi.summary.breadcrumb"));
         model.addAttribute("metaRobots", "noindex,nofollow");
         setCheckoutStepLinksForModel(model, getCheckoutStep());
+
+        try {
+            model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
+        } catch (ApiException e) {
+            LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
+        }
+        adyenCheckoutFacade.initializeSummaryData(model);
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
     }
@@ -425,14 +440,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
     }
 
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
-        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, messageKey);
 
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
-        if(cartData.getDeliveryAddress() == null) {
+        if(cartData == null || cartData.getDeliveryAddress() == null) {
+            LOGGER.debug("Redirecting to cart with error: " + messageKey);
             return REDIRECT_PREFIX + CART_PREFIX;
         }
 
+        LOGGER.debug("Redirecting to payment method with error: " + messageKey);
         return REDIRECT_PREFIX + SELECT_PAYMENT_METHOD_PREFIX;
     }
 
@@ -548,6 +564,70 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return invalid;
     }
 
+    @RequestMapping(value = "/component-result", method = RequestMethod.POST)
+    @RequireHardLogIn
+    public String handleComponentResult(final HttpServletRequest request,
+                                        final Model model,
+                                        final RedirectAttributes redirectAttributes)
+            throws CMSItemNotFoundException, InvalidCartException, CalculationException, CommerceCartModificationException {
+        String resultData = request.getParameter("resultData");
+        String isResultError = request.getParameter("isResultError");
+
+        LOGGER.debug("isResultError=" + isResultError + "\nresultData=" + resultData);
+
+        String errorMessageKey = "checkout.error.authorization.payment.error";
+
+        if (isValidResult(resultData, isResultError)) {
+            try {
+                OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                LOGGER.debug("Handling AdyenNonAuthorizedPaymentException");
+                PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+                if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
+                    switch (paymentsResponse.getResultCode()) {
+                        case REFUSED:
+                            errorMessageKey = "checkout.error.authorization.payment.refused";
+                            break;
+                        case CANCELLED:
+                            errorMessageKey = "checkout.error.authorization.payment.cancelled";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } catch (InvalidCartException e) {
+                LOGGER.error("Error retrieving order", e);
+            } catch (Exception e) {
+                LOGGER.error("Unexpected error while validating component payment result", e);
+            }
+        } else {
+            if (StringUtils.isNotBlank(resultData)) {
+                errorMessageKey = resultData;
+                adyenCheckoutFacade.restoreCartFromOrderCodeInSession();
+            }
+        }
+
+        return redirectToOrderSummaryWithError(model, redirectAttributes, errorMessageKey);
+    }
+
+    private String redirectToOrderSummaryWithError(final Model model,
+                                                   final RedirectAttributes redirectAttributes,
+                                                   final String messageKey) throws CommerceCartModificationException, CMSItemNotFoundException {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        if(cartData == null || cartData.getAdyenPaymentMethod() == null) {
+            return redirectToSelectPaymentMethodWithError(redirectAttributes, messageKey);
+        }
+
+        LOGGER.debug("Redirecting to summary view with error: " + messageKey);
+        GlobalMessages.addErrorMessage(model, messageKey);
+        return enterStep(model, redirectAttributes);
+    }
+
+    private boolean isValidResult(String resultData, String isResultError) {
+        return (StringUtils.isBlank(isResultError) || !Boolean.parseBoolean(isResultError))
+                && StringUtils.isNotBlank(resultData);
+    }
 
     @RequestMapping(value = "/back", method = RequestMethod.GET)
     @RequireHardLogIn
