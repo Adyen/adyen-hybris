@@ -223,59 +223,6 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
         return getCheckoutStep().nextStep();
     }
 
-    @RequestMapping(value = "/component-result", method = RequestMethod.POST)
-    @RequireHardLogIn
-    public String handleComponentResult(final HttpServletRequest request,
-                                        final Model model,
-                                        final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException, InvalidCartException, CalculationException {
-        String resultData = request.getParameter("resultData");
-        String isResultError = request.getParameter("isResultError");
-
-        LOGGER.debug("isResultError=" + isResultError + "\nresultData=" + resultData);
-
-        String errorMessageKey = "checkout.error.authorization.payment.error";
-
-        if (isValidResult(resultData, isResultError)) {
-            try {
-                OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
-                return redirectToOrderConfirmationPage(orderData);
-            } catch (AdyenNonAuthorizedPaymentException e) {
-                LOGGER.debug("Handling AdyenNonAuthorizedPaymentException");
-                PaymentsResponse paymentsResponse = e.getPaymentsResponse();
-                if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
-                    switch (paymentsResponse.getResultCode()) {
-                        case REFUSED:
-                            errorMessageKey = "checkout.error.authorization.payment.refused";
-                            break;
-                        case CANCELLED:
-                            errorMessageKey = "checkout.error.authorization.payment.cancelled";
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } catch (InvalidCartException e) {
-                LOGGER.error("Error retrieving order", e);
-            } catch (Exception e) {
-                LOGGER.error("Unexpected error while validating component payment result", e);
-            }
-        } else {
-            if(StringUtils.isNotBlank(resultData)) {
-                errorMessageKey = resultData;
-                getAdyenCheckoutFacade().restoreCartFromOrderCodeInSession();
-            }
-        }
-
-        LOGGER.debug("Redirecting to 'payment method select' with error..");
-        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, errorMessageKey);
-        return REDIRECT_PREFIX + AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
-    }
-
-    private boolean isValidResult(String resultData, String isResultError) {
-        return (StringUtils.isBlank(isResultError) || !Boolean.parseBoolean(isResultError))
-                && StringUtils.isNotBlank(resultData);
-    }
-
     private String fromCalendar(final Calendar calendar) {
         final Date date = calendar.getTime();
         final String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);

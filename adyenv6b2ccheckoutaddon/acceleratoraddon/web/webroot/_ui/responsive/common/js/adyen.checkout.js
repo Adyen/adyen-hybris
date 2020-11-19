@@ -26,6 +26,7 @@ var AdyenCheckoutHybris = (function () {
         oneClickCards: {},
         selectedCardBrand: null,
         sepaDirectDebit:null,
+        adyenComponent:null,
 
         convertCardBrand: function () {
             var cardBrand = this.selectedCardBrand;
@@ -298,9 +299,9 @@ var AdyenCheckoutHybris = (function () {
         },
 
         initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId) {
-            var paypalNode = document.getElementById('adyen_hpp_paypal_container');
+            var paypalNode = document.getElementById('adyen-paypal-container');
 
-            var paypalComponent = this.checkout.create("paypal", {
+            this.adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
                 amount: {
                     currency: amount.currency,
@@ -308,12 +309,18 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                showPayButton: false,
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder();
+                    }
+                },
                 onSubmit: (state, component) => {
-                    if (!this.validateForm()) {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder();
                         return false;
                     }
-                    document.querySelector("#componentData").value = JSON.stringify(state.data.paymentMethod);
-                    this.makePayment($('#adyen-encrypted-form'), component, this.handleResult);
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult);
                 },
                 onCancel: (data, component) => {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
@@ -329,17 +336,64 @@ var AdyenCheckoutHybris = (function () {
             });
 
             try {
-                paypalComponent.mount(paypalNode);
+                this.adyenComponent.mount(paypalNode);
             } catch (e) {
                 console.log('Something went wrong trying to mount the PayPal component: ' + e);
             }
         },
 
-        makePayment: function (form, component, handleResult) {
+        initiateMbway: function () {
+            var mbwayNode = document.getElementById('adyen-component-container');
+
+            this.adyenComponent = this.checkout.create("mbway", {
+                showPayButton: false,
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder();
+                    }
+                },
+                onSubmit: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder();
+                        return;
+                    }
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult);
+                },
+                onAdditionalDetails: (state, component) => {
+                    this.submitDetails(state.data, this.handleResult);
+                },
+                onError: (error, component) => {
+                    console.log('Something went wrong trying to make the MBWay payment: ' + error);
+                    this.handleResult(ErrorMessages.PaymentError, true);
+                }
+            });
+
+            try {
+                this.adyenComponent.mount(mbwayNode);
+                this.configureButton(this.adyenComponent, false);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the MBWay component: ' + e);
+            }
+        },
+
+        configureButton: function (form, useSpinner) {
+            $(document).ready(function () {
+                $("#placeOrder").click(function () {
+                    $(this).prop('disabled', true);
+                    if(useSpinner) {
+                        AdyenCheckoutHybris.showSpinner();
+                    }
+                    form.submit();
+                });
+            });
+        },
+
+        makePayment: function (data, component, handleResult) {
             $.ajax({
                 url: ACC.config.encodedContextPath + '/adyen/component/payment',
                 type: "POST",
-                data: form.serialize(),
+                data: JSON.stringify({paymentMethodDetails: data, termsCheck: document.getElementById('terms-conditions-check').checked}),
+                contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     try {
                         var response = JSON.parse(data);
@@ -354,7 +408,7 @@ var AdyenCheckoutHybris = (function () {
                     }
                 },
                 error: function (xmlHttpResponse, exception) {
-                    var responseMessage = xmlHttpResponse.responseText;
+                    var responseMessage = xmlHttpResponse.responseJSON;
                     if (xmlHttpResponse.status === 400) {
                         handleResult(responseMessage, true);
                     } else {
@@ -385,7 +439,7 @@ var AdyenCheckoutHybris = (function () {
                     }
                 },
                 error: function (xhr, exception) {
-                    var responseMessage = xhr.responseText;
+                    var responseMessage = xhr.responseJSON;
                     if (xhr.status === 400) {
                         handleResult(responseMessage, true);
                     } else {
@@ -408,6 +462,13 @@ var AdyenCheckoutHybris = (function () {
 
         showSpinner: function () {
             document.getElementById("spinner_wrapper").style.display = "flex";
+        },
+
+        enablePlaceOrder: function () {
+            //hide spinner
+            document.getElementById("spinner_wrapper").style.display = "none";
+            //enable button
+            $("#placeOrder").prop('disabled', false);
         }
     };
 })();
