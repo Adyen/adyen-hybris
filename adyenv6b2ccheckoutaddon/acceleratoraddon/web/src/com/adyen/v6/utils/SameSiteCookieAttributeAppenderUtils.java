@@ -49,17 +49,17 @@ public class SameSiteCookieAttributeAppenderUtils {
 
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
     private static final String SAMESITE_COOKIE_HANDLER_ENABLED_PROPERTY = "adyen.samesitecookie.handler.enabled";
-    private static final List<String> SAP_VERSIONS_WITH_SAMESITE_FIX = Collections.singletonList("2005");
+    private static final int SAP_VERSION_WITH_SAMESITE_FIX = 2005;
     private static final List<String> COOKIES_WITH_FORCE_SAME_SITE_NONE = Arrays.asList("JSESSIONID", "acceleratorSecureGUID", "yacceleratorstorefrontRememberMe");
     private static final Pattern CHROME_VERSION = Pattern.compile("Chrom[^ \\/]+\\/(\\d+)[\\.\\d]*");
 
     public void addSameSiteAttribute(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
         // Do not modify cookies for SAP versions which already have SameSite cookies handler available
-        if(!isSameSiteCookieHandlingEnabled() || isPlatformVersionWithSameSiteFix()) {
+        if(isPlatformVersionWithSameSiteFix()) {
             return;
         }
 
-        if (isNotCommittedResponse(servletResponse)) {
+        if (isSameSiteCookieHandlingEnabled() && isNotCommittedResponse(servletResponse)) {
             Collection<String> headers = servletResponse.getHeaders(HttpHeaders.SET_COOKIE);
             if (CollectionUtils.isNotEmpty(headers)) {
                 String userAgent = servletRequest.getHeader(HttpHeaders.USER_AGENT);
@@ -103,8 +103,20 @@ public class SameSiteCookieAttributeAppenderUtils {
     }
 
     private boolean isPlatformVersionWithSameSiteFix() {
-        String platformVersion = getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
-        return SAP_VERSIONS_WITH_SAMESITE_FIX.contains(platformVersion);
+        try {
+            String platformVersion = getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
+            if(platformVersion != null) {
+                String[] platformVersionSplit = platformVersion.split("\\.");
+                //compare major version
+                int majorVersion = Integer.parseInt(platformVersionSplit[0]);
+                return majorVersion >= SAP_VERSION_WITH_SAMESITE_FIX;
+            }
+        } catch (Exception e) {
+            LOG.debug(e);
+        }
+
+        LOG.debug("Could not parse platform version, SameSite cookie handling will be skipped");
+        return true;
     }
 
     public static boolean shouldSendSameSiteNone(String useragent) {
@@ -121,9 +133,11 @@ public class SameSiteCookieAttributeAppenderUtils {
             try {
                 String chromeVersion = matcher.group(1);
                 return Integer.parseInt(chromeVersion) >= major;
-            } catch (NumberFormatException ignored) {
+            } catch (Exception e) {
+                LOG.debug(e);
             }
         }
+
         LOG.debug("Could not parse Chrome browser version, SameSite cookie handling will be skipped");
         return false;
     }
