@@ -5,11 +5,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
-
-<spring:url value="/checkout/multi/adyen/summary/placeOrder" var="placeOrderUrl"/>
-<spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="order" tagdir="/WEB-INF/tags/responsive/order" %>
+
+<spring:url value="/checkout/multi/adyen/summary/component-result" var="handleComponentResult"/>
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 <jsp:attribute name="pageScripts">
@@ -25,17 +25,20 @@
             <%-- Configure components --%>
             <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}", "${paypalMerchantId}");
-            </c:when>
+                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}", "${paypalMerchantId}", "hidden-xs");
+                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}", "${paypalMerchantId}", "visible-xs");
+        </c:when>
 
             <c:when test="${selectedPaymentMethod eq 'mbway'}">
-                AdyenCheckoutHybris.initiateMbway();
+                AdyenCheckoutHybris.initiateMbway("hidden-xs");
+                AdyenCheckoutHybris.initiateMbway("visible-xs");
             </c:when>
 
             <%-- API only payments methods --%>
             <c:otherwise>
-                AdyenCheckoutHybris.configureButton($( "#placeOrderForm1" ), true);
-            </c:otherwise>
+                AdyenCheckoutHybris.configureButton($( "#placeOrderForm-hidden-xs" ), true, "hidden-xs");
+                AdyenCheckoutHybris.configureButton($( "#placeOrderForm-visible-xs" ), true, "visible-xs");
+        </c:otherwise>
         </c:choose>
 
     </script>
@@ -65,34 +68,44 @@
                         </div>
                     </div>
                     <div class="place-order-form hidden-xs">
-                        <%-- Components --%>
-                        <c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal'}">
-                            <adyen:componentPayment
-                                    paymentMethod="${selectedPaymentMethod}"/>
-                        </c:if>
-
-                        <%-- Paypal has it's own button --%>
-                        <c:if test="${selectedPaymentMethod ne 'paypal'}">
-                            <form:form action="${placeOrderUrl}" id="placeOrderForm1" modelAttribute="placeOrderForm">
-                                <div class="checkbox">
-                                    <label> <form:checkbox id="terms-conditions-check" path="termsCheck" />
-                                        <spring:theme code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${getTermsAndConditionsUrl}" text="Terms and Conditions"/>
-                                    </label>
-                                </div>
-                            </form:form>
-
-                            <button id="placeOrder" type="submit" class="btn btn-primary btn-place-order btn-block">
-                                <spring:theme code="checkout.summary.placeOrder" text="Place Order" />
-                            </button>
-                        </c:if>
-
+                        <adyen:checkoutOrderSummary paymentMethod="${selectedPaymentMethod}" label="hidden-xs"/>
                     </div>
                 </ycommerce:testId>
+
+                <form:form id="handleComponentResultForm"
+                           class="create_update_payment_form"
+                           action="${handleComponentResult}"
+                           method="post">
+                    <input type="hidden" id="resultData" name="resultData"/>
+                    <input type="hidden" id="isResultError" name="isResultError" value="false"/>
+                </form:form>
             </multi-checkout:checkoutSteps>
         </div>
 
         <div class="col-sm-6">
-            <multi-checkout:checkoutOrderSummary cartData="${cartData}" showDeliveryAddress="true" showPaymentInfo="true" showTaxEstimate="true" showTax="true" />
+            <div class="checkout-summary-headline hidden-xs">
+                <spring:theme code="checkout.multi.order.summary" />
+            </div>
+            <div class="checkout-order-summary">
+                <ycommerce:testId code="orderSummary">
+                    <multi-checkout:deliveryCartItems cartData="${cartData}" showDeliveryAddress="true" />
+
+                    <c:forEach items="${cartData.pickupOrderGroups}" var="groupData" varStatus="status">
+                        <multi-checkout:pickupCartItems cartData="${cartData}" groupData="${groupData}" showHead="true" />
+                    </c:forEach>
+
+                    <order:appliedVouchers order="${cartData}" />
+
+                    <multi-checkout:paymentInfo cartData="${cartData}" paymentInfo="${cartData.paymentInfo}" showPaymentInfo="true" />
+
+
+                    <multi-checkout:orderTotals cartData="${cartData}" showTaxEstimate="true" showTax="true" />
+                </ycommerce:testId>
+            </div>
+
+            <div class="visible-xs clearfix">
+                <adyen:checkoutOrderSummary paymentMethod="${selectedPaymentMethod}" label="visible-xs"/>
+            </div>
         </div>
 
         <div class="col-sm-12 col-lg-12">
