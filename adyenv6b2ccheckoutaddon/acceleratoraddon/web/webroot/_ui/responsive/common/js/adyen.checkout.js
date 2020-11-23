@@ -26,7 +26,6 @@ var AdyenCheckoutHybris = (function () {
         oneClickCards: {},
         selectedCardBrand: null,
         sepaDirectDebit:null,
-        adyenComponent:null,
 
         convertCardBrand: function () {
             var cardBrand = this.selectedCardBrand;
@@ -298,10 +297,10 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId) {
-            var paypalNode = document.getElementById('adyen-paypal-container');
+        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId, label) {
+            var paypalNode = document.getElementById('adyen-paypal-container-' + label);
 
-            this.adyenComponent = this.checkout.create("paypal", {
+            var adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
                 amount: {
                     currency: amount.currency,
@@ -312,15 +311,15 @@ var AdyenCheckoutHybris = (function () {
                 showPayButton: false,
                 onChange: (state, component) => {
                     if (!state.isValid) {
-                        this.enablePlaceOrder();
+                        this.enablePlaceOrder(label);
                     }
                 },
                 onSubmit: (state, component) => {
                     if (!state.isValid) {
-                        this.enablePlaceOrder();
+                        this.enablePlaceOrder(label);
                         return false;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult);
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
                 },
                 onCancel: (data, component) => {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
@@ -336,28 +335,28 @@ var AdyenCheckoutHybris = (function () {
             });
 
             try {
-                this.adyenComponent.mount(paypalNode);
+                adyenComponent.mount(paypalNode);
             } catch (e) {
                 console.log('Something went wrong trying to mount the PayPal component: ' + e);
             }
         },
 
-        initiateMbway: function () {
-            var mbwayNode = document.getElementById('adyen-component-container');
+        initiateMbway: function (label) {
+            var mbwayNode = document.getElementById('adyen-component-container-' + label);
 
-            this.adyenComponent = this.checkout.create("mbway", {
+            var adyenComponent = this.checkout.create("mbway", {
                 showPayButton: false,
                 onChange: (state, component) => {
                     if (!state.isValid) {
-                        this.enablePlaceOrder();
+                        this.enablePlaceOrder(label);
                     }
                 },
                 onSubmit: (state, component) => {
                     if (!state.isValid) {
-                        this.enablePlaceOrder();
+                        this.enablePlaceOrder(label);
                         return;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult);
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
                 },
                 onAdditionalDetails: (state, component) => {
                     this.submitDetails(state.data, this.handleResult);
@@ -369,16 +368,16 @@ var AdyenCheckoutHybris = (function () {
             });
 
             try {
-                this.adyenComponent.mount(mbwayNode);
-                this.configureButton(this.adyenComponent, false);
+                adyenComponent.mount(mbwayNode);
+                this.configureButton(adyenComponent, false, label);
             } catch (e) {
                 console.log('Something went wrong trying to mount the MBWay component: ' + e);
             }
         },
 
-        configureButton: function (form, useSpinner) {
+        configureButton: function (form, useSpinner, label) {
             $(document).ready(function () {
-                $("#placeOrder").click(function () {
+                $("#placeOrder-" + label).click(function () {
                     $(this).prop('disabled', true);
                     if(useSpinner) {
                         AdyenCheckoutHybris.showSpinner();
@@ -388,11 +387,14 @@ var AdyenCheckoutHybris = (function () {
             });
         },
 
-        makePayment: function (data, component, handleResult) {
+        makePayment: function (data, component, handleResult, label) {
             $.ajax({
                 url: ACC.config.encodedContextPath + '/adyen/component/payment',
                 type: "POST",
-                data: JSON.stringify({paymentMethodDetails: data, termsCheck: document.getElementById('terms-conditions-check').checked}),
+                data: JSON.stringify({
+                            paymentMethodDetails: data,
+                            termsCheck: document.getElementById('terms-conditions-check-' + label).checked
+                        }),
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     try {
@@ -464,11 +466,11 @@ var AdyenCheckoutHybris = (function () {
             document.getElementById("spinner_wrapper").style.display = "flex";
         },
 
-        enablePlaceOrder: function () {
+        enablePlaceOrder: function (label) {
             //hide spinner
             document.getElementById("spinner_wrapper").style.display = "none";
             //enable button
-            $("#placeOrder").prop('disabled', false);
+            $("#placeOrder-" + label).prop('disabled', false);
         }
     };
 })();
