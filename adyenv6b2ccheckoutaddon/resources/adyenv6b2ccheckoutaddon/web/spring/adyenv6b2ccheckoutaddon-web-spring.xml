@@ -13,15 +13,15 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
-           http://www.springframework.org/schema/aop
-           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/mvc
+	       http://www.springframework.org/schema/mvc/spring-mvc.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd">
-           
+
     <context:annotation-config/>
 
 	<context:component-scan base-package="com.adyen.v6.controllers"/>
@@ -160,5 +160,37 @@
 	<bean id="REDIRECT_TO_PAYMENT_METHOD_ADYEN" class="java.lang.String">
 		<constructor-arg value="redirect:/checkout/multi/adyen/select-payment-method"/>
 	</bean>
+
+	<bean id="sameSiteCookieAttributeAppenderUtils" class="com.adyen.v6.utils.SameSiteCookieAttributeAppenderUtils" >
+		<property name="configurationService" ref="configurationService" />
+	</bean>
+
+	<!-- SameSite cookie Authentication Handler -->
+	<bean id="loginGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
+		<property name="authenticationSuccessHandler" ref="loginAuthenticationSuccessHandler" />
+		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+	<bean id="loginCheckoutGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
+		<property name="authenticationSuccessHandler" ref="loginCheckoutAuthenticationSuccessHandler" />
+		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+
+	<!-- SameSite cookie Filter -->
+	<bean id="sameSiteCookiePostProcessFilter" class="com.adyen.v6.filters.SameSiteCookiePostProcessFilter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+	<bean id="sameSiteCookiePostProcessFilterListMergeDirective" depends-on="defaultStorefrontTenantDefaultFilterChainList" parent="listMergeDirective">
+		<property name="add" ref="sameSiteCookiePostProcessFilter"/>
+	</bean>
+
+	<!-- SameSite cookie Handler Interceptor -->
+	<bean id="sameSiteCookieHandlerInterceptorAdapter" class="com.adyen.v6.interceptors.SameSiteCookieHandlerInterceptorAdapter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+	<mvc:interceptors>
+		<ref bean="sameSiteCookieHandlerInterceptorAdapter" />
+	</mvc:interceptors>
 
 </beans>
