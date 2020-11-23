@@ -321,7 +321,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return REDIRECT_PREFIX + CART_PREFIX;
     }
 
-    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.GET)
+    @RequestMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL, method = RequestMethod.POST)
     @RequireHardLogIn
     public String authorise3DSecurePayment(final RedirectAttributes redirectModel,
                                            final HttpServletRequest request) {

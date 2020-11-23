@@ -160,6 +160,18 @@ OrderManagement extension file - resources/adyenv6ordermanagement/process/order-
 ## PayPal configuration
 This plugin uses Adyen's Checkout Component for PayPal payments. To use that in a live environment, a PayPal Merchant Id is required [(check here how to get one)](https://docs.adyen.com/payment-methods/paypal/web-component#get-your-paypal-merchant-id). This id has to be provided when adding your Adyen credentials to the BaseStore via the backoffice [(installation step 5)](#installation).
 
+## SameSite Cookie Handler configuration
+On Google Chrome browser versions 80 or later, it might occur that an account is logged out after trying to place an order using a credit card that requires 3D Secure authentication or using other redirect payment methods. 
+This is a consequence of how newer versions of Chrome browsers handle the [SameSite attribute](https://web.dev/samesite-cookies-explained/) on cookies, invalidating the user session after a redirect to a third-party page happened.
+
+To avoid those issues, for SAP Commerce versions 6.x or 1905, a cookie handler included in this plugin can be used. To enable it, add the following configuration to the config/local.properties file:
+
+```
+adyen.samesitecookie.handler.enabled=true
+```
+
+For SAP Commerce versions 2005 and above, check how to use [SAP's SameSite Cookie Attribute Handler](https://help.sap.com/viewer/d0224eca81e249cb821f2cdf45a82ace/2005/en-US/bde41b6a42c541a08eb2a3b1993fb097.html).
+
  ## Documentation
  https://docs.adyen.com/developers/plugins/hybris
 
