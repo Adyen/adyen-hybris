@@ -129,13 +129,13 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="encryptedSecurityCode"]' ).val( state.encryptedSecurityCode );
             $( 'input[name="cardHolder"]' ).val( state.holderName );
             if(this.card.data.storePaymentMethod!=null){
-                $( 'input[name="rememberTheseDetails"]' ).val( this.card.data.storePaymentMethod );}
+            $( 'input[name="rememberTheseDetails"]' ).val( this.card.data.storePaymentMethod );}
 
             if ( this.isDebitCard() ) {
                 $( 'input[name="cardBrand"]' ).val( this.convertCardBrand() );
                 $( 'input[name="cardType"]' ).val( this.getCardType() );
             }
-            $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
+                 $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
         copyOneClickCardData: function ( recurringReference, cvc ) {
@@ -210,7 +210,7 @@ var AdyenCheckoutHybris = (function () {
         },
 
 
-        initiateOneClickCard: function(storedCard) {
+    initiateOneClickCard: function(storedCard) {
             var oneClickCardNode = document.getElementById("one-click-card_" + storedCard.storedPaymentMethodId);
             var oneClickCard = this.checkout.create('card', storedCard);
             oneClickCard.mount(oneClickCardNode);
@@ -300,10 +300,10 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId) {
-            var paypalNode = document.getElementById('adyen_hpp_paypal_container');
+        initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId, label) {
+            var paypalNode = document.getElementById('adyen-paypal-container-' + label);
 
-            var paypalComponent = this.checkout.create("paypal", {
+            var adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
                 amount: {
                     currency: amount.currency,
@@ -311,12 +311,18 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                showPayButton: false,
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
+                    }
+                },
                 onSubmit: (state, component) => {
-                    if (!this.validateForm()) {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
                         return false;
                     }
-                    document.querySelector("#componentData").value = JSON.stringify(state.data.paymentMethod);
-                    this.makePayment($('#adyen-encrypted-form'), component, this.handleResult);
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
                 },
                 onCancel: (data, component) => {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
@@ -332,17 +338,67 @@ var AdyenCheckoutHybris = (function () {
             });
 
             try {
-                paypalComponent.mount(paypalNode);
+                adyenComponent.mount(paypalNode);
             } catch (e) {
                 console.log('Something went wrong trying to mount the PayPal component: ' + e);
             }
         },
 
-        makePayment: function (form, component, handleResult) {
+        initiateMbway: function (label) {
+            var mbwayNode = document.getElementById('adyen-component-container-' + label);
+
+            var adyenComponent = this.checkout.create("mbway", {
+                showPayButton: false,
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
+                    }
+                },
+                onSubmit: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
+                        return;
+                    }
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                },
+                onAdditionalDetails: (state, component) => {
+                    this.submitDetails(state.data, this.handleResult);
+                },
+                onError: (error, component) => {
+                    console.log('Something went wrong trying to make the MBWay payment: ' + error);
+                    this.handleResult(ErrorMessages.PaymentError, true);
+                }
+            });
+
+            try {
+                adyenComponent.mount(mbwayNode);
+                this.configureButton(adyenComponent, false, label);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the MBWay component: ' + e);
+            }
+        },
+
+        configureButton: function (form, useSpinner, label) {
+            $(document).ready(function () {
+                $("#placeOrder-" + label).click(function () {
+                    $(this).prop('disabled', true);
+                    if(useSpinner) {
+                        AdyenCheckoutHybris.showSpinner();
+                    }
+                    form.submit();
+                });
+            });
+        },
+
+        makePayment: function (data, component, handleResult, label) {
             $.ajax({
                 url: ACC.config.encodedContextPath + '/adyen/component/payment',
                 type: "POST",
-                data: form.serialize(),
+                data: JSON.stringify({
+                            paymentMethodDetails: data,
+                            termsCheck: document.getElementById('terms-conditions-check-' + label).checked
+                        }),
+                contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     try {
                         var response = JSON.parse(data);
@@ -357,7 +413,7 @@ var AdyenCheckoutHybris = (function () {
                     }
                 },
                 error: function (xmlHttpResponse, exception) {
-                    var responseMessage = xmlHttpResponse.responseText;
+                    var responseMessage = xmlHttpResponse.responseJSON;
                     if (xmlHttpResponse.status === 400) {
                         handleResult(responseMessage, true);
                     } else {
@@ -388,7 +444,7 @@ var AdyenCheckoutHybris = (function () {
                     }
                 },
                 error: function (xhr, exception) {
-                    var responseMessage = xhr.responseText;
+                    var responseMessage = xhr.responseJSON;
                     if (xhr.status === 400) {
                         handleResult(responseMessage, true);
                     } else {
@@ -411,6 +467,13 @@ var AdyenCheckoutHybris = (function () {
 
         showSpinner: function () {
             document.getElementById("spinner_wrapper").style.display = "flex";
+        },
+
+        enablePlaceOrder: function (label) {
+            //hide spinner
+            document.getElementById("spinner_wrapper").style.display = "none";
+            //enable button
+            $("#placeOrder-" + label).prop('disabled', false);
         }
     };
 })();
