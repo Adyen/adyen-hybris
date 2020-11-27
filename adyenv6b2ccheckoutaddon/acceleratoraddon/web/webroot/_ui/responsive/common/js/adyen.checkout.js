@@ -48,7 +48,10 @@ var AdyenCheckoutHybris = (function () {
         },
 
         getCardType: function () {
-            return $( '#adyen_combo_card_type' ).val();
+            var cardType =$( '#adyen_combo_card_type' ).val();
+            if ( cardType === "" || cardType == undefined )
+                cardType= "credit";
+            return cardType;
         },
 
         isDebitCard: function () {
