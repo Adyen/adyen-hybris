@@ -875,8 +875,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                              .collect(Collectors.toList());
 
         if (showRememberDetails()) {
-            //Include stored cards
-            storedPaymentMethodList = response.getStoredPaymentMethods();
+            //Include stored one-click cards
+            storedPaymentMethodList = getStoredOneClickPaymentMethods(response);
             Set<String> recurringDetailReferences = new HashSet<>();
             if (storedPaymentMethodList != null) {
                 recurringDetailReferences = storedPaymentMethodList.stream().map(StoredPaymentMethod::getId).collect(Collectors.toSet());
@@ -966,6 +966,20 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return true;
         }
         return false;
+    }
+
+    private List<StoredPaymentMethod> getStoredOneClickPaymentMethods(PaymentMethodsResponse response) {
+        List<StoredPaymentMethod> storedPaymentMethodList = null;
+        if (response.getOneClickPaymentMethods() != null && response.getStoredPaymentMethods() != null) {
+            Set<String> oneClickIds = response.getOneClickPaymentMethods().stream()
+                    .map(com.adyen.model.checkout.RecurringDetail::getRecurringDetailReference)
+                    .collect(Collectors.toSet());
+            storedPaymentMethodList = response.getStoredPaymentMethods().stream()
+                    .filter(storedPaymentMethod -> oneClickIds.contains(storedPaymentMethod.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        return storedPaymentMethodList;
     }
 
     @Override
