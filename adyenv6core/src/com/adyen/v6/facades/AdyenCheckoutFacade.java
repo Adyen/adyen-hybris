@@ -67,11 +67,6 @@ public interface AdyenCheckoutFacade {
      */
     void validateHPPResponse(HttpServletRequest request) throws SignatureException;
 
-    /**
-     * Retrieve the WS User Origin Key
-     */
-    String getOriginKey(HttpServletRequest request) throws IOException, ApiException;
-
     String getShopperLocale();
 
     /**
