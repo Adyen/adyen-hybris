@@ -247,8 +247,8 @@ var AdyenCheckoutHybris = (function () {
                 var sepaOwnerNameField = document.getElementById( 'sepaOwnerName' );
                 var sepaIbanNumberField = document.getElementById( 'sepaIbanNumber' );
 
-                var sepaOwnerName = event.data.paymentMethod[ "sepa.ownerName" ]
-                var sepaIbanNumber = event.data.paymentMethod[ "sepa.ibanNumber" ]
+                var sepaOwnerName = event.data.paymentMethod[ "ownerName" ]
+                var sepaIbanNumber = event.data.paymentMethod[ "iban" ]
 
                 sepaOwnerNameField.value = sepaOwnerName;
                 sepaIbanNumberField.value = sepaIbanNumber;
