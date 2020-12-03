@@ -197,11 +197,11 @@ var AdyenCheckoutHybris = (function () {
         createDfValue: function () {
             window.dfDo( "dfValue" );
         },
-        initiateCheckout: function ( locale, environment, originKey ) {
+        initiateCheckout: function ( locale, environment, clientKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
                 environment: environment,
-                originKey: originKey,
+                clientKey: clientKey,
                 risk: {
                     enabled: false
                 }
@@ -224,7 +224,7 @@ var AdyenCheckoutHybris = (function () {
                 hasHolderName: true,
                 holderNameRequired: true,
                 enableStoreDetails: showRememberDetails,
-                groupTypes: allowedCards,
+                brands: allowedCards,
                 onBrand: copyCardBrand
 
             });
@@ -311,7 +311,6 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
-                showPayButton: false,
                 onChange: (state, component) => {
                     if (!state.isValid) {
                         this.enablePlaceOrder(label);
