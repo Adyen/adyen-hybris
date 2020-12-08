@@ -207,7 +207,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_DF_URL = "dfUrl";
-    public static final String MODEL_ORIGIN_KEY = "originKey";
+    public static final String MODEL_CLIENT_KEY = "clientKey";
     public static final String MODEL_CHECKOUT_SHOPPER_HOST = "checkoutShopperHost";
     public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
@@ -269,11 +269,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         validateHPPResponse(hppResponseData, merchantSig);
-    }
-
-    @Override
-    public String getOriginKey(HttpServletRequest request) throws IOException, ApiException {
-        return getAdyenPaymentService().getOriginKey(getBaseURL(request));
     }
 
     public String getBaseURL(HttpServletRequest request) {
@@ -924,6 +919,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
 
         //Include information for components
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
@@ -946,6 +942,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
 
         //Include information for components
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());

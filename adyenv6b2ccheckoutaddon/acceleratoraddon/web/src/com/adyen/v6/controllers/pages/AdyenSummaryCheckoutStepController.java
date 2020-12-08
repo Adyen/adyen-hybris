@@ -63,7 +63,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -91,7 +90,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_POS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 
 @Controller
 @RequestMapping(value = SUMMARY_CHECKOUT_PREFIX)
@@ -154,13 +152,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         model.addAttribute("metaRobots", "noindex,nofollow");
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
-        try {
-            model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
-        } catch (IOException e) {
-            LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
-        } catch (ApiException e) {
-            LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
-        }
         adyenCheckoutFacade.initializeSummaryData(model);
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
