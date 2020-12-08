@@ -14,12 +14,12 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 <jsp:attribute name="pageScripts">
     <script type="text/javascript" src="${dfUrl}"></script>
-    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.10.0/adyen.js"></script>
+    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.17.2/adyen.js"></script>
     <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.10.0/adyen.css"/>
+    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.17.2/adyen.css"/>
 
     <script type="text/javascript">
-        AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${originKey}");
+        AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${clientKey}");
 
         <c:choose>
             <%-- Configure components --%>
