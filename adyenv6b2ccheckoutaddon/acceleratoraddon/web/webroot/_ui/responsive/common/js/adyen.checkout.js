@@ -86,8 +86,8 @@ var AdyenCheckoutHybris = (function () {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
-                if ( (oneClickCard.props.brand == "bcmc") ) {
-                    this.copyOneClickCardDataBCMC( recurringReference )
+                if ( ['bcmc','maestro'].indexOf(oneClickCard.props.brand) >= 0 ) {
+                    this.copyOneClickCardBrandData( recurringReference, oneClickCard.props.brand )
                 }
                 else {
                     this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
@@ -95,7 +95,7 @@ var AdyenCheckoutHybris = (function () {
             }
             $( 'input[name="txvariant"]' ).remove();
 
-            if ( ['eps','ideal'].includes(paymentMethod) ) {
+            if ( ['eps','ideal'].indexOf(paymentMethod) >= 0 ) {
                 var issuerIdField = document.getElementById('issuerId');
                 if( issuerIdField.value === "" ) {
                     window.alert("Please select an issuer");
@@ -144,9 +144,9 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
 
         },
-        copyOneClickCardDataBCMC: function ( recurringReference ) {
+        copyOneClickCardBrandData: function ( recurringReference, brand ) {
             $( "#selectedReference" ).val( recurringReference );
-            $( 'input[name="cardBrand"]' ).val( "bcmc" );
+            $( 'input[name="cardBrand"]' ).val( brand );
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
