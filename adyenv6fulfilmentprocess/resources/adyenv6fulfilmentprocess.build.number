@@ -7,4 +7,4 @@ module.name=platform-module
 name=adyenv6fulfilmentprocess
 vendor=adyen
 version=8.0.0
-version.api=8.0.0
+version.api=9.0.0
