@@ -223,8 +223,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_AMOUNT = "amount";
     public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
     public static final String MODEL_PAYPAL_MERCHANT_ID = "paypalMerchantId";
-
-
+    public static final String ECOMMERCE_SHOPPER_INTERACTION = "Ecommerce";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -967,12 +966,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     private List<StoredPaymentMethod> getStoredOneClickPaymentMethods(PaymentMethodsResponse response) {
         List<StoredPaymentMethod> storedPaymentMethodList = null;
-        if (response.getOneClickPaymentMethods() != null && response.getStoredPaymentMethods() != null) {
-            Set<String> oneClickIds = response.getOneClickPaymentMethods().stream()
-                    .map(com.adyen.model.checkout.RecurringDetail::getRecurringDetailReference)
-                    .collect(Collectors.toSet());
+        if (response.getStoredPaymentMethods() != null) {
             storedPaymentMethodList = response.getStoredPaymentMethods().stream()
-                    .filter(storedPaymentMethod -> oneClickIds.contains(storedPaymentMethod.getId()))
+                    .filter(storedPaymentMethod -> storedPaymentMethod.getSupportedShopperInteractions() != null
+                                                    && storedPaymentMethod.getSupportedShopperInteractions().contains(ECOMMERCE_SHOPPER_INTERACTION))
                     .collect(Collectors.toList());
         }
 
