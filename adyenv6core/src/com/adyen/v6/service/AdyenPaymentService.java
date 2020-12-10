@@ -115,12 +115,6 @@ public interface AdyenPaymentService {
     PaymentsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
 
     /**
-     * Retrieves origin key from /originKeys endpoint
-     */
-
-    String getOriginKey(String originDomain) throws ApiException, IOException;
-
-    /**
      * Returns the HPP base URL for the current basestore
      */
     String getHppEndpoint();

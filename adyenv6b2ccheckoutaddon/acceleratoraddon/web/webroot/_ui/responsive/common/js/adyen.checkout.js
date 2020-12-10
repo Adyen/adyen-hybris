@@ -48,7 +48,10 @@ var AdyenCheckoutHybris = (function () {
         },
 
         getCardType: function () {
-            return $( '#adyen_combo_card_type' ).val();
+            var cardType =$( '#adyen_combo_card_type' ).val();
+            if ( cardType === "" || cardType == undefined )
+                cardType= "credit";
+            return cardType;
         },
 
         isDebitCard: function () {
@@ -83,8 +86,8 @@ var AdyenCheckoutHybris = (function () {
                     window.alert('This credit card is not allowed');
                     return false;
                 }
-                if ( (oneClickCard.props.brand == "bcmc") ) {
-                    this.copyOneClickCardDataBCMC( recurringReference )
+                if ( ['bcmc','maestro'].indexOf(oneClickCard.props.brand) >= 0 ) {
+                    this.copyOneClickCardBrandData( recurringReference, oneClickCard.props.brand )
                 }
                 else {
                     this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
@@ -92,7 +95,7 @@ var AdyenCheckoutHybris = (function () {
             }
             $( 'input[name="txvariant"]' ).remove();
 
-            if ( ['eps','ideal'].includes(paymentMethod) ) {
+            if ( ['eps','ideal'].indexOf(paymentMethod) >= 0 ) {
                 var issuerIdField = document.getElementById('issuerId');
                 if( issuerIdField.value === "" ) {
                     window.alert("Please select an issuer");
@@ -141,9 +144,9 @@ var AdyenCheckoutHybris = (function () {
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
 
         },
-        copyOneClickCardDataBCMC: function ( recurringReference ) {
+        copyOneClickCardBrandData: function ( recurringReference, brand ) {
             $( "#selectedReference" ).val( recurringReference );
-            $( 'input[name="cardBrand"]' ).val( "bcmc" );
+            $( 'input[name="cardBrand"]' ).val( brand );
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
@@ -194,11 +197,11 @@ var AdyenCheckoutHybris = (function () {
         createDfValue: function () {
             window.dfDo( "dfValue" );
         },
-        initiateCheckout: function ( locale, environment, originKey ) {
+        initiateCheckout: function ( locale, environment, clientKey ) {
             var configuration = {
                 locale: locale,// shopper's locale
                 environment: environment,
-                originKey: originKey,
+                clientKey: clientKey,
                 risk: {
                     enabled: false
                 }
@@ -221,7 +224,7 @@ var AdyenCheckoutHybris = (function () {
                 hasHolderName: true,
                 holderNameRequired: true,
                 enableStoreDetails: showRememberDetails,
-                groupTypes: allowedCards,
+                brands: allowedCards,
                 onBrand: copyCardBrand
 
             });
@@ -244,8 +247,8 @@ var AdyenCheckoutHybris = (function () {
                 var sepaOwnerNameField = document.getElementById( 'sepaOwnerName' );
                 var sepaIbanNumberField = document.getElementById( 'sepaIbanNumber' );
 
-                var sepaOwnerName = event.data.paymentMethod[ "sepa.ownerName" ]
-                var sepaIbanNumber = event.data.paymentMethod[ "sepa.ibanNumber" ]
+                var sepaOwnerName = event.data.paymentMethod[ "ownerName" ]
+                var sepaIbanNumber = event.data.paymentMethod[ "iban" ]
 
                 sepaOwnerNameField.value = sepaOwnerName;
                 sepaIbanNumberField.value = sepaIbanNumber;
@@ -308,7 +311,6 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
-                showPayButton: false,
                 onChange: (state, component) => {
                     if (!state.isValid) {
                         this.enablePlaceOrder(label);

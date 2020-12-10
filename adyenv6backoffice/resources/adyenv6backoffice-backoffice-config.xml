@@ -32,6 +32,7 @@
 				<editorArea:section name="hmc.adyen.api">
 					<editorArea:attribute qualifier="adyenAPIEndpointPrefix"/>
 					<editorArea:attribute qualifier="adyenAPIKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenClientKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.notifications">
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>

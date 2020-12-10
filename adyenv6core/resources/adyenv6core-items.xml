@@ -155,6 +155,15 @@
                     </persistence>
                     <modifiers encrypted="true"/>
                 </attribute>
+                <attribute qualifier="adyenClientKey" type="java.lang.String">
+                    <description>System User Client Key</description>
+                    <persistence type="property">
+                        <columntype>
+                            <value>varchar(1024)</value>
+                        </columntype>
+                    </persistence>
+                    <modifiers encrypted="true"/>
+                </attribute>
                 <attribute qualifier="adyenNotificationUsername" type="java.lang.String">
                     <description>Server Communication HTTP Basic username</description>
                     <persistence type="property"/>
