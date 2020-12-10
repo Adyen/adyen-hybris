@@ -207,7 +207,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_REMEMBER_DETAILS = "showRememberTheseDetails";
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_DF_URL = "dfUrl";
-    public static final String MODEL_ORIGIN_KEY = "originKey";
+    public static final String MODEL_CLIENT_KEY = "clientKey";
     public static final String MODEL_CHECKOUT_SHOPPER_HOST = "checkoutShopperHost";
     public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
@@ -223,8 +223,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_AMOUNT = "amount";
     public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
     public static final String MODEL_PAYPAL_MERCHANT_ID = "paypalMerchantId";
-
-
+    public static final String ECOMMERCE_SHOPPER_INTERACTION = "Ecommerce";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -269,11 +268,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         validateHPPResponse(hppResponseData, merchantSig);
-    }
-
-    @Override
-    public String getOriginKey(HttpServletRequest request) throws IOException, ApiException {
-        return getAdyenPaymentService().getOriginKey(getBaseURL(request));
     }
 
     public String getBaseURL(HttpServletRequest request) {
@@ -875,8 +869,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                                              .collect(Collectors.toList());
 
         if (showRememberDetails()) {
-            //Include stored cards
-            storedPaymentMethodList = response.getStoredPaymentMethods();
+            //Include stored one-click cards
+            storedPaymentMethodList = getStoredOneClickPaymentMethods(response);
             Set<String> recurringDetailReferences = new HashSet<>();
             if (storedPaymentMethodList != null) {
                 recurringDetailReferences = storedPaymentMethodList.stream().map(StoredPaymentMethod::getId).collect(Collectors.toSet());
@@ -924,6 +918,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_ISSUER_LISTS, issuerLists);
 
         //Include information for components
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
@@ -946,6 +941,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
 
         //Include information for components
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
@@ -966,6 +962,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return true;
         }
         return false;
+    }
+
+    private List<StoredPaymentMethod> getStoredOneClickPaymentMethods(PaymentMethodsResponse response) {
+        List<StoredPaymentMethod> storedPaymentMethodList = null;
+        if (response.getStoredPaymentMethods() != null) {
+            storedPaymentMethodList = response.getStoredPaymentMethods().stream()
+                    .filter(storedPaymentMethod -> storedPaymentMethod.getSupportedShopperInteractions() != null
+                                                    && storedPaymentMethod.getSupportedShopperInteractions().contains(ECOMMERCE_SHOPPER_INTERACTION))
+                    .collect(Collectors.toList());
+        }
+
+        return storedPaymentMethodList;
     }
 
     @Override

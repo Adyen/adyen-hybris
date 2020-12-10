@@ -154,13 +154,6 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         model.addAttribute("metaRobots", "noindex,nofollow");
         setCheckoutStepLinksForModel(model, getCheckoutStep());
 
-        try {
-            model.addAttribute(MODEL_ORIGIN_KEY, adyenCheckoutFacade.getOriginKey(httpServletRequest));
-        } catch (IOException e) {
-            LOGGER.error("Exception occurred during getting the origin key" + ExceptionUtils.getStackTrace(e));
-        } catch (ApiException e) {
-            LOGGER.error("Exception occurred during getting origin key" + ExceptionUtils.getStackTrace(e));
-        }
         adyenCheckoutFacade.initializeSummaryData(model);
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
