@@ -91,7 +91,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_POS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ENVIRONMENT_MODE;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ORIGIN_KEY;
 
 @Controller
 @RequestMapping(value = SUMMARY_CHECKOUT_PREFIX)
