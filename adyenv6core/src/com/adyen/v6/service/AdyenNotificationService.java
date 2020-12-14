@@ -29,6 +29,7 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
  * Service for Adyen notifications manipulation
  */
 public interface AdyenNotificationService {
+
     /**
      * Process NotificationItemModel
      * Handles multiple eventCodes
@@ -69,4 +70,11 @@ public interface AdyenNotificationService {
      * Process notification with eventCode=REFUND
      */
     PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItem);
+
+    /**
+     * Process notification with eventCode=OFFER_CLOSED
+     * @return
+     */
+    PaymentTransactionModel processOfferClosedEvent(NotificationItemModel notificationItem);
+
 }
