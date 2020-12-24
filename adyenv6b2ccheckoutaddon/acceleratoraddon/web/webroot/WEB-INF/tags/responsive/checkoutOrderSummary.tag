@@ -33,7 +33,7 @@
 </c:if>
 
 <%-- Paypal has it's own button --%>
-<c:if test="${selectedPaymentMethod eq 'mbway'}">
+<c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay'}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
             <label> <form:checkbox id="terms-conditions-check-${label}" path="termsCheck" />
