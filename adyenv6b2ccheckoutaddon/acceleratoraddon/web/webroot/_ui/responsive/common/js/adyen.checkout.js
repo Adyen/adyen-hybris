@@ -12,7 +12,8 @@ var AdyenCheckoutHybris = (function () {
 
     var ErrorMessages = {
         PaymentCancelled: 'checkout.error.authorization.payment.cancelled',
-        PaymentError: 'checkout.error.authorization.payment.error'
+        PaymentError: 'checkout.error.authorization.payment.error',
+        PaymentNotAvailable: 'checkout.summary.component.notavailable'
     };
 
     return {
@@ -379,7 +380,7 @@ var AdyenCheckoutHybris = (function () {
                 .catch(e => {
                     // Apple Pay is not available
                     console.log('Something went wrong trying to mount the Apple Pay component: ' + e);
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
 
