@@ -64,6 +64,15 @@
                         </columntype>
                     </persistence>
                 </attribute>
+                <!-- Apple Pay -->
+                <attribute qualifier="adyenApplePayMerchantName" type="java.lang.String">
+                    <description>Apple Pay merchant name</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenApplePayMerchantIdentifier" type="java.lang.String">
+                    <description>Apple Pay merchant identifier</description>
+                    <persistence type="property"/>
+                </attribute>
             </attributes>
         </itemtype>
 
@@ -414,6 +423,16 @@
                         </columntype>
                     </persistence>
                 </attribute>
+                <!-- Apple Pay -->
+                <attribute qualifier="adyenApplePayMerchantName" type="java.lang.String">
+                    <description>Apple Pay merchant name</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenApplePayMerchantIdentifier" type="java.lang.String">
+                    <description>Apple Pay merchant identifier</description>
+                    <persistence type="property"/>
+                </attribute>
+
                 <attribute qualifier="encryptedCardNumber" type="java.lang.String">
                     <description>Adyen Encrypted Card Number</description>
                     <persistence type="property">

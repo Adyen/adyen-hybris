@@ -22,6 +22,7 @@ package com.adyen.v6.controllers.pages;
 
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.details.ApplePayDetails;
 import com.adyen.model.checkout.details.MbwayDetails;
 import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.service.exception.ApiException;
@@ -98,6 +99,8 @@ public class AdyenComponentController {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), PayPalDetails.class);
             } else if("mbway".equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), MbwayDetails.class);
+            } else if("applepay".equals(paymentMethod)) {
+                paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), ApplePayDetails.class);
             } else {
                 throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
             }
