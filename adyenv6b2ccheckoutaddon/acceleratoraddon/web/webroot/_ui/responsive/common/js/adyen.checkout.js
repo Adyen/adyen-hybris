@@ -13,7 +13,8 @@ var AdyenCheckoutHybris = (function () {
     var ErrorMessages = {
         PaymentCancelled: 'checkout.error.authorization.payment.cancelled',
         PaymentError: 'checkout.error.authorization.payment.error',
-        PaymentNotAvailable: 'checkout.summary.component.notavailable'
+        PaymentNotAvailable: 'checkout.summary.component.notavailable',
+        TermsNotAccepted: 'checkout.error.terms.not.accepted'
     };
 
     return {
@@ -370,6 +371,14 @@ var AdyenCheckoutHybris = (function () {
                         return false;
                     }
                     this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                },
+                onClick: (resolve, reject) => {
+                    if (this.isTermsAccepted(label)) {
+                        resolve();
+                    } else {
+                        reject();
+                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                    }
                 }
             });
 
@@ -495,6 +504,10 @@ var AdyenCheckoutHybris = (function () {
                     }
                 }
             })
+        },
+
+        isTermsAccepted: function(label) {
+            return document.getElementById('terms-conditions-check-' + label).checked;
         },
 
         handleResult: function (data, error) {
