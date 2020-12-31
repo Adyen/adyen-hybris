@@ -11,9 +11,9 @@
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
 <%-- Components --%>
-<c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal'}">
+<c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
     <%-- Paypal button --%>
-    <c:if test="${selectedPaymentMethod eq 'paypal'}">
+    <c:if test="${selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
         <div class="checkbox">
             <label>
                 <input type="checkbox" id="terms-conditions-check-${label}" />
@@ -21,7 +21,7 @@
                     ${ycommerce:sanitizeHTML(readTermsAndConditions)}
             </label>
         </div>
-        <div id="adyen-paypal-container-${label}"></div>
+        <div id="adyen-component-button-container-${label}"></div>
     </c:if>
 
     <c:if test="${selectedPaymentMethod eq 'mbway'}">
@@ -33,7 +33,7 @@
 </c:if>
 
 <%-- Paypal has it's own button --%>
-<c:if test="${selectedPaymentMethod ne 'paypal'}">
+<c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay'}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
             <label> <form:checkbox id="terms-conditions-check-${label}" path="termsCheck" />
