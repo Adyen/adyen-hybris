@@ -144,6 +144,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -223,6 +224,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_AMOUNT = "amount";
     public static final String MODEL_IMMEDIATE_CAPTURE = "immediateCapture";
     public static final String MODEL_PAYPAL_MERCHANT_ID = "paypalMerchantId";
+    public static final String MODEL_COUNTRY_CODE = "countryCode";
+    public static final String MODEL_APPLEPAY_MERCHANT_IDENTIFIER = "applePayMerchantIdentifier";
+    public static final String MODEL_APPLEPAY_MERCHANT_NAME = "applePayMerchantName";
     public static final String ECOMMERCE_SHOPPER_INTERACTION = "Ecommerce";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
@@ -528,14 +532,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
-        if (PaymentsResponse.ResultCodeEnum.PENDING != paymentsResponse.getResultCode()) {
-            throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
+        if (PaymentsResponse.ResultCodeEnum.PENDING == paymentsResponse.getResultCode()) {
+            placePendingOrder(paymentsResponse.getResultCode());
+            return paymentsResponse;
+        }
+        if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()) {
+            createAuthorizedOrder(paymentsResponse);
+            return paymentsResponse;
         }
 
-        //Lock the cart to prevent changes while the payment is pending
-        placePendingOrder(paymentsResponse.getResultCode());
-
-        return paymentsResponse;
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
@@ -844,6 +850,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, true);
         }
 
+        //apple pay
+        Optional<PaymentMethod> applePayMethod = alternativePaymentMethods.stream()
+                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                        && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
+                .findFirst();
+        if(applePayMethod.isPresent()) {
+            Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
+            if(!CollectionUtils.isEmpty(applePayConfiguration)) {
+                cartModel.setAdyenApplePayMerchantName(applePayConfiguration.get("merchantName"));
+                cartModel.setAdyenApplePayMerchantIdentifier(applePayConfiguration.get("merchantId"));
+            }
+        }
+
         baseStore = baseStoreService.getCurrentBaseStore();
 
         //Verify allowedCards
@@ -876,7 +895,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 recurringDetailReferences = storedPaymentMethodList.stream().map(StoredPaymentMethod::getId).collect(Collectors.toSet());
             }
             cartModel.setAdyenStoredCards(recurringDetailReferences);
-
         }
 
         Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
@@ -945,6 +963,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
+        model.addAttribute(MODEL_APPLEPAY_MERCHANT_IDENTIFIER, cartData.getAdyenApplePayMerchantIdentifier());
+        model.addAttribute(MODEL_APPLEPAY_MERCHANT_NAME, cartData.getAdyenApplePayMerchantName());
+        model.addAttribute(MODEL_COUNTRY_CODE, cartData.getDeliveryAddress().getCountry().getIsocode());
+
     }
 
     private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
@@ -1085,11 +1107,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //pos field(s)
         paymentInfo.setAdyenTerminalId(adyenPaymentForm.getTerminalId());
 
+        //apple pay
+        paymentInfo.setAdyenApplePayMerchantName(cartModel.getAdyenApplePayMerchantName());
+        paymentInfo.setAdyenApplePayMerchantIdentifier(cartModel.getAdyenApplePayMerchantIdentifier());
+
         //combo card fields
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
 
-         modelService.save(paymentInfo);
+        modelService.save(paymentInfo);
 
         return paymentInfo;
     }

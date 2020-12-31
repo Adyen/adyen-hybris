@@ -65,13 +65,18 @@ Please make sure your merchant has Variant true in API and responses section so 
 
 Credit Card payments are supported using Checkout Components.
 
+### Apple Pay
+
+[Apple Pay](https://docs.adyen.com/payment-methods/apple-pay/) is supported using Checkout Components.
+
+
 ### Ratepay
 
 Ratepay is supported via Adyen API.
 
 ### Boleto
 
-[Boleto](https://docs.adyen.com/developers/payment-methods/boleto-bancario) is supported via Adyen API.
+[Boleto](https://docs.adyen.com/payment-methods/boleto-bancario) is supported via Adyen API.
 
 ### Paypal Express Checkout Shortcut
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ [y] hybris Platform
-  ~ 
+  ~
   ~ Copyright (c) 2000-2016 SAP SE
   ~ All rights reserved.
-  ~ 
-  ~ This software is the confidential and proprietary information of SAP 
-  ~ Hybris ("Confidential Information"). You shall not disclose such 
-  ~ Confidential Information and shall use it only in accordance with the 
+  ~
+  ~ This software is the confidential and proprietary information of SAP
+  ~ Hybris ("Confidential Information"). You shall not disclose such
+  ~ Confidential Information and shall use it only in accordance with the
   ~ terms of the license agreement you entered into with SAP Hybris.
   -->
 
@@ -38,6 +38,8 @@
         <property name="adyenTerminalId" type="java.lang.String"/>
         <property name="adyenBrowserInfo" type="java.lang.String"/>
         <property name="adyenBillingAddress" type="de.hybris.platform.commercefacades.user.data.AddressData"/>
+        <property name="adyenApplePayMerchantName" type="java.lang.String"/>
+        <property name="adyenApplePayMerchantIdentifier" type="java.lang.String"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">
@@ -73,6 +75,8 @@
         <property name="terminalId" type="String" />
         <property name="adyenLastName" type="String" />
         <property name="adyenBillingAddress" type="de.hybris.platform.commercewebservicescommons.dto.user.AddressWsDTO"/>
+        <property name="adyenApplePayMerchantName" type="java.lang.String"/>
+        <property name="adyenApplePayMerchantIdentifier" type="java.lang.String"/>
     </bean>
 
     <bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">

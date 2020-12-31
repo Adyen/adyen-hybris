@@ -57,6 +57,8 @@ public class CartPopulator implements Populator<CartModel, CartData> {
             target.setAdyenBrowserInfo(paymentInfo.getAdyenBrowserInfo());
             target.setAdyenSepaOwnerName(paymentInfo.getAdyenSepaOwnerName());
             target.setAdyenSepaIbanNumber(paymentInfo.getAdyenSepaIbanNumber());
+            target.setAdyenApplePayMerchantName(paymentInfo.getAdyenApplePayMerchantName());
+            target.setAdyenApplePayMerchantIdentifier(paymentInfo.getAdyenApplePayMerchantIdentifier());
         }
     }
 
