@@ -23,7 +23,9 @@ package com.adyen.v6.service;
 import java.util.Date;
 import java.util.UUID;
 
-import com.adyen.v6.facades.AdyenCheckoutFacade;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.payment.dto.TransactionStatus;
+import de.hybris.platform.payment.enums.PaymentTransactionType;
 import org.apache.log4j.Logger;
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
@@ -34,19 +36,12 @@ import com.adyen.v6.repository.CartRepository;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
 import com.google.gson.Gson;
-import de.hybris.platform.commerceservices.enums.SalesApplication;
 import de.hybris.platform.commerceservices.order.CommercePlaceOrderStrategy;
-import de.hybris.platform.commerceservices.service.data.CommerceCheckoutParameter;
-import de.hybris.platform.commerceservices.service.data.CommerceOrderResult;
-import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
-import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.servicelayer.internal.i18n.I18NConstants;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.session.SessionExecutionBody;
 import de.hybris.platform.servicelayer.session.SessionService;
 
 public class DefaultAdyenNotificationService implements AdyenNotificationService {
@@ -196,6 +191,61 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
+    public PaymentTransactionModel processOfferClosedEvent(NotificationItemModel notificationItemModel) {
+        String orderCode = notificationItemModel.getMerchantReference();
+        if(!notificationItemModel.getSuccess()) {
+            LOG.warn("Order " + orderCode + " received unexpected OFFER_CLOSED event with success=false");
+            return null;
+        }
+
+        OrderModel orderModel = orderRepository.getOrderModel(orderCode);
+        if (orderModel == null) {
+            LOG.warn("Order " + orderCode + " was not found, skipping OFFER_CLOSED event...");
+            return null;
+        }
+        if (isOrderAuthorized(orderModel)) {
+            LOG.warn("Order " + orderCode + " already authorised, skipping OFFER_CLOSED event...");
+            return null;
+        }
+        if (OrderStatus.CANCELLED.equals(orderModel.getStatus()) || OrderStatus.PROCESSING_ERROR.equals(orderModel.getStatus())) {
+            LOG.warn("Order " + orderCode + " already cancelled, skipping OFFER_CLOSED event...");
+            return null;
+        }
+
+        orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
+        orderModel.setStatusInfo("Adyen OFFER_CLOSED: " + notificationItemModel.getPspReference());
+        getModelService().save(orderModel);
+
+        return adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
+    }
+
+    private boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
+        for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
+            if (entry.getType().equals(PaymentTransactionType.AUTHORIZATION)
+                    && TransactionStatus.ACCEPTED.name().equals(entry.getTransactionStatus())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isOrderAuthorized(final OrderModel order) {
+        if(order.getPaymentTransactions() == null || order.getPaymentTransactions().isEmpty()) {
+            return false;
+        }
+
+        //A single not authorized transaction means not authorized
+        for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
+            if (!isTransactionAuthorized(paymentTransactionModel)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public void processNotification(NotificationItemModel notificationItemModel) {
         PaymentTransactionModel paymentTransaction;
         switch (notificationItemModel.getEventCode()) {
@@ -217,6 +267,9 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
                 break;
             case NotificationRequestItem.EVENT_CODE_REFUND:
                 processRefundEvent(notificationItemModel);
+                break;
+            case NotificationRequestItem.EVENT_CODE_OFFER_CLOSED:
+                processOfferClosedEvent(notificationItemModel);
                 break;
         }
     }
