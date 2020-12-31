@@ -12,7 +12,7 @@
 
 <%-- Components --%>
 <c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
-    <%-- Paypal button --%>
+    <%-- Render Paypal or Apple Pay button --%>
     <c:if test="${selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
         <div class="checkbox">
             <label>
@@ -32,7 +32,7 @@
     </c:if>
 </c:if>
 
-<%-- Paypal has it's own button --%>
+<%-- Paypal and Apple Pay has it's own button --%>
 <c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay'}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
