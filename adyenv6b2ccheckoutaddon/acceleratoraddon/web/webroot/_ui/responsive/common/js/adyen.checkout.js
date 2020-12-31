@@ -12,7 +12,9 @@ var AdyenCheckoutHybris = (function () {
 
     var ErrorMessages = {
         PaymentCancelled: 'checkout.error.authorization.payment.cancelled',
-        PaymentError: 'checkout.error.authorization.payment.error'
+        PaymentError: 'checkout.error.authorization.payment.error',
+        PaymentNotAvailable: 'checkout.summary.component.notavailable',
+        TermsNotAccepted: 'checkout.error.terms.not.accepted'
     };
 
     return {
@@ -301,7 +303,7 @@ var AdyenCheckoutHybris = (function () {
         },
 
         initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId, label) {
-            var paypalNode = document.getElementById('adyen-paypal-container-' + label);
+            var paypalNode = document.getElementById('adyen-component-button-container-' + label);
 
             var adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
@@ -341,6 +343,54 @@ var AdyenCheckoutHybris = (function () {
             } catch (e) {
                 console.log('Something went wrong trying to mount the PayPal component: ' + e);
             }
+        },
+
+        initiateApplePay: function (amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label) {
+            var applePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var adyenComponent = this.checkout.create("applepay", {
+                amount: {
+                    currency: amount.currency,
+                    value: amount.value
+                },
+                countryCode: countryCode,
+                configuration: {
+                    merchantName: applePayMerchantName,
+                    merchantIdentifier: applePayMerchantIdentifier
+                },
+                // Button config
+                buttonType: "plain",
+                buttonColor: "black",
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
+                    }
+                },
+                onSubmit: (state, component) => {
+                    if (!state.isValid) {
+                        this.enablePlaceOrder(label);
+                        return false;
+                    }
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                },
+                onClick: (resolve, reject) => {
+                    if (this.isTermsAccepted(label)) {
+                        resolve();
+                    } else {
+                        reject();
+                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                    }
+                }
+            });
+
+            adyenComponent.isAvailable()
+                .then(() => {
+                    adyenComponent.mount(applePayNode);
+                })
+                .catch(e => {
+                    // Apple Pay is not available
+                    console.log('Something went wrong trying to mount the Apple Pay component: ' + e);
+                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                });
         },
 
         initiateMbway: function (label) {
@@ -403,6 +453,8 @@ var AdyenCheckoutHybris = (function () {
                         var response = JSON.parse(data);
                         if (response.resultCode && response.resultCode === 'Pending' && response.action) {
                             component.handleAction(response.action);
+                        } else if (response.resultCode && response.resultCode === 'Authorised') {
+                            handleResult(response, false);
                         } else {
                             handleResult(ErrorMessages.PaymentError, true);
                         }
@@ -452,6 +504,10 @@ var AdyenCheckoutHybris = (function () {
                     }
                 }
             })
+        },
+
+        isTermsAccepted: function(label) {
+            return document.getElementById('terms-conditions-check-' + label).checked;
         },
 
         handleResult: function (data, error) {
