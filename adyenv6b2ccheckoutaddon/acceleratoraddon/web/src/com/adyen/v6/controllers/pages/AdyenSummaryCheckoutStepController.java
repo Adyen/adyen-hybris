@@ -63,7 +63,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,7 +82,7 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.AdyenControllerConstants.CART_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLE_PAY;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -609,7 +608,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                                                    final String messageKey) throws CommerceCartModificationException, CMSItemNotFoundException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
         if(cartData == null || cartData.getAdyenPaymentMethod() == null
-                || PAYMENT_METHOD_APPLE_PAY.equals(cartData.getAdyenPaymentMethod())) {
+                || PAYMENT_METHOD_APPLEPAY.equals(cartData.getAdyenPaymentMethod())) {
             return redirectToSelectPaymentMethodWithError(redirectAttributes, messageKey);
         }
 

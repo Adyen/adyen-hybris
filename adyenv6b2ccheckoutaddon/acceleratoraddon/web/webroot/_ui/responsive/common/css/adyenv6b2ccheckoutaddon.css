@@ -93,3 +93,9 @@ div#section_break {
     margin: 10px 0 5px;
     clear: both;
 }
+
+@supports not (-webkit-appearance: -apple-pay-button) {
+    .chckt-pm-applepay {
+        display: none;
+    }
+}

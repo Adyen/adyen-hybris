@@ -345,7 +345,7 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        initiateApple: function (amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label) {
+        initiateApplePay: function (amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label) {
             var applePayNode = document.getElementById('adyen-component-button-container-' + label);
             var adyenComponent = this.checkout.create("applepay", {
                 amount: {

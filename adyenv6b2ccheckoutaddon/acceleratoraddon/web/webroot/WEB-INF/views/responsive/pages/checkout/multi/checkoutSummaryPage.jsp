@@ -36,8 +36,8 @@
 
             <c:when test="${selectedPaymentMethod eq 'applepay'}">
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiateApple(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "hidden-xs");
-                AdyenCheckoutHybris.initiateApple(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "visible-xs");
+                AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "hidden-xs");
+                AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "visible-xs");
             </c:when>
 
             <%-- API only payments methods --%>

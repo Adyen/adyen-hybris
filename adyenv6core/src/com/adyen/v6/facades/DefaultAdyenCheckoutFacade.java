@@ -144,7 +144,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLE_PAY;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -853,7 +853,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //apple pay
         Optional<PaymentMethod> applePayMethod = alternativePaymentMethods.stream()
                 .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
-                        && PAYMENT_METHOD_APPLE_PAY.contains(paymentMethod.getType()))
+                        && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
                 .findFirst();
         if(applePayMethod.isPresent()) {
             Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
