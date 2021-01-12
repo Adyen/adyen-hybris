@@ -37,7 +37,7 @@
         <adyen:methodSelector name="${brandCode}"/>
         <span class="chckt-pm__name js-chckt-pm__name">${name}</span>
         <span class="chckt-pm__image">
-            <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/img/pm/${brandCode}@2x.png" alt="">
+            <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/${brandCode}.svg" alt="">
             <span class="chckt-pm__image-border"></span>
         </span>
     </div>
