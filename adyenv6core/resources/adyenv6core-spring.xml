@@ -124,9 +124,7 @@
         </property>
     </bean>
 
-    <bean id="adyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory">
-        <property name="configurationService" ref="configurationService" />
-    </bean>
+    <bean id="adyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory"/>
 
     <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <property name="paymentMethodConverter" ref="adyenPaymentMethodConverter" />

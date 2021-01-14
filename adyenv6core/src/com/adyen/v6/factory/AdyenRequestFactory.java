@@ -66,8 +66,8 @@ import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.user.CustomerModel;
-import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
+import de.hybris.platform.util.Config;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -99,7 +99,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
 public class AdyenRequestFactory {
-    private ConfigurationService configurationService;
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
     private static final String PLATFORM_NAME = "Hybris";
@@ -946,24 +945,14 @@ public class AdyenRequestFactory {
     }
 
     private String getPlatformVersion() {
-        return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
+        return Config.getString(PLATFORM_VERSION_PROPERTY, "");
     }
 
     private Boolean is3DS2Allowed() {
-
-        Configuration configuration = getConfigurationService().getConfiguration();
         boolean is3DS2AllowedValue = false;
-        if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
-            is3DS2AllowedValue = configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
+        if (Config.getBoolean(IS_3DS2_ALLOWED_PROPERTY, false)) {
+            is3DS2AllowedValue = Config.getBoolean(IS_3DS2_ALLOWED_PROPERTY, false);
         }
         return is3DS2AllowedValue;
-    }
-
-    public ConfigurationService getConfigurationService() {
-        return configurationService;
-    }
-
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
     }
 }
