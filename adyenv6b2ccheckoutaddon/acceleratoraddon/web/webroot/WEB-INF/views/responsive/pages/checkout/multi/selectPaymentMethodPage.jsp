@@ -71,6 +71,12 @@
             AdyenCheckoutHybris.initiateEps( ${issuerLists['eps']} );
             </c:if>
 
+            <c:forEach var="paymentMethod" items="${paymentMethods}">
+                <c:if test="${paymentMethod.type eq 'afterpay_default'}">
+                    AdyenCheckoutHybris.showAfterPay("${countryCode}");
+                </c:if>
+            </c:forEach>
+
             <c:forEach items="${storedCards}" var="storedCard">
 
             var storedCardJS =
