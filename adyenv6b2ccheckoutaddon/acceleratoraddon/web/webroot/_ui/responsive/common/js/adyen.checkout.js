@@ -124,6 +124,7 @@ var AdyenCheckoutHybris = (function () {
             if (paymentMethod === "afterpay_default") {
                 if (!this.afterPay.state.isValid) {
                     window.alert("Please fill all the details");
+                    this.afterPay.showValidation();
                     return false;
                 }
                 var dob = $("input[name=dateOfBirth]").val();
