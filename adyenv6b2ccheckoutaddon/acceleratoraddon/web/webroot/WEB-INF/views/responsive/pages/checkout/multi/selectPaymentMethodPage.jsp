@@ -73,7 +73,7 @@
 
             <c:forEach var="paymentMethod" items="${paymentMethods}">
                 <c:if test="${paymentMethod.type eq 'afterpay_default'}">
-                    AdyenCheckoutHybris.showAfterPay("${countryCode}");
+                    AdyenCheckoutHybris.initiateAfterPay("${countryCode}");
                 </c:if>
             </c:forEach>
 
