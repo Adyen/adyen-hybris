@@ -440,7 +440,7 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
-        showAfterPay: function (countryCode) {
+        initiateAfterPay: function (countryCode) {
             this.afterPay = this.checkout.create("afterpay_default", {
                 countryCode: countryCode,
                 visibility: { // Optional configuration
