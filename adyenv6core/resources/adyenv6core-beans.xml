@@ -40,6 +40,9 @@
         <property name="adyenBillingAddress" type="de.hybris.platform.commercefacades.user.data.AddressData"/>
         <property name="adyenApplePayMerchantName" type="java.lang.String"/>
         <property name="adyenApplePayMerchantIdentifier" type="java.lang.String"/>
+        <property name="adyenShopperGender" type="java.lang.String"/>
+        <property name="adyenShopperEmail" type="java.lang.String"/>
+        <property name="adyenShopperTelephone" type="java.lang.String"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">

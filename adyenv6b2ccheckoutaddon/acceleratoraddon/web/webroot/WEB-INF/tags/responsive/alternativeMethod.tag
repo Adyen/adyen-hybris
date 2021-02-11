@@ -129,6 +129,10 @@
                        name="lastName"
                        value="${cartData.deliveryAddress.lastName}">
             </c:if>
+
+            <c:if test="${brandCode eq 'afterpay_default'}">
+                <div id="afterpay-container"></div>
+            </c:if>
         </div>
     </div>
 </div>

@@ -84,6 +84,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
@@ -830,6 +831,12 @@ public class AdyenRequestFactory {
             paymentsRequest.setDeviceFingerprint(cartData.getAdyenDfValue());
         }
 
+        if (AFTERPAY.equals(cartData.getAdyenPaymentMethod())) {
+            paymentsRequest.setShopperEmail(cartData.getAdyenShopperEmail());
+            paymentsRequest.setTelephoneNumber(cartData.getAdyenShopperTelephone());
+            paymentsRequest.setShopperName(getAfterPayShopperName(cartData));
+        }
+
         // set the invoice lines
         List<LineItem> invoiceLines = new ArrayList<>();
         String currency = cartData.getTotalPrice().getCurrencyIso();
@@ -902,6 +909,14 @@ public class AdyenRequestFactory {
         }
 
         paymentsRequest.setLineItems(invoiceLines);
+    }
+
+    private Name getAfterPayShopperName(CartData cartData) {
+        Name name = new Name();
+        name.setFirstName(cartData.getAdyenFirstName());
+        name.setLastName(cartData.getAdyenLastName());
+        name.gender(Name.GenderEnum.valueOf(cartData.getAdyenShopperGender()));
+        return name;
     }
 
     /**

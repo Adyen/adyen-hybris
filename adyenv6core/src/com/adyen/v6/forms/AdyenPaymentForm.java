@@ -80,6 +80,11 @@ public class AdyenPaymentForm {
     //POS
     private String terminalId;
 
+    // AfterPay fields
+    private String gender;
+    private String telephoneNumber;
+    private String shopperEmail;
+
     //Billing address related fields
     private boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
@@ -305,6 +310,30 @@ public class AdyenPaymentForm {
         return PAYMENT_METHOD_PAYPAL.equals(paymentMethod);
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public String getShopperEmail() {
+        return shopperEmail;
+    }
+
+    public void setShopperEmail(String shopperEmail) {
+        this.shopperEmail = shopperEmail;
+    }
+
     public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
@@ -330,6 +359,9 @@ public class AdyenPaymentForm {
         this.sepaIbanNumber = null;
         this.sepaOwnerName = null;
         this.billingAddress = billingAddress;
+        this.shopperEmail = null;
+        this.telephoneNumber = null;
+        this.gender = null;
     }
 
     @Override
@@ -351,6 +383,9 @@ public class AdyenPaymentForm {
         sb.append("    rememberTheseDetails: ").append(Util.toIndentedString(rememberTheseDetails)).append("\n");
         sb.append("    selectedReference: ").append(Util.toIndentedString(selectedReference)).append("\n");
         sb.append("    dateOfBirth: ").append(Util.toIndentedString(dob)).append("\n");
+        sb.append("    shopperEmail: ").append(Util.toIndentedString(shopperEmail)).append("\n");
+        sb.append("    telephoneNumber: ").append(Util.toIndentedString(telephoneNumber)).append("\n");
+        sb.append("    gender: ").append(Util.toIndentedString(gender)).append("\n");
         sb.append("    socialSecurityNumber: ").append(Util.toIndentedString(socialSecurityNumber)).append("\n");
         sb.append("    firstName: ").append(Util.toIndentedString(firstName)).append("\n");
         sb.append("    lastName: ").append(Util.toIndentedString(lastName)).append("\n");

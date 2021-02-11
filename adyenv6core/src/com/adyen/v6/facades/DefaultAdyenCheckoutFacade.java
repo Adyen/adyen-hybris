@@ -940,6 +940,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
+        model.addAttribute(MODEL_COUNTRY_CODE, cartData.getDeliveryAddress().getCountry().getIsocode());
 
         modelService.save(cartModel);
     }
@@ -1094,6 +1095,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         paymentInfo.setAdyenSepaOwnerName(adyenPaymentForm.getSepaOwnerName());
         paymentInfo.setAdyenSepaIbanNumber(adyenPaymentForm.getSepaIbanNumber());
+
+        // AfterPay fields
+        paymentInfo.setAdyenTelephone(adyenPaymentForm.getTelephoneNumber());
+        paymentInfo.setAdyenShopperEmail(adyenPaymentForm.getShopperEmail());
+        paymentInfo.setAdyenShopperGender(adyenPaymentForm.getGender());
 
         // Boleto fields
         paymentInfo.setAdyenFirstName(adyenPaymentForm.getFirstName());

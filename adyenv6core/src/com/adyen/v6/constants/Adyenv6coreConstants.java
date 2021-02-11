@@ -81,7 +81,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(KLARNA_SLICE);
 		add(AFFIRM);
 		add(CLEARPAY);
-//		add(AFTERPAY); // not supported yet
+		add(AFTERPAY);
 	}});
 
 
