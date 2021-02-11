@@ -74,6 +74,10 @@ Credit Card payments are supported using Checkout Components.
 
 Ratepay is supported via Adyen API.
 
+### AfterPay
+
+[AfterPay](https://docs.adyen.com/payment-methods/afterpay) is supported via Adyen component and API.
+
 ### Boleto
 
 [Boleto](https://docs.adyen.com/payment-methods/boleto-bancario) is supported via Adyen API.
