@@ -28,6 +28,7 @@ var AdyenCheckoutHybris = (function () {
         oneClickCards: {},
         selectedCardBrand: null,
         sepaDirectDebit:null,
+        afterPay: null,
 
         convertCardBrand: function () {
             var cardBrand = this.selectedCardBrand;
@@ -120,6 +121,18 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if (paymentMethod === "afterpay_default") {
+                if (!this.afterPay.state.isValid) {
+                    window.alert("Please fill all the details");
+                    this.afterPay.showValidation();
+                    return false;
+                }
+                var dob = $("input[name=dateOfBirth]").val();
+                if ( dob ) {
+                    $( "#dob" ).val( dob );
+                }
+            }
+
             return true;
         },
 
@@ -157,9 +170,9 @@ var AdyenCheckoutHybris = (function () {
          */
         setCustomPaymentMethodValues: function () {
             var paymentMethod = $( 'input[type=radio][name=paymentMethod]:checked' ).val();
-            var dob = $( '#p_method_adyen_hpp_' + paymentMethod + '_dob' );
+            var dob = $( '#p_method_adyen_hpp_' + paymentMethod + '_dob' ).val();
             if ( dob ) {
-                $( "#dob" ).val( dob.val() );
+                $( "#dob" ).val( dob );
             }
 
             var ssn = $( '#p_method_adyen_hpp_' + paymentMethod + '_ssn' );
@@ -424,6 +437,23 @@ var AdyenCheckoutHybris = (function () {
                 this.configureButton(adyenComponent, false, label);
             } catch (e) {
                 console.log('Something went wrong trying to mount the MBWay component: ' + e);
+            }
+        },
+
+        initiateAfterPay: function (countryCode) {
+            this.afterPay = this.checkout.create("afterpay_default", {
+                countryCode: countryCode,
+                visibility: { // Optional configuration
+                    personalDetails: "editable",
+                    billingAddress: "hidden",
+                    deliveryAddress: "hidden"
+                }
+            });
+
+            try {
+                this.afterPay.mount('#afterpay-container');
+            } catch (e) {
+                console.log('Something went wrong trying to mount the afterpay component: ' + e);
             }
         },
 
