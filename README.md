@@ -149,6 +149,11 @@ POS timeout (time calculated since initiating a payment) is max time to keep ter
 ```
 pos.totaltimeout = 130
 ```
+## Credit card holder name configuration
+By default Credit card holder name is a mandatory field, You can disable it by setting following property in `local.properties` file.
+```
+isCardHolderNameRequired = false
+```
 
 ## Pending Order Timeout configuration
 By default, an order remains in PAYMENT_PENDING status in order management for 1 hour and it is configured in dynamic order process defintiion file. 

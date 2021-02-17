@@ -30,7 +30,7 @@
             <c:forEach items="${allowedCards}" var="allowedCard">
             allowedCards.push( "${allowedCard.code}" );
             </c:forEach>
-            AdyenCheckoutHybris.initiateCard( allowedCards, ${showRememberTheseDetails} );
+            AdyenCheckoutHybris.initiateCard( allowedCards, ${showRememberTheseDetails}, ${cardHolderNameRequired} );
 
             </c:if>
 
