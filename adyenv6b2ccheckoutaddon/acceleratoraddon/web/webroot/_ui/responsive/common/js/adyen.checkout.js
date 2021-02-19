@@ -75,7 +75,7 @@ var AdyenCheckoutHybris = (function () {
                     (this.isDebitCard() && !this.isValidBrandType());
 
                 if ( isInvalidCard ) {
-                    window.alert( 'This ' + this.getCardType() + ' card is not allowed' );
+                    window.alert('Please check your card details.');
                     this.card.showValidation();
                     document.getElementById("card-div").scrollIntoView();
                     return false;
