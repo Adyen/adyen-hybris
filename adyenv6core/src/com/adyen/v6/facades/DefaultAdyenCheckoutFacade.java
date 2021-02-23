@@ -85,6 +85,7 @@ import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.keygenerator.KeyGenerator;
@@ -93,6 +94,7 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -187,6 +189,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
 
+    @Resource(name = "configurationService")
+    private ConfigurationService configurationService;
+
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
@@ -228,6 +233,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_APPLEPAY_MERCHANT_IDENTIFIER = "applePayMerchantIdentifier";
     public static final String MODEL_APPLEPAY_MERCHANT_NAME = "applePayMerchantName";
     public static final String ECOMMERCE_SHOPPER_INTERACTION = "Ecommerce";
+    public static final String MODEL_CARD_HOLDER_NAME_REQUIRED = "cardHolderNameRequired";
+    public static final String IS_CARD_HOLDER_NAME_REQUIRED_PROPERTY = "isCardHolderNameRequired";
 
     protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
                                                                                              HPPConstants.Response.SKIN_CODE,
@@ -941,6 +948,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
         model.addAttribute(MODEL_COUNTRY_CODE, cartData.getDeliveryAddress().getCountry().getIsocode());
+        model.addAttribute(MODEL_CARD_HOLDER_NAME_REQUIRED, getHolderNameRequired());
 
         modelService.save(cartModel);
     }
@@ -1159,8 +1167,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartModel cartModel = cartService.getSessionCart();
         boolean showRememberDetails = showRememberDetails();
         boolean showSocialSecurityNumber = showSocialSecurityNumber();
+        boolean holderNameRequired = getHolderNameRequired();
 
-        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, showSocialSecurityNumber);
+        AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, showSocialSecurityNumber, holderNameRequired);
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -1508,6 +1517,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getSessionService().removeAttribute(PAYMENT_METHOD);
 
         restoreCartFromOrder(orderCode);
+    }
+
+    private boolean getHolderNameRequired() {
+        boolean holderNameRequired = true;
+        Configuration configuration = this.configurationService.getConfiguration();
+        if (configuration != null && configuration.containsKey(IS_CARD_HOLDER_NAME_REQUIRED_PROPERTY)) {
+            holderNameRequired = configuration.getBoolean(IS_CARD_HOLDER_NAME_REQUIRED_PROPERTY);
+        }
+        return holderNameRequired;
     }
 
     public BaseStoreService getBaseStoreService() {
