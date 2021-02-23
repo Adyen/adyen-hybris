@@ -75,7 +75,9 @@ var AdyenCheckoutHybris = (function () {
                     (this.isDebitCard() && !this.isValidBrandType());
 
                 if ( isInvalidCard ) {
-                    window.alert( 'This ' + this.getCardType() + ' card is not allowed' );
+                    window.alert('Please check your card details.');
+                    this.card.showValidation();
+                    document.getElementById("card-div").scrollIntoView();
                     return false;
                 }
                 this.copyCardData();
@@ -125,6 +127,7 @@ var AdyenCheckoutHybris = (function () {
                 if (!this.afterPay.state.isValid) {
                     window.alert("Please fill all the details");
                     this.afterPay.showValidation();
+                    document.getElementById("afterpay-container").scrollIntoView();
                     return false;
                 }
                 var dob = $("input[name=dateOfBirth]").val();
@@ -232,12 +235,12 @@ var AdyenCheckoutHybris = (function () {
             this.oneClickCards[storedCard.storedPaymentMethodId] = oneClickCard;
         },
 
-        initiateCard: function (allowedCards, showRememberDetails) {
+        initiateCard: function (allowedCards, showRememberDetails, cardHolderNameRequired) {
             var context = this;
             this.card = this.checkout.create( 'card', {
                 type: 'card',
                 hasHolderName: true,
-                holderNameRequired: true,
+                holderNameRequired: cardHolderNameRequired,
                 enableStoreDetails: showRememberDetails,
                 brands: allowedCards,
                 onBrand: copyCardBrand
