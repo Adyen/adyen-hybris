@@ -95,6 +95,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
@@ -238,6 +239,9 @@ public class AdyenRequestFactory {
         }
         else if (PAYMENT_METHOD_SEPA_DIRECTDEBIT.equals(cartData.getAdyenPaymentMethod())) {
             setSepaDirectDebitData(paymentsRequest, cartData);
+        }
+        else if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
+            setPixData(paymentsRequest, cartData);
         }
 
         //For alternate payment methods like iDeal, Paypal etc.
@@ -958,6 +962,14 @@ public class AdyenRequestFactory {
         paymentMethodDetails.setSepaIbanNumber(cartData.getAdyenSepaIbanNumber());
         paymentMethodDetails.setType(PAYMENT_METHOD_SEPA_DIRECTDEBIT);
         paymentRequest.setPaymentMethod(paymentMethodDetails);
+    }
+
+    private void setPixData(PaymentsRequest paymentsRequest, CartData cartData) {
+        Name shopperName = new Name();
+        shopperName.setFirstName(cartData.getAdyenFirstName());
+        shopperName.setLastName(cartData.getAdyenLastName());
+        paymentsRequest.setShopperName(shopperName);
+        paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
     }
 
     private String getPlatformVersion() {
