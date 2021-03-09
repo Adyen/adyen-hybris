@@ -17,9 +17,9 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.19.0/adyen.js"></script>
+        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.js"></script>
         <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.19.0/adyen.css"/>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.css"/>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout( "${shopperLocale}", "${environmentMode}", "${clientKey}" );
@@ -117,6 +117,8 @@
                             <form:hidden path="issuerId"/>
                             <form:hidden path="dob"/>
                             <form:hidden path="socialSecurityNumber"/>
+                            <form:hidden path="firstName"/>
+                            <form:hidden path="lastName"/>
                             <form:hidden path="dfValue"/>
                             <form:hidden path="cardHolder"/>
                             <form:hidden path="cardBrand"/>
@@ -188,7 +190,10 @@
                                             brandCode="${paymentMethod.type}"
                                             name="${paymentMethod.name}"
                                             showDob="${paymentMethod.type=='ratepay'}"
-                                            showSocialSecurityNumber="${showSocialSecurityNumber}"
+                                            showFirstName="${paymentMethod.type=='pix'}"
+                                            showLastName="${paymentMethod.type=='pix'}"
+                                            showSocialSecurityNumber="${showSocialSecurityNumber || paymentMethod.type=='pix'}"
+                                            countryCode="${countryCode}"
                                     />
                                 </c:forEach>
 

@@ -146,6 +146,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -160,6 +161,9 @@ import static de.hybris.platform.order.impl.DefaultCartService.SESSION_CART_PARA
  * Adyen Checkout Facade for initiating payments using CC or APM
  */
 public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
+
+    private static final String ADYEN_PAYLOAD = "payload";
+
     private BaseStoreService baseStoreService;
     private SessionService sessionService;
     private CartService cartService;
@@ -402,13 +406,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public PaymentsResponse handleRedirectPayload(HashMap<String, String> details) throws Exception {
         PaymentsResponse response;
-        String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
-
         try {
-            if (paymentMethod != null && paymentMethod.startsWith(KLARNA)) {
-                response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
-            } else {
+            if (details.containsKey(ADYEN_PAYLOAD)) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
+            } else {
+                response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
             }
         } catch (Exception e) {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
@@ -490,13 +492,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == resultCode) {
             placePendingOrder(resultCode);
+            getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
                 getSessionService().setAttribute(SESSION_MD, paymentsResponse.getRedirect().getData().get(MD));
-                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
             if (adyenPaymentMethod.startsWith(KLARNA)) {
                 getSessionService().setAttribute(PAYMENT_METHOD, adyenPaymentMethod);
-                getSessionService().setAttribute(SESSION_PAYMENT_DATA, paymentsResponse.getPaymentData());
             }
         }
         if (PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER == resultCode) {
@@ -1064,7 +1065,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartData cart = getCheckoutFacade().getCheckoutCart();
         final AddressData deliveryAddress = cart.getDeliveryAddress();
         String countryCode = deliveryAddress.getCountry().getIsocode();
-        if (RATEPAY.equals(cart.getAdyenPaymentMethod()) && OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
+        if (PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(cart.getAdyenPaymentMethod()) && OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER.contains(countryCode)) {
             showSocialSecurityNumber = true;
         }
         return showSocialSecurityNumber;

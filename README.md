@@ -69,7 +69,6 @@ Credit Card payments are supported using Checkout Components.
 
 [Apple Pay](https://docs.adyen.com/payment-methods/apple-pay/) is supported using Checkout Components.
 
-
 ### Ratepay
 
 Ratepay is supported via Adyen API.
@@ -81,6 +80,9 @@ Ratepay is supported via Adyen API.
 ### Boleto
 
 [Boleto](https://docs.adyen.com/payment-methods/boleto-bancario) is supported via Adyen API.
+
+### Pix
+[Pix](https://docs.adyen.com/payment-methods/pix) is supported via Adyen component and API.
 
 ### Paypal Express Checkout Shortcut
 
