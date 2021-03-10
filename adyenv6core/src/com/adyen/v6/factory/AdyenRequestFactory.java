@@ -20,7 +20,6 @@
  */
 package com.adyen.v6.factory;
 
-import com.adyen.util.Util;
 import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
@@ -56,6 +55,7 @@ import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.util.Util;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
@@ -240,9 +240,6 @@ public class AdyenRequestFactory {
         else if (PAYMENT_METHOD_SEPA_DIRECTDEBIT.equals(cartData.getAdyenPaymentMethod())) {
             setSepaDirectDebitData(paymentsRequest, cartData);
         }
-        else if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
-            setPixData(paymentsRequest, cartData);
-        }
 
         //For alternate payment methods like iDeal, Paypal etc.
         else {
@@ -368,6 +365,11 @@ public class AdyenRequestFactory {
                 paymentsRequest.setTelephoneNumber(phone);
             }
         }
+
+        if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
+            setPixData(paymentsRequest, cartData);
+        }
+
     }
 
     private void updatePaymentRequestForCC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
@@ -970,6 +972,25 @@ public class AdyenRequestFactory {
         shopperName.setLastName(cartData.getAdyenLastName());
         paymentsRequest.setShopperName(shopperName);
         paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+
+        List<LineItem> invoiceLines = new ArrayList<>();
+        for (OrderEntryData entry : cartData.getEntries()) {
+            if (entry.getQuantity() == 0L) {
+                // skip zero quantities
+                continue;
+            }
+
+            BigDecimal productAmountIncludingTax = entry.getBasePrice().getValue();
+            String productName = "NA";
+            if (entry.getProduct().getName() != null && !entry.getProduct().getName().isEmpty()) {
+                productName = entry.getProduct().getName();
+            }
+            LineItem lineItem = new LineItem();
+            lineItem.setAmountIncludingTax(productAmountIncludingTax.longValue());
+            lineItem.setId(productName);
+            invoiceLines.add(lineItem);
+        }
+        paymentsRequest.setLineItems(invoiceLines);
     }
 
     private String getPlatformVersion() {
