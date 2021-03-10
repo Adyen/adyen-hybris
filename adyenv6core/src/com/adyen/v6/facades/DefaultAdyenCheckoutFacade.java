@@ -139,6 +139,7 @@ import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
 import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
 import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
+import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY_TOUCH;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
@@ -398,7 +399,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         String paymentMethod = getSessionService().getAttribute(PAYMENT_METHOD);
 
         try {
-            if (paymentMethod != null && paymentMethod.startsWith(KLARNA)) {
+            if (paymentMethod != null && (paymentMethod.startsWith(KLARNA)|| paymentMethod.equals(AFTERPAY_TOUCH))) {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details, getSessionService().getAttribute(SESSION_PAYMENT_DATA));
             } else {
                 response = getAdyenPaymentService().getPaymentDetailsFromPayload(details);
