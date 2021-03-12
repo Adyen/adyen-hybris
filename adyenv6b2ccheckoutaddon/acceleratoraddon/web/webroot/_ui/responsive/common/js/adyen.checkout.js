@@ -187,6 +187,16 @@ var AdyenCheckoutHybris = (function () {
             if ( terminalId ) {
                 $( "#terminalId" ).val( terminalId.val() );
             }
+
+            var firstName = $( '#p_method_adyen_hpp_' + paymentMethod + '_first_name' ).val();
+            if (firstName) {
+                $( "#firstName" ).val(firstName);
+            }
+
+            var lastName = $( '#p_method_adyen_hpp_' + paymentMethod + '_last_name' ).val();
+            if (lastName) {
+                $( "#lastName" ).val(lastName);
+            }
         },
 
         /**
@@ -460,6 +470,30 @@ var AdyenCheckoutHybris = (function () {
             }
         },
 
+        initiatePix: function (label) {
+            $("#generateqr-" + label).click(function () {
+                AdyenCheckoutHybris.showSpinner();
+                if (!AdyenCheckoutHybris.isTermsAccepted(label)) {
+                    AdyenCheckoutHybris.handleResult(ErrorMessages.TermsNotAccepted, true)
+                } else {
+                    $("#generateqr-" + label).hide();
+                    $(".checkbox").hide();
+                    var actionHandler  = {
+                        handleAction : function (action) {
+                            AdyenCheckoutHybris.checkout.createFromAction(action, {
+                                onAdditionalDetails : (state) => {
+                                    AdyenCheckoutHybris.hideSpinner();
+                                    AdyenCheckoutHybris.submitDetails(state.data, AdyenCheckoutHybris.handleResult);
+                                }
+                            }).mount('#pix-container-' + label);
+                            AdyenCheckoutHybris.hideSpinner();
+                        }
+                    };
+                    AdyenCheckoutHybris.makePayment({ type: "pix" }, actionHandler, AdyenCheckoutHybris.handleResult, label);
+                }
+            });
+        },
+
         configureButton: function (form, useSpinner, label) {
             $(document).ready(function () {
                 $("#placeOrder-" + label).click(function () {
@@ -556,10 +590,12 @@ var AdyenCheckoutHybris = (function () {
         showSpinner: function () {
             document.getElementById("spinner_wrapper").style.display = "flex";
         },
-
+        hideSpinner: function () {
+            document.getElementById("spinner_wrapper").style.display = "none";
+        },
         enablePlaceOrder: function (label) {
             //hide spinner
-            document.getElementById("spinner_wrapper").style.display = "none";
+            this.hideSpinner();
             //enable button
             $("#placeOrder-" + label).prop('disabled', false);
         }
