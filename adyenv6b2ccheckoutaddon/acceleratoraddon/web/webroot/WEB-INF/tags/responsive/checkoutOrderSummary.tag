@@ -11,9 +11,9 @@
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
 <%-- Components --%>
-<c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
+<c:if test="${selectedPaymentMethod eq 'mbway' || selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'  || selectedPaymentMethod eq 'pix'}">
     <%-- Render Paypal or Apple Pay button --%>
-    <c:if test="${selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay'}">
+    <c:if test="${selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay' || selectedPaymentMethod eq 'pix'}">
         <div class="checkbox">
             <label>
                 <input type="checkbox" id="terms-conditions-check-${label}" />
@@ -21,7 +21,18 @@
                     ${ycommerce:sanitizeHTML(readTermsAndConditions)}
             </label>
         </div>
-        <div id="adyen-component-button-container-${label}"></div>
+
+        <c:choose>
+            <c:when test="${selectedPaymentMethod eq 'pix'}">
+                <button id="generateqr-${label}" type="submit" class="btn btn-primary btn-block">
+                    <spring:theme code="checkout.summary.component.pix.generateqr" text="Generate QR Code" />
+                </button>
+                <div id="pix-container-${label}"></div>
+            </c:when>
+            <c:otherwise>
+                <div id="adyen-component-button-container-${label}"></div>
+            </c:otherwise>
+        </c:choose>
     </c:if>
 
     <c:if test="${selectedPaymentMethod eq 'mbway'}">
@@ -33,7 +44,7 @@
 </c:if>
 
 <%-- Paypal and Apple Pay has it's own button --%>
-<c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay'}">
+<c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay' && selectedPaymentMethod ne 'pix'}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
             <label> <form:checkbox id="terms-conditions-check-${label}" path="termsCheck" />

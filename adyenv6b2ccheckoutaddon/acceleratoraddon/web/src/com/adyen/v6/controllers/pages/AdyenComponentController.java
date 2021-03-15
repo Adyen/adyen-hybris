@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.controllers.pages;
 
+import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.details.ApplePayDetails;
@@ -60,6 +61,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 
 @RestController
 @RequestMapping(COMPONENT_PREFIX)
@@ -95,12 +97,15 @@ public class AdyenComponentController {
             String paymentMethod = cartData.getAdyenPaymentMethod();
 
             PaymentMethodDetails paymentMethodDetails;
-            if("paypal".equals(paymentMethod)) {
+            if(PayPalDetails.PAYPAL.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), PayPalDetails.class);
-            } else if("mbway".equals(paymentMethod)) {
+            } else if(MbwayDetails.MBWAY.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), MbwayDetails.class);
-            } else if("applepay".equals(paymentMethod)) {
+            } else if(ApplePayDetails.APPLEPAY.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), ApplePayDetails.class);
+            } else if(PAYMENT_METHOD_PIX.equals(paymentMethod)) {
+                paymentMethodDetails = new DefaultPaymentMethodDetails();
+                paymentMethodDetails.setType(PAYMENT_METHOD_PIX);
             } else {
                 throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
             }
@@ -163,8 +168,10 @@ public class AdyenComponentController {
     protected void validateOrderForm(JsonObject requestJson) throws InvalidCartException {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         Boolean termsCheck = gson.fromJson(requestJson.get("termsCheck"), Boolean.class);
+        JsonObject paymentMethodDetails = requestJson.get("paymentMethodDetails").getAsJsonObject();
+        String paymentMethod = gson.fromJson(paymentMethodDetails.get("type"), String.class);
 
-        if(termsCheck == null || !termsCheck) {
+        if(!PAYMENT_METHOD_PIX.equals(paymentMethod) &&(termsCheck == null || !termsCheck)) {
             throw new InvalidCartException("checkout.error.terms.not.accepted");
         }
 

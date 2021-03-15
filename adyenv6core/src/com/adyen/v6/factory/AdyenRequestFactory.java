@@ -20,7 +20,6 @@
  */
 package com.adyen.v6.factory;
 
-import com.adyen.util.Util;
 import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
 import com.adyen.model.AbstractPaymentRequest;
@@ -56,6 +55,7 @@ import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.util.Util;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
@@ -95,6 +95,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
@@ -364,6 +365,11 @@ public class AdyenRequestFactory {
                 paymentsRequest.setTelephoneNumber(phone);
             }
         }
+
+        if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
+            setPixData(paymentsRequest, cartData);
+        }
+
     }
 
     private void updatePaymentRequestForCC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
@@ -958,6 +964,33 @@ public class AdyenRequestFactory {
         paymentMethodDetails.setSepaIbanNumber(cartData.getAdyenSepaIbanNumber());
         paymentMethodDetails.setType(PAYMENT_METHOD_SEPA_DIRECTDEBIT);
         paymentRequest.setPaymentMethod(paymentMethodDetails);
+    }
+
+    private void setPixData(PaymentsRequest paymentsRequest, CartData cartData) {
+        Name shopperName = new Name();
+        shopperName.setFirstName(cartData.getAdyenFirstName());
+        shopperName.setLastName(cartData.getAdyenLastName());
+        paymentsRequest.setShopperName(shopperName);
+        paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
+
+        List<LineItem> invoiceLines = new ArrayList<>();
+        for (OrderEntryData entry : cartData.getEntries()) {
+            if (entry.getQuantity() == 0L) {
+                // skip zero quantities
+                continue;
+            }
+
+            BigDecimal productAmountIncludingTax = entry.getBasePrice().getValue();
+            String productName = "NA";
+            if (entry.getProduct().getName() != null && !entry.getProduct().getName().isEmpty()) {
+                productName = entry.getProduct().getName();
+            }
+            LineItem lineItem = new LineItem();
+            lineItem.setAmountIncludingTax(productAmountIncludingTax.longValue());
+            lineItem.setId(productName);
+            invoiceLines.add(lineItem);
+        }
+        paymentsRequest.setLineItems(invoiceLines);
     }
 
     private String getPlatformVersion() {
