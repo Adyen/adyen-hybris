@@ -20,23 +20,27 @@
  */
 package com.adyen.v6.forms.validation;
 
-import java.util.Set;
+import com.adyen.v6.forms.AdyenPaymentForm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import com.adyen.v6.forms.AdyenPaymentForm;
+
+import java.util.Set;
+
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 public class AdyenPaymentFormValidator implements Validator {
     private Set<String> storedCards;
     private boolean showRememberTheseDetails;
     private boolean showSocialSecurityNumber;
+    private final boolean cardHolderNameRequired;
 
-    public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails, boolean showSocialSecurityNumber) {
+    public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails, boolean showSocialSecurityNumber, boolean cardHolderNameRequired) {
         this.storedCards = storedCards;
         this.showRememberTheseDetails = showRememberTheseDetails;
         this.showSocialSecurityNumber = showSocialSecurityNumber;
+        this.cardHolderNameRequired = cardHolderNameRequired;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class AdyenPaymentFormValidator implements Validator {
             if (StringUtils.isEmpty(form.getCseToken()) && (StringUtils.isEmpty(form.getEncryptedCardNumber())
                     || StringUtils.isEmpty(form.getEncryptedExpiryMonth())
                     || StringUtils.isEmpty(form.getEncryptedExpiryYear())
-                    || StringUtils.isEmpty(form.getCardHolder()))) {
+                    || (cardHolderNameRequired && StringUtils.isEmpty(form.getCardHolder())))) {
                 errors.reject("checkout.error.paymentmethod.cse.missing");
             }
         }
