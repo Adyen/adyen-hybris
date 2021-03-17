@@ -14,9 +14,9 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 <jsp:attribute name="pageScripts">
     <script type="text/javascript" src="${dfUrl}"></script>
-    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.19.0/adyen.js"></script>
+    <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.js"></script>
     <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.19.0/adyen.css"/>
+    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.css"/>
 
     <script type="text/javascript">
         AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${clientKey}");
@@ -38,6 +38,11 @@
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
                 AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "hidden-xs");
                 AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "visible-xs");
+            </c:when>
+
+            <c:when test="${selectedPaymentMethod eq 'pix'}">
+                AdyenCheckoutHybris.initiatePix("hidden-xs");
+                AdyenCheckoutHybris.initiatePix("visible-xs");
             </c:when>
 
             <%-- API only payments methods --%>

@@ -82,6 +82,7 @@ import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.AdyenControllerConstants.CART_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
+import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY_TOUCH;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -253,6 +254,10 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     if (is3DSPaymentMethod(adyenPaymentMethod)) {
                         LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
                         return redirectTo3DSValidation(model, paymentsResponse);
+                    }
+                    if (AFTERPAY_TOUCH.equals(adyenPaymentMethod)) {
+                        LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to afterpaytouch page");
+                        return REDIRECT_PREFIX + paymentsResponse.getAction().getUrl();
                     }
                     LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to local payment method page");
                     return REDIRECT_PREFIX + paymentsResponse.getRedirect().getUrl();

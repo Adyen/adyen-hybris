@@ -52,6 +52,8 @@ public class AdyenVoidCommand implements VoidCommand {
         result.setRequestTime(new Date());
         result.setTransactionStatus(TransactionStatus.ERROR);
         result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
+        result.setAmount(request.getTotalAmount());
+        result.setCurrency(request.getCurrency());
 
         String authReference = request.getRequestId();
         String reference = request.getRequestToken();

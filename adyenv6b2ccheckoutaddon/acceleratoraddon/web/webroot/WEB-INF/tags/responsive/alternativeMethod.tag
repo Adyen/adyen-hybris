@@ -90,16 +90,16 @@
                             <span>
                                 <spring:theme code="payment.method.social.security.number"/>
                             </span>
+                            <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text">
                         </label>
-                        <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text">
                     </c:when>
                     <c:otherwise>
                         <label for="p_method_adyen_hpp_${brandCode}_ssn">
                             <span>
                                 <spring:theme code="payment.method.personal.number"/>
                             </span>
+                            <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text" size="4" title="personal number">
                         </label>
-                        <input id="p_method_adyen_hpp_${brandCode}_ssn" class="p_method_adyen_hpp_ssn" type="text" size="4" title="personal number">
                     </c:otherwise>
                 </c:choose>
             </c:if>
@@ -109,12 +109,11 @@
                     <span>
                         <spring:theme code="payment.method.first.name"/>
                     </span>
+                    <input id="p_method_adyen_hpp_${brandCode}_first_name"
+                           type="text"
+                           name="${brandCode}_firstName"
+                           value="${cartData.deliveryAddress.firstName}">
                 </label>
-
-                <input id="p_method_adyen_hpp_${brandCode}_first_name"
-                       type="text"
-                       name="firstName"
-                       value="${cartData.deliveryAddress.firstName}">
             </c:if>
 
             <c:if test="${showLastName}">
@@ -122,12 +121,11 @@
                     <span>
                         <spring:theme code="payment.method.last.name"/>
                     </span>
+                    <input id="p_method_adyen_hpp_${brandCode}_last_name"
+                           type="text"
+                           name="${brandCode}_lastName"
+                           value="${cartData.deliveryAddress.lastName}">
                 </label>
-
-                <input id="p_method_adyen_hpp_${brandCode}_last_name"
-                       type="text"
-                       name="lastName"
-                       value="${cartData.deliveryAddress.lastName}">
             </c:if>
 
             <c:if test="${brandCode eq 'afterpay_default'}">

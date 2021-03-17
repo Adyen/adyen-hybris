@@ -69,7 +69,6 @@ Credit Card payments are supported using Checkout Components.
 
 [Apple Pay](https://docs.adyen.com/payment-methods/apple-pay/) is supported using Checkout Components.
 
-
 ### Ratepay
 
 Ratepay is supported via Adyen API.
@@ -81,6 +80,9 @@ Ratepay is supported via Adyen API.
 ### Boleto
 
 [Boleto](https://docs.adyen.com/payment-methods/boleto-bancario) is supported via Adyen API.
+
+### Pix
+[Pix](https://docs.adyen.com/payment-methods/pix) is supported via Adyen component and API.
 
 ### Paypal Express Checkout Shortcut
 
@@ -148,6 +150,11 @@ is3DS2allowed = false
 POS timeout (time calculated since initiating a payment) is max time to keep terminal connection open. It is set to 130 seconds by default already. If you want to change it, please add following property in local.properties file, build your environment and restart the server. (Change 130 to your desired time, in seconds).
 ```
 pos.totaltimeout = 130
+```
+## Credit card holder name configuration
+By default Credit card holder name is a mandatory field, You can disable it by setting following property in `local.properties` file.
+```
+isCardHolderNameRequired = false
 ```
 
 ## Pending Order Timeout configuration
