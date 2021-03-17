@@ -143,6 +143,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "paypal":
             case "klarna":
             case "afterpay":
+            case "afterpaytouch":
             case "clearpay":
             case "ratepay":
             case "afterpay_default":

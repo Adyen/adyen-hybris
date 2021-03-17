@@ -31,7 +31,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "9.2.0";
+	public static final String PLUGIN_VERSION = "9.3.0";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
@@ -40,6 +40,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	final public static String PAYMENT_METHOD_IDEAL = "ideal";
 	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
 	final public static String PAYMENT_METHOD_BOLETO = "boleto";
+	final public static String PAYMENT_METHOD_PIX = "pix";
 	final public static String PAYMENT_METHOD_SEPA_DIRECTDEBIT = "sepadirectdebit";
 	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
 	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
@@ -56,6 +57,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String KLARNA = "klarna";
 	public static final String RATEPAY = "ratepay";
 	public static final String AFTERPAY = "afterpay_default";
+	public static final String AFTERPAY_TOUCH = "afterpaytouch";
 	public static final String COUNTRY_CODE_SWEDEN = "SE";
 	public static final String COUNTRY_CODE_DENMARK = "DK";
 	public static final String COUNTRY_CODE_FINLAND = "FI";
@@ -82,6 +84,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(AFFIRM);
 		add(CLEARPAY);
 		add(AFTERPAY);
+		add(AFTERPAY_TOUCH);
 	}});
 
 
@@ -90,6 +93,12 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(COUNTRY_CODE_DENMARK);
 		add(COUNTRY_CODE_FINLAND);
 		add(COUNTRY_CODE_NORWAY);
+	}});
+
+	public static final List<String> PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER = Collections.unmodifiableList(new ArrayList<String>() {{
+		add(RATEPAY);
+		add(PAYMENT_METHOD_BOLETO);
+		add(PAYMENT_METHOD_PIX);
 	}});
 
 	public static final List<String> ISSUER_PAYMENT_METHODS = Collections.unmodifiableList(new ArrayList<String>() {{
