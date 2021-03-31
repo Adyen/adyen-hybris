@@ -134,6 +134,7 @@
                             <form:hidden path="rememberTheseDetails" value="false"/>
                             <form:hidden path="sepaOwnerName"/>
                             <form:hidden path="sepaIbanNumber"/>
+                            <form:hidden path="giftCardBrand"/>
 
                             <%-- Billing Information --%>
                             <div class="headline">
@@ -188,6 +189,7 @@
                                 <c:forEach items="${paymentMethods}" var="paymentMethod">
                                     <adyen:alternativeMethod
                                             brandCode="${paymentMethod.type}"
+                                            brand="${paymentMethod.brand}"
                                             name="${paymentMethod.name}"
                                             showDob="${paymentMethod.type=='ratepay'}"
                                             showFirstName="${paymentMethod.type=='pix'}"

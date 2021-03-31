@@ -19,6 +19,7 @@
   ~  See the LICENSE file for more info.
   --%>
 <%@ attribute name="brandCode" required="true" type="java.lang.String" %>
+<%@ attribute name="brand" required="false" type="java.lang.String" %>
 <%@ attribute name="name" required="true" type="java.lang.String" %>
 <%@ attribute name="issuers" required="false" type="java.util.List" %>
 <%@ attribute name="showDob" required="false" type="java.lang.Boolean" %>
@@ -34,7 +35,7 @@
 
 <div class="chckt-pm chckt-pm-${brandCode} js-chckt-pm" data-pm="${brandCode}">
     <div class="chckt-pm__header js-chckt-pm__header">
-        <adyen:methodSelector name="${brandCode}"/>
+        <adyen:methodSelector name="${brandCode}" brand="${brand}"/>
         <span class="chckt-pm__name js-chckt-pm__name">${name}</span>
         <span class="chckt-pm__image">
             <img width="40" src="https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/${brandCode}.svg" alt="">
