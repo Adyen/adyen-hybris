@@ -1131,6 +1131,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
 
+        // Gift card
+        paymentInfo.setAdyenGiftCardBrand(adyenPaymentForm.getGiftCardBrand());
+
         modelService.save(paymentInfo);
 
         return paymentInfo;
