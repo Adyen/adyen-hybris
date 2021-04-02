@@ -477,10 +477,6 @@
                         </columntype>
                     </persistence>
                 </attribute>
-                <attribute qualifier="adyenGiftCardBrand" type="java.lang.String">
-                    <description>Gift Card Brand</description>
-                    <persistence type="property"/>
-                </attribute>
             </attributes>
         </itemtype>
     </itemtypes>

@@ -136,9 +136,6 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
-            if (paymentMethod === "giftcard") {
-                $( 'input[name="giftCardBrand"]' ).val($( 'input[type=radio][name=paymentMethod]:checked' ).attr('brand'));
-            }
             return true;
         },
 

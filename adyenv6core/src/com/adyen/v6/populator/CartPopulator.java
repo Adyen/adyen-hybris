@@ -62,7 +62,6 @@ public class CartPopulator implements Populator<CartModel, CartData> {
             target.setAdyenShopperGender(paymentInfo.getAdyenShopperGender());
             target.setAdyenShopperEmail(paymentInfo.getAdyenShopperEmail());
             target.setAdyenShopperTelephone(paymentInfo.getAdyenTelephone());
-            target.setAdyenGiftCardBrand(paymentInfo.getAdyenGiftCardBrand());
         }
     }
 

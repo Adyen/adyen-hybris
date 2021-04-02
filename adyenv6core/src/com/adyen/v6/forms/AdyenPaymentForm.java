@@ -85,9 +85,6 @@ public class AdyenPaymentForm {
     private String telephoneNumber;
     private String shopperEmail;
 
-    // Gift Card
-    private String giftCardBrand;
-
     //Billing address related fields
     private boolean useAdyenDeliveryAddress;
     private AddressForm billingAddress;
@@ -337,14 +334,6 @@ public class AdyenPaymentForm {
         this.shopperEmail = shopperEmail;
     }
 
-    public String getGiftCardBrand() {
-        return giftCardBrand;
-    }
-
-    public void setGiftCardBrand(String giftCardBrand) {
-        this.giftCardBrand = giftCardBrand;
-    }
-
     public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
@@ -373,7 +362,6 @@ public class AdyenPaymentForm {
         this.shopperEmail = null;
         this.telephoneNumber = null;
         this.gender = null;
-        this.giftCardBrand = null;
     }
 
     @Override
@@ -407,7 +395,6 @@ public class AdyenPaymentForm {
         sb.append("    browserInfo: ").append(Util.toIndentedString(browserInfo)).append("\n");
         sb.append("    useAdyenDeliveryAddress: ").append(Util.toIndentedString(useAdyenDeliveryAddress)).append("\n");
         sb.append("    billingAddress: ").append(Util.toIndentedString(billingAddress)).append("\n");
-        sb.append("    giftCardBrand: ").append(Util.toIndentedString(giftCardBrand)).append("\n");
         sb.append("}");
         return sb.toString();
     }

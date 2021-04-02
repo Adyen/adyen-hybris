@@ -86,7 +86,6 @@ import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
-import static com.adyen.v6.constants.Adyenv6coreConstants.GIFT_CARD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
@@ -461,8 +460,6 @@ public class AdyenRequestFactory {
         } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
             Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
             paymentsRequest.setShopperName(shopperName);
-        } else if (adyenPaymentMethod.equals(GIFT_CARD)) {
-            paymentMethod.setBrand(cartData.getAdyenGiftCardBrand());
         }
     }
 
