@@ -68,6 +68,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String CARD_TYPE_DEBIT = "debit";
 	public static final String AFFIRM = "affirm";
 	public static final String CLEARPAY = "clearpay";
+	public static final String GIFT_CARD = "giftcard";
 
 	private Adyenv6coreConstants() {
 		//empty to avoid instantiating this constant class

@@ -2,6 +2,11 @@
 
 This plugin supports SAP Commerce (Hybris) versions 6.x
 
+The plugin is using following adyen libraries and API.
+- [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v12.0.1)
+- [adyen-web](https://github.com/Adyen/adyen-web) (v3.23.0)
+- [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v66)
+
 ## Integration
 
 The SAP Commerce integrates Adyen Checkout for all card payments and local/redirect payment methods.
