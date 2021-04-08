@@ -97,10 +97,16 @@
                     <key>
                         <value type="java.lang.Class">de.hybris.platform.payment.commands.CaptureCommand</value>
                     </key>
-                    <bean class="com.adyen.v6.commands.AdyenCaptureCommand">
+                    <bean class="com.adyen.v6.commands.AdyenCaptureCommand" parent="abstractAdyenCaptureCommand">
                         <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
                         <property name="orderRepository" ref="adyenOrderRepository"/>
                     </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <value type="java.lang.Class">de.hybris.platform.payment.commands.PartialCaptureCommand</value>
+                    </key>
+                    <bean class="com.adyen.v6.commands.AdyenPartialCaptureCommand" parent="abstractAdyenCaptureCommand"/>
                 </entry>
                 <entry>
                     <key>
