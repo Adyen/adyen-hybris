@@ -27,7 +27,6 @@ import com.adyen.v6.service.DefaultAdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
-import de.hybris.platform.payment.commands.request.CaptureRequest;
 import de.hybris.platform.payment.commands.request.PartialCaptureRequest;
 import de.hybris.platform.payment.commands.result.CaptureResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
