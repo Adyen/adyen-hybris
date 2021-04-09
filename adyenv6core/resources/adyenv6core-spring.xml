@@ -88,6 +88,11 @@
         <property name="orderRepository" ref="adyenOrderRepository" />
     </bean>
 
+    <bean id="abstractAdyenCaptureCommand" class="com.adyen.v6.commands.AbstractAdyenCaptureCommand">
+        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
+        <property name="orderRepository" ref="adyenOrderRepository"/>
+    </bean>
+
     <!-- Used for commands triggered by order-process -->
     <bean name="adyenCommandFactory" class="de.hybris.platform.payment.commands.factory.impl.DefaultCommandFactoryImpl" >
         <property name="paymentProvider" value="Adyen"/>
