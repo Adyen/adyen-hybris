@@ -24,24 +24,24 @@ import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.terminal.TerminalAPIResponse;
 
-public class AdyenNonAuthorizedPaymentException extends Exception {
+public class AdyenNonAuthorizedPaymentResultException extends Exception {
     private PaymentResult paymentResult;
     private PaymentsResponse paymentsResponse;
     private TerminalAPIResponse terminalApiResponse;
 
-    public AdyenNonAuthorizedPaymentException(PaymentResult paymentResult) {
+    public AdyenNonAuthorizedPaymentResultException(PaymentResult paymentResult) {
         this.paymentResult = paymentResult;
     }
 
-    public AdyenNonAuthorizedPaymentException(PaymentsResponse paymentsResponse) {
+    public AdyenNonAuthorizedPaymentResultException(PaymentsResponse paymentsResponse) {
         this.paymentsResponse = paymentsResponse;
     }
 
-    public AdyenNonAuthorizedPaymentException(TerminalAPIResponse terminalApiResponse) {
+    public AdyenNonAuthorizedPaymentResultException(TerminalAPIResponse terminalApiResponse) {
         this.terminalApiResponse = terminalApiResponse;
     }
 
-    public AdyenNonAuthorizedPaymentException(String message) {
+    public AdyenNonAuthorizedPaymentResultException(String message) {
         super(message);
     }
 

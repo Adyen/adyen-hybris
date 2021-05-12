@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.adyen.util.DateUtil;
 import org.apache.log4j.Logger;
 import com.adyen.model.FraudCheckResult;
 import com.adyen.model.FraudResult;
@@ -37,6 +39,9 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.fraud.model.FraudReportModel;
 import de.hybris.platform.fraud.model.FraudSymptomScoringModel;
 import de.hybris.platform.servicelayer.model.ModelService;
+
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
@@ -141,20 +146,21 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         paymentInfo.setAdyenThreeDOffered(paymentsResponse.get3DOffered());
         paymentInfo.setAdyenThreeDAuthenticated(paymentsResponse.get3DAuthenticated());
 
-        //Boleto data
-        paymentInfo.setAdyenBoletoUrl(paymentsResponse.getBoletoUrl());
-        paymentInfo.setAdyenBoletoBarCodeReference(paymentsResponse.getBoletoBarCodeReference());
-        paymentInfo.setAdyenBoletoDueDate(paymentsResponse.getBoletoDueDate());
-        paymentInfo.setAdyenBoletoExpirationDate(paymentsResponse.getBoletoExpirationDate());
-
         CheckoutPaymentsAction action = paymentsResponse.getAction();
 
-        if (action != null && PAYMENT_METHOD_MULTIBANCO.equals(action.getPaymentMethodType())) {
-            //Multibanco data
-            paymentInfo.setAdyenMultibancoEntity(action.getEntity());
-            paymentInfo.setAdyenMultibancoAmount(BigDecimal.valueOf(action.getInitialAmount().getValue()));
-            paymentInfo.setAdyenMultibancoDeadline(action.getExpiresAt());
-            paymentInfo.setAdyenMultibancoReference(action.getReference());
+        if (action != null) {
+            if (PAYMENT_METHOD_MULTIBANCO.equals(action.getPaymentMethodType())) {
+                //Multibanco data
+                paymentInfo.setAdyenMultibancoEntity(action.getEntity());
+                paymentInfo.setAdyenMultibancoAmount(BigDecimal.valueOf(action.getInitialAmount().getValue()));
+                paymentInfo.setAdyenMultibancoDeadline(action.getExpiresAt());
+                paymentInfo.setAdyenMultibancoReference(action.getReference());
+            } else if (PAYMENT_METHOD_BOLETO.equals(action.getPaymentMethodType()) || PAYMENT_METHOD_BOLETO_SANTANDER.equals(action.getPaymentMethodType())) {
+                //Boleto data
+                paymentInfo.setAdyenBoletoUrl(action.getDownloadUrl());
+                paymentInfo.setAdyenBoletoBarCodeReference(action.getReference());
+                paymentInfo.setAdyenBoletoExpirationDate(DateUtil.parseYmdDate(action.getExpiresAt()));
+            }
         }
 
         //pos receipt

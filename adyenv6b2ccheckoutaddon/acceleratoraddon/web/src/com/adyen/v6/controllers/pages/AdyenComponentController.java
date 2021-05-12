@@ -22,13 +22,14 @@ package com.adyen.v6.controllers.pages;
 
 import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodDetails;
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.details.ApplePayDetails;
 import com.adyen.model.checkout.details.MbwayDetails;
 import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenComponentException;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentResultException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -121,7 +122,7 @@ public class AdyenComponentController {
         catch ( ApiException e) {
             LOGGER.error("ApiException: " + e.toString());
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        }  catch (AdyenNonAuthorizedPaymentException  e) {
+        }  catch (AdyenNonAuthorizedPaymentResultException e) {
             LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
@@ -142,7 +143,7 @@ public class AdyenComponentController {
             Map<String, String> details = gson.fromJson(requestJson.get("details"), mapType);
             String paymentData = gson.fromJson(requestJson.get("paymentData"), String.class);
 
-            PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
+            PaymentsDetailsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
             return gson.toJson(paymentsResponse);
         } catch (ApiException e) {
             LOGGER.error("ApiException: " + e.toString());

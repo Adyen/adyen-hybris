@@ -21,6 +21,7 @@
 package com.adyen.v6.facades;
 
 import com.adyen.model.checkout.PaymentMethodDetails;
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -29,9 +30,7 @@ import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
-import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.CartModel;
-import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
@@ -106,7 +105,7 @@ public interface AdyenCheckoutFacade {
      * @param details consisting of parameters present in response query string
      * @return PaymentsResponse
      */
-    PaymentsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
+    PaymentsDetailsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -141,7 +140,7 @@ public interface AdyenCheckoutFacade {
      * @return PaymentsResponse
      * @throws Exception In case request failed
      */
-    PaymentsResponse componentDetails(HttpServletRequest request, Map<String, String> details, String paymentData) throws Exception;
+    PaymentsDetailsResponse componentDetails(HttpServletRequest request, Map<String, String> details, String paymentData) throws Exception;
 
     /**
      * Add payment details to cart
@@ -152,14 +151,12 @@ public interface AdyenCheckoutFacade {
      * Handles an 3D response
      * In case of authorized, it places an order from cart
      *
-     * @param request HTTP Request object
+     * @param details HTTP Request object
      * @return OrderData
      * @throws Exception In case order failed to be created
      */
 
-    OrderData handle3DS2Response(HttpServletRequest request) throws Exception;
-
-    OrderData handle3DResponse(HttpServletRequest request) throws Exception;
+    OrderData handle3DSResponse(Map<String, String> details) throws Exception;
 
     /**
      * Initializes an HPP payment
@@ -241,4 +238,6 @@ public interface AdyenCheckoutFacade {
     OrderData handleComponentResult(String resultJson) throws Exception;
 
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
+
+    String getClientKey();
 }
