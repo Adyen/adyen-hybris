@@ -25,13 +25,13 @@ import com.adyen.Config;
 import com.adyen.enums.Environment;
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentRequest;
-import com.adyen.model.PaymentRequest3d;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsRequest;
 import com.adyen.model.checkout.PaymentMethodsResponse;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.modification.CancelOrRefundRequest;
@@ -216,37 +216,15 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse authorise3DPayment(final String paymentData, final String paRes, final String md) throws Exception {
+    public PaymentsDetailsResponse authorise3DSPayment(Map<String, String> details) throws Exception {
         Checkout checkout = new Checkout(client);
+        PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DSPaymentsRequest(details);
 
-        PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DPaymentsRequest(paymentData, md, paRes);
         LOG.debug(paymentsDetailsRequest);
+        PaymentsDetailsResponse paymentsDetailsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        LOG.debug(paymentsDetailsResponse);
 
-        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
-        LOG.debug(paymentsResponse);
-
-        return paymentsResponse;
-    }
-
-    @Override
-    public PaymentsResponse authorise3DS2Payment(String paymentData, String token, String type) throws Exception {
-        Checkout checkout = new Checkout(client);
-        PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DS2PaymentsRequest(paymentData, token, type);
-        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
-        return paymentsResponse;
-    }
-
-    @Override
-    public PaymentResult authorise3D(final HttpServletRequest request, final String paRes, final String md) throws Exception {
-        Payment payment = new Payment(client);
-
-        PaymentRequest3d paymentRequest3d = getAdyenRequestFactory().create3DAuthorizationRequest(client.getConfig().getMerchantAccount(), request, md, paRes);
-
-        LOG.debug(paymentRequest3d);
-        PaymentResult paymentResult = payment.authorise3D(paymentRequest3d);
-        LOG.debug(paymentResult);
-
-        return paymentResult;
+        return paymentsDetailsResponse;
     }
 
     @Override
@@ -377,28 +355,28 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public PaymentsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception {
+    public PaymentsDetailsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception {
         Checkout checkout = new Checkout(client);
 
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
         paymentsDetailsRequest.setDetails(details);
 
         LOG.debug(paymentsDetailsRequest);
-        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        PaymentsDetailsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
         LOG.debug(paymentsResponse);
 
         return paymentsResponse;
     }
 
     @Override
-    public PaymentsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception {
+    public PaymentsDetailsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception {
         Checkout checkout = new Checkout(client);
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
         paymentsDetailsRequest.setDetails(details);
         paymentsDetailsRequest.setPaymentData(paymentData);
 
         LOG.debug(paymentsDetailsRequest);
-        PaymentsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
+        PaymentsDetailsResponse paymentsResponse = checkout.paymentsDetails(paymentsDetailsRequest);
         LOG.debug(paymentsResponse);
 
         return paymentsResponse;

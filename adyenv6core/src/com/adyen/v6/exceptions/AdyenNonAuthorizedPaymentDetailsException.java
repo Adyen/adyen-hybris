@@ -14,37 +14,30 @@
  *
  *  Adyen Hybris Extension
  *
- *  Copyright (c) 2017 Adyen B.V.
+ *  Copyright (c) 2021 Adyen B.V.
  *  This file is open source and available under the MIT license.
  *  See the LICENSE file for more info.
  */
-package com.adyen.v6.constants;
+package com.adyen.v6.exceptions;
 
-public interface AdyenControllerConstants
-{
-	String ADDON_PREFIX = "addon:/adyenv6b2ccheckoutaddon/";
-	String CART_PREFIX = "/cart";
-	String SELECT_PAYMENT_METHOD_PREFIX = "/checkout/multi/adyen/select-payment-method";
-	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
-	String COMPONENT_PREFIX = "/adyen/component";
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 
-	/**
-	 * Class with view name constants
-	 */
-	interface Views
-	{
+public class AdyenNonAuthorizedPaymentDetailsException extends Exception {
+    private PaymentsDetailsResponse paymentDetails;
 
-		interface Pages
-		{
+    public AdyenNonAuthorizedPaymentDetailsException(PaymentsDetailsResponse paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
 
-			interface MultiStepCheckout
-			{
-				String CheckoutSummaryPage = ADDON_PREFIX + "pages/checkout/multi/checkoutSummaryPage";
-				String SelectPaymentMethod = ADDON_PREFIX + "pages/checkout/multi/selectPaymentMethodPage";
-				String Validate3DSPaymentPage = ADDON_PREFIX + "pages/checkout/multi/3ds_payment";
-				String BillingAddressformPage = ADDON_PREFIX + "pages/checkout/multi/billingAddressForm";
-			}
-		}
+    public AdyenNonAuthorizedPaymentDetailsException(String message) {
+        super(message);
+    }
 
-	}
+    public PaymentsDetailsResponse getPaymentDetails() {
+        return paymentDetails;
+    }
+
+    public void setPaymentDetails(PaymentsDetailsResponse paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
 }
