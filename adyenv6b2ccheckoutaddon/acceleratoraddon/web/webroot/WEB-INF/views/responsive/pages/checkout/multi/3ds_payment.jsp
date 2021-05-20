@@ -6,9 +6,9 @@
             integrity="sha384-eNk32fgfYxvzNLyV19j4SLSHPQdLNR+iUS1t/D7rO4gwvbHrj6y77oJLZI7ikzBH"
             crossorigin="anonymous"></script>
     <link rel="stylesheet"
-          href="https://checkoutshopper-live.adyen.com/checkoutshopper/sdk/4.3.1/adyen.css"
+          href="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.css"
           integrity="sha384-5CDvDZiVPuf+3ZID0lh0aaUHAeky3/ACF1YAKzPbn3GEmzWgO53gP6stiYHWIdpB"
-          crossorigin="anonymous">
+          crossorigin="anonymous"/>
 
     <script type="text/javascript">
         function initiateCheckout ( locale, environmentMode, clientKey ) {
