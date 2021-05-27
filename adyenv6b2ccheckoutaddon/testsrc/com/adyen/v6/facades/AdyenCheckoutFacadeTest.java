@@ -26,7 +26,7 @@ import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.util.HMACValidator;
 import com.adyen.v6.converters.PaymentsResponseConverter;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentResultException;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.repository.OrderRepository;
@@ -255,7 +255,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
             assertEquals(paymentsResponse, e.getPaymentsResponse());
         }
@@ -271,7 +271,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.authorisePayment(requestMock, cartDataMock);
             fail("Expecting exception");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with paymentResult details
             assertEquals(paymentsResponse, e.getPaymentsResponse());
         }
@@ -306,7 +306,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(detailsMap);
             fail("Expecting exception");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             //throw exception with getPaymentsResponse details
             assertEquals(paymentsResponseMock, e.getPaymentsResponse());
         }

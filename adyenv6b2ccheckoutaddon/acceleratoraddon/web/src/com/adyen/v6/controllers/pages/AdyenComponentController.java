@@ -29,7 +29,7 @@ import com.adyen.model.checkout.details.MbwayDetails;
 import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenComponentException;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentResultException;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -122,7 +122,7 @@ public class AdyenComponentController {
         catch ( ApiException e) {
             LOGGER.error("ApiException: " + e.toString());
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        }  catch (AdyenNonAuthorizedPaymentResultException e) {
+        }  catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {

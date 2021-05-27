@@ -44,7 +44,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentResultException;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenBusinessProcessService;
@@ -323,7 +323,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.initiatePosPayment(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
         }
     }
@@ -338,7 +338,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.initiatePosPayment(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
         }
     }
@@ -390,7 +390,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
         }
     }
@@ -415,7 +415,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacadeSpy.checkPosPaymentStatus(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
             verify(adyenCheckoutFacadeSpy, atLeast(2)).checkPosPaymentStatus(request, cartData);
         }
@@ -436,7 +436,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
         }
     }
@@ -478,7 +478,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.authorisePayment(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorisePayment(eq(cartData), any(), any());
             verify(cartModel).setStatus(OrderStatus.PAYMENT_PENDING);
             verify(checkoutFacade).placeOrder();
@@ -538,7 +538,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
             verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
             verify(cartFactory).createCart();
@@ -575,7 +575,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(e.getMessage(), EXCEPTION);
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
             verify(orderRepository, times(2)).getOrderModel(PENDING_ORDER_CODE);
@@ -627,7 +627,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
             assertNotNull(e.getPaymentsResponse());
             assertEquals(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER, e.getPaymentsResponse().getResultCode());
@@ -667,7 +667,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
             verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
             verify(cartFactory).createCart();
@@ -706,7 +706,7 @@ public class AdyenCheckoutFacadeTest {
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
-        } catch (AdyenNonAuthorizedPaymentResultException e) {
+        } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(e.getMessage(), EXCEPTION);
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
             verify(orderRepository, times(2)).getOrderModel(PENDING_ORDER_CODE);

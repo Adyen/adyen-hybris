@@ -47,8 +47,7 @@ import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentDetailsException;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentResultException;
+import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -413,7 +412,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         } catch (Exception e) {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
             restoreCartFromOrderCodeInSession();
-            throw new AdyenNonAuthorizedPaymentResultException(e.getMessage());
+            throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
 
         String orderCode = response.getMerchantReference();
@@ -472,7 +471,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             if (PaymentResult.ResultCodeEnum.RECEIVED == paymentResult.getResultCode()) {
                 return createOrderFromPaymentResult(paymentResult);
             }
-            throw new AdyenNonAuthorizedPaymentResultException(paymentResult);
+            throw new AdyenNonAuthorizedPaymentException(paymentResult);
         }
 
         RequestInfo requestInfo = new RequestInfo(request);
@@ -499,7 +498,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             placePendingOrder(resultCode);
         }
 
-        throw new AdyenNonAuthorizedPaymentResultException(paymentsResponse);
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     private boolean isGuestUserTokenizationEnabled() {
@@ -533,7 +532,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return paymentsResponse;
         }
 
-        throw new AdyenNonAuthorizedPaymentResultException(paymentsResponse);
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     @Override
@@ -573,7 +572,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         } catch (Exception e) {
             LOGGER.debug(e instanceof ApiException ? e.toString() : e.getMessage());
             restoreCartFromOrderCodeInSession();
-            throw new AdyenNonAuthorizedPaymentResultException(e.getMessage());
+            throw new AdyenNonAuthorizedPaymentException(e.getMessage());
         }
 
         String orderCode = paymentsDetailsResponse.getMerchantReference();
@@ -587,7 +586,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         restoreCartFromOrder(orderCode);
-        throw new AdyenNonAuthorizedPaymentDetailsException(paymentsDetailsResponse);
+        throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
     }
 
     @Override
@@ -1274,7 +1273,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
             return createAuthorizedOrder(paymentsResponse);
         }
-        throw new AdyenNonAuthorizedPaymentResultException(terminalApiResponse);
+        throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
     }
 
     /**
@@ -1299,7 +1298,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                     }
                     return createAuthorizedOrder(paymentsResponse);
                 } else {
-                    throw new AdyenNonAuthorizedPaymentResultException(terminalApiResponse);
+                    throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
             } else {
                 ErrorConditionType errorCondition = TerminalAPIUtil.getErrorConditionForStatusFromStatusResponse(terminalApiResponse);
@@ -1307,18 +1306,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 if (errorCondition == ErrorConditionType.IN_PROGRESS) {
                     TimeUnit.SECONDS.sleep(5);
                     if (isPosTimedOut(request)) {
-                        throw new AdyenNonAuthorizedPaymentResultException(terminalApiResponse);
+                        throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                     } else {
                         return checkPosPaymentStatus(request, cartData);
                     }
                 } else {
-                    throw new AdyenNonAuthorizedPaymentResultException(terminalApiResponse);
+                    throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
                 }
             }
         }
 
         //probably returned SaleToPOIRequest, that means terminal unreachable, return the response as error
-        throw new AdyenNonAuthorizedPaymentResultException(terminalApiResponse);
+        throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
     }
 
     private boolean isPosTimedOut(HttpServletRequest request) {
@@ -1358,7 +1357,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         restoreCartFromOrder(orderCode);
 
-        throw new AdyenNonAuthorizedPaymentResultException(paymentsResponse);
+        throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
     private OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
