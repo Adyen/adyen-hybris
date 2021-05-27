@@ -44,6 +44,12 @@
                 AdyenCheckoutHybris.initiatePix("hidden-xs");
                 AdyenCheckoutHybris.initiatePix("visible-xs");
             </c:when>
+        
+            <c:when test="${selectedPaymentMethod eq 'paywithgoogle'}">
+                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
+                AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "hidden-xs");
+                AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "visible-xs");
+            </c:when>
 
             <%-- API only payments methods --%>
             <c:otherwise>

@@ -583,6 +583,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (paymentsResponse != null && paymentsResponse.getResultCode() != null) {
                     switch (paymentsResponse.getResultCode()) {
+                        case REDIRECTSHOPPER:
+                            LOGGER.debug("Component PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
+                            return redirectTo3DSValidation(model, paymentsResponse);
                         case REFUSED:
                             errorMessageKey = "checkout.error.authorization.payment.refused";
                             break;
