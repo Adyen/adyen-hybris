@@ -25,6 +25,7 @@ import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodsResponse;
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
@@ -56,13 +57,7 @@ public interface AdyenPaymentService {
 
     PaymentsResponse componentPayment(CartData cartData, PaymentMethodDetails paymentMethodDetails, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
-    /**
-     * Performs 3D secure authorization request via Adyen API
-     */
-    PaymentResult authorise3D(HttpServletRequest request, String paRes, String md) throws Exception;
-
-    PaymentsResponse authorise3DPayment(String paymentData, String paRes, String md) throws Exception;
-    PaymentsResponse authorise3DS2Payment(String paymentData, String token, String type) throws Exception;
+    PaymentsDetailsResponse authorise3DSPayment(Map<String, String> details) throws Exception;
 
     /**
      * Performs Capture request via Adyen API
@@ -107,12 +102,12 @@ public interface AdyenPaymentService {
     /**
      * Retrieves payment response from /payments/details for redirect methods like klarna
      */
-    PaymentsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception;
+    PaymentsDetailsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception;
 
     /**
      * Retrieves payment response from /payments/details
      */
-    PaymentsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
+    PaymentsDetailsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
 
     /**
      * Returns the HPP base URL for the current basestore
