@@ -421,6 +421,53 @@ var AdyenCheckoutHybris = (function () {
                     this.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
+        
+        initiateGooglePay: function (amount, merchantAccount, label) {
+            var googlePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var adyenComponent = this.checkout.create("paywithgoogle", {
+                environment: this.checkout.options.environment,
+                amount: {
+                    currency: amount.currency,
+                    value: amount.value
+                },
+                configuration: {
+                    gatewayMerchantId: merchantAccount,
+                    merchantName: merchantAccount
+                },
+                buttonColor: "white",
+                onChange: (state, component) => {
+                    if (!state.isValid) {
+                        this.hideSpinner();
+                    }
+                },
+                onSubmit: (state, component) => {
+                    if (!state.isValid) {
+                        this.hideSpinner();
+                        return false;
+                    }
+                    this.showSpinner();
+                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                },
+                onClick: (resolve, reject) => {
+                    if (this.isTermsAccepted(label)) {
+                        resolve();
+                    } else {
+                        reject();
+                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                    }
+                }
+            });
+
+            adyenComponent.isAvailable()
+                .then(() => {
+                    adyenComponent.mount(googlePayNode);
+                })
+                .catch(e => {
+                    // Google Pay is not available
+                    console.log('Something went wrong trying to mount the Google Pay component: ' + e);
+                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                });
+        },
 
         initiateMbway: function (label) {
             var mbwayNode = document.getElementById('adyen-component-container-' + label);
@@ -523,7 +570,7 @@ var AdyenCheckoutHybris = (function () {
                         var response = JSON.parse(data);
                         if (response.resultCode && response.resultCode === 'Pending' && response.action) {
                             component.handleAction(response.action);
-                        } else if (response.resultCode && response.resultCode === 'Authorised') {
+                        } else if (response.resultCode && (response.resultCode === 'Authorised' || response.resultCode === 'RedirectShopper') ) {
                             handleResult(response, false);
                         } else {
                             handleResult(ErrorMessages.PaymentError, true);

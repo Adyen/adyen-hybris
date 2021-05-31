@@ -215,6 +215,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_STORED_CARDS = "storedCards";
     public static final String MODEL_DF_URL = "dfUrl";
     public static final String MODEL_CLIENT_KEY = "clientKey";
+    public static final String MODEL_MERCHANT_ACCOUNT = "merchantAccount";
     public static final String MODEL_CHECKOUT_SHOPPER_HOST = "checkoutShopperHost";
     public static final String DF_VALUE = "dfValue";
     public static final String MODEL_OPEN_INVOICE_METHODS = "openInvoiceMethods";
@@ -513,7 +514,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     @Override
     public PaymentsResponse componentPayment(final HttpServletRequest request, final CartData cartData, final PaymentMethodDetails paymentMethodDetails) throws Exception {
         CustomerModel customer = null;
-        if (! getCheckoutCustomerStrategy().isAnonymousCheckout()) {
+        if (!getCheckoutCustomerStrategy().isAnonymousCheckout()) {
             customer = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
         }
 
@@ -523,7 +524,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentsResponse paymentsResponse = getAdyenPaymentService().componentPayment(cartData, paymentMethodDetails, requestInfo, customer);
-        if (PaymentsResponse.ResultCodeEnum.PENDING == paymentsResponse.getResultCode()) {
+        if (PaymentsResponse.ResultCodeEnum.PENDING == paymentsResponse.getResultCode() || PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
             placePendingOrder(paymentsResponse.getResultCode());
             return paymentsResponse;
         }
@@ -898,6 +899,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include information for components
         model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
+        model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
@@ -1348,15 +1350,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }.getType());
 
         String orderCode = paymentsResponse.getMerchantReference();
-        OrderModel orderModel = retrievePendingOrder(orderCode);
 
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == paymentsResponse.getResultCode()
                 || PaymentsResponse.ResultCodeEnum.RECEIVED == paymentsResponse.getResultCode()) {
+            OrderModel orderModel = retrievePendingOrder(orderCode);
             return getOrderConverter().convert(orderModel);
         }
-
-        restoreCartFromOrder(orderCode);
-
+        
+        if (PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER != paymentsResponse.getResultCode()) {
+            restoreCartFromOrder(orderCode);
+        }
         throw new AdyenNonAuthorizedPaymentException(paymentsResponse);
     }
 
