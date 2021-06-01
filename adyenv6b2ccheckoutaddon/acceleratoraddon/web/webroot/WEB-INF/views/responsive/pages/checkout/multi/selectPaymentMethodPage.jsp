@@ -17,9 +17,14 @@
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
         <script type="text/javascript" src="${dfUrl}"></script>
-        <script type="text/javascript" src="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.js"></script>
-        <link rel="stylesheet" href="https://checkoutshopper-live.adyen.com/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/sdk/3.23.0/adyen.css"/>
+        <script src="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.js"
+                integrity="sha384-eNk32fgfYxvzNLyV19j4SLSHPQdLNR+iUS1t/D7rO4gwvbHrj6y77oJLZI7ikzBH"
+                crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/css/chckt-default-v1.css"/>
+        <link rel="stylesheet"
+              href="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.css"
+              integrity="sha384-5CDvDZiVPuf+3ZID0lh0aaUHAeky3/ACF1YAKzPbn3GEmzWgO53gP6stiYHWIdpB"
+              crossorigin="anonymous"/>
 
         <script type="text/javascript">
             AdyenCheckoutHybris.initiateCheckout( "${shopperLocale}", "${environmentMode}", "${clientKey}" );
@@ -134,6 +139,7 @@
                             <form:hidden path="rememberTheseDetails" value="false"/>
                             <form:hidden path="sepaOwnerName"/>
                             <form:hidden path="sepaIbanNumber"/>
+                            <form:hidden path="giftCardBrand"/>
 
                             <%-- Billing Information --%>
                             <div class="headline">
@@ -188,6 +194,7 @@
                                 <c:forEach items="${paymentMethods}" var="paymentMethod">
                                     <adyen:alternativeMethod
                                             brandCode="${paymentMethod.type}"
+                                            brand="${paymentMethod.brand}"
                                             name="${paymentMethod.name}"
                                             showDob="${paymentMethod.type=='ratepay'}"
                                             showFirstName="${paymentMethod.type=='pix'}"

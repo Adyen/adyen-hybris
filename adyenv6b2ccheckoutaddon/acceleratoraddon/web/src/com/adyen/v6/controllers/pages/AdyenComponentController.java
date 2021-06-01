@@ -22,8 +22,10 @@ package com.adyen.v6.controllers.pages;
 
 import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodDetails;
+import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.model.checkout.details.ApplePayDetails;
+import com.adyen.model.checkout.details.GooglePayDetails;
 import com.adyen.model.checkout.details.MbwayDetails;
 import com.adyen.model.checkout.details.PayPalDetails;
 import com.adyen.service.exception.ApiException;
@@ -61,6 +63,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
+import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 
 @RestController
@@ -103,6 +106,8 @@ public class AdyenComponentController {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), MbwayDetails.class);
             } else if(ApplePayDetails.APPLEPAY.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), ApplePayDetails.class);
+            } else if(GooglePayDetails.GOOGLEPAY.equals(paymentMethod)) {
+                paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), GooglePayDetails.class);
             } else if(PAYMENT_METHOD_PIX.equals(paymentMethod)) {
                 paymentMethodDetails = new DefaultPaymentMethodDetails();
                 paymentMethodDetails.setType(PAYMENT_METHOD_PIX);
@@ -110,7 +115,7 @@ public class AdyenComponentController {
                 throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
             }
 
-            cartData.setAdyenReturnUrl(getReturnUrl());
+            cartData.setAdyenReturnUrl(getReturnUrl(paymentMethod));
 
             PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, paymentMethodDetails);
             return gson.toJson(paymentsResponse);
@@ -121,7 +126,7 @@ public class AdyenComponentController {
         catch ( ApiException e) {
             LOGGER.error("ApiException: " + e.toString());
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        }  catch (AdyenNonAuthorizedPaymentException  e) {
+        }  catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
@@ -142,7 +147,7 @@ public class AdyenComponentController {
             Map<String, String> details = gson.fromJson(requestJson.get("details"), mapType);
             String paymentData = gson.fromJson(requestJson.get("paymentData"), String.class);
 
-            PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
+            PaymentsDetailsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
             return gson.toJson(paymentsResponse);
         } catch (ApiException e) {
             LOGGER.error("ApiException: " + e.toString());
@@ -200,8 +205,14 @@ public class AdyenComponentController {
         }
     }
 
-    private String getReturnUrl() {
-        String url = COMPONENT_PREFIX + "/submit-details";
+    private String getReturnUrl(String paymentMethod) {
+        String url;
+        if(GooglePayDetails.GOOGLEPAY.equals(paymentMethod)) {
+            //Google Pay will only use returnUrl if redirected to 3DS authentication
+            url = SUMMARY_CHECKOUT_PREFIX + "/authorise-3d-adyen-response";
+        } else {
+            url = COMPONENT_PREFIX + "/submit-details";
+        }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
     }

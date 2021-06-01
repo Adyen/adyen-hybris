@@ -83,9 +83,11 @@ import java.util.Currency;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
+import static com.adyen.v6.constants.Adyenv6coreConstants.GIFT_CARD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
@@ -166,22 +168,9 @@ public class AdyenRequestFactory {
         return paymentRequest;
     }
 
-    public PaymentsDetailsRequest create3DPaymentsRequest(final String paymentData, final String md, final String paRes) {
-
+    public PaymentsDetailsRequest create3DSPaymentsRequest(final Map<String, String> details) {
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
-        paymentsDetailsRequest.set3DRequestData(md, paRes, paymentData);
-        return paymentsDetailsRequest;
-    }
-
-    public PaymentsDetailsRequest create3DS2PaymentsRequest(final String paymentData, final String token, String type) {
-
-        PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
-        if (type.equals("fingerprint")) {
-            paymentsDetailsRequest.setFingerPrint(token, paymentData);
-
-        } else if (type.equals("challenge")) {
-            paymentsDetailsRequest.setChallengeResult(token, paymentData);
-        }
+        paymentsDetailsRequest.setDetails(details);
         return paymentsDetailsRequest;
     }
 
@@ -460,6 +449,8 @@ public class AdyenRequestFactory {
         } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
             Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
             paymentsRequest.setShopperName(shopperName);
+        } else if (adyenPaymentMethod.equals(GIFT_CARD)) {
+            paymentMethod.setBrand(cartData.getAdyenGiftCardBrand());
         }
     }
 
