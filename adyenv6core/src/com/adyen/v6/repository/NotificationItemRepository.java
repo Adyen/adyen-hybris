@@ -56,30 +56,30 @@ public class NotificationItemRepository extends AbstractRepository {
         return nonProcessedNotifications;
     }
 
-    public  boolean isNewerNotificationExists(String merchantReference, Date eventDate, String merchantAccountCode)
-    {
-        final Map queryParams = new HashMap();
-        queryParams.put("merchantReference", merchantReference);
+    public boolean isNewerNotificationExists(String merchantReference, Date eventDate, String merchantAccountCode) {
+        String query = "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
+                + " WHERE {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL";
+        final Map<String, Object> queryParams = new HashMap<>();
+
+        if (merchantReference != null) {
+            queryParams.put("merchantReference", merchantReference);
+            query += " AND {" + NotificationItemModel.MERCHANTREFERENCE + "} = ?merchantReference";
+        } else {
+            query += " AND {" + NotificationItemModel.MERCHANTREFERENCE + "} IS NULL";
+        }
         queryParams.put("eventDate", eventDate);
         queryParams.put("merchantAccountCode", merchantAccountCode);
+        query += " AND {" + NotificationItemModel.EVENTDATE + "} > ?eventDate"
+                + " AND {" + NotificationItemModel.MERCHANTACCOUNTCODE + "} = ?merchantAccountCode"
+                + " ORDER BY {eventDate} desc";
 
-        final FlexibleSearchQuery laterNotificationQuery = new FlexibleSearchQuery(
-                "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
-                        + " WHERE {" + NotificationItemModel.MERCHANTREFERENCE + "} = ?merchantReference"
-                        + " AND {" +  NotificationItemModel.EVENTDATE + "} > ?eventDate"
-                        + " AND {" +  NotificationItemModel.MERCHANTACCOUNTCODE + "} = ?merchantAccountCode"
-                        + " AND {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL "
-                        + "order by {eventDate} desc",
-                queryParams
-        );
+        final FlexibleSearchQuery laterNotificationQuery = new FlexibleSearchQuery(query, queryParams);
         LOG.debug("Checking if a newer notification already exists");
-        List newerNotificationList = flexibleSearchService
+        List<Object> newerNotificationList = flexibleSearchService
                 .search(laterNotificationQuery)
                 .getResult();
-        if(newerNotificationList!=null && newerNotificationList.size() > 0) {
-            return true;
-        }
-        return false;
+
+        return newerNotificationList != null && newerNotificationList.size() > 0;
     }
 
     /**
@@ -91,7 +91,7 @@ public class NotificationItemRepository extends AbstractRepository {
      * @return true|false
      */
     public boolean notificationProcessed(String pspReference, String eventCode, boolean success) {
-        final Map queryParams = new HashMap();
+        final Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("pspReference", pspReference);
         queryParams.put("eventCode", eventCode);
         queryParams.put("success", success);
