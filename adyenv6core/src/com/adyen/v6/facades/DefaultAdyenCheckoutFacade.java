@@ -148,6 +148,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_AL
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
@@ -234,6 +235,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_COUNTRY_CODE = "countryCode";
     public static final String MODEL_APPLEPAY_MERCHANT_IDENTIFIER = "applePayMerchantIdentifier";
     public static final String MODEL_APPLEPAY_MERCHANT_NAME = "applePayMerchantName";
+    public static final String MODEL_AMAZONPAY_CONFIGURATION = "amazonPayConfiguration";
     public static final String ECOMMERCE_SHOPPER_INTERACTION = "Ecommerce";
     public static final String MODEL_CARD_HOLDER_NAME_REQUIRED = "cardHolderNameRequired";
     public static final String IS_CARD_HOLDER_NAME_REQUIRED_PROPERTY = "isCardHolderNameRequired";
@@ -800,6 +802,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             }
         }
 
+        //amazon pay
+        Optional<PaymentMethod> amazonPayMethod = alternativePaymentMethods.stream()
+                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                        && PAYMENT_METHOD_AMAZONPAY.contains(paymentMethod.getType()))
+                .findFirst();
+        if(amazonPayMethod.isPresent()) {
+            Map<String, String> amazonPayConfiguration = amazonPayMethod.get().getConfiguration();
+            if(!CollectionUtils.isEmpty(amazonPayConfiguration)) {
+                cartModel.setAdyenAmazonPayConfiguration(amazonPayConfiguration);
+            }
+        }
+
         baseStore = baseStoreService.getCurrentBaseStore();
 
         //Verify allowedCards
@@ -905,6 +919,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
         model.addAttribute(MODEL_APPLEPAY_MERCHANT_IDENTIFIER, cartData.getAdyenApplePayMerchantIdentifier());
         model.addAttribute(MODEL_APPLEPAY_MERCHANT_NAME, cartData.getAdyenApplePayMerchantName());
+        model.addAttribute(MODEL_AMAZONPAY_CONFIGURATION, new Gson().toJson(cartData.getAdyenAmazonPayConfiguration()));
         model.addAttribute(MODEL_COUNTRY_CODE, cartData.getDeliveryAddress().getCountry().getIsocode());
 
     }
@@ -1056,6 +1071,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenApplePayMerchantName(cartModel.getAdyenApplePayMerchantName());
         paymentInfo.setAdyenApplePayMerchantIdentifier(cartModel.getAdyenApplePayMerchantIdentifier());
 
+        //amazon pay
+        paymentInfo.setAdyenAmazonPayConfiguration(cartModel.getAdyenAmazonPayConfiguration());
+        
         //combo card fields
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());

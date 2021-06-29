@@ -468,6 +468,61 @@ var AdyenCheckoutHybris = (function () {
                     this.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
+        
+        initiateAmazonPay: function (amount, amazonPayConfiguration) {
+            var label = this.getVisibleLabel();
+            var url = new URL(window.location.href);
+            var componentConfiguration;
+            if(url.searchParams.has('amazonCheckoutSessionId')) {
+                // Complete payment, amazon session already created
+                componentConfiguration = {
+                    amount: amount,
+                    amazonCheckoutSessionId: url.searchParams.get('amazonCheckoutSessionId'),
+                    showOrderButton: false,
+                    onSubmit: (state, component) => {
+                        if (!state.isValid) {
+                            component.setStatus('ready');
+                            this.hideSpinner();
+                            return false;
+                        }
+                        component.setStatus('loading');
+                        this.showSpinner();
+                        this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    }
+                };
+            } else {
+                // Pre-payment, login and choose amazon pay method
+                componentConfiguration = {
+                    environment: this.checkout.options.environment,
+                    amount: amount,
+                    configuration: amazonPayConfiguration,
+                    productType: 'PayOnly',
+                    checkoutMode: 'ProcessOrder',
+                    returnUrl: window.location.origin + ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/view',
+                    onClick: (resolve, reject) => {
+                        if (this.isTermsAccepted(label)) {
+                            resolve();
+                        } else {
+                            reject();
+                            this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        }
+                    }
+                };
+            }
+            
+            var amazonPayNode = document.getElementById('adyen-component-button-container-' + label);
+            var adyenComponent = this.checkout.create("amazonpay", componentConfiguration);
+            
+            try {
+                adyenComponent.mount(amazonPayNode);
+                if(url.searchParams.has('amazonCheckoutSessionId')) {
+                    adyenComponent.submit();
+                }
+            } catch (e) {
+                console.log('Something went wrong trying to mount the Amazon Pay component: ' + e);
+                this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+            }
+        },
 
         initiateMbway: function (label) {
             var mbwayNode = document.getElementById('adyen-component-container-' + label);
@@ -648,6 +703,16 @@ var AdyenCheckoutHybris = (function () {
             this.hideSpinner();
             //enable button
             $("#placeOrder-" + label).prop('disabled', false);
+        },
+        getVisibleLabel: function () {
+            if(!(window.getComputedStyle(document.getElementById('adyen-checkout-visible-xs')).display === "none")) {
+                return 'visible-xs';
+            }
+            if(!(window.getComputedStyle(document.getElementById('adyen-checkout-hidden-xs')).display === "none")) {
+                return 'hidden-xs';
+            }
+            console.log('Something went wrong while trying to compute current visible label');
+            return '';
         }
     };
 })();

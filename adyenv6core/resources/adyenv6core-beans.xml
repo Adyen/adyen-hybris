@@ -44,6 +44,7 @@
         <property name="adyenShopperEmail" type="java.lang.String"/>
         <property name="adyenShopperTelephone" type="java.lang.String"/>
         <property name="adyenGiftCardBrand" type="java.lang.String"/>
+        <property name="adyenAmazonPayConfiguration" type="java.util.Map"/>
     </bean>
 
     <bean class="de.hybris.platform.commercefacades.order.data.AbstractOrderData">

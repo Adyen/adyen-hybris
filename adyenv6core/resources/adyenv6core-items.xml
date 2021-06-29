@@ -73,6 +73,10 @@
                     <description>Apple Pay merchant identifier</description>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="adyenAmazonPayConfiguration" type="java.util.Map">
+                    <description>Amazon Pay configuration</description>
+                    <persistence type="property"/>
+                </attribute>
             </attributes>
         </itemtype>
 
@@ -442,6 +446,10 @@
                 </attribute>
                 <attribute qualifier="adyenApplePayMerchantIdentifier" type="java.lang.String">
                     <description>Apple Pay merchant identifier</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenAmazonPayConfiguration" type="java.util.Map">
+                    <description>Amazon Pay configuration</description>
                     <persistence type="property"/>
                 </attribute>
 
