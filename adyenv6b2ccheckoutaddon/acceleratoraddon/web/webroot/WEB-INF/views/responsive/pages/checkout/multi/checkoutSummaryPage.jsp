@@ -55,6 +55,11 @@
                 AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "hidden-xs");
                 AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "visible-xs");
             </c:when>
+        
+            <c:when test="${selectedPaymentMethod eq 'amazonpay'}">
+                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
+                AdyenCheckoutHybris.initiateAmazonPay(amountJS, ${amazonPayConfiguration});
+            </c:when>
 
             <%-- API only payments methods --%>
             <c:otherwise>
@@ -89,7 +94,7 @@
                             <multi-checkout:orderTotals cartData="${cartData}" showTaxEstimate="${showTaxEstimate}" showTax="${showTax}" subtotalsCssClasses="dark"/>
                         </div>
                     </div>
-                    <div class="place-order-form hidden-xs">
+                    <div id="adyen-checkout-hidden-xs" class="place-order-form hidden-xs">
                         <adyen:checkoutOrderSummary paymentMethod="${selectedPaymentMethod}" label="hidden-xs"/>
                     </div>
                 </ycommerce:testId>
@@ -125,7 +130,7 @@
                 </ycommerce:testId>
             </div>
 
-            <div class="visible-xs clearfix">
+            <div id="adyen-checkout-visible-xs" class="visible-xs clearfix">
                 <adyen:checkoutOrderSummary paymentMethod="${selectedPaymentMethod}" label="visible-xs"/>
             </div>
         </div>
