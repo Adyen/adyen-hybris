@@ -37,11 +37,4 @@ public class AdyenCheckoutFlowFacade extends DefaultCheckoutFlowFacade
 
         return cartData;
     }
-
-    @Override
-    public boolean hasNoPaymentInfo()
-    {
-        final CartData cartData = getCheckoutCart();
-        return cartData == null || cartData.getPaymentInfo() == null;
-    }
 }
