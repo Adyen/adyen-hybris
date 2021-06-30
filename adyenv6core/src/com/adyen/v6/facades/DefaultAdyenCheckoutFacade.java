@@ -1073,9 +1073,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         paymentInfo.setAdyenApplePayMerchantName(cartModel.getAdyenApplePayMerchantName());
         paymentInfo.setAdyenApplePayMerchantIdentifier(cartModel.getAdyenApplePayMerchantIdentifier());
 
-        //amazon pay
-        paymentInfo.setAdyenAmazonPayConfiguration(cartModel.getAdyenAmazonPayConfiguration());
-        
         //combo card fields
         paymentInfo.setCardType(adyenPaymentForm.getCardType());
         paymentInfo.setCardBrand(adyenPaymentForm.getCardBrand());
