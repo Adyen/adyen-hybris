@@ -58,7 +58,7 @@
         
             <c:when test="${selectedPaymentMethod eq 'amazonpay'}">
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiateAmazonPay(amountJS, ${amazonPayConfiguration});
+                AdyenCheckoutHybris.initiateAmazonPay(amountJS, ${deliveryAddress}, ${amazonPayConfiguration});
             </c:when>
 
             <%-- API only payments methods --%>
