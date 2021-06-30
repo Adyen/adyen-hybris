@@ -469,7 +469,7 @@ var AdyenCheckoutHybris = (function () {
                 });
         },
         
-        initiateAmazonPay: function (amount, amazonPayConfiguration) {
+        initiateAmazonPay: function (amount, deliveryAddress, amazonPayConfiguration) {
             var label = this.getVisibleLabel();
             var url = new URL(window.location.href);
             var componentConfiguration;
@@ -494,9 +494,18 @@ var AdyenCheckoutHybris = (function () {
                 // Pre-payment, login and choose amazon pay method
                 componentConfiguration = {
                     environment: this.checkout.options.environment,
+                    addressDetails: {
+                        name: deliveryAddress.firstName + ' ' + deliveryAddress.lastName,
+                        addressLine1: deliveryAddress.line1,
+                        addressLine2: deliveryAddress.line2,
+                        city: deliveryAddress.town,
+                        postalCode: deliveryAddress.postalCode,
+                        countryCode: deliveryAddress.country.isocode,
+                        phoneNumber: deliveryAddress.phone
+                    },
                     amount: amount,
                     configuration: amazonPayConfiguration,
-                    productType: 'PayOnly',
+                    productType: 'PayAndShip',
                     checkoutMode: 'ProcessOrder',
                     returnUrl: window.location.origin + ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/view',
                     onClick: (resolve, reject) => {
