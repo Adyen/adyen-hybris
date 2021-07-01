@@ -333,6 +333,7 @@ var AdyenCheckoutHybris = (function () {
 
         initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId, label) {
             var paypalNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
 
             var adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
@@ -342,28 +343,28 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return false;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onCancel: (data, component) => {
+                onCancel: function(data, component) {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
-                    this.handleResult(ErrorMessages.PaymentCancelled, true);
+                    self.handleResult(ErrorMessages.PaymentCancelled, true);
                 },
-                onError: (error, component) => {
+                onError: function(error, component) {
                     // Sets your prefered status of the component when an error occurs.
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    self.handleResult(ErrorMessages.PaymentError, true);
                 },
-                onAdditionalDetails: (state, component) => {
-                    this.submitDetails(state.data, this.handleResult);
+                onAdditionalDetails: function(state, component) {
+                    self.submitDetails(state.data, self.handleResult);
                 }
             });
 
@@ -376,6 +377,7 @@ var AdyenCheckoutHybris = (function () {
 
         initiateApplePay: function (amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label) {
             var applePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
             var adyenComponent = this.checkout.create("applepay", {
                 amount: {
                     currency: amount.currency,
@@ -389,41 +391,42 @@ var AdyenCheckoutHybris = (function () {
                 // Button config
                 buttonType: "plain",
                 buttonColor: "black",
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return false;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    state.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onClick: (resolve, reject) => {
-                    if (this.isTermsAccepted(label)) {
+                onClick: function(resolve, reject) {
+                    if (self.isTermsAccepted(label)) {
                         resolve();
                     } else {
                         reject();
-                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        self.handleResult(ErrorMessages.TermsNotAccepted, true);
                     }
                 }
             });
 
             adyenComponent.isAvailable()
-                .then(() => {
+                .then(function() {
                     adyenComponent.mount(applePayNode);
                 })
-                .catch(e => {
+                .catch(function(e) {
                     // Apple Pay is not available
                     console.log('Something went wrong trying to mount the Apple Pay component: ' + e);
-                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                    self.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
         
         initiateGooglePay: function (amount, merchantAccount, label) {
             var googlePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
             var adyenComponent = this.checkout.create("paywithgoogle", {
                 environment: this.checkout.options.environment,
                 amount: {
@@ -435,69 +438,70 @@ var AdyenCheckoutHybris = (function () {
                     merchantName: merchantAccount
                 },
                 buttonColor: "white",
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.hideSpinner();
+                        self.hideSpinner();
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.hideSpinner();
+                        self.hideSpinner();
                         return false;
                     }
-                    this.showSpinner();
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    state.showSpinner();
+                    state.makePayment(state.data.paymentMethod, component, state.handleResult, label);
                 },
-                onClick: (resolve, reject) => {
-                    if (this.isTermsAccepted(label)) {
+                onClick: function(resolve, reject) {
+                    if (self.isTermsAccepted(label)) {
                         resolve();
                     } else {
                         reject();
-                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        self.handleResult(ErrorMessages.TermsNotAccepted, true);
                     }
                 }
             });
 
             adyenComponent.isAvailable()
-                .then(() => {
+                .then(function() {
                     adyenComponent.mount(googlePayNode);
                 })
-                .catch(e => {
+                .catch(function(e) {
                     // Google Pay is not available
                     console.log('Something went wrong trying to mount the Google Pay component: ' + e);
-                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                    self.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
 
         initiateMbway: function (label) {
             var mbwayNode = document.getElementById('adyen-component-container-' + label);
+            var self = this;
 
             var adyenComponent = this.checkout.create("mbway", {
                 showPayButton: false,
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onAdditionalDetails: (state, component) => {
-                    this.submitDetails(state.data, this.handleResult);
+                onAdditionalDetails: function(state, component) {
+                    self.submitDetails(state.data, self.handleResult);
                 },
-                onError: (error, component) => {
+                onError: function(error, component) {
                     console.log('Something went wrong trying to make the MBWay payment: ' + error);
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    self.handleResult(ErrorMessages.PaymentError, true);
                 }
             });
 
             try {
                 adyenComponent.mount(mbwayNode);
-                this.configureButton(adyenComponent, false, label);
+                self.configureButton(adyenComponent, false, label);
             } catch (e) {
                 console.log('Something went wrong trying to mount the MBWay component: ' + e);
             }
@@ -531,7 +535,7 @@ var AdyenCheckoutHybris = (function () {
                     var actionHandler  = {
                         handleAction : function (action) {
                             AdyenCheckoutHybris.checkout.createFromAction(action, {
-                                onAdditionalDetails : (state) => {
+                                onAdditionalDetails : function(state) {
                                     AdyenCheckoutHybris.hideSpinner();
                                     AdyenCheckoutHybris.submitDetails(state.data, AdyenCheckoutHybris.handleResult);
                                 }
