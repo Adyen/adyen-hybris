@@ -93,4 +93,9 @@ public interface AdyenTransactionService {
      * Creates a PaymentTransactionModel
      */
     PaymentTransactionModel createPaymentTransactionFromResultCode(AbstractOrderModel abstractOrderModel, String merchantTransactionCode, String pspReference, PaymentsResponse.ResultCodeEnum resultCodeEnum);
+
+    /**
+     * Creates a PaymentTransactionEntryModel with type=CAPTURE
+     */
+    PaymentTransactionEntryModel createCapturePaymentTransactionEntryModel(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel);
 }

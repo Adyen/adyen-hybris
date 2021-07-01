@@ -427,6 +427,50 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return terminalApiResponse;
     }
 
+    @Override
+    public boolean supportsManualCapture(final String paymentMethod) {
+        if (paymentMethod == null) {
+            return de.hybris.platform.util.Config.getBoolean("adyen.payment.method.null.support.manual.capture", true);
+        }
+
+        switch (paymentMethod) {
+            case "cup":
+            case "cartebancaire":
+            case "visa":
+            case "visadankort":
+            case "mc":
+            case "uatp":
+            case "amex":
+            case "maestro":
+            case "maestrouk":
+            case "diners":
+            case "discover":
+            case "jcb":
+            case "laser":
+            case "paypal":
+            case "klarna":
+            case "afterpay":
+            case "afterpaytouch":
+            case "clearpay":
+            case "ratepay":
+            case "afterpay_default":
+            case "sepadirectdebit":
+            case "dankort":
+            case "elo":
+            case "hipercard":
+            case "mc_applepay":
+            case "visa_applepay":
+            case "amex_applepay":
+            case "discover_applepay":
+            case "maestro_applepay":
+            case "paywithgoogle":
+                return true;
+            default:
+                return false;
+        }
+
+    }
+
     public AdyenRequestFactory getAdyenRequestFactory() {
         return adyenRequestFactory;
     }

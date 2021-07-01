@@ -256,6 +256,29 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return paymentTransactionModel;
     }
 
+    @Override
+    public PaymentTransactionEntryModel createCapturePaymentTransactionEntryModel(
+            final PaymentTransactionModel paymentTransaction,
+            final String merchantCode,
+            final AbstractOrderModel abstractOrderModel) {
+        final PaymentTransactionEntryModel transactionEntryModel = getModelService().create(PaymentTransactionEntryModel.class);
+
+        final String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
+
+        transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
+        transactionEntryModel.setPaymentTransaction(paymentTransaction);
+        transactionEntryModel.setRequestId(paymentTransaction.getRequestId());
+        transactionEntryModel.setRequestToken(merchantCode);
+        transactionEntryModel.setCode(code);
+        transactionEntryModel.setTime(DateTime.now().toDate());
+        transactionEntryModel.setTransactionStatus(TransactionStatus.ACCEPTED.name());
+        transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+        transactionEntryModel.setAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
+        transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
+
+        return transactionEntryModel;
+    }
+
     private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(
             final PaymentTransactionModel paymentTransaction,
             final String merchantCode,

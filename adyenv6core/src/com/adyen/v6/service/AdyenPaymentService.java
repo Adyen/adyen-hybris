@@ -127,4 +127,9 @@ public interface AdyenPaymentService {
      * Send POS Status Request using Adyen Terminal API
      */
     TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String serviceId) throws Exception;
+
+    /**
+     * Check if paymentMethod supports manual capture
+     */
+    boolean supportsManualCapture(final String paymentMethod);
 }

@@ -81,7 +81,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
 
         boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
 
-        boolean autoCapture = isImmediateCapture || ! supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
+        boolean autoCapture = isImmediateCapture || ! adyenPaymentService.supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
 
         if (autoCapture) {
             result.setTransactionStatus(TransactionStatus.ACCEPTED);
@@ -122,44 +122,6 @@ public class AdyenCaptureCommand implements CaptureCommand {
         result.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE);
 
         return result;
-    }
-
-    private boolean supportsManualCapture(String paymentMethod) {
-        switch (paymentMethod) {
-            case "cup":
-            case "cartebancaire":
-            case "visa":
-            case "visadankort":
-            case "mc":
-            case "uatp":
-            case "amex":
-            case "maestro":
-            case "maestrouk":
-            case "diners":
-            case "discover":
-            case "jcb":
-            case "laser":
-            case "paypal":
-            case "klarna":
-            case "afterpay":
-            case "afterpaytouch":
-            case "clearpay":
-            case "ratepay":
-            case "afterpay_default":
-            case "sepadirectdebit":
-            case "dankort":
-            case "elo":
-            case "hipercard":
-            case "mc_applepay":
-            case "visa_applepay":
-            case "amex_applepay":
-            case "discover_applepay":
-            case "maestro_applepay":
-            case "paywithgoogle":
-                return true;
-        }
-
-        return false;
     }
 
     public AdyenPaymentServiceFactory getAdyenPaymentServiceFactory() {
