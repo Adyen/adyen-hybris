@@ -10,8 +10,10 @@
 <spring:url value="/checkout/multi/adyen/summary/placeOrder" var="placeOrderUrl"/>
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
+<c:set var="componentsWithPayButton" value="amazonpay,applepay,paypal,paywithgoogle,pix" />
+
 <%-- Components --%>
-<c:if test="${selectedPaymentMethod eq 'paypal' || selectedPaymentMethod eq 'applepay' || selectedPaymentMethod eq 'pix' || selectedPaymentMethod eq 'paywithgoogle'}">
+<c:if test="${fn:contains(componentsWithPayButton, selectedPaymentMethod)}">
     <div class="checkbox">
         <label>
             <input type="checkbox" id="terms-conditions-check-${label}" />
@@ -29,7 +31,7 @@
             <div id="pix-container-${label}"></div>
         </c:when>
         <c:otherwise>
-            <%-- Render Paypal, Apple or Google Pay button --%>
+            <%-- Render payment button --%>
             <div id="adyen-component-button-container-${label}"></div>
         </c:otherwise>
     </c:choose>
@@ -43,7 +45,7 @@
 </c:if>
 
 <%-- For components that do not have it's own button --%>
-<c:if test="${selectedPaymentMethod ne 'paypal' && selectedPaymentMethod ne 'applepay' && selectedPaymentMethod ne 'pix' && selectedPaymentMethod ne 'paywithgoogle'}">
+<c:if test="${not fn:contains(componentsWithPayButton, selectedPaymentMethod)}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
             <label> <form:checkbox id="terms-conditions-check-${label}" path="termsCheck" />
