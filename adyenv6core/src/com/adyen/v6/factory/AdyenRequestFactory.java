@@ -616,7 +616,7 @@ public class AdyenRequestFactory {
             address.setHouseNumberOrName(addressData.getLine2());
         }
 
-        if (addressData.getPostalCode() != null && ! address.getPostalCode().isEmpty()) {
+        if (addressData.getPostalCode() != null && ! addressData.getPostalCode().isEmpty()) {
             address.setPostalCode(addressData.getPostalCode());
         }
 
