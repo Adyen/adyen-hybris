@@ -78,7 +78,7 @@ public class AdyenFollowOnRefundCommand implements FollowOnRefundCommand<FollowO
 
             LOG.debug("Refund response: " + modificationResult.getResponse());
             //change status to ACCEPTED if there is no error
-            if (modificationResult.getResponse() == REFUND_RECEIVED_RESPONSE) {
+            if (modificationResult.getResponse().equals(REFUND_RECEIVED_RESPONSE)) {
                 result.setTransactionStatus(ACCEPTED);
                 result.setTransactionStatusDetails(REVIEW_NEEDED);
             }
