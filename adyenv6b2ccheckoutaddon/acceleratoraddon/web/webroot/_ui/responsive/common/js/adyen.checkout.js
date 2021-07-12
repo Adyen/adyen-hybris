@@ -136,6 +136,15 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if (paymentMethod === "paybright") {
+                var phoneNumber = $("#p_method_adyen_hpp_paybright_telephonenumber").val();
+                if (!phoneNumber) {
+                    window.alert("Please fill phone number");
+                    document.getElementById("p_method_adyen_hpp_paybright_telephonenumber").scrollIntoView();
+                    return false;
+                }
+            }
+
             if (paymentMethod === "giftcard") {
                 $( 'input[name="giftCardBrand"]' ).val($( 'input[type=radio][name=paymentMethod]:checked' ).attr('brand'));
             }
