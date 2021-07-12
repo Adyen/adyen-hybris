@@ -201,6 +201,7 @@
                                             showLastName="${paymentMethod.type=='pix'}"
                                             showSocialSecurityNumber="${showSocialSecurityNumber || paymentMethod.type=='pix'}"
                                             countryCode="${countryCode}"
+                                            showTelephoneNumber="${paymentMethod.type=='paybright'}"
                                     />
                                 </c:forEach>
 

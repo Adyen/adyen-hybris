@@ -59,6 +59,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String RATEPAY = "ratepay";
 	public static final String AFTERPAY = "afterpay_default";
 	public static final String AFTERPAY_TOUCH = "afterpaytouch";
+	public static final String PAYBRIGHT = "paybright";
 	public static final String COUNTRY_CODE_SWEDEN = "SE";
 	public static final String COUNTRY_CODE_DENMARK = "DK";
 	public static final String COUNTRY_CODE_FINLAND = "FI";
@@ -87,6 +88,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 		add(CLEARPAY);
 		add(AFTERPAY);
 		add(AFTERPAY_TOUCH);
+		add(PAYBRIGHT);
 	}});
 
 

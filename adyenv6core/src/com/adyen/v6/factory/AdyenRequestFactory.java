@@ -91,6 +91,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.GIFT_CARD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYBRIGHT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -832,6 +833,8 @@ public class AdyenRequestFactory {
             paymentsRequest.setShopperEmail(cartData.getAdyenShopperEmail());
             paymentsRequest.setTelephoneNumber(cartData.getAdyenShopperTelephone());
             paymentsRequest.setShopperName(getAfterPayShopperName(cartData));
+        } else if (PAYBRIGHT.equals(cartData.getAdyenPaymentMethod())) {
+            paymentsRequest.setTelephoneNumber(cartData.getAdyenShopperTelephone());
         }
 
         // set the invoice lines

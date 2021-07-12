@@ -28,6 +28,7 @@
 <%@ attribute name="showLastName" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showTerminalList" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="countryCode" required="false" type="java.lang.String" %>
+<%@ attribute name="showTelephoneNumber" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
@@ -126,6 +127,18 @@
                            type="text"
                            name="${brandCode}_lastName"
                            value="${cartData.deliveryAddress.lastName}">
+                </label>
+            </c:if>
+
+            <c:if test="${showTelephoneNumber}">
+                <label for="p_method_adyen_hpp_${brandCode}_telephonenumber">
+                    <span>
+                        <spring:theme code="payment.method.telephonenumber"/>
+                    </span>
+                    <input id="p_method_adyen_hpp_${brandCode}_telephonenumber"
+                           type="text"
+                           name="telephoneNumber"
+                           value="${cartData.deliveryAddress.phone}">
                 </label>
             </c:if>
 
