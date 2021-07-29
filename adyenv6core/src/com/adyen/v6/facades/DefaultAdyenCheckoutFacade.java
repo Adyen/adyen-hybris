@@ -146,6 +146,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYBRIGHT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
@@ -1121,6 +1122,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         boolean holderNameRequired = getHolderNameRequired();
 
         AdyenPaymentFormValidator adyenPaymentFormValidator = new AdyenPaymentFormValidator(cartModel.getAdyenStoredCards(), showRememberDetails, showSocialSecurityNumber, holderNameRequired);
+        if (PAYBRIGHT.equals(adyenPaymentForm.getPaymentMethod())) {
+            adyenPaymentFormValidator.setTelephoneNumberRequired(true);
+        }
+
         adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
