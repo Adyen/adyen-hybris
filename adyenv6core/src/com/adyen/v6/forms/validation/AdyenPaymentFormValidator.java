@@ -35,6 +35,7 @@ public class AdyenPaymentFormValidator implements Validator {
     private boolean showRememberTheseDetails;
     private boolean showSocialSecurityNumber;
     private final boolean cardHolderNameRequired;
+    private boolean telephoneNumberRequired;
 
     public AdyenPaymentFormValidator(Set<String> storedCards, boolean showRememberTheseDetails, boolean showSocialSecurityNumber, boolean cardHolderNameRequired) {
         this.storedCards = storedCards;
@@ -46,6 +47,14 @@ public class AdyenPaymentFormValidator implements Validator {
     @Override
     public boolean supports(final Class<?> aClass) {
         return AdyenPaymentForm.class.equals(aClass);
+    }
+
+    public boolean isTelephoneNumberRequired() {
+        return telephoneNumberRequired;
+    }
+
+    public void setTelephoneNumberRequired(boolean telephoneNumberRequired) {
+        this.telephoneNumberRequired = telephoneNumberRequired;
     }
 
     @Override
@@ -94,7 +103,12 @@ public class AdyenPaymentFormValidator implements Validator {
                 errors.reject("checkout.error.paymentethod.dob.invalid");
             }
         }
-        if (form.getUseAdyenDeliveryAddress() == false && form.getBillingAddress()!=null) {
+
+        if (telephoneNumberRequired && StringUtils.isEmpty(form.getTelephoneNumber())) {
+            errors.reject("checkout.error.paymentmethod.telephonenumber.invalid");
+        }
+
+        if (!form.getUseAdyenDeliveryAddress() && form.getBillingAddress()!=null) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.titleCode", "address.title.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.firstName", "address.firstName.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.lastName", "address.lastName.invalid");
