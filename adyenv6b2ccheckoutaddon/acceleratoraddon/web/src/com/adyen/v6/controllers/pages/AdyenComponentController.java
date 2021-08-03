@@ -24,6 +24,7 @@ import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.details.AmazonPayDetails;
 import com.adyen.model.checkout.details.ApplePayDetails;
 import com.adyen.model.checkout.details.GooglePayDetails;
 import com.adyen.model.checkout.details.MbwayDetails;
@@ -64,6 +65,7 @@ import java.util.Map;
 
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 
 @RestController
@@ -108,6 +110,8 @@ public class AdyenComponentController {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), ApplePayDetails.class);
             } else if(GooglePayDetails.GOOGLEPAY.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), GooglePayDetails.class);
+            } else if(AmazonPayDetails.AMAZONPAY.equals(paymentMethod)) {
+                paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), AmazonPayDetails.class);
             } else if(PAYMENT_METHOD_PIX.equals(paymentMethod)) {
                 paymentMethodDetails = new DefaultPaymentMethodDetails();
                 paymentMethodDetails.setType(PAYMENT_METHOD_PIX);
@@ -176,7 +180,9 @@ public class AdyenComponentController {
         JsonObject paymentMethodDetails = requestJson.get("paymentMethodDetails").getAsJsonObject();
         String paymentMethod = gson.fromJson(paymentMethodDetails.get("type"), String.class);
 
-        if(!PAYMENT_METHOD_PIX.equals(paymentMethod) &&(termsCheck == null || !termsCheck)) {
+        // Pix and Amazon already have the terms validated on a previous step
+        if(!PAYMENT_METHOD_PIX.equals(paymentMethod) && !PAYMENT_METHOD_AMAZONPAY.equals(paymentMethod)
+                && (termsCheck == null || !termsCheck)) {
             throw new InvalidCartException("checkout.error.terms.not.accepted");
         }
 

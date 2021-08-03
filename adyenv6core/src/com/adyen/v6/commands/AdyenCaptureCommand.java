@@ -73,14 +73,13 @@ public class AdyenCaptureCommand implements CaptureCommand {
         }
 
         BaseStoreModel baseStore = order.getStore();
-        Assert.notNull(baseStore);
+        Assert.notNull(baseStore, "BaseStore model is null");
         AdyenPaymentService adyenPaymentService = adyenPaymentServiceFactory.createFromBaseStore(baseStore);
 
         final PaymentInfoModel paymentInfo = order.getPaymentInfo();
-        Assert.notNull(paymentInfo);
+        Assert.notNull(paymentInfo, "PaymentInfoModel is null");
 
         boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
-        Assert.notNull(isImmediateCapture);
 
         boolean autoCapture = isImmediateCapture || ! supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
 
@@ -91,7 +90,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             try {
                 ModificationResult modificationResult = adyenPaymentService.capture(amount, currency, originalPSPReference, reference);
 
-                if (modificationResult.getResponse() == CAPTURE_RECEIVED_RESPONSE) {
+                if (modificationResult.getResponse().equals(CAPTURE_RECEIVED_RESPONSE)) {
                     result.setTransactionStatus(TransactionStatus.ACCEPTED);  //Accepted so that TakePaymentAction doesn't fail
                     result.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED);
                 } else {
@@ -157,6 +156,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "discover_applepay":
             case "maestro_applepay":
             case "paywithgoogle":
+            case "amazonpay":
                 return true;
         }
 
