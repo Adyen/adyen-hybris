@@ -136,6 +136,15 @@ var AdyenCheckoutHybris = (function () {
                 }
             }
 
+            if (paymentMethod === "paybright") {
+                var phoneNumber = $("#p_method_adyen_hpp_paybright_telephonenumber").val();
+                if (!phoneNumber) {
+                    window.alert("Please fill phone number");
+                    document.getElementById("p_method_adyen_hpp_paybright_telephonenumber").scrollIntoView();
+                    return false;
+                }
+            }
+
             if (paymentMethod === "giftcard") {
                 $( 'input[name="giftCardBrand"]' ).val($( 'input[type=radio][name=paymentMethod]:checked' ).attr('brand'));
             }
@@ -333,6 +342,7 @@ var AdyenCheckoutHybris = (function () {
 
         initiatePaypal: function (amount, isImmediateCapture, paypalMerchantId, label) {
             var paypalNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
 
             var adyenComponent = this.checkout.create("paypal", {
                 environment: this.checkout.options.environment,
@@ -342,28 +352,28 @@ var AdyenCheckoutHybris = (function () {
                 },
                 intent: isImmediateCapture ? "capture" : "authorize",
                 merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return false;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onCancel: (data, component) => {
+                onCancel: function(data, component) {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
-                    this.handleResult(ErrorMessages.PaymentCancelled, true);
+                    self.handleResult(ErrorMessages.PaymentCancelled, true);
                 },
-                onError: (error, component) => {
+                onError: function(error, component) {
                     // Sets your prefered status of the component when an error occurs.
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    self.handleResult(ErrorMessages.PaymentError, true);
                 },
-                onAdditionalDetails: (state, component) => {
-                    this.submitDetails(state.data, this.handleResult);
+                onAdditionalDetails: function(state, component) {
+                    self.submitDetails(state.data, self.handleResult);
                 }
             });
 
@@ -376,6 +386,7 @@ var AdyenCheckoutHybris = (function () {
 
         initiateApplePay: function (amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label) {
             var applePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
             var adyenComponent = this.checkout.create("applepay", {
                 amount: {
                     currency: amount.currency,
@@ -389,41 +400,42 @@ var AdyenCheckoutHybris = (function () {
                 // Button config
                 buttonType: "plain",
                 buttonColor: "black",
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return false;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    state.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onClick: (resolve, reject) => {
-                    if (this.isTermsAccepted(label)) {
+                onClick: function(resolve, reject) {
+                    if (self.isTermsAccepted(label)) {
                         resolve();
                     } else {
                         reject();
-                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        self.handleResult(ErrorMessages.TermsNotAccepted, true);
                     }
                 }
             });
 
             adyenComponent.isAvailable()
-                .then(() => {
+                .then(function() {
                     adyenComponent.mount(applePayNode);
                 })
-                .catch(e => {
+                .catch(function(e) {
                     // Apple Pay is not available
                     console.log('Something went wrong trying to mount the Apple Pay component: ' + e);
-                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                    self.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
         },
         
         initiateGooglePay: function (amount, merchantAccount, label) {
             var googlePayNode = document.getElementById('adyen-component-button-container-' + label);
+            var self = this;
             var adyenComponent = this.checkout.create("paywithgoogle", {
                 environment: this.checkout.options.environment,
                 amount: {
@@ -435,69 +447,134 @@ var AdyenCheckoutHybris = (function () {
                     merchantName: merchantAccount
                 },
                 buttonColor: "white",
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.hideSpinner();
+                        self.hideSpinner();
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.hideSpinner();
+                        self.hideSpinner();
                         return false;
                     }
-                    this.showSpinner();
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    state.showSpinner();
+                    state.makePayment(state.data.paymentMethod, component, state.handleResult, label);
                 },
-                onClick: (resolve, reject) => {
-                    if (this.isTermsAccepted(label)) {
+                onClick: function(resolve, reject) {
+                    if (self.isTermsAccepted(label)) {
                         resolve();
                     } else {
                         reject();
-                        this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        self.handleResult(ErrorMessages.TermsNotAccepted, true);
                     }
                 }
             });
 
             adyenComponent.isAvailable()
-                .then(() => {
+                .then(function() {
                     adyenComponent.mount(googlePayNode);
                 })
-                .catch(e => {
+                .catch(function(e) {
                     // Google Pay is not available
                     console.log('Something went wrong trying to mount the Google Pay component: ' + e);
-                    this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+                    self.handleResult(ErrorMessages.PaymentNotAvailable, true);
                 });
+        },
+        
+        initiateAmazonPay: function (amount, deliveryAddress, amazonPayConfiguration) {
+            var label = this.getVisibleLabel();
+            var url = new URL(window.location.href);
+            var componentConfiguration;
+            if(url.searchParams.has('amazonCheckoutSessionId')) {
+                // Complete payment, amazon session already created
+                componentConfiguration = {
+                    amount: amount,
+                    amazonCheckoutSessionId: url.searchParams.get('amazonCheckoutSessionId'),
+                    showOrderButton: false,
+                    onSubmit: (state, component) => {
+                        if (!state.isValid) {
+                            component.setStatus('ready');
+                            this.hideSpinner();
+                            return false;
+                        }
+                        component.setStatus('loading');
+                        this.showSpinner();
+                        this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    }
+                };
+            } else {
+                // Pre-payment, login and choose amazon pay method
+                componentConfiguration = {
+                    environment: this.checkout.options.environment,
+                    addressDetails: {
+                        name: deliveryAddress.firstName + ' ' + deliveryAddress.lastName,
+                        addressLine1: deliveryAddress.line1,
+                        addressLine2: deliveryAddress.line2,
+                        city: deliveryAddress.town,
+                        postalCode: deliveryAddress.postalCode,
+                        countryCode: deliveryAddress.country.isocode,
+                        phoneNumber: deliveryAddress.phone
+                    },
+                    amount: amount,
+                    configuration: amazonPayConfiguration,
+                    productType: 'PayAndShip',
+                    checkoutMode: 'ProcessOrder',
+                    returnUrl: window.location.origin + ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/view',
+                    onClick: (resolve, reject) => {
+                        if (this.isTermsAccepted(label)) {
+                            resolve();
+                        } else {
+                            reject();
+                            this.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        }
+                    }
+                };
+            }
+            
+            var amazonPayNode = document.getElementById('adyen-component-button-container-' + label);
+            var adyenComponent = this.checkout.create("amazonpay", componentConfiguration);
+            
+            try {
+                adyenComponent.mount(amazonPayNode);
+                if(url.searchParams.has('amazonCheckoutSessionId')) {
+                    adyenComponent.submit();
+                }
+            } catch (e) {
+                console.log('Something went wrong trying to mount the Amazon Pay component: ' + e);
+                this.handleResult(ErrorMessages.PaymentNotAvailable, true);
+            }
         },
 
         initiateMbway: function (label) {
             var mbwayNode = document.getElementById('adyen-component-container-' + label);
+            var self = this;
 
             var adyenComponent = this.checkout.create("mbway", {
                 showPayButton: false,
-                onChange: (state, component) => {
+                onChange: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                     }
                 },
-                onSubmit: (state, component) => {
+                onSubmit: function(state, component) {
                     if (!state.isValid) {
-                        this.enablePlaceOrder(label);
+                        self.enablePlaceOrder(label);
                         return;
                     }
-                    this.makePayment(state.data.paymentMethod, component, this.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
-                onAdditionalDetails: (state, component) => {
-                    this.submitDetails(state.data, this.handleResult);
+                onAdditionalDetails: function(state, component) {
+                    self.submitDetails(state.data, self.handleResult);
                 },
-                onError: (error, component) => {
+                onError: function(error, component) {
                     console.log('Something went wrong trying to make the MBWay payment: ' + error);
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    self.handleResult(ErrorMessages.PaymentError, true);
                 }
             });
 
             try {
                 adyenComponent.mount(mbwayNode);
-                this.configureButton(adyenComponent, false, label);
+                self.configureButton(adyenComponent, false, label);
             } catch (e) {
                 console.log('Something went wrong trying to mount the MBWay component: ' + e);
             }
@@ -531,7 +608,7 @@ var AdyenCheckoutHybris = (function () {
                     var actionHandler  = {
                         handleAction : function (action) {
                             AdyenCheckoutHybris.checkout.createFromAction(action, {
-                                onAdditionalDetails : (state) => {
+                                onAdditionalDetails : function(state) {
                                     AdyenCheckoutHybris.hideSpinner();
                                     AdyenCheckoutHybris.submitDetails(state.data, AdyenCheckoutHybris.handleResult);
                                 }
@@ -648,6 +725,16 @@ var AdyenCheckoutHybris = (function () {
             this.hideSpinner();
             //enable button
             $("#placeOrder-" + label).prop('disabled', false);
+        },
+        getVisibleLabel: function () {
+            if(!(window.getComputedStyle(document.getElementById('adyen-checkout-visible-xs')).display === "none")) {
+                return 'visible-xs';
+            }
+            if(!(window.getComputedStyle(document.getElementById('adyen-checkout-hidden-xs')).display === "none")) {
+                return 'hidden-xs';
+            }
+            console.log('Something went wrong while trying to compute current visible label');
+            return '';
         }
     };
 })();
