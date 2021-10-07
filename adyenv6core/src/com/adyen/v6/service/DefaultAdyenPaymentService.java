@@ -379,11 +379,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public String getHppEndpoint() {
-        return config.getHppEndpoint();
-    }
-
-    @Override
     public String getDeviceFingerprintUrl() {
         DateFormat df = new SimpleDateFormat("yyyyMMdd");
         Date today = Calendar.getInstance().getTime();

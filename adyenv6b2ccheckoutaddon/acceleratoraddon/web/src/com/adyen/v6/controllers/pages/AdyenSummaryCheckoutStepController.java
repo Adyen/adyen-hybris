@@ -102,7 +102,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     private final static String SUMMARY = "summary";
     private static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
-    private static final String HPP_RESULT_URL = "/hpp-adyen-response";
+    private static final String CHECKOUT_RESULT_URL = "/checkout-adyen-response";
     private static final String REDIRECT_RESULT = "redirectResult";
     private static final String ACTION = "action";
 
@@ -342,7 +342,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return REDIRECT_PREFIX + CART_PREFIX;
     }
 
-    @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
+    @RequestMapping(value = CHECKOUT_RESULT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
     public String handleAdyenResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
         String redirectResult = request.getParameter(REDIRECT_RESULT);
@@ -455,7 +455,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
             url = SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
         } else {
-            url = SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
+            url = SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL;
         }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
 
