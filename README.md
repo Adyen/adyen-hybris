@@ -89,16 +89,6 @@ Ratepay is supported via Adyen API.
 ### Pix
 [Pix](https://docs.adyen.com/payment-methods/pix) is supported via Adyen component and API.
 
-### Paypal Express Checkout Shortcut
-
-Requires both Adyen API and HPP credentials.
-
-The plugin offers:
- - a facade (AdyenPaypalFacade) that takes care of the communication from and to Adyen regarding Paypal ECS
- - a default controller that given a valid Cart, can initiate such payment "/en/adyen/paypal-ecs/initialize"
-
-More details can be found here: https://docs.adyen.com/developers/payment-methods/paypal/express-checkout-shortcut
-
 ### Other alternative payment methods
 
 Supported via Adyen Checkout.
