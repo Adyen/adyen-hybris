@@ -90,7 +90,7 @@ public class AdyenRequestFactoryTest {
     private static final String REMOTE_ADDRESS = "1.2.3.4";
     private static final String REQUEST_URL = "https://localhost:9002/electronics/en/checkout/multi/adyen/summary/placeOrder";
     private static final String REQUEST_URI = "/electronics/en/checkout/multi/adyen/summary/placeOrder";
-    private static final String RETURN_URL ="https://localhost:9002/electronics/en/checkout/multi/adyen/summary/hpp-adyen-response";
+    private static final String RETURN_URL ="https://localhost:9002/electronics/en/checkout/multi/adyen/summary/checkout-adyen-response";
     //POS
     private static final String SERVICE_ID = "serviceId";
     private static final String TERMINAL_ID = "V400m-123456789";
