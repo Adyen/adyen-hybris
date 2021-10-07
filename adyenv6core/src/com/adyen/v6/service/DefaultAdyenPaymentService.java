@@ -109,8 +109,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
         String apiKey = baseStore.getAdyenAPIKey();
         String merchantAccount = baseStore.getAdyenMerchantAccount();
-        String skinCode = baseStore.getAdyenSkinCode();
-        String hmacKey = baseStore.getAdyenSkinHMAC();
         String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
         boolean isTestMode = baseStore.getAdyenTestMode();
         boolean isPosEnabled = baseStore.getAdyenPosEnabled();
@@ -135,8 +133,6 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         config = new Config();
         config.setApiKey(apiKey);
         config.setMerchantAccount(merchantAccount);
-        config.setSkinCode(skinCode);
-        config.setHmacKey(hmacKey);
         config.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
         client = new Client(config);
 
