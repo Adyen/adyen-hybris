@@ -39,32 +39,14 @@ import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
  */
 public interface AdyenCheckoutFacade {
-    /**
-     * Validates an HPP response based on Map
-     *
-     * @param hppResponseData map with hpp data
-     * @param merchantSig     merchant signature
-     * @throws SignatureException in case signature doesn't match
-     */
-    void validateHPPResponse(SortedMap<String, String> hppResponseData, String merchantSig) throws SignatureException;
-
-    /**
-     * Validates an HPP response based on the HTTP request object
-     *
-     * @param request HTTP request object
-     * @throws SignatureException in case signature doesn't match
-     */
-    void validateHPPResponse(HttpServletRequest request) throws SignatureException;
 
     String getShopperLocale();
 
@@ -77,13 +59,6 @@ public interface AdyenCheckoutFacade {
      * Retrieve the environment is running in test mode or live mode
      */
     String getEnvironmentMode();
-
-    /**
-     * Retrieve the HPP base URL for the current basestore
-     *
-     * @return HPP url
-     */
-    String getHppUrl();
 
     /**
      * Removes cart from the session so that users can't update it while being in a payment page
@@ -157,18 +132,6 @@ public interface AdyenCheckoutFacade {
      */
 
     OrderData handle3DSResponse(Map<String, String> details) throws Exception;
-
-    /**
-     * Initializes an HPP payment
-     * Returns map of data to be submitted to Adyen HPP
-     *
-     * @param cartData    Shopper's cart
-     * @param redirectUrl HPP result url
-     * @return HPP data
-     * @throws SignatureException   In case signature cannot be generated
-     * @throws InvalidCartException In case there is an existing locked cart
-     */
-    Map<String, String> initializeHostedPayment(CartData cartData, String redirectUrl) throws SignatureException, InvalidCartException;
 
     /**
      * Retrieve available payment methods
