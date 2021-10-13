@@ -92,6 +92,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYBRIGHT;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
@@ -193,7 +194,7 @@ public class AdyenRequestFactory {
         Boolean is3DS2allowed = is3DS2Allowed();
 
         //For credit cards
-        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod)) {
+        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || PAYMENT_METHOD_BCMC.equals(adyenPaymentMethod)) {
             if (CARD_TYPE_DEBIT.equals(cartData.getAdyenCardType())) {
                 updatePaymentRequestForDC(paymentsRequest, cartData, recurringContractMode);
             }

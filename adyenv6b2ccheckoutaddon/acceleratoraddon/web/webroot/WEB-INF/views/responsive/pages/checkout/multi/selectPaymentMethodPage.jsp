@@ -80,6 +80,9 @@
                 <c:if test="${paymentMethod.type eq 'afterpay_default'}">
                     AdyenCheckoutHybris.initiateAfterPay("${countryCode}");
                 </c:if>
+                <c:if test="${paymentMethod.type eq 'bcmc'}">
+                    AdyenCheckoutHybris.initiateBcmc("${countryCode}");
+                </c:if>
             </c:forEach>
 
             <c:forEach items="${storedCards}" var="storedCard">
