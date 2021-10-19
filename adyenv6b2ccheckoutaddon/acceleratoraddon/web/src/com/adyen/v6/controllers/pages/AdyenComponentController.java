@@ -61,11 +61,14 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC_MOBILE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 
 @RestController
@@ -87,6 +90,10 @@ public class AdyenComponentController {
 
     @Resource(name = "baseSiteService")
     private BaseSiteService baseSiteService;
+
+    private final List<String> PAYMENT_METHODS_WITH_VALIDATED_TERMS = Arrays.asList(PAYMENT_METHOD_AMAZONPAY,
+                                                                                PAYMENT_METHOD_BCMC_MOBILE,
+                                                                                PAYMENT_METHOD_PIX);
 
     @RequestMapping(value = "/payment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -112,9 +119,9 @@ public class AdyenComponentController {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), GooglePayDetails.class);
             } else if(AmazonPayDetails.AMAZONPAY.equals(paymentMethod)) {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), AmazonPayDetails.class);
-            } else if(PAYMENT_METHOD_PIX.equals(paymentMethod)) {
+            } else if(PAYMENT_METHOD_PIX.equals(paymentMethod) || PAYMENT_METHOD_BCMC_MOBILE.equals(paymentMethod)) {
                 paymentMethodDetails = new DefaultPaymentMethodDetails();
-                paymentMethodDetails.setType(PAYMENT_METHOD_PIX);
+                paymentMethodDetails.setType(paymentMethod);
             } else {
                 throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
             }
@@ -180,8 +187,8 @@ public class AdyenComponentController {
         JsonObject paymentMethodDetails = requestJson.get("paymentMethodDetails").getAsJsonObject();
         String paymentMethod = gson.fromJson(paymentMethodDetails.get("type"), String.class);
 
-        // Pix and Amazon already have the terms validated on a previous step
-        if(!PAYMENT_METHOD_PIX.equals(paymentMethod) && !PAYMENT_METHOD_AMAZONPAY.equals(paymentMethod)
+        // Some methods already have the terms validated on a previous step
+        if (!PAYMENT_METHODS_WITH_VALIDATED_TERMS.contains(paymentMethod)
                 && (termsCheck == null || !termsCheck)) {
             throw new InvalidCartException("checkout.error.terms.not.accepted");
         }
