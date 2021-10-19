@@ -84,6 +84,7 @@ import static com.adyen.v6.constants.AdyenControllerConstants.SELECT_PAYMENT_MET
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY_TOUCH;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_MULTIBANCO;
@@ -102,7 +103,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
     private final static String SUMMARY = "summary";
     private static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
-    private static final String HPP_RESULT_URL = "/hpp-adyen-response";
+    private static final String CHECKOUT_RESULT_URL = "/checkout-adyen-response";
     private static final String REDIRECT_RESULT = "redirectResult";
     private static final String ACTION = "action";
 
@@ -342,7 +343,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return REDIRECT_PREFIX + CART_PREFIX;
     }
 
-    @RequestMapping(value = HPP_RESULT_URL, method = RequestMethod.GET)
+    @RequestMapping(value = CHECKOUT_RESULT_URL, method = RequestMethod.GET)
     @RequireHardLogIn
     public String handleAdyenResponse(final HttpServletRequest request, final RedirectAttributes redirectModel) {
         String redirectResult = request.getParameter(REDIRECT_RESULT);
@@ -423,7 +424,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
-        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
+        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
     }
 
     private String redirectToSelectPaymentMethodWithError(final RedirectAttributes redirectModel, final String messageKey) {
@@ -455,7 +456,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
             url = SUMMARY_CHECKOUT_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
         } else {
-            url = SUMMARY_CHECKOUT_PREFIX + HPP_RESULT_URL;
+            url = SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL;
         }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
 

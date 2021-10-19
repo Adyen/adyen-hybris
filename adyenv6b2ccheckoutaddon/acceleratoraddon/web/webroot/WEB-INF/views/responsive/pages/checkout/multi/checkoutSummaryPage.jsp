@@ -60,7 +60,12 @@
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
                 AdyenCheckoutHybris.initiateAmazonPay(amountJS, ${deliveryAddress}, ${amazonPayConfiguration});
             </c:when>
-
+        
+            <c:when test="${selectedPaymentMethod eq 'bcmc_mobile'}">
+                AdyenCheckoutHybris.initiateBcmcMobile("hidden-xs");
+                AdyenCheckoutHybris.initiateBcmcMobile("visible-xs");
+            </c:when>
+        
             <%-- API only payments methods --%>
             <c:otherwise>
                 AdyenCheckoutHybris.configureButton($( "#placeOrderForm-hidden-xs" ), true, "hidden-xs");

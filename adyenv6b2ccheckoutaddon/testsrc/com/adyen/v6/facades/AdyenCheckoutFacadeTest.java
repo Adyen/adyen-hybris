@@ -24,7 +24,6 @@ import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.CheckoutPaymentsAction;
 import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.util.HMACValidator;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
@@ -63,16 +62,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import static com.adyen.constants.ApiConstants.Redirect.Data.MD;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_LOCKED_CART;
@@ -121,9 +115,6 @@ public class AdyenCheckoutFacadeTest {
     private CheckoutCustomerStrategy checkoutCustomerStrategyMock;
 
     @Mock
-    private HMACValidator hmacValidatorMock;
-
-    @Mock
     private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
 
     @Mock
@@ -153,13 +144,8 @@ public class AdyenCheckoutFacadeTest {
         paymentsDetailsResponseMock = mock(PaymentsDetailsResponse.class);
         CartData cartDataMock = mock(CartData.class);
 
-        when(baseStoreModelMock.getAdyenSkinHMAC()).thenReturn("hmacKey");
         when(baseStoreModelMock.getAdyenMerchantAccount()).thenReturn("merchantAccount");
-        when(baseStoreModelMock.getAdyenSkinCode()).thenReturn("skinCode");
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
-
-        when(hmacValidatorMock.calculateHMAC(isA(String.class), isA(String.class))).thenReturn("merchantSig");
-        when(hmacValidatorMock.getDataToSign(isA(SortedMap.class))).thenReturn("dataToSign");
 
         when(cartModelMock.getCode()).thenReturn("code");
         when(cartServiceMock.getSessionCart()).thenReturn(cartModelMock);
@@ -215,20 +201,6 @@ public class AdyenCheckoutFacadeTest {
 
         verify(sessionServiceMock).setAttribute(SESSION_LOCKED_CART, cartModelMock);
         verify(sessionServiceMock).removeAttribute(SESSION_CART_PARAMETER_NAME);
-    }
-
-    @Test
-    public void testValidateHPPResponse() throws NoSuchAlgorithmException, SignatureException {
-        SortedMap<String, String> hppResponseData = new TreeMap<>();
-
-        adyenCheckoutFacade.validateHPPResponse(hppResponseData, "merchantSig");
-
-        try {
-            adyenCheckoutFacade.validateHPPResponse(hppResponseData, "wrongMerchantSig");
-
-            fail("Expected exception!");
-        } catch (SignatureException ignored) {
-        }
     }
 
     @Test
@@ -317,16 +289,6 @@ public class AdyenCheckoutFacadeTest {
             fail("Expecting exception");
         } catch (SignatureException ignored) {
         }
-    }
-
-    @Test
-    public void testInitializeHostedPayment() throws SignatureException, InvalidCartException {
-        CartData cartData = createCartData();
-
-        Map<String, String> hppFormData = adyenCheckoutFacade.initializeHostedPayment(cartData, "redirectUrl");
-
-        assertEquals("1234", hppFormData.get(PAYMENT_AMOUNT));
-        assertEquals("EUR", hppFormData.get(CURRENCY_CODE));
     }
 
     private CartData createCartData() {

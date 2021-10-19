@@ -110,11 +110,6 @@ public interface AdyenPaymentService {
     PaymentsDetailsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
 
     /**
-     * Returns the HPP base URL for the current basestore
-     */
-    String getHppEndpoint();
-
-    /**
      * Returns the Device Fingerprint url
      */
     String getDeviceFingerprintUrl();

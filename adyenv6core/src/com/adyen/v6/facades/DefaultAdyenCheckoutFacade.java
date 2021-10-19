@@ -20,7 +20,6 @@
  */
 package com.adyen.v6.facades;
 
-import com.adyen.constants.HPPConstants;
 import com.adyen.model.Amount;
 import com.adyen.model.Card;
 import com.adyen.model.PaymentResult;
@@ -39,7 +38,6 @@ import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.util.DateUtil;
-import com.adyen.util.HMACValidator;
 import com.adyen.util.Util;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PaymentsDetailsResponseConverter;
@@ -104,7 +102,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 
@@ -112,8 +109,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.SignatureException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -121,26 +116,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_CHALLENGE_TOKEN;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.THREEDS2_FINGERPRINT_TOKEN;
-import static com.adyen.constants.HPPConstants.Fields.BRAND_CODE;
-import static com.adyen.constants.HPPConstants.Fields.COUNTRY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.CURRENCY_CODE;
-import static com.adyen.constants.HPPConstants.Fields.ISSUER_ID;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_ACCOUNT;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_REFERENCE;
-import static com.adyen.constants.HPPConstants.Fields.MERCHANT_SIG;
-import static com.adyen.constants.HPPConstants.Fields.PAYMENT_AMOUNT;
-import static com.adyen.constants.HPPConstants.Fields.RES_URL;
-import static com.adyen.constants.HPPConstants.Fields.SESSION_VALIDITY;
-import static com.adyen.constants.HPPConstants.Fields.SHIP_BEFORE_DATE;
-import static com.adyen.constants.HPPConstants.Fields.SKIN_CODE;
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
 import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
@@ -175,7 +156,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private OrderRepository orderRepository;
     private AdyenOrderService adyenOrderService;
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
-    private HMACValidator hmacValidator;
     private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
     private ModelService modelService;
     private CommonI18NService commonI18NService;
@@ -242,56 +222,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String MODEL_CARD_HOLDER_NAME_REQUIRED = "cardHolderNameRequired";
     public static final String IS_CARD_HOLDER_NAME_REQUIRED_PROPERTY = "isCardHolderNameRequired";
 
-    protected static final Set<String> HPP_RESPONSE_PARAMETERS = new HashSet<>(Arrays.asList(HPPConstants.Response.MERCHANT_REFERENCE,
-                                                                                             HPPConstants.Response.SKIN_CODE,
-                                                                                             HPPConstants.Response.SHOPPER_LOCALE,
-                                                                                             HPPConstants.Response.PAYMENT_METHOD,
-                                                                                             HPPConstants.Response.AUTH_RESULT,
-                                                                                             HPPConstants.Response.PSP_REFERENCE,
-                                                                                             HPPConstants.Response.MERCHANT_RETURN_DATA));
-
     public DefaultAdyenCheckoutFacade() {
-        hmacValidator = new HMACValidator();
-    }
-
-    @Override
-    public void validateHPPResponse(SortedMap<String, String> hppResponseData, String merchantSig) throws SignatureException {
-        BaseStoreModel baseStore = getBaseStoreService().getCurrentBaseStore();
-
-        String hmacKey = baseStore.getAdyenSkinHMAC();
-        if (StringUtils.isEmpty(hmacKey)) {
-            LOGGER.error("Empty HMAC Key");
-            throw new SignatureException("Empty HMAC Key");
-        }
-        String dataToSign = getHmacValidator().getDataToSign(hppResponseData);
-        String calculatedMerchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
-        LOGGER.debug("Calculated signature: " + calculatedMerchantSig + " from data: " + dataToSign);
-        if (StringUtils.isEmpty(calculatedMerchantSig) || ! calculatedMerchantSig.equals(merchantSig)) {
-            LOGGER.error("Signature does not match!");
-            throw new SignatureException("Signatures doesn't match");
-        }
-    }
-
-    @Override
-    public void validateHPPResponse(final HttpServletRequest request) throws SignatureException {
-        SortedMap<String, String> hppResponseData = getQueryParameters(request);
-
-        LOGGER.debug("Received HPP response: " + hppResponseData);
-
-        String merchantSig = request.getParameter(HPPConstants.Response.MERCHANT_SIG);
-        if (StringUtils.isEmpty(merchantSig)) {
-            LOGGER.error("MerchantSig was not provided");
-            throw new SignatureException("MerchantSig was not provided");
-        }
-
-        validateHPPResponse(hppResponseData, merchantSig);
-    }
-
-    public String getBaseURL(HttpServletRequest request) {
-        String currentRequestURL = request.getRequestURL().toString();
-        int requestUrlLength = currentRequestURL.length();
-        int requestUriLength = request.getRequestURI().length();
-        return currentRequestURL.substring(0, requestUrlLength - requestUriLength);
     }
 
     @Override
@@ -312,11 +243,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return "test";
         }
         return "live";
-    }
-
-    @Override
-    public String getHppUrl() {
-        return getAdyenPaymentService().getHppEndpoint() + "/details.shtml";
     }
 
     @Override
@@ -594,71 +520,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
     }
 
-    @Override
-    public Map<String, String> initializeHostedPayment(final CartData cartData, final String redirectUrl) throws SignatureException {
-        final String sessionValidity = Util.calculateSessionValidity();
-        final SortedMap<String, String> hppFormData = new TreeMap<>();
-
-        BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
-
-        String merchantAccount = baseStore.getAdyenMerchantAccount();
-        String skinCode = baseStore.getAdyenSkinCode();
-        String hmacKey = baseStore.getAdyenSkinHMAC();
-
-        Assert.notNull(merchantAccount);
-        Assert.notNull(skinCode);
-        Assert.notNull(hmacKey);
-
-        Amount amount = Util.createAmount(cartData.getTotalPrice().getValue(), cartData.getTotalPrice().getCurrencyIso());
-
-        //Identify country code based on shopper's delivery address
-        String countryCode = "";
-        AddressData deliveryAddress = cartData.getDeliveryAddress();
-        if (deliveryAddress != null) {
-            CountryData deliveryCountry = deliveryAddress.getCountry();
-            if (deliveryCountry != null) {
-                countryCode = deliveryCountry.getIsocode();
-            }
-        }
-
-        CartModel cartModel = regenerateCartCode();
-        String merchantReference = cartModel.getCode();
-
-        hppFormData.put(PAYMENT_AMOUNT, String.valueOf(amount.getValue()));
-        hppFormData.put(CURRENCY_CODE, cartData.getTotalPrice().getCurrencyIso());
-        hppFormData.put(SHIP_BEFORE_DATE, sessionValidity);
-        hppFormData.put(MERCHANT_REFERENCE, merchantReference);
-        hppFormData.put(SKIN_CODE, skinCode);
-        hppFormData.put(MERCHANT_ACCOUNT, merchantAccount);
-        hppFormData.put(SESSION_VALIDITY, sessionValidity);
-        hppFormData.put(BRAND_CODE, cartData.getAdyenPaymentMethod());
-        hppFormData.put(ISSUER_ID, cartData.getAdyenIssuerId());
-        hppFormData.put(COUNTRY_CODE, countryCode);
-        hppFormData.put(RES_URL, redirectUrl);
-        hppFormData.put(DF_VALUE, cartData.getAdyenDfValue());
-
-        if (! StringUtils.isEmpty(getShopperLocale())) {
-            hppFormData.put(SHOPPER_LOCALE, getShopperLocale());
-        }
-
-        String dataToSign = getHmacValidator().getDataToSign(hppFormData);
-        String merchantSig = getHmacValidator().calculateHMAC(dataToSign, hmacKey);
-
-        hppFormData.put(MERCHANT_SIG, merchantSig);
-
-        //Lock the cart
-        lockSessionCart();
-
-        return hppFormData;
-    }
-
-    private CartModel regenerateCartCode() {
-        final CartModel cartModel = cartService.getSessionCart();
-        cartModel.setCode(String.valueOf(keyGenerator.generate()));
-        cartService.saveOrder(cartModel);
-        return cartModel;
-    }
-
     /**
      * Create order and authorized TX
      */
@@ -835,7 +696,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                        .collect(Collectors.toSet());
         }
 
-        //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
+        //Exclude cards, boleto and iDeal
         alternativePaymentMethods = alternativePaymentMethods.stream()
                                                              .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
                                                              .collect(Collectors.toList());
@@ -855,7 +716,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         // current selected PaymentMethod
         model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, cartData.getAdyenPaymentMethod());
 
-        //Set HPP payment methods
+        //Set payment methods
         model.addAttribute(MODEL_PAYMENT_METHODS, alternativePaymentMethods);
 
         //Set allowed Credit Cards
@@ -932,8 +793,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (paymentMethodType == null || paymentMethodType.isEmpty() ||
                 paymentMethodType.equals("scheme") ||
-                paymentMethodType.equals("bcmc") ||
-                paymentMethodType.equals("bcmc_mobile_QR") ||
                 (paymentMethodType.contains("wechatpay")
                         && ! paymentMethodType.equals("wechatpayWeb")) ||
                 paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||
@@ -1236,36 +1095,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return null;
     }
 
-    /**
-     * Helper function for retrieving only GET parameters (of querystring)
-     *
-     * @param request HttpServletRequest request object
-     * @return Sorted map with parameters
-     */
-    private static SortedMap<String, String> getQueryParameters(HttpServletRequest request) {
-        SortedMap<String, String> queryParameters = new TreeMap<>();
-        String queryString = request.getQueryString();
-
-        if (StringUtils.isEmpty(queryString)) {
-            return queryParameters;
-        }
-
-        String[] parameters = queryString.split("&");
-
-        for (String parameter : parameters) {
-            String[] keyValuePair = parameter.split("=");
-            String key = keyValuePair[0];
-            String value = request.getParameter(key);
-
-            // Add only HPP parameters for signature calculation
-            if (HPP_RESPONSE_PARAMETERS.contains(key) || key.startsWith("additionalData.")) {
-                queryParameters.put(key, value);
-            }
-        }
-
-        return queryParameters;
-    }
-
     protected String generateCcPaymentInfoCode(final CartModel cartModel) {
         return cartModel.getCode() + "_" + UUID.randomUUID();
     }
@@ -1551,14 +1380,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setCheckoutCustomerStrategy(CheckoutCustomerStrategy checkoutCustomerStrategy) {
         this.checkoutCustomerStrategy = checkoutCustomerStrategy;
-    }
-
-    public HMACValidator getHmacValidator() {
-        return hmacValidator;
-    }
-
-    public void setHmacValidator(HMACValidator hmacValidator) {
-        this.hmacValidator = hmacValidator;
     }
 
     public AdyenPaymentServiceFactory getAdyenPaymentServiceFactory() {

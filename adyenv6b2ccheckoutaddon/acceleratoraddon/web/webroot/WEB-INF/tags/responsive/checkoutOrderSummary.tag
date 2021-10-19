@@ -10,10 +10,11 @@
 <spring:url value="/checkout/multi/adyen/summary/placeOrder" var="placeOrderUrl"/>
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
-<c:set var="componentsWithPayButton" value="amazonpay,applepay,paypal,paywithgoogle,pix" />
+<c:set var="componentsWithPayButton" value="[amazonpay],[applepay],[paypal],[paywithgoogle],[pix],[bcmc_mobile]" />
+<c:set var="componentPaymentMethod" value="[${selectedPaymentMethod}]" />
 
 <%-- Components --%>
-<c:if test="${fn:contains(componentsWithPayButton, selectedPaymentMethod)}">
+<c:if test="${fn:contains(componentsWithPayButton, componentPaymentMethod)}">
     <div class="checkbox">
         <label>
             <input type="checkbox" id="terms-conditions-check-${label}" />
@@ -23,12 +24,12 @@
     </div>
 
     <c:choose>
-        <c:when test="${selectedPaymentMethod eq 'pix'}">
-            <%-- Render Pix QR code --%>
+        <c:when test="${componentPaymentMethod eq '[pix]' || componentPaymentMethod eq '[bcmc_mobile]'}">
+            <%-- Render QR code --%>
             <button id="generateqr-${label}" type="submit" class="btn btn-primary btn-block">
-                <spring:theme code="checkout.summary.component.pix.generateqr" text="Generate QR Code" />
+                <spring:theme code="checkout.summary.component.generateqr" text="Generate QR Code" />
             </button>
-            <div id="pix-container-${label}"></div>
+            <div id="qrcode-container-${label}"></div>
         </c:when>
         <c:otherwise>
             <%-- Render payment button --%>
@@ -37,7 +38,7 @@
     </c:choose>
 </c:if>
 
-<c:if test="${selectedPaymentMethod eq 'mbway'}">
+<c:if test="${componentPaymentMethod eq '[mbway]'}">
     <div class="chckt-pm__header js-chckt-pm__header">
         <spring:theme code="checkout.summary.component.mbway.payment"/>
     </div>
@@ -45,7 +46,7 @@
 </c:if>
 
 <%-- For components that do not have it's own button --%>
-<c:if test="${not fn:contains(componentsWithPayButton, selectedPaymentMethod)}">
+<c:if test="${not fn:contains(componentsWithPayButton, componentPaymentMethod)}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">
         <div class="checkbox">
             <label> <form:checkbox id="terms-conditions-check-${label}" path="termsCheck" />
