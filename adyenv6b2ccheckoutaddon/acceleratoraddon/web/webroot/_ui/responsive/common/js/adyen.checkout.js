@@ -29,6 +29,7 @@ var AdyenCheckoutHybris = (function () {
         selectedCardBrand: null,
         sepaDirectDebit:null,
         afterPay: null,
+        bcmc: null,
 
         convertCardBrand: function () {
             var cardBrand = this.selectedCardBrand;
@@ -148,6 +149,24 @@ var AdyenCheckoutHybris = (function () {
             if (paymentMethod === "giftcard") {
                 $( 'input[name="giftCardBrand"]' ).val($( 'input[type=radio][name=paymentMethod]:checked' ).attr('brand'));
             }
+            
+            if (paymentMethod === "bcmc") {
+                if (!this.bcmc.state.isValid) {
+                    window.alert("Please fill all the details");
+                    this.bcmc.showValidation();
+                    document.getElementById("bcmc-container").scrollIntoView();
+                    return false;
+                }
+                var state = this.bcmc.data.paymentMethod;
+                $( 'input[name="encryptedCardNumber"]' ).val( state.encryptedCardNumber );
+                $( 'input[name="encryptedExpiryMonth"]' ).val( state.encryptedExpiryMonth );
+                $( 'input[name="encryptedExpiryYear"]' ).val( state.encryptedExpiryYear );
+                $( 'input[name="cardHolder"]' ).val( state.holderName );
+                $( 'input[name="cardBrand"]' ).val( 'bcmc' );
+                $( 'input[name="cardType"]' ).val( 'debit' );
+                $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.bcmc.data.browserInfo ) );
+            }
+                        
             return true;
         },
 
@@ -612,11 +631,48 @@ var AdyenCheckoutHybris = (function () {
                                     AdyenCheckoutHybris.hideSpinner();
                                     AdyenCheckoutHybris.submitDetails(state.data, AdyenCheckoutHybris.handleResult);
                                 }
-                            }).mount('#pix-container-' + label);
+                            }).mount('#qrcode-container-' + label);
                             AdyenCheckoutHybris.hideSpinner();
                         }
                     };
                     AdyenCheckoutHybris.makePayment({ type: "pix" }, actionHandler, AdyenCheckoutHybris.handleResult, label);
+                }
+            });
+        },
+
+        initiateBcmc: function () {
+            this.bcmc = this.checkout.create("bcmc", {
+                hasHolderName: true,
+                holderNameRequired: true
+            });
+
+            try {
+                this.bcmc.mount('#bcmc-container');
+            } catch (e) {
+                console.log('Something went wrong trying to mount the BCMC component: ' + e);
+            }
+        },
+
+        initiateBcmcMobile: function (label) {
+            $("#generateqr-" + label).click(function () {
+                AdyenCheckoutHybris.showSpinner();
+                if (!AdyenCheckoutHybris.isTermsAccepted(label)) {
+                    AdyenCheckoutHybris.handleResult(ErrorMessages.TermsNotAccepted, true)
+                } else {
+                    $("#generateqr-" + label).hide();
+                    $(".checkbox").hide();
+                    var actionHandler  = {
+                        handleAction : function (action) {
+                            AdyenCheckoutHybris.checkout.createFromAction(action, {
+                                onAdditionalDetails : function(state) {
+                                    AdyenCheckoutHybris.hideSpinner();
+                                    AdyenCheckoutHybris.submitDetails(state.data, AdyenCheckoutHybris.handleResult);
+                                }
+                            }).mount('#qrcode-container-' + label);
+                            AdyenCheckoutHybris.hideSpinner();
+                        }
+                    };
+                    AdyenCheckoutHybris.makePayment({ type: "bcmc_mobile" }, actionHandler, AdyenCheckoutHybris.handleResult, label);
                 }
             });
         },

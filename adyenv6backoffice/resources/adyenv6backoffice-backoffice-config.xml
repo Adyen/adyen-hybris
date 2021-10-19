@@ -45,10 +45,6 @@
 					<editorArea:attribute qualifier="adyenPosStoreId"/>
 					<editorArea:attribute qualifier="adyenPosRecurringContractMode"/>
 				</editorArea:section>
-				<editorArea:section name="hmc.adyen.hpp">
-					<editorArea:attribute qualifier="adyenSkinCode"/>
-					<editorArea:attribute qualifier="adyenSkinHMAC" editor="com.hybris.cockpitng.editor.defaultpassword"/>
-				</editorArea:section>
 				<editorArea:section name="hmc.adyen.advanced">
 					<editorArea:attribute qualifier="adyenBoleto"/>
 					<editorArea:attribute qualifier="adyenPaypalMerchantId"/>
