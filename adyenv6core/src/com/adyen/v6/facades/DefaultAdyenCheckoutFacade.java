@@ -696,7 +696,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                                        .collect(Collectors.toSet());
         }
 
-        //Exclude cards, boleto, bcmc and bcmc_mobile_QR and iDeal
+        //Exclude cards, boleto and iDeal
         alternativePaymentMethods = alternativePaymentMethods.stream()
                                                              .filter(paymentMethod -> ! paymentMethod.getType().isEmpty() && ! isHiddenPaymentMethod(paymentMethod))
                                                              .collect(Collectors.toList());
@@ -793,8 +793,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (paymentMethodType == null || paymentMethodType.isEmpty() ||
                 paymentMethodType.equals("scheme") ||
-                paymentMethodType.equals("bcmc") ||
-                paymentMethodType.equals("bcmc_mobile_QR") ||
                 (paymentMethodType.contains("wechatpay")
                         && ! paymentMethodType.equals("wechatpayWeb")) ||
                 paymentMethodType.startsWith(PAYMENT_METHOD_BOLETO) ||

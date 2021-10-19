@@ -145,6 +145,10 @@
             <c:if test="${brandCode eq 'afterpay_default'}">
                 <div id="afterpay-container"></div>
             </c:if>
+
+            <c:if test="${brandCode eq 'bcmc'}">
+                <div id="bcmc-container"></div>
+            </c:if>
         </div>
     </div>
 </div>
