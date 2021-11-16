@@ -31,6 +31,8 @@ import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
+
 /**
  * Check if order is authorized
  */
@@ -56,28 +58,7 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
             return Transition.OK.toString();
         }
 
-        //No transactions means that is not authorized yet
-        if (order.getPaymentTransactions().isEmpty()) {
-            LOG.debug("Process: " + process.getCode() + " Order Waiting");
-            return Transition.WAIT.toString();
-        }
-
-        boolean orderAuthorized = isOrderAuthorized(order);
-
-        //Continue if all transactions are authorised
-        if (orderAuthorized) {
-            LOG.debug("Process: " + process.getCode() + " Order Authorized");
-            order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
-            modelService.save(order);
-
-            return Transition.OK.toString();
-        }
-
-        LOG.debug("Process: " + process.getCode() + " Order Not Authorized");
-        order.setStatus(OrderStatus.PAYMENT_NOT_AUTHORIZED);
-        modelService.save(order);
-
-        return Transition.NOK.toString();
+        return processOrderAuthorization(process, order);
     }
 
     private boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
@@ -91,14 +72,42 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
         return false;
     }
 
-    private boolean isOrderAuthorized(final OrderModel order) {
-        //A single not authorized transaction means not authorized
+    private String processOrderAuthorization(final OrderProcessModel process, final OrderModel order) {
+        //No transactions means that is not authorized yet
+        if (order.getPaymentTransactions() == null || order.getPaymentTransactions().isEmpty()) {
+            LOG.debug("Process: " + process.getCode() + " Order Waiting");
+            return Transition.WAIT.toString();
+        }
+        
+        BigDecimal remainingAmount = BigDecimal.valueOf(order.getTotalPrice());
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
             if (!isTransactionAuthorized(paymentTransactionModel)) {
-                return false;
+                //A single not authorized transaction means not authorized
+                LOG.debug("Process: " + process.getCode() + " Order Not Authorized");
+                order.setStatus(OrderStatus.PAYMENT_NOT_AUTHORIZED);
+                modelService.save(order);
+                return Transition.NOK.toString();
             }
+            
+            remainingAmount = remainingAmount.subtract(paymentTransactionModel.getPlannedAmount());
         }
 
-        return true;
+        BigDecimal zero = BigDecimal.ZERO;
+        //Setting scale to 3, to avoid comparison issues on more than 3 decimal places
+        zero = zero.setScale(3, BigDecimal.ROUND_FLOOR);
+        remainingAmount = remainingAmount.setScale(3, BigDecimal.ROUND_FLOOR);
+
+        //Wait if there is still amount to be authorized
+        if (remainingAmount.compareTo(zero) > 0) {
+            LOG.debug("Process: " + process.getCode() + " Order Waiting remaining amount to be authorized");
+            return Transition.WAIT.toString();
+        }
+
+        //Return success if all transactions and total amount are authorised
+        LOG.debug("Process: " + process.getCode() + " Order Authorized");
+        order.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
+        modelService.save(order);
+
+        return Transition.OK.toString();
     }
 }
