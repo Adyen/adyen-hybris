@@ -23,11 +23,14 @@ package com.adyen.v6.service;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
+
+import java.math.BigDecimal;
 
 public interface AdyenTransactionService {
     /**
@@ -93,4 +96,9 @@ public interface AdyenTransactionService {
      * Creates a PaymentTransactionModel
      */
     PaymentTransactionModel createPaymentTransactionFromResultCode(AbstractOrderModel abstractOrderModel, String merchantTransactionCode, String pspReference, PaymentsResponse.ResultCodeEnum resultCodeEnum);
+
+    /**
+     * Stores the authorization transactions for an order
+     */
+    PaymentTransactionModel authorizeOrderModel(AbstractOrderModel abstractOrderModel, String merchantTransactionCode, String pspReference, BigDecimal paymentAmount);
 }
