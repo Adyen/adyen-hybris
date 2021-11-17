@@ -134,9 +134,9 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             return null;
         }
 
-        PaymentTransactionModel paymentTransactionModel = null;
+        PaymentTransactionModel paymentTransactionModel;
         if (notificationItemModel.getSuccess()) {
-            paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference());
+            paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference(), notificationItemModel.getAmountValue());
         } else {
             paymentTransactionModel = adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
         }
