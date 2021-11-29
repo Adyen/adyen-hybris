@@ -52,11 +52,11 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
         for (final NotificationItemModel notificationItemModel : nonProcessedNotifications) {
             notificationItemModel.setProcessedAt(new Date());
 
-            boolean isDuplicate = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
+            LOG.debug("Processing event " + notificationItemModel.getEventCode() + " for order with code " + notificationItemModel.getMerchantReference());
 
-            LOG.debug("Processing order with code: " + notificationItemModel.getMerchantReference());
-
-            if (isDuplicate) {
+            NotificationItemModel processedNotification = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
+            if (processedNotification != null) {
+                notificationItemModel.setEventDate(processedNotification.getEventDate());
                 LOG.debug("Skipping duplicate notification");
             } else {
                 boolean isOldNotification = notificationItemRepository.isNewerNotificationExists(notificationItemModel.getMerchantReference(),

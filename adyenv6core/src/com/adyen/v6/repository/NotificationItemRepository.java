@@ -90,27 +90,35 @@ public class NotificationItemRepository extends AbstractRepository {
      * @param success Notification success
      * @return true|false
      */
-    public boolean notificationProcessed(String pspReference, String eventCode, boolean success) {
+    public NotificationItemModel notificationProcessed(String pspReference, String eventCode, boolean success) {
         final Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("pspReference", pspReference);
         queryParams.put("eventCode", eventCode);
         queryParams.put("success", success);
 
-        final FlexibleSearchQuery selectNonProcessedNotificationsQuery = new FlexibleSearchQuery(
+        final FlexibleSearchQuery selectProcessedNotificationsQuery = new FlexibleSearchQuery(
                 "SELECT {pk} FROM {" + NotificationItemModel._TYPECODE + "}"
                         + " WHERE {" + NotificationItemModel.PSPREFERENCE + "} = ?pspReference"
                         + " AND {" + NotificationItemModel.EVENTCODE + "} = ?eventCode"
                         + " AND {" + NotificationItemModel.SUCCESS + "} = ?success"
-                        + " AND {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL",
+                        + " AND {" + NotificationItemModel.PROCESSEDAT + "} IS NOT NULL"
+                        + " ORDER BY {" + NotificationItemModel.PROCESSEDAT + "} ASC",
                 queryParams
         );
+
         LOG.debug("Checking if notification already exists");
-        int count = flexibleSearchService
-                .search(selectNonProcessedNotificationsQuery)
-                .getCount();
+        NotificationItemModel processed = flexibleSearchService
+                .search(selectProcessedNotificationsQuery)
+                .getResult()
+                .stream()
+                .map(element -> (NotificationItemModel) element)
+                .findFirst()
+                .orElse(null);
 
-        LOG.debug(count + " items found ");
+        if(processed != null) {
+            LOG.debug(processed.getUuid() + " - processed item found");
+        }
 
-        return (count > 0);
+        return processed;
     }
 }
