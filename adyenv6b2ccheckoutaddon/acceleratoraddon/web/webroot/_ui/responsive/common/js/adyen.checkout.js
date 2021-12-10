@@ -414,7 +414,7 @@ var AdyenCheckoutHybris = (function () {
                 countryCode: countryCode,
                 configuration: {
                     merchantName: applePayMerchantName,
-                    merchantIdentifier: applePayMerchantIdentifier
+                    merchantId: applePayMerchantIdentifier
                 },
                 // Button config
                 buttonType: "plain",
