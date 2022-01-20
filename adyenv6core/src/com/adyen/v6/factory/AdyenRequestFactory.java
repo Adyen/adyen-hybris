@@ -399,6 +399,11 @@ public class AdyenRequestFactory {
             DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
             paymentMethodDetails.setStoreDetails(true);
         }
+
+        // For Dual branded card set card brand as payment method type
+        if (!StringUtils.isEmpty(cartData.getAdyenCardBrand())) {
+            paymentsRequest.getPaymentMethod().setType(cartData.getAdyenCardBrand());
+        }
     }
 
     private void updatePaymentRequestForDC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {

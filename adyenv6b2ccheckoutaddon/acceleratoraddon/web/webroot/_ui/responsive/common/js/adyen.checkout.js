@@ -183,6 +183,8 @@ var AdyenCheckoutHybris = (function () {
             if ( this.isDebitCard() ) {
                 $( 'input[name="cardBrand"]' ).val( this.convertCardBrand() );
                 $( 'input[name="cardType"]' ).val( this.getCardType() );
+            } else {
+                $( 'input[name="cardBrand"]' ).val(this.selectedCardBrand);
             }
                  $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
