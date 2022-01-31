@@ -112,7 +112,23 @@
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="reason" type="java.lang.String">
-                    <persistence type="property"/>
+                    <persistence type="property">
+                        <columntype database="oracle">
+                            <value>CLOB</value>
+                        </columntype>
+                        <columntype database="sap">
+                            <value>NCLOB</value>
+                        </columntype>
+                        <columntype database="mysql">
+                            <value>TEXT</value>
+                        </columntype>
+                        <columntype database="sqlserver">
+                            <value>TEXT</value>
+                        </columntype>
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
+                        </columntype>
+                    </persistence>
                 </attribute>
                 <attribute qualifier="success" type="java.lang.Boolean">
                     <persistence type="property"/>
@@ -130,11 +146,14 @@
                         <columntype database="sap">
                             <value>NCLOB</value>
                         </columntype>
-                        <columntype>
-                            <value>HYBRIS.LONG_STRING</value>
-                        </columntype>
                         <columntype database="mysql">
                             <value>TEXT</value>
+                        </columntype>
+                        <columntype database="sqlserver">
+                            <value>TEXT</value>
+                        </columntype>
+                        <columntype>
+                            <value>HYBRIS.LONG_STRING</value>
                         </columntype>
                     </persistence>
                 </attribute>
