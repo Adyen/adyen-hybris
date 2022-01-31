@@ -96,7 +96,7 @@ var AdyenCheckoutHybris = (function () {
                     this.copyOneClickCardBrandData( recurringReference, oneClickCard.props.brand )
                 }
                 else {
-                    this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
+                    this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode, oneClickCard.props.brand );
                 }
             }
             $( 'input[name="txvariant"]' ).remove();
@@ -187,10 +187,13 @@ var AdyenCheckoutHybris = (function () {
                  $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
-        copyOneClickCardData: function ( recurringReference, cvc ) {
+        copyOneClickCardData: function ( recurringReference, cvc, brand ) {
             $( "#selectedReference" ).val( recurringReference );
             $( 'input[name="encryptedSecurityCode"]' ).val( cvc );
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
+            if (brand) {
+                $( 'input[name="cardBrand"]' ).val( brand );
+            }
 
         },
         copyOneClickCardBrandData: function ( recurringReference, brand ) {
