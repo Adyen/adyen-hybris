@@ -419,7 +419,7 @@ var AdyenCheckoutHybris = (function () {
                 countryCode: countryCode,
                 configuration: {
                     merchantName: applePayMerchantName,
-                    merchantIdentifier: applePayMerchantIdentifier
+                    merchantId: applePayMerchantIdentifier
                 },
                 // Button config
                 buttonType: "plain",
@@ -434,7 +434,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return false;
                     }
-                    state.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
                 onClick: function(resolve, reject) {
                     if (self.isTermsAccepted(label)) {
