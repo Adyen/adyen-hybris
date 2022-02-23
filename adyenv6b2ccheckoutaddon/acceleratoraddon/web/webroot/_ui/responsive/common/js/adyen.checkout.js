@@ -374,8 +374,10 @@ var AdyenCheckoutHybris = (function () {
                     currency: amount.currency,
                     value: amount.value
                 },
-                intent: isImmediateCapture ? "capture" : "authorize",
-                merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                configuration: {
+                    intent: isImmediateCapture ? "capture" : "authorize",
+                    merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                },
                 onChange: function(state, component) {
                     if (!state.isValid) {
                         self.enablePlaceOrder(label);
