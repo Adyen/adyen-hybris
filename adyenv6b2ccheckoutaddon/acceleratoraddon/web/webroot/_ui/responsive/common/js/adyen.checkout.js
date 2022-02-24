@@ -96,7 +96,7 @@ var AdyenCheckoutHybris = (function () {
                     this.copyOneClickCardBrandData( recurringReference, oneClickCard.props.brand )
                 }
                 else {
-                    this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode );
+                    this.copyOneClickCardData( recurringReference, oneClickCard.data.paymentMethod.encryptedSecurityCode, oneClickCard.props.brand );
                 }
             }
             $( 'input[name="txvariant"]' ).remove();
@@ -183,14 +183,19 @@ var AdyenCheckoutHybris = (function () {
             if ( this.isDebitCard() ) {
                 $( 'input[name="cardBrand"]' ).val( this.convertCardBrand() );
                 $( 'input[name="cardType"]' ).val( this.getCardType() );
+            } else {
+                $( 'input[name="cardBrand"]' ).val(this.selectedCardBrand);
             }
                  $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
         },
 
-        copyOneClickCardData: function ( recurringReference, cvc ) {
+        copyOneClickCardData: function ( recurringReference, cvc, brand ) {
             $( "#selectedReference" ).val( recurringReference );
             $( 'input[name="encryptedSecurityCode"]' ).val( cvc );
             $( 'input[name="browserInfo"]' ).val( JSON.stringify( this.card.data.browserInfo ) );
+            if (brand) {
+                $( 'input[name="cardBrand"]' ).val( brand );
+            }
 
         },
         copyOneClickCardBrandData: function ( recurringReference, brand ) {
@@ -369,8 +374,10 @@ var AdyenCheckoutHybris = (function () {
                     currency: amount.currency,
                     value: amount.value
                 },
-                intent: isImmediateCapture ? "capture" : "authorize",
-                merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                configuration: {
+                    intent: isImmediateCapture ? "capture" : "authorize",
+                    merchantId: (this.checkout.options.environment === 'test') ? null : paypalMerchantId,  // Your PayPal Merchant ID. Required for accepting live payments.
+                },
                 onChange: function(state, component) {
                     if (!state.isValid) {
                         self.enablePlaceOrder(label);
@@ -414,7 +421,7 @@ var AdyenCheckoutHybris = (function () {
                 countryCode: countryCode,
                 configuration: {
                     merchantName: applePayMerchantName,
-                    merchantIdentifier: applePayMerchantIdentifier
+                    merchantId: applePayMerchantIdentifier
                 },
                 // Button config
                 buttonType: "plain",
@@ -429,7 +436,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return false;
                     }
-                    state.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
                 onClick: function(resolve, reject) {
                     if (self.isTermsAccepted(label)) {
