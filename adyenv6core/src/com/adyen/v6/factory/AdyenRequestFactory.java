@@ -56,7 +56,6 @@ import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.util.Util;
-import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
 import com.google.gson.Gson;
@@ -78,7 +77,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -113,7 +111,6 @@ public class AdyenRequestFactory {
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
     private static final String OVERWRITE_BRAND_PROPERTY = "overwriteBrand";
-    private static final List<String> CVC_OPTIONAL_BRANDS = Arrays.asList(AdyenCardTypeEnum.BCMC.getCode(), AdyenCardTypeEnum.MAESTRO.getCode());
 
     public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
         return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
@@ -214,7 +211,7 @@ public class AdyenRequestFactory {
             if (selectedReference != null && ! selectedReference.isEmpty()) {
                 paymentsRequest.addOneClickData(selectedReference, cartData.getAdyenEncryptedSecurityCode());
                 String cardBrand = cartData.getAdyenCardBrand();
-                if (cardBrand != null && CVC_OPTIONAL_BRANDS.contains(cardBrand)) {
+                if (cardBrand != null) {
                     DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
                     paymentMethodDetails.setType(cardBrand);
                     paymentsRequest.setPaymentMethod(paymentMethodDetails);
@@ -401,6 +398,11 @@ public class AdyenRequestFactory {
         if (cartData.getAdyenRememberTheseDetails()) {
             DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
             paymentMethodDetails.setStoreDetails(true);
+        }
+
+        // For Dual branded card set card brand as payment method type
+        if (!StringUtils.isEmpty(cartData.getAdyenCardBrand())) {
+            paymentsRequest.getPaymentMethod().setType(cartData.getAdyenCardBrand());
         }
     }
 

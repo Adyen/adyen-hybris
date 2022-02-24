@@ -30,8 +30,8 @@
             <%-- Configure components --%>
             <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
                 var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}", "${paypalMerchantId}", "hidden-xs");
-                AdyenCheckoutHybris.initiatePaypal(amountJS, "${immediateCapture}", "${paypalMerchantId}", "visible-xs");
+                AdyenCheckoutHybris.initiatePaypal(amountJS, ${immediateCapture}, "${paypalMerchantId}", "hidden-xs");
+                AdyenCheckoutHybris.initiatePaypal(amountJS, ${immediateCapture}, "${paypalMerchantId}", "visible-xs");
             </c:when>
 
             <c:when test="${selectedPaymentMethod eq 'mbway'}">
