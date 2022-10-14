@@ -483,8 +483,8 @@ var AdyenCheckoutHybris = (function () {
                         self.hideSpinner();
                         return false;
                     }
-                    state.showSpinner();
-                    state.makePayment(state.data.paymentMethod, component, state.handleResult, label);
+                    self.showSpinner();
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
                 },
                 onClick: function(resolve, reject) {
                     if (self.isTermsAccepted(label)) {
