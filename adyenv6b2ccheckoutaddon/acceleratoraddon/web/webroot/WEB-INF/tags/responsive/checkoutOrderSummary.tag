@@ -10,17 +10,20 @@
 <spring:url value="/checkout/multi/adyen/summary/placeOrder" var="placeOrderUrl"/>
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
-<c:set var="componentsWithPayButton" value="[amazonpay],[applepay],[paypal],[paywithgoogle],[pix],[bcmc_mobile]" />
+<c:set var="componentsWithPayButton" value="[amazonpay],[applepay],[paypal],[paywithgoogle],[pix],[bcmc_mobile],[upi]" />
 <c:set var="componentPaymentMethod" value="[${selectedPaymentMethod}]" />
 
 <%-- Components --%>
 <c:if test="${fn:contains(componentsWithPayButton, componentPaymentMethod)}">
     <div class="checkbox">
         <label>
-            <input type="checkbox" id="terms-conditions-check-${label}" />
+            <input type="checkbox" id="terms-conditions-check-${label}" class="adyen-terms-conditions-check" />
             <spring:theme var="readTermsAndConditions" code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${fn:escapeXml(getTermsAndConditionsUrl)}" htmlEscape="false"/>
                 ${ycommerce:sanitizeHTML(readTermsAndConditions)}
         </label>
+        <div class="adyen-terms-conditions-check-error hidden">
+            <spring:theme code="checkout.error.terms.not.accepted" />
+        </div>
     </div>
 
     <c:choose>

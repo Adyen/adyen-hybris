@@ -43,6 +43,8 @@ public interface AdyenControllerConstants
 				String SelectPaymentMethod = ADDON_PREFIX + "pages/checkout/multi/selectPaymentMethodPage";
 				String Validate3DSPaymentPage = ADDON_PREFIX + "pages/checkout/multi/3ds_payment";
 				String BillingAddressformPage = ADDON_PREFIX + "pages/checkout/multi/billingAddressForm";
+				String AddEditDeliveryAddressPage = ADDON_PREFIX + "pages/checkout/multi/addEditDeliveryAddressPage";
+				String CountryAddressForm = ADDON_PREFIX + "pages/checkout/multi/countryAddressForm";
 			}
 		}
 

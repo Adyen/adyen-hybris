@@ -23,6 +23,8 @@ package com.adyen.v6.factory;
 import java.math.BigDecimal;
 
 import com.adyen.model.Name;
+import com.adyen.model.checkout.details.CardDetails;
+import com.adyen.model.checkout.details.GenericIssuerPaymentMethodDetails;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.MessageCategoryType;
 import com.adyen.model.nexo.MessageHeader;
@@ -30,15 +32,16 @@ import com.adyen.model.nexo.SaleData;
 import com.adyen.model.nexo.TransactionStatusRequest;
 import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
+import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import com.adyen.model.PaymentRequest;
-import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -96,43 +99,47 @@ public class AdyenRequestFactoryTest {
     private static final String TERMINAL_ID = "V400m-123456789";
 
 
+    @InjectMocks
     private AdyenRequestFactory adyenRequestFactory;
 
     @Mock
-    CartData cartDataMock;
+    private ConfigurationService configurationServiceMock;
 
     @Mock
-    javax.servlet.http.HttpServletRequest requestMock;
+    private AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsStrategyExecutor;
 
     @Mock
-    CustomerModel customerModelMock;
+    private CartData cartDataMock;
 
     @Mock
-    AddressData deliveryAddressMock;
+    private javax.servlet.http.HttpServletRequest requestMock;
 
     @Mock
-    AddressData billingAddressMock;
+    private CustomerModel customerModelMock;
 
     @Mock
-    CCPaymentInfoData paymentInfoMock;
+    private AddressData deliveryAddressMock;
 
     @Mock
-    CountryData deliveryCountryDataMock;
+    private AddressData billingAddressMock;
 
     @Mock
-    CountryData billingCountryDataMock;
+    private CCPaymentInfoData paymentInfoMock;
 
     @Mock
-    ConfigurationService configurationServiceMock;
+    private CountryData deliveryCountryDataMock;
+
+    @Mock
+    private CountryData billingCountryDataMock;
 
     @Before
     public void setUp() {
-        adyenRequestFactory = new AdyenRequestFactory();
+        adyenRequestFactory = new AdyenRequestFactory(configurationServiceMock, adyenPaymentMethodDetailsStrategyExecutor);
         PriceData priceData = new PriceData();
         priceData.setValue(new BigDecimal(AMOUNT));
         priceData.setCurrencyIso(CURRENCY);
 
-        when(cartDataMock.getTotalPrice()).thenReturn(priceData);
+        when(cartDataMock.getTotalPriceWithTax()).thenReturn(priceData);
         when(cartDataMock.getCode()).thenReturn(CART_CODE);
         when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddressMock);
         when(cartDataMock.getPaymentInfo()).thenReturn(paymentInfoMock);
@@ -160,17 +167,15 @@ public class AdyenRequestFactoryTest {
         Configuration configurationMock = mock(BaseConfiguration.class);
         when(configurationMock.getString(any(String.class))).thenReturn("dummy");
         when(configurationServiceMock.getConfiguration()).thenReturn(configurationMock);
-
-        adyenRequestFactory.setConfigurationService(configurationServiceMock);
     }
 
     @Test
-    public void testAuthorise() throws Exception {
+    public void testAuthorise() {
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_CC);
 
         PaymentsRequest paymentsRequest;
-        //Test anonymous
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), null, RecurringContractMode.NONE, false);
+
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, RecurringContractMode.RECURRING, false);
 
         //use delivery/billing address from cart
         assertEquals(DELIVERY_TOWN, paymentsRequest.getDeliveryAddress().getCity());
@@ -178,7 +183,7 @@ public class AdyenRequestFactoryTest {
         assertEquals(BILLING_TOWN, paymentsRequest.getBillingAddress().getCity());
         assertEquals(BILLING_COUNTRY, paymentsRequest.getBillingAddress().getCountry());
 
-        assertNull(paymentsRequest.getShopperReference());
+        assertNotNull(paymentsRequest.getShopperReference());
 
         assertEquals(USER_AGENT_HEADER, paymentsRequest.getBrowserInfo().getUserAgent());
         assertEquals(ACCEPT_HEADER, paymentsRequest.getBrowserInfo().getAcceptHeader());
@@ -206,7 +211,7 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
         paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new RequestInfo(requestMock), customerModelMock, null, false);
 
-        DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
+        final CardDetails paymentMethodDetails = (CardDetails) paymentsRequest.getPaymentMethod();
         assertEquals(RECURRING_REFERENCE, paymentMethodDetails.getRecurringDetailReference());
     }
 
@@ -236,7 +241,7 @@ public class AdyenRequestFactoryTest {
         assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
         assertNotNull(paymentsRequest.getPaymentMethod());
         assertEquals(PAYMENT_METHOD_EPS, paymentsRequest.getPaymentMethod().getType());
-        assertEquals(ISSUER_ID, ((DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod()).getIssuer());
+        assertEquals(ISSUER_ID, ((GenericIssuerPaymentMethodDetails) paymentsRequest.getPaymentMethod()).getIssuer());
     }
 
     @Test

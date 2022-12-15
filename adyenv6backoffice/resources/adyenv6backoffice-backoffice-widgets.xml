@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widgets.xsd">
+
+    <!-- Action widget connections -->
+    <widget-connection sourceWidgetId="STUB_com.adyen.v6.backoffice.widgets.actions.adyencancelorderaction" outputId="cancelOrderContext" targetWidgetId="omsCancelOrderPopup" inputId="inputObject"/>
+
+</widgets>

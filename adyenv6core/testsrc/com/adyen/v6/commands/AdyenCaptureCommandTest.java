@@ -20,16 +20,7 @@
  */
 package com.adyen.v6.commands;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import com.adyen.model.modification.ModificationResult;
+import com.adyen.model.checkout.PaymentCaptureResource;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.DefaultAdyenPaymentService;
@@ -41,6 +32,17 @@ import de.hybris.platform.payment.commands.result.CaptureResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.store.BaseStoreModel;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -98,12 +100,12 @@ public class AdyenCaptureCommandTest {
      */
     @Test
     public void testManualCaptureSuccess() throws Exception {
-        ModificationResult modificationResult = new ModificationResult();
-        modificationResult.setPspReference("1235");
-        modificationResult.setResponse("[capture-received]");
+        PaymentCaptureResource paymentCaptureResult = new PaymentCaptureResource();
+        paymentCaptureResult.setPspReference("1235");
+        paymentCaptureResult.setStatus(PaymentCaptureResource.StatusEnum.RECEIVED);
 
-        when(adyenPaymentServiceMock.capture(captureRequest.getTotalAmount(), captureRequest.getCurrency(), captureRequest.getRequestId(), captureRequest.getRequestToken())).thenReturn(
-                modificationResult);
+        when(adyenPaymentServiceMock.captures(captureRequest.getTotalAmount(), captureRequest.getCurrency(), captureRequest.getRequestId(), captureRequest.getRequestToken())).thenReturn(
+                paymentCaptureResult);
 
         CaptureResult result = adyenCaptureCommand.perform(captureRequest);
         assertEquals(TransactionStatus.ACCEPTED, result.getTransactionStatus());
