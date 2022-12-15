@@ -8,70 +8,104 @@
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="order" tagdir="/WEB-INF/tags/responsive/order" %>
-
+<%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
 <spring:url value="/checkout/multi/adyen/summary/component-result" var="handleComponentResult"/>
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 <jsp:attribute name="pageScripts">
-    <script type="text/javascript" src="${dfUrl}"></script>
-    <script src="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.js"
-            integrity="sha384-eNk32fgfYxvzNLyV19j4SLSHPQdLNR+iUS1t/D7rO4gwvbHrj6y77oJLZI7ikzBH"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/css/chckt-default-v1.css"/>
-    <link rel="stylesheet"
-          href="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.css"
-          integrity="sha384-5CDvDZiVPuf+3ZID0lh0aaUHAeky3/ACF1YAKzPbn3GEmzWgO53gP6stiYHWIdpB"
-          crossorigin="anonymous"/>
+    <adyen:adyenLibrary
+            dfUrl="${dfUrl}"
+            showDefaultCss="${true}"
+    />
 
     <script type="text/javascript">
-        AdyenCheckoutHybris.initiateCheckout("${shopperLocale}", "${environmentMode}", "${clientKey}");
+        <c:set var="initConfig">
+            <json:object escapeXml="false">
+                <json:property name="shopperLocale" value="${shopperLocale}"/>
+                <json:property name="environment" value="${environmentMode}"/>
+                <json:property name="clientKey" value="${clientKey}"/>
+                <json:property name="sessionId" value="${sessionData.id}"/>
+                <json:property name="sessionData" value="${sessionData.sessionData}"/>
+                <json:object escapeXml="false" name="session">
+                    <json:property name="id" value="${sessionData.id}"/>
+                    <json:property name="sessionData" value="${sessionData.sessionData}"/>
+                </json:object>
+            </json:object>
+        </c:set>
+
+        <c:set var="callbackConfig">
+            <json:object escapeXml="false" name="callbackConfig">
+                <json:object escapeXml="false" name="amount">
+                    <json:property name="value" value="${amount.value}"/>
+                    <json:property name="currency" value="${amount.currency}"/>
+                </json:object>
+                <json:property name="merchantAccount" value="${merchantAccount}"/>
+                <json:array name="label" items="${['visible-xs', 'hidden-xs']}"/>
+            </json:object>
+        </c:set>
+
+        const initConfig = ${initConfig};
+        const callbackConfig = ${callbackConfig};
+        const fnCallbackArray = {};
 
         <c:choose>
             <%-- Configure components --%>
             <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
-                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiatePaypal(amountJS, ${immediateCapture}, "${paypalMerchantId}", "hidden-xs");
-                AdyenCheckoutHybris.initiatePaypal(amountJS, ${immediateCapture}, "${paypalMerchantId}", "visible-xs");
+                fnCallbackArray['initiatePaypal'] = {
+                    ...callbackConfig,
+                    isImmediateCapture: ${immediateCapture},
+                    paypalMerchantId: "${paypalMerchantId}"
+                }
             </c:when>
 
             <c:when test="${selectedPaymentMethod eq 'mbway'}">
-                AdyenCheckoutHybris.initiateMbway("hidden-xs");
-                AdyenCheckoutHybris.initiateMbway("visible-xs");
+                fnCallbackArray['initiateMbway'] = callbackConfig
             </c:when>
 
             <c:when test="${selectedPaymentMethod eq 'applepay'}">
-                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "hidden-xs");
-                AdyenCheckoutHybris.initiateApplePay(amountJS, "${countryCode}", "${applePayMerchantIdentifier}", "${applePayMerchantName}", "visible-xs");
+                fnCallbackArray['initiateApplePay'] = {
+                    ...callbackConfig,
+                    contryCode: "${countryCode}",
+                    applePayMerchantIdentifier: "${applePayMerchantIdentifier}",
+                    applePayMerchantName: "${applePayMerchantName}",
+                }
             </c:when>
 
             <c:when test="${selectedPaymentMethod eq 'pix'}">
-                AdyenCheckoutHybris.initiatePix("hidden-xs");
-                AdyenCheckoutHybris.initiatePix("visible-xs");
+                fnCallbackArray['initiatePix'] = callbackConfig
             </c:when>
-        
+
             <c:when test="${selectedPaymentMethod eq 'paywithgoogle'}">
-                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "hidden-xs");
-                AdyenCheckoutHybris.initiateGooglePay(amountJS, "${merchantAccount}", "visible-xs");
+                fnCallbackArray['initiateGooglePay'] = callbackConfig
             </c:when>
-        
+
             <c:when test="${selectedPaymentMethod eq 'amazonpay'}">
-                var amountJS = {value: "${amount.value}", currency: "${amount.currency}"};
-                AdyenCheckoutHybris.initiateAmazonPay(amountJS, ${deliveryAddress}, ${amazonPayConfiguration});
+                fnCallbackArray['initiateAmazonPay'] = {
+                    ...callbackConfig,
+                    deliveryAddress: ${deliveryAddress},
+                    amazonPayConfiguration: ${amazonPayConfiguration},
+                    label: null,
+                };
             </c:when>
-        
+
+            <c:when test="${selectedPaymentMethod eq 'upi'}">
+                fnCallbackArray['initiateUPI'] = callbackConfig
+            </c:when>
+
             <c:when test="${selectedPaymentMethod eq 'bcmc_mobile'}">
-                AdyenCheckoutHybris.initiateBcmcMobile("hidden-xs");
-                AdyenCheckoutHybris.initiateBcmcMobile("visible-xs");
+                fnCallbackArray['initiateBcmcMobile'] = callbackConfig;
             </c:when>
-        
+
             <%-- API only payments methods --%>
             <c:otherwise>
                 AdyenCheckoutHybris.configureButton($( "#placeOrderForm-hidden-xs" ), true, "hidden-xs");
                 AdyenCheckoutHybris.configureButton($( "#placeOrderForm-visible-xs" ), true, "visible-xs");
         </c:otherwise>
         </c:choose>
+
+        AdyenCheckoutHybris.initiateCheckout(initConfig, fnCallbackArray);
 
     </script>
 </jsp:attribute>
@@ -135,7 +169,7 @@
                 </ycommerce:testId>
             </div>
 
-            <div id="adyen-checkout-visible-xs" class="visible-xs clearfix">
+            <div id="adyen-checkout-visible-xs" class="visible-xs clearfix side-margins">
                 <adyen:checkoutOrderSummary paymentMethod="${selectedPaymentMethod}" label="visible-xs"/>
             </div>
         </div>

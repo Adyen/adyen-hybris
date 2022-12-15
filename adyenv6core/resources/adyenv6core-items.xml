@@ -49,6 +49,12 @@
         <enumtype code="OrderStatus" autocreate="false" generate="true" dynamic="true">
             <value code="PAYMENT_PENDING"/>
         </enumtype>
+        <enumtype code="AdyenRegions" dynamic="true">
+            <value code="EU"/>
+            <value code="US"/>
+            <value code="AU"/>
+            <value code="IN"/>
+        </enumtype>
     </enumtypes>
 
     <itemtypes>
@@ -284,6 +290,11 @@
                     <persistence type="property"/>
                     <modifiers optional="true"/>
                 </attribute>
+                <attribute qualifier="adyenRegion" type="AdyenRegions">
+                    <description>Region</description>
+                    <persistence type="property"/>
+                    <modifiers optional="true"/>
+                </attribute>
             </attributes>
         </itemtype>
 
@@ -296,6 +307,10 @@
                 </attribute>
                 <attribute qualifier="adyenIssuerId" type="java.lang.String">
                     <description>Issuer identifier (e.g. iDeal bank)</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="adyenUPIVirtualAddress" type="java.lang.String">
+                    <description>virtualAddress filled on UPI APM(India)</description>
                     <persistence type="property"/>
                 </attribute>
                 <attribute qualifier="adyenAvsResult" type="java.lang.String">

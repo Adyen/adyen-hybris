@@ -51,13 +51,21 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	final public static String PAYMENT_METHOD_AMAZONPAY = "amazonpay";
 	final public static String PAYMENT_METHOD_BCMC = "bcmc";
 	final public static String PAYMENT_METHOD_BCMC_MOBILE = "bcmc_mobile";
+	final public static String PAYMENT_METHOD_GOOGLE = "paywithgoogle";
+	final public static String PAYMENT_METHOD_TRUSTLY = "trustly";
+	final public static String PAYMENT_METHOD_INTERAC = "interac";
+	final public static String PAYMENT_METHOD_SOFORT = "directEbanking";
+	final public static String PAYMENT_METHOD_DOTPAY = "dotpay";
+	final public static String PAYMENT_METHOD_WECHATPAY = "wechatpayWeb";
+	final public static String PAYMENT_METHOD_PAYTM = "paytm";
+	final public static String PAYMENT_METHOD_BILLDESK_UPI = "billdesk_upi";
 
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
 	public static final String PROCESS_EVENT_ADYEN_PAYMENT_RESULT = "AdyenPaymentResult";
 	public static final String PROCESS_EVENT_ADYEN_REFUNDED = "AdyenRefunded";
 
-	public static final String KLARNA = "klarna";
+	public static final String PAYMENT_METHOD_KLARNA = "klarna";
 	public static final String RATEPAY = "ratepay";
 	public static final String AFTERPAY = "afterpay_default";
 	public static final String AFTERPAY_TOUCH = "afterpaytouch";
@@ -72,7 +80,6 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String CARD_TYPE_DEBIT = "debit";
 	public static final String AFFIRM = "affirm";
 	public static final String CLEARPAY = "clearpay";
-	public static final String GIFT_CARD = "giftcard";
 
 	private Adyenv6coreConstants() {
 		//empty to avoid instantiating this constant class
@@ -82,8 +89,8 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 
 	public static final String PLATFORM_LOGO_CODE = "adyenv6corePlatformLogo";
 
-	public static final List<String> OPENINVOICE_METHODS_API = Collections.unmodifiableList(new ArrayList<String>() {{
-		add(KLARNA);
+	public static final List<String> OPENINVOICE_METHODS_API = Collections.unmodifiableList(new ArrayList<>() {{
+		add(PAYMENT_METHOD_KLARNA);
 		add(RATEPAY);
 		add(KLARNA_SLICE);
 		add(AFFIRM);
@@ -94,21 +101,22 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	}});
 
 
-	public static final List<String> OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER = Collections.unmodifiableList(new ArrayList<String>() {{
+	public static final List<String> OPENINVOICE_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER = Collections.unmodifiableList(new ArrayList<>() {{
 		add(COUNTRY_CODE_SWEDEN);
 		add(COUNTRY_CODE_DENMARK);
 		add(COUNTRY_CODE_FINLAND);
 		add(COUNTRY_CODE_NORWAY);
 	}});
 
-	public static final List<String> PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER = Collections.unmodifiableList(new ArrayList<String>() {{
+	public static final List<String> PAYMENT_METHODS_ALLOW_SOCIAL_SECURITY_NUMBER = Collections.unmodifiableList(new ArrayList<>() {{
 		add(RATEPAY);
 		add(PAYMENT_METHOD_BOLETO);
 		add(PAYMENT_METHOD_PIX);
 	}});
 
-	public static final List<String> ISSUER_PAYMENT_METHODS = Collections.unmodifiableList(new ArrayList<String>() {{
+	public static final List<String> ISSUER_PAYMENT_METHODS = Collections.unmodifiableList(new ArrayList<>() {{
 		add(PAYMENT_METHOD_IDEAL);
 		add(PAYMENT_METHOD_EPS);
+		add("onlinebanking_IN");
 	}});
 }

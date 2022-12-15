@@ -13,8 +13,11 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans.xsd">
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!--
 	The hybris platform provides one single Spring application context for beans located at the jalo layer.
@@ -125,12 +128,12 @@
     </bean>
 
     <bean id="adyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory">
-        <property name="configurationService" ref="configurationService" />
+        <constructor-arg name="configurationService" ref="configurationService" />
+        <constructor-arg name="adyenPaymentMethodDetailsBuilderExecutor" ref="adyenPaymentMethodDetailsStrategyExecutorImpl" />
     </bean>
 
     <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
-        <property name="paymentMethodConverter" ref="adyenPaymentMethodConverter" />
-        <property name="adyenRequestFactory" ref="adyenRequestFactory" />
+        <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
     </bean>
 
     <bean id="adyenPaymentsResponseConverter" class="com.adyen.v6.converters.PaymentsResponseConverter" />
@@ -187,7 +190,7 @@
 
 
     <alias name="defaultAdyenCheckoutFacade" alias="adyenCheckoutFacade" />
-    <bean id="defaultAdyenCheckoutFacade" class="com.adyen.v6.facades.DefaultAdyenCheckoutFacade">
+    <bean id="defaultAdyenCheckoutFacade" class="com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade">
         <property name="countryConverter" ref="countryConverter"/>
         <property name="baseStoreService" ref="baseStoreService"/>
         <property name="sessionService" ref="sessionService"/>
@@ -256,5 +259,168 @@
     <bean id="adyenCreateOrderFromCartStrategy" class="com.adyen.v6.impl.order.strategies.AdyenCreateOrderFromCartStrategy" parent="defaultCreateOrderFromCartStrategy" />
 
     <bean id="adyenOrderEntryPopulator" class="com.adyen.v6.populator.TaxValuesOrderEntryPopulator" parent="defaultOrderEntryPopulator" />
+
+    <alias name="adyenOrderCancelPopulator" alias="orderCancelPopulator"/>
+    <bean id="adyenOrderCancelPopulator" parent="defaultOrderCancelPopulator"
+          class="com.adyen.v6.populator.AdyenOrderCancelPopulator"/>
+
+    <alias name="defaultAdyenPartialOrderCancelDenialStrategy"
+           alias="adyenPartialOrderCancelDenialStrategy"/>
+    <bean id="defaultAdyenPartialOrderCancelDenialStrategy"
+          class="com.adyen.v6.ordercancel.denialstrategies.impl.AdyenPartialOrderCancelDenialStrategy">
+        <property name="reason">
+            <bean class="de.hybris.platform.ordercancel.DefaultOrderCancelDenialReason">
+                <property name="code" value="5"/>
+                <property name="description"
+                          value="Partial Order or order entry cancel is not supported."/>
+            </bean>
+        </property>
+    </bean>
+
+    <alias name="defaultAdyenPaymentStatusOrderCancelDenialStrategy"
+           alias="adyenPaymentStatusOrderCancelDenialStrategy"/>
+    <bean id="defaultAdyenPaymentStatusOrderCancelDenialStrategy"
+          class="com.adyen.v6.ordercancel.denialstrategies.impl.AdyenPaymentStatusOrderCancelDenialStrategy">
+        <property name="reason">
+            <bean class="de.hybris.platform.ordercancel.DefaultOrderCancelDenialReason">
+                <property name="code" value="6"/>
+                <property name="description"
+                          value="Order Cancel for not authorized order or captured order not allowed."/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="adyenPartialOrderCancelServiceListMergeDirective" depends-on="orderCancelService"
+          parent="listMergeDirective">
+        <property name="add" ref="adyenPartialOrderCancelDenialStrategy"/>
+        <property name="listPropertyDescriptor" value="cancelDenialStrategies"/>
+    </bean>
+
+    <bean id="adyenPaymentStatusOrderCancelServiceListMergeDirective" depends-on="orderCancelService"
+          parent="listMergeDirective">
+        <property name="add" ref="adyenPaymentStatusOrderCancelDenialStrategy"/>
+        <property name="listPropertyDescriptor" value="cancelDenialStrategies"/>
+    </bean>
+
+    <alias name="adyenDefaultOmsOrderFacade" alias="omsOrderFacade"/>
+    <bean id="adyenDefaultOmsOrderFacade" parent="defaultOmsOrderFacade"
+          class="com.adyen.v6.ordermanagement.impl.AdyenDefaultOmsOrderFacade"/>
+
+    <alias name="defaultPaypalAdyenPaymentMethodDetailsBuilderStrategy" alias="paypalAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultPaypalAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.PaypalAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultPaybrightPaymentMethodDetailsBuilderStrategy" alias="paybrightPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultPaybrightPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.PaybrightPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultAffirmPaymentMethodDetailsBuilderStrategy" alias="affirmPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultAffirmPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.AffirmPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultAfterpayAdyenPaymentMethodDetailsBuilderStrategy" alias="afterpayAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultAfterpayAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.AfterpayAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultBoletoBancarioSantanderAdyenPaymentMethodDetailsBuilderStrategy" alias="boletoBancarioSantanderAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultBoletoBancarioSantanderAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.BoletoBancarioSantanderAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultCreditCardAdyenPaymentMethodDetailsBuilderStrategy" alias="creditCardAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultCreditCardAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.CreditCardAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultEPSAdyenPaymentMethodDetailsBuilderStrategy" alias="EPSAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultEPSAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.EPSAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultFacilpayPaymentMethodDetailsBuilderStrategy" alias="facilpayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultFacilpayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.FacilpayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultGiftcardPaymentMethodDetailsBuilderStrategy" alias="giftcardPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultGiftcardPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.GiftcardPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultIdealAdyenPaymentMethodDetailsBuilderStrategy" alias="idealAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultIdealAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.IdealAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultKlarnaAdyenPaymentMethodDetailsBuilderStrategy" alias="klarnaAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultKlarnaAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.KlarnaAdyenPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultRatepayPaymentMethodDetailsBuilderStrategy" alias="ratepayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultRatepayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.RatepayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultSepaDirectDebitPaymentMethodDetailsBuilderStrategy" alias="sepaDirectDebitPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultSepaDirectDebitPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.SepaDirectDebitPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultTrustyPaymentMethodDetailsBuilderStrategy" alias="trustyPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultTrustyPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.TrustyPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultClearpayPaymentMethodDetailsBuilderStrategy" alias="clearpayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultClearpayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.ClearpayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultOneyPaymentMethodDetailsBuilderStrategy" alias="oneyPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultOneyPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.OneyPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultGiropayPaymentMethodDetailsBuilderStrategy" alias="giropayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultGiropayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.GiropayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultInteracPaymentMethodDetailsBuilderStrategy" alias="interacPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultInteracPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.InteracPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultSofortPaymentMethodDetailsBuilderStrategy" alias="sofortPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultSofortPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.SofortPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultDotpayPaymentMethodDetailsBuilderStrategy" alias="dotpayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultDotpayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.DotpayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultWechatpayWebPaymentMethodDetailsBuilderStrategy" alias="wechatpayWebPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultWechatpayWebPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.WechatpayWebPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultMultibancoPaymentMethodDetailsBuilderStrategy" alias="multibancoPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultMultibancoPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.MultibancoPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultMolpayPaymentMethodDetailsBuilderStrategy" alias="molpayPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultMolpayPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.MolpayPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultOnlineBankingPaymentMethodDetailsBuilderStrategy" alias="onlineBankingPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultOnlineBankingPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.OnlineBankingPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultUPIPaymentMethodDetailsBuilderStrategy" alias="uPIPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultUPIPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.UPIPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultWalletsIndiaPaymentMethodDetailsBuilderStrategy" alias="walletsIndiaPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultWalletsIndiaPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.WalletsIndiaPaymentMethodDetailsBuilderStrategy"/>
+
+    <alias name="defaultPaytmPaymentMethodDetailsBuilderStrategy" alias="paytmPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultPaytmPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.PaytmPaymentMethodDetailsBuilderStrategy"/>
+
+    <util:list id="adyenPaymentMethodDetailsBuilderStrategies">
+        <ref bean="clearpayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="trustyPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="paypalAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="sepaDirectDebitPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="ratepayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="klarnaAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="idealAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="giftcardPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="facilpayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="EPSAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="creditCardAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="boletoBancarioSantanderAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="afterpayAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="affirmPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="paybrightPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="paypalAdyenPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="oneyPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="giropayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="interacPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="sofortPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="dotpayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="wechatpayWebPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="multibancoPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="molpayPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="onlineBankingPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="uPIPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="walletsIndiaPaymentMethodDetailsBuilderStrategy"/>
+        <ref bean="paytmPaymentMethodDetailsBuilderStrategy"/>
+    </util:list>
+
+    <alias name="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" alias="adyenPaymentMethodDetailsStrategyExecutorImpl"/>
+    <bean id="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" class="com.adyen.v6.paymentmethoddetails.executors.impl.AdyenPaymentMethodDetailsStrategyExecutorImpl">
+        <constructor-arg name="strategies" ref="adyenPaymentMethodDetailsBuilderStrategies"/>
+    </bean>
 
 </beans>
