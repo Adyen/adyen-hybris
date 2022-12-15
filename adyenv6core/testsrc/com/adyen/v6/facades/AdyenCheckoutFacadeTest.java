@@ -45,6 +45,7 @@ import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenBusinessProcessService;
@@ -102,9 +103,9 @@ import java.util.UUID;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_EPS;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_PENDING_ORDER_CODE;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.SESSION_PENDING_ORDER_CODE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -173,6 +174,14 @@ public class AdyenCheckoutFacadeTest {
     AddressPopulator addressPopulator;
     @Mock
     AdyenBusinessProcessService adyenBusinessProcessService;
+    @Mock
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
+    @Mock
+    private BaseStoreService baseStoreServiceMock;
+    @Mock
+    private BaseStoreModel baseStoreModelMock;
+    @Mock
+    private AdyenPaymentService adyenPaymentServiceMock;
 
     @Mock
     HttpServletRequest request;
@@ -244,13 +253,16 @@ public class AdyenCheckoutFacadeTest {
         when(request.getAttribute("originalServiceId")).thenReturn(SERVICE_ID);
         when(baseStoreService.getCurrentBaseStore()).thenReturn(baseStore);
         when(adyenPaymentServiceFactory.createFromBaseStore(any())).thenReturn(adyenPaymentService);
+        when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
+        when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
+        when(adyenPaymentServiceMock.calculateAmountWithTaxes(orderModel)).thenReturn(new BigDecimal(10));
     }
 
     @Test
     public void testInitializeEpsCheckoutData() throws Exception {
         when(checkoutFacade.getCheckoutCart()).thenReturn(cartData);
         when(baseStore.getAdyenPosEnabled()).thenReturn(false);
-        when(cartData.getTotalPrice()).thenReturn(priceData);
+        when(cartData.getTotalPriceWithTax()).thenReturn(priceData);
         when(priceData.getValue()).thenReturn(BigDecimal.TEN);
         when(priceData.getCurrencyIso()).thenReturn("EUR");
         when(cartData.getDeliveryAddress()).thenReturn(addressData);
@@ -282,7 +294,7 @@ public class AdyenCheckoutFacadeTest {
         item.setId(UUID.randomUUID().toString());
         item.setName("FakeIssuer");
         detail.addItemsItem(item);
-        paymentMethod.addDetailsItem(detail);
+        paymentMethod.addInputDetailsItem(detail);
 
         PaymentMethodsResponse response = new PaymentMethodsResponse();
         response.setPaymentMethods(Collections.singletonList(paymentMethod));

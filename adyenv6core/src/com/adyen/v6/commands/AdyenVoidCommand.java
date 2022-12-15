@@ -20,9 +20,7 @@
  */
 package com.adyen.v6.commands;
 
-import java.util.Date;
-import org.apache.log4j.Logger;
-import com.adyen.model.modification.ModificationResult;
+import com.adyen.model.checkout.PaymentReversalResource;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.BaseStoreRepository;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -32,6 +30,9 @@ import de.hybris.platform.payment.commands.result.VoidResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.log4j.Logger;
+
+import java.util.Date;
 
 /**
  * Issues a Cancel request
@@ -65,9 +66,9 @@ public class AdyenVoidCommand implements VoidCommand {
         AdyenPaymentService adyenPaymentService = adyenPaymentServiceFactory.createFromBaseStore(baseStore);
 
         try {
-            ModificationResult modificationResult = adyenPaymentService.cancelOrRefund(authReference, reference);
+            final PaymentReversalResource paymentReversalResource = adyenPaymentService.cancelOrRefunds(authReference, reference);
 
-            if (CANCELORREFUND_RECEIVED_RESPONSE.equals(modificationResult.getResponse())) {
+            if (PaymentReversalResource.StatusEnum.RECEIVED.equals(paymentReversalResource.getStatus())) {
                 result.setTransactionStatus(TransactionStatus.ACCEPTED);
                 result.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED);
             } else {

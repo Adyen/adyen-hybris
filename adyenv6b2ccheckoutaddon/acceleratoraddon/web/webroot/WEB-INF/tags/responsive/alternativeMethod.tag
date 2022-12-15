@@ -52,7 +52,7 @@
                             <spring:theme code="payment.method.issuer.selector"/>
                         </option>
                         <c:forEach items="${issuers}" var="issuer">
-                            <option value="${issuer.issuerId}">${issuer.name}</option>
+                            <option value="${issuer.id}">${issuer.name}</option>
                         </c:forEach>
                     </select>
                 </label>

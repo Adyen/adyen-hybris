@@ -22,43 +22,34 @@ package com.adyen.v6.factory;
 
 import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
 import com.adyen.enums.VatCategory;
-import com.adyen.model.AbstractPaymentRequest;
-import com.adyen.model.Address;
 import com.adyen.model.Amount;
-import com.adyen.model.BrowserInfo;
-import com.adyen.model.Installments;
-import com.adyen.model.Name;
 import com.adyen.model.PaymentRequest;
-import com.adyen.model.PaymentRequest3d;
+import com.adyen.model.*;
 import com.adyen.model.additionalData.InvoiceLine;
 import com.adyen.model.applicationinfo.ApplicationInfo;
 import com.adyen.model.applicationinfo.CommonField;
 import com.adyen.model.applicationinfo.ExternalPlatform;
-import com.adyen.model.checkout.DefaultPaymentMethodDetails;
 import com.adyen.model.checkout.LineItem;
 import com.adyen.model.checkout.PaymentMethodDetails;
 import com.adyen.model.checkout.PaymentsDetailsRequest;
 import com.adyen.model.checkout.PaymentsRequest;
+import com.adyen.model.checkout.details.CardDetails;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.RefundRequest;
-import com.adyen.model.nexo.AmountsReq;
-import com.adyen.model.nexo.DocumentQualifierType;
-import com.adyen.model.nexo.MessageCategoryType;
-import com.adyen.model.nexo.MessageReference;
-import com.adyen.model.nexo.PaymentTransaction;
-import com.adyen.model.nexo.SaleData;
-import com.adyen.model.nexo.TransactionIdentification;
-import com.adyen.model.nexo.TransactionStatusRequest;
+import com.adyen.model.nexo.*;
 import com.adyen.model.recurring.DisableRequest;
 import com.adyen.model.recurring.Recurring;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.util.Util;
+import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
+import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import com.google.gson.Gson;
+import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -76,34 +67,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY;
-import static com.adyen.v6.constants.Adyenv6coreConstants.CARD_TYPE_DEBIT;
-import static com.adyen.v6.constants.Adyenv6coreConstants.GIFT_CARD;
-import static com.adyen.v6.constants.Adyenv6coreConstants.ISSUER_PAYMENT_METHODS;
-import static com.adyen.v6.constants.Adyenv6coreConstants.KLARNA;
-import static com.adyen.v6.constants.Adyenv6coreConstants.OPENINVOICE_METHODS_API;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYBRIGHT;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SEPA_DIRECTDEBIT;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
+import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 
 public class AdyenRequestFactory {
-    private ConfigurationService configurationService;
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
     private static final String PLATFORM_NAME = "Hybris";
@@ -112,8 +81,12 @@ public class AdyenRequestFactory {
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
     private static final String OVERWRITE_BRAND_PROPERTY = "overwriteBrand";
 
-    public PaymentRequest3d create3DAuthorizationRequest(final String merchantAccount, final HttpServletRequest request, final String md, final String paRes) {
-        return createBasePaymentRequest(new PaymentRequest3d(), request, merchantAccount).set3DRequestData(md, paRes);
+    protected final ConfigurationService configurationService;
+    protected final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor;
+
+    public AdyenRequestFactory(final ConfigurationService configurationService, final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor) {
+        this.configurationService = configurationService;
+        this.adyenPaymentMethodDetailsBuilderExecutor = adyenPaymentMethodDetailsBuilderExecutor;
     }
 
     @Deprecated
@@ -122,8 +95,8 @@ public class AdyenRequestFactory {
                                                      final HttpServletRequest request,
                                                      final CustomerModel customerModel,
                                                      final RecurringContractMode recurringContractMode) {
-        String amount = String.valueOf(cartData.getTotalPrice().getValue());
-        String currency = cartData.getTotalPrice().getCurrencyIso();
+        String amount = String.valueOf(cartData.getTotalPriceWithTax().getValue());
+        String currency = cartData.getTotalPriceWithTax().getCurrencyIso();
         String reference = cartData.getCode();
 
         PaymentRequest paymentRequest = createBasePaymentRequest(new PaymentRequest(), request, merchantAccount).reference(reference).setAmountData(amount, currency);
@@ -133,13 +106,6 @@ public class AdyenRequestFactory {
             paymentRequest.setShopperReference(customerModel.getCustomerID());
             paymentRequest.setShopperEmail(customerModel.getContactEmail());
         }
-
-        // set recurring contract
-        if (customerModel != null && PAYMENT_METHOD_CC.equals(cartData.getAdyenPaymentMethod())) {
-            Recurring recurring = getRecurringContractType(recurringContractMode, cartData.getAdyenRememberTheseDetails());
-            paymentRequest.setRecurring(recurring);
-        }
-
         // if address details are provided added it into the request
         if (cartData.getDeliveryAddress() != null) {
             Address deliveryAddress = setAddressData(cartData.getDeliveryAddress());
@@ -148,7 +114,7 @@ public class AdyenRequestFactory {
 
         if (cartData.getPaymentInfo().getBillingAddress() != null) {
             // set PhoneNumber if it is provided
-            if (cartData.getPaymentInfo().getBillingAddress().getPhone() != null && ! cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
+            if (cartData.getPaymentInfo().getBillingAddress().getPhone() != null && !cartData.getPaymentInfo().getBillingAddress().getPhone().isEmpty()) {
                 paymentRequest.setTelephoneNumber(cartData.getPaymentInfo().getBillingAddress().getPhone());
             }
 
@@ -179,69 +145,68 @@ public class AdyenRequestFactory {
                                                  final CustomerModel customerModel,
                                                  final RecurringContractMode recurringContractMode,
                                                  final Boolean guestUserTokenizationEnabled) {
-        PaymentsRequest paymentsRequest = new PaymentsRequest();
-        String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
+        final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
+        final Boolean is3DS2allowed = is3DS2Allowed();
+        final PaymentsRequest paymentsRequest = new PaymentsRequest();
 
         if (adyenPaymentMethod == null) {
             throw new IllegalArgumentException("Payment method is null");
         }
         //Update payment request for generic information for all payment method types
-
-        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
-        Boolean is3DS2allowed = is3DS2Allowed();
-
-        //For credit cards
-        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || PAYMENT_METHOD_BCMC.equals(adyenPaymentMethod)) {
-            if (CARD_TYPE_DEBIT.equals(cartData.getAdyenCardType())) {
-                updatePaymentRequestForDC(paymentsRequest, cartData, recurringContractMode);
-            }
-            else {
-                updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
-            }
-            if (is3DS2allowed) {
-                paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
-            }
-            if (customerModel != null && customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
-                paymentsRequest.setEnableOneClick(false);
-            }
-        }
-        //For one click
-        else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
-            String selectedReference = cartData.getAdyenSelectedReference();
-            if (selectedReference != null && ! selectedReference.isEmpty()) {
-                paymentsRequest.addOneClickData(selectedReference, cartData.getAdyenEncryptedSecurityCode());
-                String cardBrand = cartData.getAdyenCardBrand();
-                if (cardBrand != null) {
-                    DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
-                    paymentMethodDetails.setType(cardBrand);
-                    paymentsRequest.setPaymentMethod(paymentMethodDetails);
-                }
-            }
-            if (is3DS2allowed) {
-                paymentsRequest = enhanceForThreeDS2(paymentsRequest, cartData);
-            }
-        }
-        //Set Boleto parameters
-        else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
-            setBoletoData(paymentsRequest, cartData);
-        }
-        else if (PAYMENT_METHOD_SEPA_DIRECTDEBIT.equals(cartData.getAdyenPaymentMethod())) {
-            setSepaDirectDebitData(paymentsRequest, cartData);
-        }
-
-        //For alternate payment methods like iDeal, Paypal etc.
-        else {
-            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData);
-        }
-
-        ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
-        paymentsRequest.setApplicationInfo(applicationInfo);
+        setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
 
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
         paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
 
+        //For credit cards
+        if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || PAYMENT_METHOD_BCMC.equals(adyenPaymentMethod)) {
+            if (CARD_TYPE_DEBIT.equals(cartData.getAdyenCardType())) {
+                updatePaymentRequestForDC(paymentsRequest, cartData, recurringContractMode);
+            } else {
+                updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
+            }
+            if (is3DS2allowed) {
+                enhanceForThreeDS2(paymentsRequest, cartData);
+            }
+            if (customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
+                paymentsRequest.setEnableOneClick(false);
+            }
+        }
+        //For one click
+        else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+            Optional.ofNullable(cartData.getAdyenSelectedReference())
+                    .filter(StringUtils::isNotEmpty)
+                    .map(selectedReference -> getCardDetails(cartData, selectedReference))
+                    .ifPresent(paymentsRequest::setPaymentMethod);
+
+            if (is3DS2allowed) {
+                enhanceForThreeDS2(paymentsRequest, cartData);
+            }
+        }
+        //For Pix APM
+        else if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
+            setPixData(paymentsRequest, cartData);
+        }
+        //Set Boleto parameters
+        else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+            setBoletoData(paymentsRequest, cartData);
+        }
+        //For alternate payment methods like iDeal, Paypal etc.
+        else {
+            updatePaymentRequestForAlternateMethod(paymentsRequest, cartData);
+        }
+
         return paymentsRequest;
+    }
+
+    protected CardDetails getCardDetails(CartData cartData, String selectedReference) {
+        final CardDetails paymentMethodDetails = new CardDetails();
+        paymentMethodDetails.encryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode());
+        paymentMethodDetails.recurringDetailReference(selectedReference);
+        Optional.ofNullable(cartData.getAdyenCardBrand()).ifPresent(paymentMethodDetails::setType);
+        return paymentMethodDetails;
     }
 
     public PaymentsRequest createPaymentsRequest(final String merchantAccount,
@@ -249,242 +214,171 @@ public class AdyenRequestFactory {
                                                  final PaymentMethodDetails paymentMethodDetails,
                                                  final RequestInfo requestInfo,
                                                  final CustomerModel customerModel) {
-        PaymentsRequest paymentsRequest = new PaymentsRequest();
-        updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
-
+        final PaymentsRequest paymentsRequest = new PaymentsRequest();
+        setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
+        updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
         paymentsRequest.setPaymentMethod(paymentMethodDetails);
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
 
-        ApplicationInfo applicationInfo = updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
-        paymentsRequest.setApplicationInfo(applicationInfo);
-
         return paymentsRequest;
     }
 
-    public PaymentsRequest enhanceForThreeDS2(PaymentsRequest paymentsRequest, CartData cartData) {
-        if (paymentsRequest.getAdditionalData() == null) {
-            paymentsRequest.setAdditionalData(new HashMap<>());
-        }
-        paymentsRequest.getAdditionalData().put(ALLOW_3DS2_PROPERTY, is3DS2Allowed().toString());
+    protected PaymentsRequest enhanceForThreeDS2(final PaymentsRequest paymentsRequest, final CartData cartData) {
+        final BrowserInfo browserInfo = Optional.ofNullable(new Gson().fromJson(cartData.getAdyenBrowserInfo(), BrowserInfo.class))
+                .orElse(new BrowserInfo())
+                .acceptHeader(paymentsRequest.getBrowserInfo().getAcceptHeader())
+                .userAgent(paymentsRequest.getBrowserInfo().getUserAgent());
+
+        paymentsRequest.setAdditionalData(Optional.ofNullable(paymentsRequest.getAdditionalData()).orElse(new HashMap<>()));
         paymentsRequest.setChannel(PaymentsRequest.ChannelEnum.WEB);
-        BrowserInfo browserInfo = new Gson().fromJson(cartData.getAdyenBrowserInfo(), BrowserInfo.class);
-        browserInfo = updateBrowserInfoFromRequest(browserInfo, paymentsRequest);
         paymentsRequest.setBrowserInfo(browserInfo);
+
         return paymentsRequest;
     }
 
-    public BrowserInfo updateBrowserInfoFromRequest(BrowserInfo browserInfo, PaymentsRequest paymentsRequest) {
-        if (browserInfo != null) {
-            browserInfo.setUserAgent(paymentsRequest.getBrowserInfo().getUserAgent());
-            browserInfo.setAcceptHeader(paymentsRequest.getBrowserInfo().getAcceptHeader());
-        }
-        return browserInfo;
+    private void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
+        final CommonField version = new CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
+
+        applicationInfo.setExternalPlatform((ExternalPlatform) new ExternalPlatform()
+                .name(PLATFORM_NAME)
+                .version(getPlatformVersion()));
+        applicationInfo.setMerchantApplication(version);
+        applicationInfo.setAdyenPaymentSource(version);
+
     }
 
-    public ApplicationInfo updateApplicationInfoEcom(ApplicationInfo applicationInfo) {
-        updateApplicationInfoPos(applicationInfo);
-        CommonField adyenPaymentSource = new CommonField();
-        adyenPaymentSource.setName(PLUGIN_NAME);
-        adyenPaymentSource.setVersion(PLUGIN_VERSION);
-        applicationInfo.setAdyenPaymentSource(adyenPaymentSource);
-
-        return applicationInfo;
-    }
-
-    public ApplicationInfo updateApplicationInfoPos(ApplicationInfo applicationInfo) {
-        if (applicationInfo == null) {
-            applicationInfo = new ApplicationInfo();
-        }
-        ExternalPlatform externalPlatform = new ExternalPlatform();
-        externalPlatform.setName(PLATFORM_NAME);
-        externalPlatform.setVersion(getPlatformVersion());
-        applicationInfo.setExternalPlatform(externalPlatform);
-
-        CommonField merchantApplication = new CommonField();
-        merchantApplication.setName(PLUGIN_NAME);
-        merchantApplication.setVersion(PLUGIN_VERSION);
-        applicationInfo.setMerchantApplication(merchantApplication);
-
-        return applicationInfo;
-    }
-
-    private void updatePaymentRequest(final String merchantAccount, final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel, PaymentsRequest paymentsRequest) {
+    protected void setCommonInfoOnPaymentRequest(final String merchantAccount, final CartData cartData,
+                                                 final RequestInfo requestInfo, final CustomerModel customerModel,
+                                                 final PaymentsRequest paymentsRequest) {
 
         //Get details from CartData to set in PaymentRequest.
-        String amount = String.valueOf(cartData.getTotalPrice().getValue());
-        String currency = cartData.getTotalPrice().getCurrencyIso();
-        String reference = cartData.getCode();
-
-        AddressData billingAddress = cartData.getPaymentInfo() != null ? cartData.getPaymentInfo().getBillingAddress() : null;
-        AddressData deliveryAddress = cartData.getDeliveryAddress();
+        final String amount = String.valueOf(cartData.getTotalPriceWithTax().getValue());
+        final String currency = cartData.getTotalPriceWithTax().getCurrencyIso();
+        final String reference = cartData.getCode();
+        final AddressData billingAddress = cartData.getPaymentInfo() != null ? cartData.getPaymentInfo().getBillingAddress() : null;
+        final AddressData deliveryAddress = cartData.getDeliveryAddress();
 
         //Get details from HttpServletRequest to set in PaymentRequest.
-        String userAgent = requestInfo.getUserAgent();
-        String acceptHeader = requestInfo.getAcceptHeader();
-        String shopperIP = requestInfo.getShopperIp();
-        String origin = requestInfo.getOrigin();
-        String shopperLocale = requestInfo.getShopperLocale();
+        final String userAgent = requestInfo.getUserAgent();
+        final String acceptHeader = requestInfo.getAcceptHeader();
+        final String shopperIP = requestInfo.getShopperIp();
+        final String origin = requestInfo.getOrigin();
+        final String shopperLocale = requestInfo.getShopperLocale();
 
-        paymentsRequest.setAmountData(amount, currency)
+        paymentsRequest
+                .amount(Util.createAmount(amount, currency))
                 .reference(reference)
                 .merchantAccount(merchantAccount)
-                .addBrowserInfoData(userAgent, acceptHeader)
+                .browserInfo(new BrowserInfo().userAgent(userAgent).acceptHeader(acceptHeader))
                 .shopperIP(shopperIP)
                 .origin(origin)
                 .shopperLocale(shopperLocale)
+                .shopperReference(customerModel.getCustomerID())
+                .shopperEmail(customerModel.getContactEmail())
+                .deliveryAddress(setAddressData(deliveryAddress))
+                .billingAddress(setAddressData(billingAddress))
+                .telephoneNumber(billingAddress.getPhone())
                 .setCountryCode(getCountryCode(cartData));
-
-        // set shopper details from CustomerModel.
-        if (customerModel != null) {
-            paymentsRequest.setShopperReference(customerModel.getCustomerID());
-            paymentsRequest.setShopperEmail(customerModel.getContactEmail());
-        }
-
-        // if address details are provided, set it to the PaymentRequest
-        if (deliveryAddress != null) {
-            paymentsRequest.setDeliveryAddress(setAddressData(deliveryAddress));
-        }
-
-        if (billingAddress != null) {
-            paymentsRequest.setBillingAddress(setAddressData(billingAddress));
-            // set PhoneNumber if it is provided
-            String phone = billingAddress.getPhone();
-            if (phone != null && ! phone.isEmpty()) {
-                paymentsRequest.setTelephoneNumber(phone);
-            }
-        }
-
-        if (PAYMENT_METHOD_PIX.equals(cartData.getAdyenPaymentMethod())) {
-            setPixData(paymentsRequest, cartData);
-        }
-
     }
 
-    private void updatePaymentRequestForCC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
-        Recurring recurringContract = getRecurringContractType(recurringContractMode);
-        Recurring.ContractEnum contractEnum = null;
-        if (recurringContract != null) {
-            contractEnum = recurringContract.getContract();
+    protected void updatePaymentRequestForCC(final PaymentsRequest paymentsRequest, final CartData cartData, final RecurringContractMode recurringContractMode) {
+        final Recurring recurringContract = getRecurringContractType(recurringContractMode);
+        final Recurring.ContractEnum contract = recurringContract.getContract();
+        final String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
+        final String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
+        final String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
+
+        if (Recurring.ContractEnum.ONECLICK_RECURRING.equals(contract)) {
+            paymentsRequest.setEnableRecurring(true);
+            if (cartData.getAdyenRememberTheseDetails()) {
+                paymentsRequest.setEnableOneClick(true);
+            }
+        } else if (Recurring.ContractEnum.ONECLICK.equals(contract) && cartData.getAdyenRememberTheseDetails()) {
+            paymentsRequest.setEnableOneClick(true);
+        } else if (Recurring.ContractEnum.RECURRING.equals(contract)) {
+            paymentsRequest.setEnableRecurring(true);
         }
 
-        paymentsRequest.setEnableRecurring(false);
-        paymentsRequest.setEnableOneClick(false);
+        if (StringUtils.isNotEmpty(encryptedCardNumber) && StringUtils.isNotEmpty(encryptedExpiryMonth) && StringUtils.isNotEmpty(encryptedExpiryYear)) {
+            paymentsRequest.setPaymentMethod(new CardDetails()
+                    .encryptedCardNumber(encryptedCardNumber)
+                    .encryptedExpiryMonth(encryptedExpiryMonth)
+                    .encryptedExpiryYear(encryptedExpiryYear)
+                    .encryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode())
+                    .holderName(cartData.getAdyenCardHolder()));
+        }
 
-        String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
-        String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
-        String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
+        // For Dual branded card set card brand as payment method type
+        if (StringUtils.isNotEmpty(cartData.getAdyenCardBrand())) {
+            paymentsRequest.getPaymentMethod().setType(cartData.getAdyenCardBrand());
+        }
         if (cartData.getAdyenInstallments() != null) {
             Installments installmentObj = new Installments();
             installmentObj.setValue(cartData.getAdyenInstallments());
             paymentsRequest.setInstallments(installmentObj);
         }
-
-        if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
-
-            paymentsRequest.addEncryptedCardData(encryptedCardNumber, encryptedExpiryMonth, encryptedExpiryYear, cartData.getAdyenEncryptedSecurityCode(), cartData.getAdyenCardHolder());
-        }
-        if (Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum) {
-            paymentsRequest.setEnableRecurring(true);
-            if(cartData.getAdyenRememberTheseDetails()) {
-                paymentsRequest.setEnableOneClick(true);
-            }
-        } else if (Recurring.ContractEnum.ONECLICK == contractEnum && cartData.getAdyenRememberTheseDetails() ) {
-            paymentsRequest.setEnableOneClick(true);
-        } else if (Recurring.ContractEnum.RECURRING == contractEnum) {
-            paymentsRequest.setEnableRecurring(true);
-        }
-
-        // Set storeDetails parameter when shopper selected to have his card details stored
-        if (cartData.getAdyenRememberTheseDetails()) {
-            DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
-            paymentMethodDetails.setStoreDetails(true);
-        }
-
-        // For Dual branded card set card brand as payment method type
-        if (!StringUtils.isEmpty(cartData.getAdyenCardBrand())) {
-            paymentsRequest.getPaymentMethod().setType(cartData.getAdyenCardBrand());
-        }
     }
 
-    private void updatePaymentRequestForDC(PaymentsRequest paymentsRequest, CartData cartData, RecurringContractMode recurringContractMode) {
+    protected void updatePaymentRequestForDC(final PaymentsRequest paymentsRequest, final CartData cartData, final RecurringContractMode recurringContractMode) {
 
-        Recurring recurringContract = getRecurringContractType(recurringContractMode);
-        Recurring.ContractEnum contractEnum = null;
-        if (recurringContract != null) {
-            contractEnum = recurringContract.getContract();
-        }
+        final Recurring recurringContract = getRecurringContractType(recurringContractMode);
+        final Recurring.ContractEnum contract = recurringContract.getContract();
+        final String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
+        final String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
+        final String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
+        final String cardBrand = cartData.getAdyenCardBrand();
 
-        paymentsRequest.setEnableRecurring(false);
-        paymentsRequest.setEnableOneClick(false);
-
-        String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
-        String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
-        String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
-        if ((Recurring.ContractEnum.ONECLICK_RECURRING == contractEnum || Recurring.ContractEnum.ONECLICK == contractEnum) && cartData.getAdyenRememberTheseDetails()) {
+        if ((Recurring.ContractEnum.ONECLICK_RECURRING.equals(contract) || Recurring.ContractEnum.ONECLICK.equals(contract))
+                && cartData.getAdyenRememberTheseDetails()) {
             paymentsRequest.setEnableOneClick(true);
         }
-        if (! StringUtils.isEmpty(encryptedCardNumber) && ! StringUtils.isEmpty(encryptedExpiryMonth) && ! StringUtils.isEmpty(encryptedExpiryYear)) {
-            paymentsRequest.addEncryptedCardData(encryptedCardNumber, encryptedExpiryMonth, encryptedExpiryYear, cartData.getAdyenEncryptedSecurityCode(), cartData.getAdyenCardHolder());
+
+        if (StringUtils.isNotEmpty(encryptedCardNumber) && StringUtils.isNotEmpty(encryptedExpiryMonth) && StringUtils.isNotEmpty(encryptedExpiryYear)) {
+            paymentsRequest.setPaymentMethod(new CardDetails()
+                    .encryptedCardNumber(encryptedCardNumber)
+                    .encryptedExpiryMonth(encryptedExpiryMonth)
+                    .encryptedExpiryYear(encryptedExpiryYear)
+                    .encryptedSecurityCode(cartData.getAdyenEncryptedSecurityCode())
+                    .holderName(cartData.getAdyenCardHolder()));
         }
 
-        // Set storeDetails parameter when shopper selected to have his card details stored
-        if (cartData.getAdyenRememberTheseDetails()) {
-            DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) paymentsRequest.getPaymentMethod();
-            paymentMethodDetails.setStoreDetails(true);
-        }
-
-        String cardBrand = cartData.getAdyenCardBrand();
         paymentsRequest.putAdditionalDataItem(OVERWRITE_BRAND_PROPERTY, "true");
         paymentsRequest.getPaymentMethod().setType(cardBrand);
     }
 
-    private void updatePaymentRequestForAlternateMethod(PaymentsRequest paymentsRequest, CartData cartData) {
-        String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-        DefaultPaymentMethodDetails paymentMethod = new DefaultPaymentMethodDetails();
-        paymentsRequest.setPaymentMethod(paymentMethod);
-        paymentMethod.setType(adyenPaymentMethod);
+    protected void updatePaymentRequestForAlternateMethod(final PaymentsRequest paymentsRequest, final CartData cartData) {
+        final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
+
+        paymentsRequest.setShopperName(getShopperNameFromAddress(cartData.getDeliveryAddress()));
+        paymentsRequest.setPaymentMethod(adyenPaymentMethodDetailsBuilderExecutor.createPaymentMethodDetails(cartData));
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
-        if (ISSUER_PAYMENT_METHODS.contains(adyenPaymentMethod)) {
-            paymentMethod.setIssuer(cartData.getAdyenIssuerId());
-        } else if (adyenPaymentMethod.startsWith(KLARNA)
+
+        if (adyenPaymentMethod.startsWith(PAYMENT_METHOD_KLARNA)
                 || adyenPaymentMethod.startsWith(PAYMENT_METHOD_FACILPAY_PREFIX)
-                || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)) {
+                || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)
+                || adyenPaymentMethod.contains(RATEPAY)) {
             setOpenInvoiceData(paymentsRequest, cartData);
-        } else if (adyenPaymentMethod.equals(PAYMENT_METHOD_PAYPAL) && cartData.getDeliveryAddress() != null) {
-            Name shopperName = getShopperNameFromAddress(cartData.getDeliveryAddress());
-            paymentsRequest.setShopperName(shopperName);
-        } else if (adyenPaymentMethod.equals(GIFT_CARD)) {
-            paymentMethod.setBrand(cartData.getAdyenGiftCardBrand());
         }
     }
 
-    private String getCountryCode(CartData cartData) {
+    protected String getCountryCode(final CartData cartData) {
         //Identify country code based on shopper's delivery address
-        String countryCode = "";
-        AddressData billingAddressData = cartData.getPaymentInfo() != null ? cartData.getPaymentInfo().getBillingAddress() : null;
-        if (billingAddressData != null) {
-            CountryData billingCountry = billingAddressData.getCountry();
-            if (billingCountry != null) {
-                countryCode = billingCountry.getIsocode();
-            }
-        } else {
-            AddressData deliveryAddressData = cartData.getDeliveryAddress();
-            if (deliveryAddressData != null) {
-                CountryData deliveryCountry = deliveryAddressData.getCountry();
-                if (deliveryCountry != null) {
-                    countryCode = deliveryCountry.getIsocode();
-                }
-            }
-        }
-        return countryCode;
+        return Optional.ofNullable(cartData.getPaymentInfo())
+                .map(CCPaymentInfoData::getBillingAddress)
+                .map(billingAddress -> Optional.ofNullable(billingAddress).or(() -> Optional.ofNullable(cartData.getDeliveryAddress())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(AddressData::getCountry)
+                .map(CountryData::getIsocode)
+                .orElse("");
     }
 
 
     public CaptureRequest createCaptureRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
         CaptureRequest request = new CaptureRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode())
-                                                     .merchantAccount(merchantAccount)
-                                                     .originalReference(authReference)
-                                                     .reference(merchantReference);
+                .merchantAccount(merchantAccount)
+                .originalReference(authReference)
+                .reference(merchantReference);
         updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
@@ -497,9 +391,9 @@ public class AdyenRequestFactory {
 
     public RefundRequest createRefundRequest(final String merchantAccount, final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) {
         RefundRequest request = new RefundRequest().fillAmount(String.valueOf(amount), currency.getCurrencyCode())
-                                                   .merchantAccount(merchantAccount)
-                                                   .originalReference(authReference)
-                                                   .reference(merchantReference);
+                .merchantAccount(merchantAccount)
+                .originalReference(authReference)
+                .reference(merchantReference);
         updateApplicationInfoEcom(request.getApplicationInfo());
         return request;
     }
@@ -557,7 +451,7 @@ public class AdyenRequestFactory {
         saleData.setSaleTransactionID(transactionIdentification);
 
         //Set recurring contract, if exists
-        if(customer != null) {
+        if (customer != null) {
             String shopperReference = customer.getCustomerID();
             String shopperEmail = customer.getContactEmail();
             Recurring recurringContract = getRecurringContractType(recurringContractMode);
@@ -568,7 +462,7 @@ public class AdyenRequestFactory {
                 saleToAcquirerData.setShopperReference(shopperReference);
                 saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
             }
-            updateApplicationInfoPos(saleToAcquirerData.getApplicationInfo());
+            updateApplicationInfoEcom(saleToAcquirerData.getApplicationInfo());
             saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 
@@ -576,8 +470,8 @@ public class AdyenRequestFactory {
 
         PaymentTransaction paymentTransaction = new PaymentTransaction();
         AmountsReq amountsReq = new AmountsReq();
-        amountsReq.setCurrency(cartData.getTotalPrice().getCurrencyIso());
-        amountsReq.setRequestedAmount(cartData.getTotalPrice().getValue());
+        amountsReq.setCurrency(cartData.getTotalPriceWithTax().getCurrencyIso());
+        amountsReq.setRequestedAmount(cartData.getTotalPriceWithTax().getValue());
         paymentTransaction.setAmountsReq(amountsReq);
 
         paymentRequest.setPaymentTransaction(paymentTransaction);
@@ -604,23 +498,23 @@ public class AdyenRequestFactory {
         address.setStreet("NA");
 
         // set the actual values if they are available
-        if (addressData.getTown() != null && ! addressData.getTown().isEmpty()) {
+        if (addressData.getTown() != null && !addressData.getTown().isEmpty()) {
             address.setCity(addressData.getTown());
         }
 
-        if (addressData.getCountry() != null && ! addressData.getCountry().getIsocode().isEmpty()) {
+        if (addressData.getCountry() != null && !addressData.getCountry().getIsocode().isEmpty()) {
             address.setCountry(addressData.getCountry().getIsocode());
         }
 
-        if (addressData.getLine1() != null && ! addressData.getLine1().isEmpty()) {
+        if (addressData.getLine1() != null && !addressData.getLine1().isEmpty()) {
             address.setStreet(addressData.getLine1());
         }
 
-        if (addressData.getLine2() != null && ! addressData.getLine2().isEmpty()) {
+        if (addressData.getLine2() != null && !addressData.getLine2().isEmpty()) {
             address.setHouseNumberOrName(addressData.getLine2());
         }
 
-        if (addressData.getPostalCode() != null && ! address.getPostalCode().isEmpty()) {
+        if (addressData.getPostalCode() != null && !address.getPostalCode().isEmpty()) {
             address.setPostalCode(addressData.getPostalCode());
         }
 
@@ -695,7 +589,7 @@ public class AdyenRequestFactory {
         shopperName.setLastName(addressData.getLastName());
         shopperName.setGender(Name.GenderEnum.UNKNOWN);
 
-        if (addressData.getTitleCode() != null && ! addressData.getTitleCode().isEmpty()) {
+        if (addressData.getTitleCode() != null && !addressData.getTitleCode().isEmpty()) {
             if (addressData.getTitleCode().equals("mrs") || addressData.getTitleCode().equals("miss") || addressData.getTitleCode().equals("ms")) {
                 shopperName.setGender(Name.GenderEnum.FEMALE);
             } else {
@@ -718,26 +612,26 @@ public class AdyenRequestFactory {
             paymentRequest.setDateOfBirth(cartData.getAdyenDob());
         }
 
-        if (cartData.getAdyenSocialSecurityNumber() != null && ! cartData.getAdyenSocialSecurityNumber().isEmpty()) {
+        if (cartData.getAdyenSocialSecurityNumber() != null && !cartData.getAdyenSocialSecurityNumber().isEmpty()) {
             paymentRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
         }
 
-        if (cartData.getAdyenDfValue() != null && ! cartData.getAdyenDfValue().isEmpty()) {
+        if (cartData.getAdyenDfValue() != null && !cartData.getAdyenDfValue().isEmpty()) {
             paymentRequest.setDeviceFingerprint(cartData.getAdyenDfValue());
         }
 
         // set the invoice lines
         List<InvoiceLine> invoiceLines = new ArrayList();
-        String currency = cartData.getTotalPrice().getCurrencyIso();
+        String currency = cartData.getTotalPriceWithTax().getCurrencyIso();
 
         for (OrderEntryData entry : cartData.getEntries()) {
 
             // Use totalPrice because the basePrice does include tax as well if you have configured this to be calculated in the price
-            BigDecimal pricePerItem = entry.getTotalPrice().getValue().divide(new BigDecimal(entry.getQuantity()));
+            BigDecimal pricePerItem = entry.getBasePrice().getValue();
 
 
             String description = "NA";
-            if (entry.getProduct().getName() != null && ! entry.getProduct().getName().equals("")) {
+            if (entry.getProduct().getName() != null && !entry.getProduct().getName().equals("")) {
                 description = entry.getProduct().getName();
             }
 
@@ -774,17 +668,17 @@ public class AdyenRequestFactory {
             invoiceLine.setVatCategory(VatCategory.NONE);
 
             // An unique id for this item. Required for RatePay if the description of each item is not unique.
-            if (! entry.getProduct().getCode().isEmpty()) {
+            if (!entry.getProduct().getCode().isEmpty()) {
                 invoiceLine.setItemId(entry.getProduct().getCode());
             }
 
             invoiceLine.setNumberOfItems(entry.getQuantity().intValue());
 
-            if (entry.getProduct() != null && ! entry.getProduct().getCode().isEmpty()) {
+            if (entry.getProduct() != null && !entry.getProduct().getCode().isEmpty()) {
                 invoiceLine.setItemId(entry.getProduct().getCode());
             }
 
-            if (entry.getProduct() != null && ! entry.getProduct().getCode().isEmpty()) {
+            if (entry.getProduct() != null && !entry.getProduct().getCode().isEmpty()) {
                 invoiceLine.setItemId(entry.getProduct().getCode());
             }
 
@@ -824,11 +718,11 @@ public class AdyenRequestFactory {
             paymentsRequest.setDateOfBirth(cartData.getAdyenDob());
         }
 
-        if (cartData.getAdyenSocialSecurityNumber() != null && ! cartData.getAdyenSocialSecurityNumber().isEmpty()) {
+        if (cartData.getAdyenSocialSecurityNumber() != null && !cartData.getAdyenSocialSecurityNumber().isEmpty()) {
             paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
         }
 
-        if (cartData.getAdyenDfValue() != null && ! cartData.getAdyenDfValue().isEmpty()) {
+        if (cartData.getAdyenDfValue() != null && !cartData.getAdyenDfValue().isEmpty()) {
             paymentsRequest.setDeviceFingerprint(cartData.getAdyenDfValue());
         }
 
@@ -842,151 +736,152 @@ public class AdyenRequestFactory {
 
         // set the invoice lines
         List<LineItem> invoiceLines = new ArrayList<>();
-        String currency = cartData.getTotalPrice().getCurrencyIso();
+        String currency = cartData.getTotalPriceWithTax().getCurrencyIso();
 
         for (OrderEntryData entry : cartData.getEntries()) {
             if (entry.getQuantity() == 0L) {
                 // skip zero quantities
                 continue;
             }
-            // Use totalPrice because the basePrice does include tax as well if you have configured this to be calculated in the price
-            BigDecimal pricePerItem = entry.getTotalPrice().getValue().divide(new BigDecimal(entry.getQuantity()));
 
             String description = "NA";
-            if (entry.getProduct().getName() != null && ! entry.getProduct().getName().isEmpty()) {
+            if (entry.getProduct().getName() != null && !entry.getProduct().getName().isEmpty()) {
                 description = entry.getProduct().getName();
             }
 
             // Tax of total price (included quantity)
-            Double tax = entry.getTaxValues().stream().map(TaxValue::getAppliedValue).reduce(0.0, (x, y) -> x + y);
+            Double tax = entry.getTaxValues().stream().map(TaxValue::getAppliedValue).reduce(0.0, Double::sum);
 
             // Calculate Tax per quantitiy
             if (tax > 0) {
                 tax = tax / entry.getQuantity().intValue();
             }
 
-            // Calculate price without tax
-            Amount itemAmountWithoutTax = Util.createAmount(pricePerItem.subtract(new BigDecimal(tax)), currency);
-            Double percentage = entry.getTaxValues().stream().map(TaxValue::getValue).reduce(0.0, (x, y) -> x + y) * 100;
+            final Double percentage = entry.getTaxValues().stream().map(TaxValue::getValue).reduce(0.0, Double::sum) * 100;
 
-            LineItem invoiceLine = new LineItem();
+            final LineItem invoiceLine = new LineItem();
+
             invoiceLine.setDescription(description);
 
             /*
              * The price for one item in the invoice line, represented in minor units.
              * The due amount for the item, VAT excluded.
              */
-            invoiceLine.setAmountExcludingTax(itemAmountWithoutTax.getValue());
+            final Amount itemAmount = Util.createAmount(entry.getBasePrice().getValue(), currency);
 
-            // The VAT due for one item in the invoice line, represented in minor units.
-            invoiceLine.setTaxAmount(Util.createAmount(BigDecimal.valueOf(tax), currency).getValue());
+            if (cartData.isNet()) {
+                invoiceLine.setAmountExcludingTax(itemAmount.getValue());
+                invoiceLine.setTaxAmount(Util.createAmount(BigDecimal.valueOf(tax), currency).getValue());
+            } else {
+                invoiceLine.setAmountIncludingTax(itemAmount.getValue());
+            }
 
             // The VAT percentage for one item in the invoice line, represented in minor units.
             invoiceLine.setTaxPercentage(percentage.longValue());
 
-            // The country-specific VAT category a product falls under.  Allowed values: (High,Low,None)
-            invoiceLine.setTaxCategory(LineItem.TaxCategoryEnum.NONE);
-
             invoiceLine.setQuantity(entry.getQuantity());
 
-            if (entry.getProduct() != null && ! entry.getProduct().getCode().isEmpty()) {
+            if (entry.getProduct() != null && !entry.getProduct().getCode().isEmpty()) {
                 invoiceLine.setId(entry.getProduct().getCode());
             }
 
-            LOG.debug("InvoiceLine Product:" + invoiceLine.toString());
+            LOG.debug("InvoiceLine Product:" + invoiceLine);
             invoiceLines.add(invoiceLine);
         }
 
         // Add delivery costs
         if (cartData.getDeliveryCost() != null) {
-            LineItem invoiceLine = new LineItem();
+            final LineItem invoiceLine = new LineItem();
             invoiceLine.setDescription("Delivery Costs");
-            Amount deliveryAmount = Util.createAmount(cartData.getDeliveryCost().getValue().toString(), currency);
-            invoiceLine.setAmountExcludingTax(deliveryAmount.getValue());
-            invoiceLine.setTaxAmount(new Long("0"));
-            invoiceLine.setTaxPercentage(new Long("0"));
-            invoiceLine.setTaxCategory(LineItem.TaxCategoryEnum.NONE);
+
+            final Amount deliveryAmount = Util.createAmount(cartData.getDeliveryCost().getValue().toString(), currency);
+
+            if (cartData.isNet()) {
+                final Double taxAmount = cartData.getEntries().stream()
+                        .map(OrderEntryData::getTaxValues)
+                        .flatMap(Collection::stream)
+                        .map(TaxValue::getAppliedValue)
+                        .collect(Collectors.toList())
+                        .stream()
+                        .reduce(0.0, Double::sum);
+                invoiceLine.setAmountExcludingTax(deliveryAmount.getValue());
+                invoiceLine.setTaxAmount(Util.createAmount(cartData.getTotalTax().getValue().subtract(new BigDecimal(taxAmount)), currency).getValue());
+            } else {
+                invoiceLine.setAmountIncludingTax(deliveryAmount.getValue());
+            }
+
+            final Double percentage = cartData.getEntries().stream()
+                    .findFirst()
+                    .map(OrderEntryData::getTaxValues)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .map(TaxValue::getValue)
+                    .reduce(0.0, Double::sum) * 100;
+
+            invoiceLine.setTaxPercentage(percentage.longValue());
             invoiceLine.setQuantity(1L);
-            LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine.toString());
+            LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine);
             invoiceLines.add(invoiceLine);
         }
 
         paymentsRequest.setLineItems(invoiceLines);
     }
 
-    private Name getAfterPayShopperName(CartData cartData) {
-        Name name = new Name();
-        name.setFirstName(cartData.getAdyenFirstName());
-        name.setLastName(cartData.getAdyenLastName());
-        name.gender(Name.GenderEnum.valueOf(cartData.getAdyenShopperGender()));
-        return name;
+    private Name getAfterPayShopperName(final CartData cartData) {
+        return new Name()
+                .firstName(cartData.getAdyenFirstName())
+                .lastName(cartData.getAdyenLastName())
+                .gender(Name.GenderEnum.valueOf(cartData.getAdyenShopperGender()));
     }
 
     /**
      * Set Boleto payment request data
      */
-    private void setBoletoData(PaymentsRequest paymentsRequest, CartData cartData) {
-        DefaultPaymentMethodDetails paymentMethodDetails = (DefaultPaymentMethodDetails) (paymentsRequest.getPaymentMethod());
-        if (paymentMethodDetails == null) {
-            paymentMethodDetails = new DefaultPaymentMethodDetails();
-        }
-        paymentMethodDetails.setType(PAYMENT_METHOD_BOLETO_SANTANDER);
-        paymentsRequest.setPaymentMethod(paymentMethodDetails);
+    private void setBoletoData(final PaymentsRequest paymentsRequest, final CartData cartData) {
+        paymentsRequest.setPaymentMethod(adyenPaymentMethodDetailsBuilderExecutor.createPaymentMethodDetails(cartData));
         paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
 
-        Name shopperName = new Name();
-        shopperName.setFirstName(cartData.getAdyenFirstName());
-        shopperName.setLastName(cartData.getAdyenLastName());
+        final Name shopperName = new Name()
+                .firstName(cartData.getAdyenFirstName())
+                .lastName(cartData.getAdyenLastName());
+
         paymentsRequest.setShopperName(shopperName);
 
         if (paymentsRequest.getBillingAddress() != null) {
             String stateOrProvinceBilling = paymentsRequest.getBillingAddress().getStateOrProvince();
-            if (! StringUtils.isEmpty(stateOrProvinceBilling) && stateOrProvinceBilling.length() > 2) {
+            if (!StringUtils.isEmpty(stateOrProvinceBilling) && stateOrProvinceBilling.length() > 2) {
                 String shortStateOrProvince = stateOrProvinceBilling.substring(stateOrProvinceBilling.length() - 2);
                 paymentsRequest.getBillingAddress().setStateOrProvince(shortStateOrProvince);
             }
         }
         if (paymentsRequest.getDeliveryAddress() != null) {
             String stateOrProvinceDelivery = paymentsRequest.getDeliveryAddress().getStateOrProvince();
-            if (! StringUtils.isEmpty(stateOrProvinceDelivery) && stateOrProvinceDelivery.length() > 2) {
+            if (!StringUtils.isEmpty(stateOrProvinceDelivery) && stateOrProvinceDelivery.length() > 2) {
                 String shortStateOrProvince = stateOrProvinceDelivery.substring(stateOrProvinceDelivery.length() - 2);
                 paymentsRequest.getDeliveryAddress().setStateOrProvince(shortStateOrProvince);
             }
         }
     }
 
-    private void setSepaDirectDebitData(PaymentsRequest paymentRequest, CartData cartData) {
-        DefaultPaymentMethodDetails paymentMethodDetails = new DefaultPaymentMethodDetails();
-        paymentMethodDetails.setSepaOwnerName(cartData.getAdyenSepaOwnerName());
-        paymentMethodDetails.setSepaIbanNumber(cartData.getAdyenSepaIbanNumber());
-        paymentMethodDetails.setType(PAYMENT_METHOD_SEPA_DIRECTDEBIT);
-        paymentRequest.setPaymentMethod(paymentMethodDetails);
-    }
 
-    private void setPixData(PaymentsRequest paymentsRequest, CartData cartData) {
-        Name shopperName = new Name();
-        shopperName.setFirstName(cartData.getAdyenFirstName());
-        shopperName.setLastName(cartData.getAdyenLastName());
-        paymentsRequest.setShopperName(shopperName);
+    private void setPixData(final PaymentsRequest paymentsRequest, final CartData cartData) {
+        final List<LineItem> invoiceLines = cartData.getEntries().stream()
+                .filter(cartEntry -> cartEntry.getQuantity() > 0)
+                .map(cartEntry ->
+                        new LineItem()
+                                .amountIncludingTax(cartEntry.getBasePrice().getValue().longValue())
+                                .id(Optional.ofNullable(cartEntry.getProduct().getName())
+                                        .filter(StringUtils::isNotEmpty)
+                                        .orElse("NA")
+                                )
+                )
+                .collect(Collectors.toList());
+
         paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
-
-        List<LineItem> invoiceLines = new ArrayList<>();
-        for (OrderEntryData entry : cartData.getEntries()) {
-            if (entry.getQuantity() == 0L) {
-                // skip zero quantities
-                continue;
-            }
-
-            BigDecimal productAmountIncludingTax = entry.getBasePrice().getValue();
-            String productName = "NA";
-            if (entry.getProduct().getName() != null && !entry.getProduct().getName().isEmpty()) {
-                productName = entry.getProduct().getName();
-            }
-            LineItem lineItem = new LineItem();
-            lineItem.setAmountIncludingTax(productAmountIncludingTax.longValue());
-            lineItem.setId(productName);
-            invoiceLines.add(lineItem);
-        }
+        paymentsRequest.setShopperName(new Name()
+                .firstName(cartData.getAdyenFirstName())
+                .lastName(cartData.getAdyenLastName())
+        );
         paymentsRequest.setLineItems(invoiceLines);
     }
 
@@ -995,20 +890,15 @@ public class AdyenRequestFactory {
     }
 
     private Boolean is3DS2Allowed() {
-
-        Configuration configuration = getConfigurationService().getConfiguration();
-        boolean is3DS2AllowedValue = false;
+        final Configuration configuration = getConfigurationService().getConfiguration();
         if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
-            is3DS2AllowedValue = configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
+            return configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
         }
-        return is3DS2AllowedValue;
+        return false;
     }
 
     public ConfigurationService getConfigurationService() {
         return configurationService;
     }
 
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
-    }
 }
