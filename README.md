@@ -1,11 +1,11 @@
 # Adyen SAP Commerce (Hybris) v6 plugin
 
-This plugin supports SAP Commerce (Hybris) versions 6.x
+This plugin supports SAP Commerce (Hybris) versions 1905,2005,2011,2105
 
 The plugin is using following adyen libraries and API.
-- [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v14.0.0)
-- [adyen-web](https://github.com/Adyen/adyen-web) (v4.3.1)
-- [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v67)
+- [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v18.1.3)
+- [adyen-web](https://github.com/Adyen/adyen-web) (v5.25.0)
+- [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v69)
 
 ## Integration
 
@@ -13,7 +13,7 @@ The SAP Commerce integrates Adyen Checkout for all card payments and local/redir
 Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
 
 ## Requirements
-SAP Commerce (Hybris) version 6.x or 1905
+SAP Commerce (Hybris) version 1905,2005,2011,2105
 
 ## Installation
 
@@ -32,12 +32,12 @@ Required for the notifications:
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
 ```
 
-Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe for 6.x and b2c_b2b_acc_oms recipe for 1905) :
+Additionally, required when using yacceleratorordermanagement (b2c_b2b_acc_oms recipe) :
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6ordermanagement"/>
 ```
 
-Additionally, required when using yacceleratorfulfilment (b2c_acc recipe for 6.x and b2c_acc_plus for 1905):
+Additionally, required when using yacceleratorfulfilment (b2c_acc_plus recipe):
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6fulfilmentprocess"/>
 ```
@@ -47,7 +47,6 @@ Additionally, required when using yacceleratorfulfilment (b2c_acc recipe for 6.x
 Modify config/local.properties file:
 
 1. append ``` ,/[^/]+(/[^?]*)+(adyen-response)$,/adyen(/[^?]*)+$ ``` to the value of ```csrf.allowed.url.patterns```
-2. add ```is3DS2allowed = true```
 
 
 ### 4. Build
@@ -63,12 +62,17 @@ ant clean all
 For more detailed instructions you can visit the [documentation page](https://docs.adyen.com/developers/plug-ins-and-partners/hybris)
 Please make sure your merchant has Variant true in API and responses section so that you get paymentMethod back in response.
 
+### 6. Add your Adyen credentials to the BaseStore via Hybris backoffice
 
 ## Supported payment methods
 
 ### Credit Cards
 
 Credit Card payments are supported using Checkout Components.
+
+### UPI Collect or qr
+
+Are supported using Checkout Components.
 
 ### Apple Pay
 
@@ -136,11 +140,6 @@ It returns an instance of OrderWSDTO obtained from OrderData of the placed order
 For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date
 https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
 
-## 3DS2 configuration
-By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
-```
-is3DS2allowed = false
-```
 ## POS Timeout configuration
 POS timeout (time calculated since initiating a payment) is max time to keep terminal connection open. It is set to 130 seconds by default already. If you want to change it, please add following property in local.properties file, build your environment and restart the server. (Change 130 to your desired time, in seconds).
 ```
@@ -175,7 +174,7 @@ This plugin uses Adyen's Checkout Component for PayPal payments. To use that in 
 On Google Chrome browser versions 80 or later, it might occur that an account is logged out after trying to place an order using a credit card that requires 3D Secure authentication or using other redirect payment methods. 
 This is a consequence of how newer versions of Chrome browsers handle the [SameSite attribute](https://web.dev/samesite-cookies-explained/) on cookies, invalidating the user session after a redirect to a third-party page happened.
 
-To avoid those issues, for SAP Commerce versions 6.x or 1905, a cookie handler included in this plugin can be used. To enable it, add the following configuration to the config/local.properties file:
+To avoid those issues, for SAP Commerce versions under 2005 , a cookie handler included in this plugin can be used. To enable it, add the following configuration to the config/local.properties file:
 
 ```
 adyen.samesitecookie.handler.enabled=true
