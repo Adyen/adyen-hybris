@@ -15,15 +15,18 @@
 
 <%-- Components --%>
 <c:if test="${fn:contains(componentsWithPayButton, componentPaymentMethod)}">
+    <c:if test="${not componentPaymentMethod eq '[upi]'}">
     <div class="checkbox">
         <label>
             <input type="checkbox" id="terms-conditions-check-${label}" class="adyen-terms-conditions-check" />
             <spring:theme var="readTermsAndConditions" code="checkout.summary.placeOrder.readTermsAndConditions" arguments="${fn:escapeXml(getTermsAndConditionsUrl)}" htmlEscape="false"/>
                 ${ycommerce:sanitizeHTML(readTermsAndConditions)}
         </label>
+
         <div class="adyen-terms-conditions-check-error hidden">
             <spring:theme code="checkout.error.terms.not.accepted" />
         </div>
+    </c:if>
     </div>
 
     <c:choose>
