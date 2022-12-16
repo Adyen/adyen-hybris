@@ -447,13 +447,12 @@ var AdyenCheckoutHybris = (function () {
             const self = this;
             const uPINode = document.getElementById('adyen-component-button-container-' + label);
             let upi = this.checkout.create('upi', {
-                onChange: handleChange,
                 onPaymentCompleted: handlePaymentResult,
                 defaultMode:'vpa',
                 showPayButton:true,
             });
 
-            function handlePaymentResult(result,component){
+            function handlePaymentResult(result, component){
                 $.ajax({
                     url: ACC.config.encodedContextPath + '/adyen/component/resultHandler',
                     type: "POST",
@@ -481,22 +480,6 @@ var AdyenCheckoutHybris = (function () {
                     }
                 })
             }
-
-            function handleChange (state, component)  {
-                if (!state.isValid) {
-                    return false;
-                }
-                if(state.data.paymentMethod.type === "upi_collect"){
-                    $(".adyen-checkout__button adyen-checkout__button--pay").on("click",
-                        function() {
-                        self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
-                    });
-                }
-                else {
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
-                }
-            }
-
             try {
                 upi.mount(uPINode);
             } catch (e) {
