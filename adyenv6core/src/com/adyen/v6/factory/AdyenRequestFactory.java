@@ -80,6 +80,7 @@ public class AdyenRequestFactory {
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
     private static final String OVERWRITE_BRAND_PROPERTY = "overwriteBrand";
+    private static final String DUAL_BRANDED_NOT_SELECTED_FLOW_PAYMENT_TYPE = "scheme";
 
     protected final ConfigurationService configurationService;
     protected final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor;
@@ -310,7 +311,7 @@ public class AdyenRequestFactory {
 
         // For Dual branded card set card brand as payment method type
         if (StringUtils.isNotEmpty(cartData.getAdyenCardBrand())) {
-            paymentsRequest.getPaymentMethod().setType(cartData.getAdyenCardBrand());
+            paymentsRequest.getPaymentMethod().setType(DUAL_BRANDED_NOT_SELECTED_FLOW_PAYMENT_TYPE);
         }
         if (cartData.getAdyenInstallments() != null) {
             Installments installmentObj = new Installments();
