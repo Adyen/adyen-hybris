@@ -11,13 +11,17 @@
   ~ terms of the license agreement you entered into with SAP Hybris.
   --><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
 
-   <extension abstractclassprefix="Generated" classprefix="Adyenv6core" managername="Adyenv6coreManager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenv6core" usemaven="false">
+   <extension abstractclassprefix="Generated" classprefix="Adyenv6core" managername="Adyenv6coreManager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenv6core" usemaven="true">
       <!-- for more information on maven managed libraries please consult https://wiki.hybris.com/x/Nq8sDQ -->
                
       <!-- you should add all required extensions to this list, except platform extensions which are automatically required -->         
       <!-- <requires-extension name="cms"/> -->
       <requires-extension name="addonsupport"/>
       <requires-extension name="payment"/>
+      <requires-extension name="ordermanagementfacades"/>
+      <requires-extension name="acceleratorfacades"/>
+      <requires-extension name="commercefacades"/>
+      <requires-extension name="basecommerce"/>
 
       <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6coreManager" packageroot="com.adyen.v6"/>
    </extension>

@@ -34,7 +34,10 @@
 
     <!--Step of order-process that checks authorization completion-->
     <alias name="defaultAdyenCheckAuthorizationAction" alias="adyenCheckAuthorizationAction"/>
-    <bean id="defaultAdyenCheckAuthorizationAction" class="com.adyen.v6.actions.order.AdyenCheckAuthorizationAction" parent="abstractAction"/>
+    <bean id="defaultAdyenCheckAuthorizationAction" class="com.adyen.v6.actions.order.AdyenCheckAuthorizationAction" parent="abstractAction">
+        <constructor-arg ref="adyenPaymentServiceFactory" name="adyenPaymentServiceFactory"/>
+        <constructor-arg ref="baseStoreService" name="baseStoreService"/>
+    </bean>
 
     <!--Step of order-process that checks capture completion-->
     <alias name="defaultAdyenCheckCaptureAction" alias="adyenCheckCaptureAction"/>
