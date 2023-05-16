@@ -193,4 +193,13 @@
 		<ref bean="sameSiteCookieHandlerInterceptorAdapter" />
 	</mvc:interceptors>
 
+	<alias name="adyenAddressValidator" alias="addressValidator"/>
+	<bean id="adyenAddressValidator" class="com.adyen.v6.validator.AdyenAddressValidator"/>
+
+	<!--<alias name="adyenPaymentMethodCheckoutStepController" alias="paymentMethodCheckoutStepController"/>
+	<bean id="adyenPaymentMethodCheckoutStepController" class="com.adyen.v6.controllers.pages.checkout.steps.AdyenPaymentMethodCheckoutStepController"/>-->
+
+	<alias name="adyenDeliveryAddressCheckoutStepController" alias="deliveryAddressCheckoutStepController"/>
+	<bean id="adyenDeliveryAddressCheckoutStepController" class="com.adyen.v6.controllers.pages.checkout.steps.AdyenDeliveryAddressCheckoutStepController"/>
+
 </beans>
