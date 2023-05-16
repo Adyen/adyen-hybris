@@ -29,7 +29,7 @@
     <input type="hidden" name="txvariant" value="card">
     <div class="chckt-pm__header js-chckt-pm__header">
         <adyen:methodSelector name="adyen_cc"/>
-        <span class="chckt-pm__name js-chckt-pm__name">${creditCardLabel}</span>
+        <span class="chckt-pm__name js-chckt-pm__name"><spring:theme code="payment.method.label.information"/></span>
         <span class="chckt-pm__image">
             <span id="cardLogos"></span>
             <span class="chckt-pm__image-border"></span>
