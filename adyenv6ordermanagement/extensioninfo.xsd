@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<xs:element name="extensioninfo">
+		<xs:annotation>
+			<xs:documentation>Configures the available modules of the extension.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation>Configures the available modules of the extension.</xs:documentation>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="extension" type="extensionType" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="extensionType">
+		<xs:annotation>
+			<xs:documentation>Configures the available modules of the extension.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="requires-extension" type="requires-extensionType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures the set of extensions required by the extension at compile time. If you set 'autoload=true' in the localextensions.xml file, you will not need to reference any core extensions here.					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="coremodule" type="coremoduleType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures a core module for the extension. A core module consists of an items.xml file (and therefore allows to add new types to the system), a manager class, classes for the JaLo Layer and the ServiceLayer and JUnit test classes. The following directories are required: /src, /resources, /testsrc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="webmodule" type="webmoduleType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures a web module for the extension. Required directory: /web.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="hmcmodule" type="hmcmoduleType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Configures an hMC module for the extension. Required directory: /hmc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="meta" type="metaType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Configures metadata.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the extension. Do not use special characters or spaces.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Optionally defines the version of this extension. If not defined the build process assumes it being the same version as the platform.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="classprefix" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Prefix used for generated extension classes, such as the classes for Constants. Default is "[extensionname]".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="abstractclassprefix" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Prefix for generated Java classes, such as the abstract classes for getter and setter methods. Default is "Generated".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isoldstyleextension" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Default is "false".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>		
+		<xs:attribute name="requiredbyall" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If 'true' this extension is treated like platform/ext core extensions and is automtically added to all other extension dependencies.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>		
+		<xs:attribute name="managername" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Class name of the manager class. Default is "[classprefix]Manager"</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="managersuperclass" type="classType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Class name of the manager's superclass. Default is de.hybris.platform.jalo.extension.Extension.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="description" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Short description of this extension. Is used by the hybris package manager.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="usemaven" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If 'true' uses maven and external-dependencies.xml file for fetching required libraries into \lib and \web\webroot\WEB-INF\lib.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="jaloLogicFree" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If 'true' types introduced by this extension are SLD safe by default and contains no JALO logic.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="requires-extensionType">
+		<xs:annotation>
+			<xs:documentation>Configures the set of extensions required by the extension at compile time.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of an extension which is required at compile time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Allowed range of versions of the required extension. Is used by the hybris package manager.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="coremoduleType">
+		<xs:annotation>
+			<xs:documentation>Configures a core module for the extension. A core module consists of an items.xml file (and therefore allows to add new types to the system), a manager class, classes for the JaLo Layer and the ServiceLayer and JUnit test classes. The following directories are required: /src, /resources, /testsrc.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="additionalclasspath" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Not used anymore.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="packageroot" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Package root where extension and item classes will be generated to.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="manager" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Fully qualified Java class name of the extension's manager.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sourceavailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect and will be evaluated always to 'true' if a 'src' directory is available</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generated" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If "true", item and extension classes will be generated. Only needed in case of "sourceavailable=true". Default is "false".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="java5" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Will always be evaluated to 'true'. Generated item and extension classes will use java generics and annotations.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="generatePartOf" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If "true", the generated item and extension classes will use the partOf handler, so partOf references will be removed if the holding item is removed. Default is "true".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="webmoduleType">
+		<xs:annotation>
+			<xs:documentation>Configures an hMC module for the extension. Required directory: /web.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="webroot" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Webroot where the web application will be available at.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="additionalclasspath" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Not used anymore.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="jspcompile" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>If "true", JSP files will be pre-compiled as part of the build process. If "false", JSP files will be compiled when first used by the application server. Default is "true".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sourceavailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect and will be evaluated always to 'true' if a 'web/src' directory is available</xs:documentation>			
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:complexType name="hmcmoduleType">
+		<xs:annotation>
+			<xs:documentation>Configures an hmc module for the extension. Required directory: /hmc.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="additionalclasspath" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Not used anymore.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extensionclassname" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Name of the extension's HMCExtension class.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sourceavailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Deprecated. Has no effect and will be evaluated always to 'true' if a 'hmc/src' directory is available</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:complexType name="metaType">
+		<xs:annotation>
+			<xs:documentation>Configures metadata.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="key" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Metadata key.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Metadata value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:simpleType name="classType">
+		<xs:annotation>
+			<xs:documentation>A class name including full package name.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString"/>
+	</xs:simpleType>
+	
+</xs:schema>

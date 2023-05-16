@@ -39,6 +39,7 @@ public class CartPopulator implements Populator<CartModel, CartData> {
         if (paymentInfo != null && isAdyenPaymentInfo(paymentInfo)) {
             target.setAdyenPaymentMethod(paymentInfo.getAdyenPaymentMethod());
             target.setAdyenIssuerId(paymentInfo.getAdyenIssuerId());
+            target.setAdyenUPIVirtualAddress(paymentInfo.getAdyenUPIVirtualAddress());
             target.setAdyenRememberTheseDetails(paymentInfo.getAdyenRememberTheseDetails());
             target.setAdyenSelectedReference(paymentInfo.getAdyenSelectedReference());
             target.setAdyenDob(paymentInfo.getAdyenDob());

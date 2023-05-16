@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.adyen.util.DateUtil;
 import org.apache.log4j.Logger;
@@ -47,6 +48,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_PROVIDER;
 
 public class DefaultAdyenOrderService implements AdyenOrderService {
     private static final Logger LOG = Logger.getLogger(DefaultAdyenOrderService.class);
+    private static final String ADDITIONAL_DATA_CARD_TYPE = "checkout.cardAddedBrand";
     private ModelService modelService;
     private PaymentsResponseConverter paymentsResponseConverter;
 
@@ -132,8 +134,11 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         PaymentInfoModel paymentInfo = order.getPaymentInfo();
 
-        if(paymentsResponse.getPaymentMethod()!=null && !paymentsResponse.getPaymentMethod().isEmpty()) {
-            paymentInfo.setAdyenPaymentMethod(paymentsResponse.getPaymentMethod());
+        if(Objects.nonNull(paymentsResponse.getAdditionalData()) && paymentsResponse.getAdditionalData().containsKey(ADDITIONAL_DATA_CARD_TYPE)){
+            paymentInfo.setAdyenPaymentMethod(paymentsResponse.getAdditionalData().get(ADDITIONAL_DATA_CARD_TYPE));
+        }
+        else if(paymentsResponse.getPaymentMethod()!=null) {
+            paymentInfo.setAdyenPaymentMethod(paymentsResponse.getPaymentMethod().getType());
         }
 
         //Card specific data

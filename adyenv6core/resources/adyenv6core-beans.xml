@@ -26,6 +26,7 @@
         <property name="adyenRememberTheseDetails" type="java.lang.Boolean"/>
         <property name="adyenPaymentMethod" type="java.lang.String"/>
         <property name="adyenIssuerId" type="java.lang.String"/>
+        <property name="adyenUPIVirtualAddress" type="java.lang.String"/>
         <property name="adyenDob" type="java.util.Date"/>
         <property name="adyenSocialSecurityNumber" type="java.lang.String"/>
         <property name="adyenSepaOwnerName" type="java.lang.String"/>
@@ -82,6 +83,11 @@
         <property name="adyenBillingAddress" type="de.hybris.platform.commercewebservicescommons.dto.user.AddressWsDTO"/>
         <property name="adyenApplePayMerchantName" type="java.lang.String"/>
         <property name="adyenApplePayMerchantIdentifier" type="java.lang.String"/>
+    </bean>
+
+    <bean class="com.adyen.v6.controllers.dtos.PaymentResultDTO">
+        <property name="resultCode" type="String" />
+        <property name="sessionData" type="String" />
     </bean>
 
     <bean class="de.hybris.platform.commercewebservicescommons.dto.order.AbstractOrderWsDTO">

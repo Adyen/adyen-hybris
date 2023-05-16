@@ -60,11 +60,12 @@ ant clean all
 
 ### 5. Add your Adyen credentials to the BaseStore via Hybris backoffice
 
-For more detailed instructions you can visit the [documentation page](https://docs.adyen.com/developers/plug-ins-and-partners/hybris)
+For more detailed instructions you can visit the [documentation page](https://github.com/Adyen/adyen-hybris/wiki)
 Please make sure your merchant has Variant true in API and responses section so that you get paymentMethod back in response.
 
 
 ## Supported payment methods
+A reference of all supported payment methods is [here](https://github.com/Adyen/adyen-hybris/wiki#supported-payment-methods).
 
 ### Credit Cards
 
@@ -72,7 +73,7 @@ Credit Card payments are supported using Checkout Components.
 
 ### Apple Pay
 
-[Apple Pay](https://docs.adyen.com/payment-methods/apple-pay/) is supported using Checkout Components.
+Apple Pay is supported using Checkout Components.
 
 ### Ratepay
 
@@ -80,14 +81,15 @@ Ratepay is supported via Adyen API.
 
 ### AfterPay
 
-[AfterPay](https://docs.adyen.com/payment-methods/afterpay) is supported via Adyen component and API.
+AfterPay is supported via Adyen component and API.
 
 ### Boleto
 
-[Boleto](https://docs.adyen.com/payment-methods/boleto-bancario) is supported via Adyen API.
+Boleto is supported via Adyen API.
 
 ### Pix
-[Pix](https://docs.adyen.com/payment-methods/pix) is supported via Adyen component and API.
+
+Pix is supported via Adyen component and API.
 
 ### Other alternative payment methods
 
@@ -133,8 +135,7 @@ For Boleto payments - social security number
 This method will place the payment request using the previously stored payment method selection data. Upon successful response from Adyen API, it will register payment response in cart/order level.
 
 It returns an instance of OrderWSDTO obtained from OrderData of the placed order.
-For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date
-https://docs.adyen.com/developers/payment-methods/boleto-bancario/boleto-payment-request
+For Boleto, it will contain the pdf url, the base64 encoded data, expiration date and due date.
 
 ## 3DS2 configuration
 By default 3DS2 is enabled (Except for OCC). If you want to disable 3DS2 in your system, please set following property in local.properties file, build your environment and restart the server.
@@ -153,8 +154,8 @@ isCardHolderNameRequired = false
 ```
 
 ## Pending Order Timeout configuration
-By default, an order remains in PAYMENT_PENDING status in order management for 1 hour and it is configured in dynamic order process defintiion file. 
-Based on which extension you are using (fulfillment or ordermanangement) timeout value can be updated in corresponding order-process.xml file. 
+By default, an order remains in PAYMENT_PENDING status in order management for 1 hour and it is configured in dynamic order process defintiion file.
+Based on which extension you are using (fulfillment or ordermanangement) timeout value can be updated in corresponding order-process.xml file.
 
 For example, following 2 files have 60 mins configuration under waitForAdyenPendingPayment process with delay value=PT60M
 
@@ -169,10 +170,10 @@ OrderManagement extension file - resources/adyenv6ordermanagement/process/order-
 ```
 
 ## PayPal configuration
-This plugin uses Adyen's Checkout Component for PayPal payments. To use that in a live environment, a PayPal Merchant Id is required [(check here how to get one)](https://docs.adyen.com/payment-methods/paypal/web-component#get-your-paypal-merchant-id). This id has to be provided when adding your Adyen credentials to the BaseStore via the backoffice [(installation step 5)](#installation).
+This plugin uses Adyen's Checkout Component for PayPal payments. To use that in a live environment, a PayPal Merchant Id is required. This id has to be provided when adding your Adyen credentials to the BaseStore via the backoffice [(installation step 5)](#installation).
 
 ## SameSite Cookie Handler configuration
-On Google Chrome browser versions 80 or later, it might occur that an account is logged out after trying to place an order using a credit card that requires 3D Secure authentication or using other redirect payment methods. 
+On Google Chrome browser versions 80 or later, it might occur that an account is logged out after trying to place an order using a credit card that requires 3D Secure authentication or using other redirect payment methods.
 This is a consequence of how newer versions of Chrome browsers handle the [SameSite attribute](https://web.dev/samesite-cookies-explained/) on cookies, invalidating the user session after a redirect to a third-party page happened.
 
 To avoid those issues, for SAP Commerce versions 6.x or 1905, a cookie handler included in this plugin can be used. To enable it, add the following configuration to the config/local.properties file:
@@ -184,7 +185,7 @@ adyen.samesitecookie.handler.enabled=true
 For SAP Commerce versions 2005 and above, check how to use [SAP's SameSite Cookie Attribute Handler](https://help.sap.com/viewer/d0224eca81e249cb821f2cdf45a82ace/2005/en-US/bde41b6a42c541a08eb2a3b1993fb097.html).
 
  ## Documentation
- https://docs.adyen.com/developers/plugins/hybris
+ https://github.com/Adyen/adyen-hybris/wiki
 
  ## Support
 If you have a feature request, or spotted a bug or a technical problem, create a GitHub issue. For other questions, contact our [support team](https://support.adyen.com/hc/en-us/requests/new?ticket_form_id=360000705420).
