@@ -58,6 +58,7 @@ public class AdyenPaymentForm {
 
     //HPP
     private String issuerId;
+    private String upiVirtualAddress;
 
     //SEPA direct debit fields
     private String sepaOwnerName;
@@ -130,6 +131,14 @@ public class AdyenPaymentForm {
 
     public void setIssuerId(String issuerId) {
         this.issuerId = issuerId;
+    }
+
+    public String getUpiVirtualAddress() {
+        return upiVirtualAddress;
+    }
+
+    public void setUpiVirtualAddress(String upiVirtualAddress) {
+        this.upiVirtualAddress = upiVirtualAddress;
     }
 
     public boolean getRememberTheseDetails() {

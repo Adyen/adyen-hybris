@@ -22,11 +22,7 @@ package com.adyen.v6.service;
 
 import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentResult;
-import com.adyen.model.checkout.PaymentMethod;
-import com.adyen.model.checkout.PaymentMethodDetails;
-import com.adyen.model.checkout.PaymentMethodsResponse;
-import com.adyen.model.checkout.PaymentsDetailsResponse;
-import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.*;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
@@ -34,6 +30,7 @@ import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +48,7 @@ public interface AdyenPaymentService {
      */
     PaymentResult authorise(CartData cartData, HttpServletRequest request, CustomerModel customerModel) throws Exception;
 
-    ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException ;
+    ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException;
 
     PaymentsResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
@@ -85,10 +82,11 @@ public interface AdyenPaymentService {
      * @deprecated use getPaymentMethods including shopperReference instead {@link #getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference)
      */
     @Deprecated
-    List<com.adyen.model.hpp.PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale) throws HTTPClientException, SignatureException, IOException;
+    List<PaymentMethod> getPaymentMethods(BigDecimal amount, String currency, String countryCode, String shopperLocale) throws HTTPClientException, SignatureException, IOException;
 
     /**
      * Retrieve stored cards from recurring contracts via Adyen API
+     *
      * @deprecated use getPaymentMethodsResponse instead {@link #getPaymentMethodsResponse(BigDecimal amount, String currency, String countryCode, String shopperLocale, String shopperReference)} ()
      */
     @Deprecated
@@ -107,7 +105,7 @@ public interface AdyenPaymentService {
     /**
      * Retrieves payment response from /payments/details
      */
-    PaymentsDetailsResponse getPaymentDetailsFromPayload( HashMap<String, String> details) throws Exception;
+    PaymentsDetailsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception;
 
     /**
      * Returns the Device Fingerprint url
@@ -118,8 +116,28 @@ public interface AdyenPaymentService {
      * Send POS Payment Request using Adyen Terminal API
      */
     TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception;
+
     /**
      * Send POS Status Request using Adyen Terminal API
      */
     TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String serviceId) throws Exception;
+
+    /**
+     * Performs Refund request via new Adyen API
+     */
+    PaymentRefundResource refunds(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception;
+
+    /**
+     * Performs Capture request via new Adyen API
+     */
+    PaymentCaptureResource captures(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception;
+
+    /**
+     * Performs Cancel or Refunds request via new Adyen API
+     */
+    PaymentReversalResource cancelOrRefunds(final String authReference, final String merchantReference) throws Exception;
+
+    BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel);
+
+    CreateCheckoutSessionResponse getPaymentSessionData(final CartData cartData) throws IOException, ApiException;
 }
