@@ -101,6 +101,14 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="adyenv6backoffice_before_build">
+		<sequential>
+			<register_sass_extension extensionname="adyenv6backoffice"/>
+			<register_sass_extension extensionname="adyenv6backoffice" resources="resources" destination=""/>
+		</sequential>
+	</macrodef>
+	
+
 	<macrodef name="adyenv6backoffice_after_build">
 		<sequential>
 			<adyenv6backoffice_remove_web_fragment/>
