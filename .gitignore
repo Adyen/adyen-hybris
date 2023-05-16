@@ -4,3 +4,5 @@
 */.project
 */.pmd
 **.iml
+**.DS_Store
+**/lib/*.jar
