@@ -31,35 +31,36 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final String EXTENSIONNAME = "adyenv6core";
 
 	public static final String PLUGIN_NAME = "adyen-hybris";
-	public static final String PLUGIN_VERSION = "11.0.1";
+	public static final String PLUGIN_VERSION = "11.0.2";
 	public static final String PAYMENT_PROVIDER = "Adyen";
 	public static final String PAYMENT_METHOD ="paymentMethod";
 
-	final public static String PAYMENT_METHOD_CC = "adyen_cc";
-	final public static String PAYMENT_METHOD_EPS = "eps";
-	final public static String PAYMENT_METHOD_IDEAL = "ideal";
-	final public static String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
-	final public static String PAYMENT_METHOD_BOLETO = "boleto";
-	final public static String PAYMENT_METHOD_PIX = "pix";
-	final public static String PAYMENT_METHOD_SEPA_DIRECTDEBIT = "sepadirectdebit";
-	final public static String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
-	final public static String PAYMENT_METHOD_MULTIBANCO = "multibanco";
-	final public static String PAYMENT_METHOD_POS = "pos";
-	final public static String PAYMENT_METHOD_PAYPAL = "paypal";
-	final public static String PAYMENT_METHOD_SCHEME = "scheme";
-	final public static String PAYMENT_METHOD_APPLEPAY = "applepay";
-	final public static String PAYMENT_METHOD_AMAZONPAY = "amazonpay";
-	final public static String PAYMENT_METHOD_BCMC = "bcmc";
-	final public static String PAYMENT_METHOD_BCMC_MOBILE = "bcmc_mobile";
-	final public static String PAYMENT_METHOD_GOOGLE = "paywithgoogle";
-	final public static String PAYMENT_METHOD_TRUSTLY = "trustly";
-	final public static String PAYMENT_METHOD_INTERAC = "interac";
-	final public static String PAYMENT_METHOD_SOFORT = "directEbanking";
-	final public static String PAYMENT_METHOD_DOTPAY = "dotpay";
-	final public static String PAYMENT_METHOD_WECHATPAY = "wechatpayWeb";
-	final public static String PAYMENT_METHOD_PAYTM = "paytm";
-	final public static String PAYMENT_METHOD_BILLDESK_UPI = "billdesk_upi";
-	final public static String PAYMENT_METHOD_ONLINEBANKING_PL = "onlineBanking_PL";
+	public static final String PAYMENT_METHOD_CC = "adyen_cc";
+	public static final String PAYMENT_METHOD_EPS = "eps";
+	public static final String PAYMENT_METHOD_IDEAL = "ideal";
+	public static final String PAYMENT_METHOD_ONECLICK = "adyen_oneclick_";
+	public static final String PAYMENT_METHOD_BOLETO = "boleto";
+	public static final String PAYMENT_METHOD_PIX = "pix";
+	public static final String PAYMENT_METHOD_SEPA_DIRECTDEBIT = "sepadirectdebit";
+	public static final String PAYMENT_METHOD_BOLETO_SANTANDER = "boletobancario_santander";
+	public static final String PAYMENT_METHOD_MULTIBANCO = "multibanco";
+	public static final String PAYMENT_METHOD_POS = "pos";
+	public static final String PAYMENT_METHOD_PAYPAL = "paypal";
+	public static final String PAYMENT_METHOD_SCHEME = "scheme";
+	public static final String PAYMENT_METHOD_APPLEPAY = "applepay";
+	public static final String PAYMENT_METHOD_AMAZONPAY = "amazonpay";
+	public static final String PAYMENT_METHOD_BCMC = "bcmc";
+	public static final String PAYMENT_METHOD_BCMC_MOBILE = "bcmc_mobile";
+	public static final String PAYMENT_METHOD_GOOGLE = "paywithgoogle";
+	public static final String PAYMENT_METHOD_TRUSTLY = "trustly";
+	public static final String PAYMENT_METHOD_INTERAC = "interac";
+	public static final String PAYMENT_METHOD_SOFORT = "directEbanking";
+	public static final String PAYMENT_METHOD_DOTPAY = "dotpay";
+	public static final String PAYMENT_METHOD_WECHATPAY = "wechatpayWeb";
+	public static final String PAYMENT_METHOD_PAYTM = "paytm";
+	public static final String PAYMENT_METHOD_BILLDESK_UPI = "billdesk_upi";
+	public static final String PAYMENT_METHOD_ONLINEBANKING_PL = "onlineBanking_PL";
+	public static final String PAYMENT_METHOD_ONLINEBANKING_IN = "onlinebanking_IN";
 
 
 	public static final String PROCESS_EVENT_ADYEN_CAPTURED = "AdyenCaptured";
@@ -118,7 +119,7 @@ public final class Adyenv6coreConstants extends GeneratedAdyenv6coreConstants {
 	public static final List<String> ISSUER_PAYMENT_METHODS = Collections.unmodifiableList(new ArrayList<>() {{
 		add(PAYMENT_METHOD_IDEAL);
 		add(PAYMENT_METHOD_EPS);
-		add("onlinebanking_IN");
-		add("onlineBanking_PL");
+		add(PAYMENT_METHOD_ONLINEBANKING_IN);
+		add(PAYMENT_METHOD_ONLINEBANKING_PL);
 	}});
 }

@@ -390,6 +390,9 @@
     <alias name="defaultPaytmPaymentMethodDetailsBuilderStrategy" alias="paytmPaymentMethodDetailsBuilderStrategy"/>
     <bean id="defaultPaytmPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.PaytmPaymentMethodDetailsBuilderStrategy"/>
 
+    <alias name="defaultGenericAdyenPaymentMethodDetailsBuilderStrategy" alias="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
+    <bean id="defaultGenericAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.GenericAdyenPaymentMethodDetailsBuilderStrategy"/>
+
     <util:list id="adyenPaymentMethodDetailsBuilderStrategies">
         <ref bean="clearpayPaymentMethodDetailsBuilderStrategy"/>
         <ref bean="trustyPaymentMethodDetailsBuilderStrategy"/>
@@ -437,6 +440,7 @@
     <alias name="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" alias="adyenPaymentMethodDetailsStrategyExecutorImpl"/>
     <bean id="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" class="com.adyen.v6.paymentmethoddetails.executors.impl.AdyenPaymentMethodDetailsStrategyExecutorImpl">
         <constructor-arg name="strategies" ref="adyenPaymentMethodDetailsBuilderStrategies"/>
+        <constructor-arg name="genericStrategy" ref="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     </bean>
 
 </beans>
