@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -128,6 +129,7 @@ public class AdyenNotificationServiceTest {
     public void testAuthorisationNotification() throws Exception {
         String pspReference = "123";
         String merchantReference = "001";
+        final BigDecimal amount = new BigDecimal(2);
 
         OrderModel orderModel = createDummyOrderModel();
 
@@ -136,6 +138,7 @@ public class AdyenNotificationServiceTest {
         notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);
         notificationItemModel.setMerchantReference(merchantReference);
         notificationItemModel.setSuccess(true);
+        notificationItemModel.setAmountValue(amount);
 
         when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class))).thenReturn(null);
 
@@ -144,10 +147,10 @@ public class AdyenNotificationServiceTest {
         adyenNotificationService.processNotification(notificationItemModel);
 
         //Verify that we emmit the event of Capture to the order processes
-        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenAuthorized");
+        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenPaymentResult");
 
         //Verify that the authorizeOrderModel is called
-        verify(adyenTransactionServiceMock).authorizeOrderModel(orderModel, merchantReference, pspReference);
+        verify(adyenTransactionServiceMock).authorizeOrderModel(orderModel, merchantReference, pspReference, amount);
     }
 
     /**
@@ -173,7 +176,7 @@ public class AdyenNotificationServiceTest {
         adyenNotificationService.processNotification(notificationItemModel);
 
         //Verify that we emmit the event of Capture to the order processes
-        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenAuthorized");
+        verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenPaymentResult");
 
         //Verify that the authorizeOrderModel is called
         verify(adyenTransactionServiceMock).storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);

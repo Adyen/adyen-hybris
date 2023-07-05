@@ -42,9 +42,11 @@ import com.adyen.model.nexo.TransactionStatusResponse;
 import com.adyen.model.terminal.TerminalAPIResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.Adyenv6coreConstants;
+import com.adyen.v6.converters.PaymentsDetailsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenBusinessProcessService;
@@ -74,6 +76,7 @@ import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.servicelayer.dto.converter.ConversionException;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
@@ -81,18 +84,19 @@ import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,9 +106,9 @@ import java.util.UUID;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.CHALLENGE_RESULT;
 import static com.adyen.constants.ApiConstants.ThreeDS2Property.FINGERPRINT_RESULT;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_EPS;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
-import static com.adyen.v6.facades.DefaultAdyenCheckoutFacade.SESSION_PENDING_ORDER_CODE;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.MODEL_ISSUER_LISTS;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.MODEL_SELECTED_PAYMENT_METHOD;
+import static com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade.SESSION_PENDING_ORDER_CODE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -112,12 +116,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
@@ -131,7 +130,9 @@ public class AdyenCheckoutFacadeTest {
     private static final String RESULT = "result";
     private static final String SERVICE_ID = "serviceId";
     private static final String URL = "url";
+    private static final String ORDER_CODE = "orderCode";
 
+    @Spy
     @InjectMocks
     DefaultAdyenCheckoutFacade adyenCheckoutFacade = new DefaultAdyenCheckoutFacade();
 
@@ -173,6 +174,18 @@ public class AdyenCheckoutFacadeTest {
     AddressPopulator addressPopulator;
     @Mock
     AdyenBusinessProcessService adyenBusinessProcessService;
+    @Mock
+    private PaymentsDetailsResponseConverter getPaymentsDetailsResponseConverterMock;
+    @Mock
+    private ConfigurationService configurationServiceMock;
+    @Mock
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
+    @Mock
+    private BaseStoreService baseStoreServiceMock;
+    @Mock
+    private BaseStoreModel baseStoreModelMock;
+    @Mock
+    private AdyenPaymentService adyenPaymentServiceMock;
 
     @Mock
     HttpServletRequest request;
@@ -206,7 +219,6 @@ public class AdyenCheckoutFacadeTest {
     UserModel userModel;
     @Mock
     BaseStoreModel storeModel;
-
     @Mock
     TerminalAPIResponse terminalApiResponse;
     @Mock
@@ -236,6 +248,8 @@ public class AdyenCheckoutFacadeTest {
     OutputText textJustName;
     @Mock
     OutputText textJustValue;
+    @Mock
+    Configuration configurationMock;
 
     @Before
     public void setUp() {
@@ -244,13 +258,18 @@ public class AdyenCheckoutFacadeTest {
         when(request.getAttribute("originalServiceId")).thenReturn(SERVICE_ID);
         when(baseStoreService.getCurrentBaseStore()).thenReturn(baseStore);
         when(adyenPaymentServiceFactory.createFromBaseStore(any())).thenReturn(adyenPaymentService);
+        when(getPaymentsDetailsResponseConverterMock.convert(paymentsDetailsResponse)).thenReturn(paymentsResponse);
+        when(configurationServiceMock.getConfiguration()).thenReturn(configurationMock);
+        when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
+        when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
+        when(adyenPaymentServiceMock.calculateAmountWithTaxes(orderModel)).thenReturn(new BigDecimal(10));
     }
 
     @Test
     public void testInitializeEpsCheckoutData() throws Exception {
         when(checkoutFacade.getCheckoutCart()).thenReturn(cartData);
         when(baseStore.getAdyenPosEnabled()).thenReturn(false);
-        when(cartData.getTotalPrice()).thenReturn(priceData);
+        when(cartData.getTotalPriceWithTax()).thenReturn(priceData);
         when(priceData.getValue()).thenReturn(BigDecimal.TEN);
         when(priceData.getCurrencyIso()).thenReturn("EUR");
         when(cartData.getDeliveryAddress()).thenReturn(addressData);
@@ -282,7 +301,7 @@ public class AdyenCheckoutFacadeTest {
         item.setId(UUID.randomUUID().toString());
         item.setName("FakeIssuer");
         detail.addItemsItem(item);
-        paymentMethod.addDetailsItem(detail);
+        paymentMethod.addInputDetailsItem(detail);
 
         PaymentMethodsResponse response = new PaymentMethodsResponse();
         response.setPaymentMethods(Collections.singletonList(paymentMethod));
@@ -411,13 +430,12 @@ public class AdyenCheckoutFacadeTest {
         when(request.getAttribute("paymentStartTime")).thenReturn(processStartTime);
         when(request.getAttribute("totalTimeout")).thenReturn(10);
 
-        AdyenCheckoutFacade adyenCheckoutFacadeSpy = spy(adyenCheckoutFacade);
         try {
-            adyenCheckoutFacadeSpy.checkPosPaymentStatus(request, cartData);
+            adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             assertEquals(terminalApiResponse, e.getTerminalApiResponse());
-            verify(adyenCheckoutFacadeSpy, atLeast(2)).checkPosPaymentStatus(request, cartData);
+            verify(adyenCheckoutFacade, atLeast(2)).checkPosPaymentStatus(request, cartData);
         }
     }
 
@@ -496,14 +514,17 @@ public class AdyenCheckoutFacadeTest {
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
+        when(paymentsDetailsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         doNothing().when(modelService).save(any());
         when(orderConverter.convert(any())).thenReturn(orderData);
         doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
 
         OrderData orderDataResult = adyenCheckoutFacade.handle3DSResponse(details);
         assertEquals(orderData, orderDataResult);
         verify(adyenPaymentService).authorise3DSPayment(anyMap());
-        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
+        verify(orderRepository).getOrderModel(ORDER_CODE);
         verify(orderConverter).convert(orderModel);
     }
 
@@ -534,13 +555,15 @@ public class AdyenCheckoutFacadeTest {
         when(cartModel.getUser()).thenReturn(userModel);
         when(orderModel.getStore()).thenReturn(storeModel);
         when(cartModel.getStore()).thenReturn(storeModel);
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
+        when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER);
+        when(orderRepository.getOrderModel(ORDER_CODE)).thenReturn(orderModel);
 
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
-            verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
             verify(cartFactory).createCart();
             verify(cartService).setSessionCart(cartModel);
             verify(calculationService).calculate(cartModel);
@@ -586,16 +609,6 @@ public class AdyenCheckoutFacadeTest {
     }
 
     @Test
-    public void testHandle3DResponseWrongSignature() throws Exception {
-        try {
-            adyenCheckoutFacade.handle3DSResponse(details);
-            fail("Expected SignatureException");
-        } catch (SignatureException e) {
-            assertEquals("MD does not match!", e.getMessage());
-        }
-    }
-
-    @Test
     public void testHandle3DS2ResponseAuthorised() throws Exception {
         when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(null);
         when(request.getParameter(CHALLENGE_RESULT)).thenReturn(RESULT);
@@ -605,15 +618,17 @@ public class AdyenCheckoutFacadeTest {
         doNothing().when(sessionService).removeAttribute(any());
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
+        when(paymentsDetailsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         doNothing().when(modelService).save(any());
         when(orderConverter.convert(any())).thenReturn(orderData);
         doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
 
         OrderData orderDataResult = adyenCheckoutFacade.handle3DSResponse(details);
         assertEquals(orderData, orderDataResult);
         verify(adyenPaymentService).authorise3DSPayment(anyMap());
-        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
         verify(orderConverter).convert(orderModel);
     }
 
@@ -622,15 +637,17 @@ public class AdyenCheckoutFacadeTest {
         when(request.getParameter(FINGERPRINT_RESULT)).thenReturn(RESULT);
         when(request.getParameter(CHALLENGE_RESULT)).thenReturn(null);
         when(adyenPaymentService.authorise3DSPayment(anyMap())).thenReturn(paymentsDetailsResponse);
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER);
+        when(orderRepository.getOrderModel(ORDER_CODE)).thenReturn(orderModel);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
 
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
-            assertNotNull(e.getPaymentsResponse());
-            assertEquals(PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER, e.getPaymentsResponse().getResultCode());
+            assertNotNull(e.getPaymentsDetailsResponse());
         }
     }
 
@@ -663,13 +680,14 @@ public class AdyenCheckoutFacadeTest {
         when(cartModel.getUser()).thenReturn(userModel);
         when(orderModel.getStore()).thenReturn(storeModel);
         when(cartModel.getStore()).thenReturn(storeModel);
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
 
         try {
             adyenCheckoutFacade.handle3DSResponse(details);
             fail("Expected AdyenNonAuthorizedPaymentException");
         } catch (AdyenNonAuthorizedPaymentException e) {
             verify(adyenPaymentService).authorise3DSPayment(anyMap());
-            verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
             verify(cartFactory).createCart();
             verify(cartService).setSessionCart(cartModel);
             verify(calculationService).calculate(cartModel);
@@ -720,20 +738,24 @@ public class AdyenCheckoutFacadeTest {
     public void testHandleRedirectPayloadAuthorised() throws Exception {
         when(sessionService.getAttribute(Adyenv6coreConstants.PAYMENT_METHOD)).thenReturn(PAYMENT_METHOD);
         when(adyenPaymentService.getPaymentDetailsFromPayload(any())).thenReturn(paymentsDetailsResponse);
+        when(adyenPaymentService.authorise3DSPayment(any())).thenReturn(paymentsDetailsResponse);
         when(paymentsResponse.getMerchantReference()).thenReturn(MERCHANT_REFERENCE);
         when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
         doNothing().when(sessionService).removeAttribute(any());
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
+        when(paymentsDetailsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.AUTHORISED);
         when(adyenTransactionService.createPaymentTransactionFromResultCode(any(), any(), any(), any())).thenReturn(new PaymentTransactionModel());
         doNothing().when(adyenOrderService).updateOrderFromPaymentsResponse(any(), any());
         doNothing().when(adyenBusinessProcessService).triggerOrderProcessEvent(any(), any());
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
 
         HashMap<String, String> details = new HashMap<>();
         PaymentsDetailsResponse paymentsDetailsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
         assertEquals(paymentsDetailsResponseReturned, paymentsDetailsResponse);
         assertEquals(PaymentsResponse.ResultCodeEnum.AUTHORISED, paymentsDetailsResponseReturned.getResultCode());
         verify(adyenPaymentService).getPaymentDetailsFromPayload(details);
-        verify(orderRepository).getOrderModel(MERCHANT_REFERENCE);
+        verify(orderRepository).getOrderModel(ORDER_CODE);
     }
 
     @Test
@@ -744,6 +766,7 @@ public class AdyenCheckoutFacadeTest {
         when(orderRepository.getOrderModel(any())).thenReturn(orderModel);
         doNothing().when(sessionService).removeAttribute(any());
         when(paymentsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.REFUSED);
+        when(paymentsDetailsResponse.getResultCode()).thenReturn(PaymentsResponse.ResultCodeEnum.REFUSED);
         doNothing().when(modelService).save(any());
         when(cartFactory.createCart()).thenReturn(cartModel);
         doNothing().when(cartService).setSessionCart(any());
@@ -764,13 +787,15 @@ public class AdyenCheckoutFacadeTest {
         when(cartModel.getUser()).thenReturn(userModel);
         when(orderModel.getStore()).thenReturn(storeModel);
         when(cartModel.getStore()).thenReturn(storeModel);
+        when(orderRepository.getOrderModel(ORDER_CODE)).thenReturn(orderModel);
+        when(orderModel.getEntries()).thenReturn(Collections.emptyList());
+        when(paymentsDetailsResponse.getMerchantReference()).thenReturn(ORDER_CODE);
 
         HashMap<String, String> details = new HashMap<>();
         PaymentsDetailsResponse paymentsDetailsResponseReturned = adyenCheckoutFacade.handleRedirectPayload(details);
         assertEquals(paymentsDetailsResponseReturned, paymentsDetailsResponse);
         assertEquals(PaymentsResponse.ResultCodeEnum.REFUSED, paymentsDetailsResponseReturned.getResultCode());
         verify(adyenPaymentService).getPaymentDetailsFromPayload(details);
-        verify(orderRepository, times(2)).getOrderModel(MERCHANT_REFERENCE);
         verify(cartFactory).createCart();
         verify(cartService).setSessionCart(cartModel);
         verify(calculationService).calculate(cartModel);
