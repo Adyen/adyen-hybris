@@ -1,9 +1,14 @@
 package com.adyen.v6.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -22,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class TerminalAPIUtilTest {
 
-    public static String TEST_RESPONSE_DIR ="resources/test/";
+    public static String TEST_RESPONSE_DIR ="test/";
     @Test
     public void testGetPaymentResultFromStatusOrPaymentResponseSuccess() throws IOException {
         TerminalAPIResponse terminalAPIResponse = createResponseFromFile(TEST_RESPONSE_DIR+"SaleToPOIResponse.json");
@@ -112,8 +117,9 @@ public class TerminalAPIUtilTest {
         assertEquals("checkout.error.authorization.payment.cancelled", errorMessage);
     }
 
-    private static TerminalAPIResponse createResponseFromFile(String fileName) throws IOException {
-        String json = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+    private  TerminalAPIResponse createResponseFromFile(String fileName) throws IOException {
+        URL resource = getClass().getClassLoader().getResource(fileName);
+        String json = Files.readString(Path.of(resource.getPath()), StandardCharsets.UTF_8);
         return TerminalAPIGsonBuilder.create().fromJson(json, new TypeToken<TerminalAPIResponse>() {
         }.getType());
     }
