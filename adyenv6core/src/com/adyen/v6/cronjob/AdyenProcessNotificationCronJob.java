@@ -57,16 +57,16 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             NotificationItemModel processedNotification = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
             if (processedNotification != null) {
                 notificationItemModel.setEventDate(processedNotification.getEventDate());
-                LOG.debug("Skipping duplicate notification");
+                LOG.info("Skipping duplicate notification: " + notificationItemModel.getPspReference());
             } else {
                 boolean isOldNotification = notificationItemRepository.isNewerNotificationExists(notificationItemModel.getMerchantReference(),
                                                                                                  notificationItemModel.getEventDate(),
                                                                                                  notificationItemModel.getMerchantAccountCode());
                 if (isOldNotification) {
-                    LOG.debug("Skipping delayed notification");
+                    LOG.info("Skipping delayed notification: " + notificationItemModel.getPspReference());
                 } else {
                     adyenNotificationService.processNotification(notificationItemModel);
-                    LOG.debug("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
+                    LOG.info("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
                 }
             }
 

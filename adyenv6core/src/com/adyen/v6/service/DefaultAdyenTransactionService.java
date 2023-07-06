@@ -131,6 +131,8 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
     @Override
     public PaymentTransactionModel storeFailedAuthorizationFromNotification(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
+        LOG.warn("Payment authorization failed for order: " + notificationItemModel.getMerchantReference() + " notification reference: " + notificationItemModel.getPspReference());
+
         boolean partialPayment = isPartialPayment(notificationItemModel, abstractOrderModel);
 
         //First save the transactions to the CartModel < AbstractOrderModel
