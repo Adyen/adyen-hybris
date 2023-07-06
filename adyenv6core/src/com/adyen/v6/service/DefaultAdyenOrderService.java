@@ -58,7 +58,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         FraudResult fraudResult = paymentsResponse.getFraudResult();
 
         if (fraudResult == null) {
-            LOG.debug("No fraud result found");
+            LOG.warn("No fraud result found");
             return null;
         }
 
@@ -88,7 +88,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         fraudReport.setFraudSymptomScorings(fraudSymptomScorings);
 
-        LOG.debug("Returning fraud report with score: " + fraudResult.getAccountScore());
+        LOG.info("Returning fraud report with score: " + fraudResult.getAccountScore());
 
         return fraudReport;
 
