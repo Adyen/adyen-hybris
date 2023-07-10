@@ -6,3 +6,7 @@
 **.iml
 **.DS_Store
 **/lib/*.jar
+**/resources/beans.xsd
+**/resources/items.xsd
+**/*testclasses.xml
+*/extensioninfo.xsd

@@ -107,7 +107,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     @Override
     public PaymentTransactionEntryModel processCapturedEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
-            LOG.debug("Parent transaction is null");
+            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
             return null;
         }
 
@@ -130,13 +130,14 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         OrderModel orderModel = orderRepository.getOrderModel(orderCode);
 
         if (orderModel == null) {
-            LOG.warn("Order with orderCode: " + orderCode + " was not found!");
+            LOG.error("Order with orderCode: " + orderCode + " was not found!");
             return null;
         }
 
         PaymentTransactionModel paymentTransactionModel;
         if (notificationItemModel.getSuccess()) {
             paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference(), notificationItemModel.getAmountValue());
+            LOG.debug("Payment authorization success");
         } else {
             paymentTransactionModel = adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
         }
@@ -150,6 +151,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     @Override
     public PaymentTransactionEntryModel processCancelEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
+            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
             return null;
         }
 
@@ -159,26 +161,27 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
 
         if (notificationItemModel.getSuccess()) {
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+            LOG.debug("Payment cancellation success");
         } else {
             paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
+            LOG.warn("Payment cancellation failed for notification: " + notificationItemModel.getPspReference());
         }
 
-        LOG.debug("Saving Cancel transaction entry");
         modelService.save(paymentTransactionEntryModel);
 
         return paymentTransactionEntryModel;
     }
 
     @Override
-    public PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItem) {
-        PaymentTransactionModel paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItem.getOriginalReference());
+    public PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItemModel) {
+        PaymentTransactionModel paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
         if (paymentTransaction == null) {
-            LOG.debug("Parent transaction is null");
+            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
             return null;
         }
 
         //Register Refund transaction
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createRefundedTransactionFromNotification(paymentTransaction, notificationItem);
+        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createRefundedTransactionFromNotification(paymentTransaction, notificationItemModel);
 
         LOG.debug("Saving Refunded transaction entry");
         modelService.save(paymentTransactionEntryModel);
@@ -194,21 +197,21 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     public PaymentTransactionModel processOfferClosedEvent(NotificationItemModel notificationItemModel) {
         String orderCode = notificationItemModel.getMerchantReference();
         if(!notificationItemModel.getSuccess()) {
-            LOG.warn("Order " + orderCode + " received unexpected OFFER_CLOSED event with success=false");
+            LOG.error("Order " + orderCode + " received unexpected OFFER_CLOSED event with success=false");
             return null;
         }
 
         OrderModel orderModel = orderRepository.getOrderModel(orderCode);
         if (orderModel == null) {
-            LOG.warn("Order " + orderCode + " was not found, skipping OFFER_CLOSED event...");
+            LOG.error("Order " + orderCode + " was not found, skipping OFFER_CLOSED event...");
             return null;
         }
         if (isOrderAuthorized(orderModel)) {
-            LOG.warn("Order " + orderCode + " already authorised, skipping OFFER_CLOSED event...");
+            LOG.error("Order " + orderCode + " already authorised, skipping OFFER_CLOSED event...");
             return null;
         }
         if (OrderStatus.CANCELLED.equals(orderModel.getStatus()) || OrderStatus.PROCESSING_ERROR.equals(orderModel.getStatus())) {
-            LOG.warn("Order " + orderCode + " already cancelled, skipping OFFER_CLOSED event...");
+            LOG.error("Order " + orderCode + " already cancelled, skipping OFFER_CLOSED event...");
             return null;
         }
 
@@ -248,6 +251,8 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     @Override
     public void processNotification(NotificationItemModel notificationItemModel) {
         PaymentTransactionModel paymentTransaction;
+        LOG.debug("Processing notification: "+ notificationItemModel.getPspReference()+" event: "+ notificationItemModel.getEventCode());
+
         switch (notificationItemModel.getEventCode()) {
             case NotificationRequestItem.EVENT_CODE_CAPTURE:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
