@@ -99,6 +99,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
@@ -158,7 +159,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private CalculationService calculationService;
     private Populator<AddressModel, AddressData> addressPopulator;
     private AdyenBusinessProcessService adyenBusinessProcessService;
-
+    private TransactionOperations transactionTemplate;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -275,16 +276,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public PaymentDetailsWsDTO addPaymentDetails(PaymentDetailsWsDTO paymentDetails) {
         CartModel cartModel = cartService.getSessionCart();
 
-        final AddressModel billingAddress = createBillingAddress(paymentDetails);
+        transactionTemplate.execute(transactionStatus -> {
+            final AddressModel billingAddress = createBillingAddress(paymentDetails);
 
-        PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, paymentDetails);
-        paymentInfo.setBillingAddress(billingAddress);
-        billingAddress.setOwner(paymentInfo);
+            PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, paymentDetails);
+            paymentInfo.setBillingAddress(billingAddress);
+            billingAddress.setOwner(paymentInfo);
 
-        modelService.save(paymentInfo);
+            modelService.save(paymentInfo);
 
-        cartModel.setPaymentInfo(paymentInfo);
-        modelService.save(cartModel);
+            cartModel.setPaymentInfo(paymentInfo);
+            modelService.save(cartModel);
+            return null;
+        });
 
         return paymentDetails;
     }
@@ -1074,10 +1078,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Update CartModel
         cartModel.setAdyenDfValue(adyenPaymentForm.getDfValue());
 
-        //Create payment info
-        PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
-        cartModel.setPaymentInfo(paymentInfo);
-        modelService.save(cartModel);
+        transactionTemplate.execute(transactionStatus -> {
+            //Create payment info
+            PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentForm);
+            cartModel.setPaymentInfo(paymentInfo);
+            modelService.save(cartModel);
+            return null;
+        });
     }
 
     @Override
@@ -1570,5 +1577,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setPaymentsDetailsResponseConverter(PaymentsDetailsResponseConverter paymentsDetailsResponseConverter) {
         this.paymentsDetailsResponseConverter = paymentsDetailsResponseConverter;
+    }
+
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }

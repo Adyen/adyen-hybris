@@ -43,6 +43,7 @@ import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class DefaultAdyenNotificationService implements AdyenNotificationService {
     private ModelService modelService;
@@ -53,6 +54,8 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     private CartRepository cartRepository;
     private CommercePlaceOrderStrategy commercePlaceOrderStrategy;
     private SessionService sessionService;
+    private TransactionOperations transactionTemplate;
+
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenNotificationService.class);
 
@@ -111,11 +114,14 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             return null;
         }
 
-        //Register Captured transaction
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createCapturedTransactionFromNotification(paymentTransactionModel, notificationItemModel);
+        PaymentTransactionEntryModel paymentTransactionEntryModel = transactionTemplate.execute(transactionStatus -> {
+            //Register Captured transaction
+            PaymentTransactionEntryModel paymentTransactionEntry = adyenTransactionService.createCapturedTransactionFromNotification(paymentTransactionModel, notificationItemModel);
 
-        LOG.debug("Saving Captured transaction entry");
-        modelService.save(paymentTransactionEntryModel);
+            LOG.debug("Saving Captured transaction entry");
+            modelService.save(paymentTransactionEntry);
+            return paymentTransactionEntry;
+        });
 
         //Trigger Captured event
         OrderModel orderModel = (OrderModel) paymentTransactionModel.getOrder();
@@ -155,21 +161,22 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             return null;
         }
 
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createCancellationTransaction(paymentTransactionModel,
-                                                                                                                          notificationItemModel.getMerchantReference(),
-                                                                                                                          notificationItemModel.getPspReference());
+        return transactionTemplate.execute(transactionStatus -> {
+            PaymentTransactionEntryModel paymentTransactionEntry = adyenTransactionService.createCancellationTransaction(paymentTransactionModel,
+                    notificationItemModel.getMerchantReference(),
+                    notificationItemModel.getPspReference());
+            if (notificationItemModel.getSuccess()) {
+                paymentTransactionEntry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
+                LOG.debug("Payment cancellation success");
+            } else {
+                paymentTransactionEntry.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
+                LOG.warn("Payment cancellation failed for notification: " + notificationItemModel.getPspReference());
+            }
 
-        if (notificationItemModel.getSuccess()) {
-            paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-            LOG.debug("Payment cancellation success");
-        } else {
-            paymentTransactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.UNKNOWN_CODE.name());
-            LOG.warn("Payment cancellation failed for notification: " + notificationItemModel.getPspReference());
-        }
-
-        modelService.save(paymentTransactionEntryModel);
-
-        return paymentTransactionEntryModel;
+            LOG.debug("Saving Cancel transaction entry");
+            modelService.save(paymentTransactionEntry);
+            return paymentTransactionEntry;
+        });
     }
 
     @Override
@@ -180,17 +187,18 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             return null;
         }
 
-        //Register Refund transaction
-        PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createRefundedTransactionFromNotification(paymentTransaction, notificationItemModel);
+        return transactionTemplate.execute(transactionStatus -> {
+            //Register Refund transaction
+            PaymentTransactionEntryModel paymentTransactionEntryModel = adyenTransactionService.createRefundedTransactionFromNotification(paymentTransaction, notificationItemModel);
 
-        LOG.debug("Saving Refunded transaction entry");
-        modelService.save(paymentTransactionEntryModel);
+            LOG.debug("Saving Refunded transaction entry");
+            modelService.save(paymentTransactionEntryModel);
 
-        //Trigger Refunded event
-        OrderModel orderModel = (OrderModel) paymentTransaction.getOrder();
-        adyenBusinessProcessService.triggerReturnProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_REFUNDED);
-
-        return paymentTransactionEntryModel;
+            //Trigger Refunded event
+            OrderModel orderModel = (OrderModel) paymentTransaction.getOrder();
+            adyenBusinessProcessService.triggerReturnProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_REFUNDED);
+            return paymentTransactionEntryModel;
+        });
     }
 
     @Override
@@ -343,4 +351,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         this.sessionService = sessionService;
     }
 
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
 }
