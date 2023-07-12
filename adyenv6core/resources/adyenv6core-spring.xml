@@ -152,6 +152,11 @@
         <property name="cartRepository" ref="adyenCartRepository" />
         <property name="commercePlaceOrderStrategy" ref="commercePlaceOrderStrategy" />
         <property name="sessionService" ref="sessionService" />
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="adyenOrderCancelPaymentServiceAdapter" class="com.adyen.v6.service.AdyenOrderCancelPaymentServiceAdapter">
@@ -164,6 +169,11 @@
     <bean id="defaultAdyenOrderService" class="com.adyen.v6.service.DefaultAdyenOrderService">
         <property name="modelService" ref="modelService" />
         <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
     </bean>
 
     <alias name="defaultAdyenBusinessProcessService" alias="adyenBusinessProcessService"/>
@@ -215,6 +225,11 @@
         <property name="calculationService" ref="calculationService" />
         <property name="addressPopulator" ref="addressPopulator" />
         <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService" />
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
