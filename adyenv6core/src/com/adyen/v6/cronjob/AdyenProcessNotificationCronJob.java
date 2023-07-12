@@ -46,34 +46,43 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     @Override
     public PerformResult perform(final CronJobModel cronJob) {
         LOG.debug("Start processing..");
-
+        int exceptions = 0;
         List<NotificationItemModel> nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
 
         for (final NotificationItemModel notificationItemModel : nonProcessedNotifications) {
-            notificationItemModel.setProcessedAt(new Date());
+            try {
+                notificationItemModel.setProcessedAt(new Date());
 
-            LOG.debug("Processing event " + notificationItemModel.getEventCode() + " for order with code " + notificationItemModel.getMerchantReference());
+                LOG.debug("Processing event " + notificationItemModel.getEventCode() + " for order with code " + notificationItemModel.getMerchantReference());
 
-            NotificationItemModel processedNotification = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
-            if (processedNotification != null) {
-                notificationItemModel.setEventDate(processedNotification.getEventDate());
-                LOG.info("Skipping duplicate notification: " + notificationItemModel.getPspReference());
-            } else {
-                boolean isOldNotification = notificationItemRepository.isNewerNotificationExists(notificationItemModel.getMerchantReference(),
-                                                                                                 notificationItemModel.getEventDate(),
-                                                                                                 notificationItemModel.getMerchantAccountCode());
-                if (isOldNotification) {
-                    LOG.info("Skipping delayed notification: " + notificationItemModel.getPspReference());
+                NotificationItemModel processedNotification = notificationItemRepository.notificationProcessed(notificationItemModel.getPspReference(), notificationItemModel.getEventCode(), notificationItemModel.getSuccess());
+                if (processedNotification != null) {
+                    notificationItemModel.setEventDate(processedNotification.getEventDate());
+                    LOG.info("Skipping duplicate notification: " + notificationItemModel.getPspReference());
                 } else {
-                    adyenNotificationService.processNotification(notificationItemModel);
-                    LOG.info("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
+                    boolean isOldNotification = notificationItemRepository.isNewerNotificationExists(notificationItemModel.getMerchantReference(),
+                            notificationItemModel.getEventDate(),
+                            notificationItemModel.getMerchantAccountCode());
+                    if (isOldNotification) {
+                        LOG.info("Skipping delayed notification: " + notificationItemModel.getPspReference());
+                    } else {
+                        adyenNotificationService.processNotification(notificationItemModel);
+                        LOG.info("Notification with PSPReference " + notificationItemModel.getPspReference() + " was processed");
+                    }
                 }
+
+                modelService.save(notificationItemModel);
+            }catch(Exception e){
+                LOG.error("Notification with code: " + notificationItemModel.getEventCode() + " cause an exception. \n");
+                LOG.error("Exception: ", e);
+                exceptions++;
             }
-
-            modelService.save(notificationItemModel);
         }
+        if(exceptions==0){
+            return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
+        }
+        return new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
 
-        return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
     }
 
     public ModelService getModelService() {
