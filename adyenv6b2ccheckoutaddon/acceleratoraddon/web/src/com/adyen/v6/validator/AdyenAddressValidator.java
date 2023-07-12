@@ -83,7 +83,7 @@ public class AdyenAddressValidator extends AddressValidator {
         }
     }
     protected static void validateIndianPhoneField(final String addressField, final AddressField fieldType, final Errors errors) {
-        final String regexIndianPhone = "^(?:(?:\\+|0{0,2})91(\\s*[\\ -]\\s*)?|[0]?)?[789]\\d{9}|(\\d[ -]?){10}\\d$";
+        final String regexIndianPhone = "^((?:(?:\\+|0{0,2})91(\\s*[\\ -]\\s*)?|[0]?)?[789]\\d{9}|(\\d[ -]?){10}\\d)$";
         final Pattern pattern = Pattern.compile(regexIndianPhone);
         if(!pattern.matcher(addressField).matches()){
             errors.rejectValue(fieldType.getFieldKey(), fieldType.getErrorKey());

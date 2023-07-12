@@ -279,13 +279,17 @@ public class AdyenRequestFactory {
                 .shopperEmail(customerModel.getContactEmail())
                 .deliveryAddress(setAddressData(deliveryAddress))
                 .billingAddress(setAddressData(billingAddress))
-                .telephoneNumber(billingAddress.getPhone())
+                .telephoneNumber(billingAddress != null ? billingAddress.getPhone() : "")
                 .setCountryCode(getCountryCode(cartData));
     }
 
     protected void updatePaymentRequestForCC(final PaymentsRequest paymentsRequest, final CartData cartData, final RecurringContractMode recurringContractMode) {
         final Recurring recurringContract = getRecurringContractType(recurringContractMode);
-        final Recurring.ContractEnum contract = recurringContract.getContract();
+        Recurring.ContractEnum contract = null;
+        if (recurringContract != null) {
+            contract = recurringContract.getContract();
+        }
+
         final String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
         final String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
         final String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
@@ -324,7 +328,11 @@ public class AdyenRequestFactory {
     protected void updatePaymentRequestForDC(final PaymentsRequest paymentsRequest, final CartData cartData, final RecurringContractMode recurringContractMode) {
 
         final Recurring recurringContract = getRecurringContractType(recurringContractMode);
-        final Recurring.ContractEnum contract = recurringContract.getContract();
+        Recurring.ContractEnum contract = null;
+        if (recurringContract != null) {
+            contract = recurringContract.getContract();
+        }
+
         final String encryptedCardNumber = cartData.getAdyenEncryptedCardNumber();
         final String encryptedExpiryMonth = cartData.getAdyenEncryptedExpiryMonth();
         final String encryptedExpiryYear = cartData.getAdyenEncryptedExpiryYear();
@@ -488,6 +496,10 @@ public class AdyenRequestFactory {
      * Set Address Data into API
      */
     private Address setAddressData(AddressData addressData) {
+        if (addressData == null) {
+            LOG.warn("Null address data");
+            return null;
+        }
 
         Address address = new Address();
 
@@ -807,7 +819,7 @@ public class AdyenRequestFactory {
                         .stream()
                         .reduce(0.0, Double::sum);
                 invoiceLine.setAmountExcludingTax(deliveryAmount.getValue());
-                invoiceLine.setTaxAmount(Util.createAmount(cartData.getTotalTax().getValue().subtract(new BigDecimal(taxAmount)), currency).getValue());
+                invoiceLine.setTaxAmount(Util.createAmount(cartData.getTotalTax().getValue().subtract(BigDecimal.valueOf(taxAmount)), currency).getValue());
             } else {
                 invoiceLine.setAmountIncludingTax(deliveryAmount.getValue());
             }
