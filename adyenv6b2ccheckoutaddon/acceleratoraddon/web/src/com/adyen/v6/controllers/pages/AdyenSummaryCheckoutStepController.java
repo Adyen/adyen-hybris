@@ -170,7 +170,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         try {
             adyenCheckoutFacade.initializeSummaryData(model);
         } catch (ApiException e) {
-            e.printStackTrace();
+            LOGGER.error("Initialize summary data failed. ",e);
+
         }
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
@@ -240,7 +241,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return CHECKOUT_ERROR_AUTHORIZATION_FAILED;
     }
 
-    @RequestMapping({"/placeOrder"})
+    @PostMapping({"/placeOrder"})
     @RequireHardLogIn
     public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm,
                              final Model model,
@@ -450,8 +451,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             PaymentsDetailsResponse response = adyenCheckoutFacade.handleRedirectPayload(details);
 
             switch (response.getResultCode()) {
-                case AUTHORISED:
-                case RECEIVED:
+                case AUTHORISED, RECEIVED:
                     LOGGER.debug("Redirecting to order confirmation");
                     OrderData orderData = orderFacade.getOrderDetailsForCodeWithoutUser(response.getMerchantReference());
                     if (orderData == null) {

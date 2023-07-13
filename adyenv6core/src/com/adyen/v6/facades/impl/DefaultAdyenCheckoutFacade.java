@@ -789,10 +789,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             final CartData cartData = getCheckoutFacade().getCheckoutCart();
             return getAdyenPaymentService().getPaymentSessionData(cartData);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.error("Processing json failed. ", e);
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Exception during geting Adyen session data. ", e);
             return null;
         }
     }
