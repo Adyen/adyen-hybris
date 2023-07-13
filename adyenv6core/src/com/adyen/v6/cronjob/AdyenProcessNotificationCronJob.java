@@ -79,9 +79,9 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
             }
         }
         if(exceptionsOccurred){
-            return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
+            return new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
         }
-        return new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
+        return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
 
     }
 
