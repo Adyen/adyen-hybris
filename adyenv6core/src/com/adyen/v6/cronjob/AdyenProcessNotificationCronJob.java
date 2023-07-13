@@ -22,6 +22,7 @@ package com.adyen.v6.cronjob;
 
 import java.util.Date;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.NotificationItemRepository;
@@ -72,13 +73,13 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
                 }
 
                 modelService.save(notificationItemModel);
-            }catch(Exception e){
+            } catch (Exception e) {
                 LOG.error("Notification with psp reference: " + notificationItemModel.getPspReference() + " cause an exception. \n");
                 LOG.error("Exception: ", e);
-                exceptionsOccurred=true;
+                exceptionsOccurred = true;
             }
         }
-        if(exceptionsOccurred){
+        if (exceptionsOccurred) {
             return new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
         }
         return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
