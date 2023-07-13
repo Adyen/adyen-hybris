@@ -66,6 +66,7 @@ public class AdyenAddressValidator extends AddressValidator {
                     validateStringFieldLengthPostalCodeBR(addressForm.getPostcode(), AddressField.POSTCODE_BR, POSTCODE_BR_LENGTH, errors);
                     break;
                 case INDIA:
+                    validateStringFieldLength(addressForm.getTitleCode(), AddressField.TITLE, MAX_FIELD_LENGTH, errors);
                     validateIndianPhoneField(addressForm.getPhone(),AddressField.PHONE_IN,errors);
                     break;
                 default:
