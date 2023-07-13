@@ -46,7 +46,7 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
     @Override
     public PerformResult perform(final CronJobModel cronJob) {
         LOG.debug("Start processing..");
-        int exceptions = 0;
+        boolean exceptionsOccurred = false;
         List<NotificationItemModel> nonProcessedNotifications = notificationItemRepository.getNonProcessedNotifications();
 
         for (final NotificationItemModel notificationItemModel : nonProcessedNotifications) {
@@ -73,12 +73,12 @@ public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<Cron
 
                 modelService.save(notificationItemModel);
             }catch(Exception e){
-                LOG.error("Notification with code: " + notificationItemModel.getEventCode() + " cause an exception. \n");
+                LOG.error("Notification with psp reference: " + notificationItemModel.getPspReference() + " cause an exception. \n");
                 LOG.error("Exception: ", e);
-                exceptions++;
+                exceptionsOccurred=true;
             }
         }
-        if(exceptions==0){
+        if(exceptionsOccurred){
             return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
         }
         return new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
