@@ -1,12 +1,128 @@
-$productCatalog=electronicsProductCatalog
-$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
-$thumbnail=thumbnail(code, $catalogVersion)
-$picture=picture(code, $catalogVersion)
-$thumbnails=thumbnails(code, $catalogVersion)
-$detail=detail(code, $catalogVersion)
-$normal=normal(code, $catalogVersion)
-$others=others(code, $catalogVersion)
-$data_sheet=data_sheet(code, $catalogVersion)
-$medias=medias(code, $catalogVersion)
-$galleryImages=galleryImages(qualifier, $catalogVersion)
-$siteResource=jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/productCatalogs/$productCatalog
+$productCatalog = electronicsProductCatalog
+$catalogVersion = catalogversion(catalog(id[default=$productCatalog]), version[default='Staged'])[unique=true, default=$productCatalog:Staged]
+$thumbnail = thumbnail(code, $catalogVersion)
+$picture = picture(code, $catalogVersion)
+$thumbnails = thumbnails(code, $catalogVersion)
+$detail = detail(code, $catalogVersion)
+$normal = normal(code, $catalogVersion)
+$others = others(code, $catalogVersion)
+$data_sheet = data_sheet(code, $catalogVersion)
+$medias = medias(code, $catalogVersion)
+$galleryImages = galleryImages(qualifier, $catalogVersion)
+$siteResource = jar:com.adyen.v6.constants.Adyenv6b2ccheckoutaddonConstants&/adyenv6b2ccheckoutaddon/import/productCatalogs/$productCatalog
+
+INSERT_UPDATE Media; mediaFormat(qualifier); code[unique = true]     ; @media[translator = de.hybris.platform.impex.jalo.media.MediaDataTranslator]; mime[default = 'image/jpeg']; $catalogVersion; folder(qualifier)
+                   ; 1200Wx1200H           ; /1200Wx1200H/239999.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239998.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239997.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239996.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239995.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239994.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239993.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239992.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239991.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239990.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239989.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239988.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/239987.jpg ; $siteResource/images/1200Wx1200H/BLIKProduct.jpg                            ;                             ;                ; images
+
+                   ; 515Wx515H             ; /515Wx515H/239999.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239998.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239997.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239996.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239995.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239994.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239993.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239992.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239991.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239990.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239989.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239988.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/239987.jpg   ; $siteResource/images/515Wx515H/BLIKProduct.jpg                              ;                             ;                ; images
+
+                   ; 300Wx300H             ; /300Wx300H/239999.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239998.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239997.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239996.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239995.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239994.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239993.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239992.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239991.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239990.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239989.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239988.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/239987.jpg   ; $siteResource/images/300Wx300H/BLIKProduct.jpg                              ;                             ;                ; images
+
+                   ; 96Wx96H               ; /96Wx96H/239999.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239998.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239997.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239996.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239995.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239994.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239993.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239992.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239991.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239990.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239989.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239988.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/239987.jpg     ; $siteResource/images/96Wx96H/BLIKProduct.jpg                                ;                             ;                ; images
+
+                   ; 65Wx65H               ; /65Wx65H/239999.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239998.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239997.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239996.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239995.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239994.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239993.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239992.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239991.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239990.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239989.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239988.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/239987.jpg     ; $siteResource/images/65Wx65H/BLIKProduct.jpg                                ;                             ;                ; images
+
+                   ; 30Wx30H               ; /30Wx30H/239999.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239998.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239997.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239996.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239995.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239994.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239993.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239992.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239991.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239990.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239989.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239988.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/239987.jpg     ; $siteResource/images/30Wx30H/BLIKProduct.jpg                                ;                             ;                ; images
+
+
+INSERT_UPDATE MediaContainer; qualifier[unique = true]; $medias                                                                                                                                                  ; $catalogVersion
+                            ; 239999                  ; /1200Wx1200H/239999.jpg,/515Wx515H/239999.jpg,/300Wx300H/239999.jpg,/96Wx96H/239999.jpg,/65Wx65H/239999.jpg,/30Wx30H/239999.jpg                          ;
+                            ; 239998                  ; /1200Wx1200H/239998.jpg,/515Wx515H/239998.jpg,/300Wx300H/239998.jpg,/96Wx96H/239998.jpg,/65Wx65H/239998.jpg,/30Wx30H/239998.jpg                          ;
+                            ; 239997                  ; /1200Wx1200H/239997.jpg,/515Wx515H/239997.jpg,/300Wx300H/239997.jpg,/96Wx96H/239997.jpg,/65Wx65H/239997.jpg,/30Wx30H/239997.jpg ;
+                            ; 239996                  ; /1200Wx1200H/239996.jpg,/515Wx515H/239996.jpg,/300Wx300H/239996.jpg,/96Wx96H/239996.jpg,/65Wx65H/239996.jpg,/30Wx30H/239996.jpg                          ;
+                            ; 239995                  ; /1200Wx1200H/239995.jpg,/515Wx515H/239995.jpg,/300Wx300H/239995.jpg,/96Wx96H/239995.jpg,/65Wx65H/239995.jpg,/30Wx30H/239995.jpg                          ;
+                            ; 239994                  ; /1200Wx1200H/239994.jpg,/515Wx515H/239994.jpg,/300Wx300H/239994.jpg,/96Wx96H/239994.jpg,/65Wx65H/239994.jpg,/30Wx30H/239994.jpg                          ;
+                            ; 239993                  ; /1200Wx1200H/239993.jpg,/515Wx515H/239993.jpg,/300Wx300H/239993.jpg,/96Wx96H/239993.jpg,/65Wx65H/239993.jpg,/30Wx30H/239993.jpg                          ;
+                            ; 239992                  ; /1200Wx1200H/239992.jpg,/515Wx515H/239992.jpg,/300Wx300H/239992.jpg,/96Wx96H/239992.jpg,/65Wx65H/239992.jpg,/30Wx30H/239992.jpg                          ;
+                            ; 239991                  ; /1200Wx1200H/239991.jpg,/515Wx515H/239991.jpg,/300Wx300H/239991.jpg,/96Wx96H/239991.jpg,/65Wx65H/239991.jpg,/30Wx30H/239991.jpg                          ;
+                            ; 239990                  ; /1200Wx1200H/239990.jpg,/515Wx515H/239990.jpg,/300Wx300H/239990.jpg,/96Wx96H/239990.jpg,/65Wx65H/239990.jpg,/30Wx30H/239990.jpg                          ;
+                            ; 239989                  ; /1200Wx1200H/239989.jpg,/515Wx515H/239989.jpg,/300Wx300H/239989.jpg,/96Wx96H/239989.jpg,/65Wx65H/239989.jpg,/30Wx30H/239989.jpg                          ;
+                            ; 239988                  ; /1200Wx1200H/239988.jpg,/515Wx515H/239988.jpg,/300Wx300H/239988.jpg,/96Wx96H/239988.jpg,/65Wx65H/239988.jpg,/30Wx30H/239988.jpg                          ;
+                            ; 239987                  ; /1200Wx1200H/239987.jpg,/515Wx515H/239987.jpg,/300Wx300H/239987.jpg,/96Wx96H/239987.jpg,/65Wx65H/239987.jpg,/30Wx30H/239987.jpg                          ;
+
+UPDATE Product; code[unique = true]; $picture              ; $thumbnail          ; $detail                 ; $others                                                       ; $normal               ; $thumbnails         ; $galleryImages; $catalogVersion
+              ; 239999             ; /300Wx300H/239999.jpg ; /96Wx96H/239999.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239999.jpg,/65Wx65H/239999.jpg,/30Wx30H/239999.jpg ; /300Wx300H/239999.jpg ; /96Wx96H/239999.jpg ; 239999        ;
+              ; 239998             ; /300Wx300H/239998.jpg ; /96Wx96H/239998.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239998.jpg,/65Wx65H/239998.jpg,/30Wx30H/239998.jpg ; /300Wx300H/239998.jpg ; /96Wx96H/239998.jpg ; 239998        ;
+              ; 239997             ; /300Wx300H/239997.jpg ; /96Wx96H/239997.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239997.jpg,/65Wx65H/239997.jpg,/30Wx30H/239997.jpg ; /300Wx300H/239997.jpg ; /96Wx96H/239997.jpg ; 239997        ;
+              ; 239996             ; /300Wx300H/239996.jpg ; /96Wx96H/239996.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239996.jpg,/65Wx65H/239996.jpg,/30Wx30H/239996.jpg ; /300Wx300H/239996.jpg ; /96Wx96H/239996.jpg ; 239996        ;
+              ; 239995             ; /300Wx300H/239995.jpg ; /96Wx96H/239995.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239995.jpg,/65Wx65H/239995.jpg,/30Wx30H/239995.jpg ; /300Wx300H/239995.jpg ; /96Wx96H/239995.jpg ; 239995        ;
+              ; 239994             ; /300Wx300H/239994.jpg ; /96Wx96H/239994.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239994.jpg,/65Wx65H/239994.jpg,/30Wx30H/239994.jpg ; /300Wx300H/239994.jpg ; /96Wx96H/239994.jpg ; 239994        ;
+              ; 239993             ; /300Wx300H/239993.jpg ; /96Wx96H/239993.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239993.jpg,/65Wx65H/239993.jpg,/30Wx30H/239993.jpg ; /300Wx300H/239993.jpg ; /96Wx96H/239993.jpg ; 239993        ;
+              ; 239992             ; /300Wx300H/239992.jpg ; /96Wx96H/239992.jpg ; /1200Wx1200H/239992.jpg ; /515Wx515H/239992.jpg,/65Wx65H/239993.jpg,/30Wx30H/239992.jpg ; /300Wx300H/239992.jpg ; /96Wx96H/239992.jpg ; 239992        ;
+              ; 239991             ; /300Wx300H/239991.jpg ; /96Wx96H/239991.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239991.jpg,/65Wx65H/239991.jpg,/30Wx30H/239991.jpg ; /300Wx300H/239991.jpg ; /96Wx96H/239991.jpg ; 239991        ;
+              ; 239990             ; /300Wx300H/239990.jpg ; /96Wx96H/239990.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239990.jpg,/65Wx65H/239990.jpg,/30Wx30H/239990.jpg ; /300Wx300H/239990.jpg ; /96Wx96H/239990.jpg ; 239990        ;
+              ; 239989             ; /300Wx300H/239989.jpg ; /96Wx96H/239989.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239989.jpg,/65Wx65H/239989.jpg,/30Wx30H/239989.jpg ; /300Wx300H/239989.jpg ; /96Wx96H/239989.jpg ; 239989        ;
+              ; 239988             ; /300Wx300H/239988.jpg ; /96Wx96H/239988.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239988.jpg,/65Wx65H/239988.jpg,/30Wx30H/239988.jpg ; /300Wx300H/239988.jpg ; /96Wx96H/239988.jpg ; 239988        ;
+              ; 239987             ; /300Wx300H/239987.jpg ; /96Wx96H/239987.jpg ; /1200Wx1200H/239994.jpg ; /515Wx515H/239987.jpg,/65Wx65H/239987.jpg,/30Wx30H/239987.jpg ; /300Wx300H/239987.jpg ; /96Wx96H/239987.jpg ; 239987        ;

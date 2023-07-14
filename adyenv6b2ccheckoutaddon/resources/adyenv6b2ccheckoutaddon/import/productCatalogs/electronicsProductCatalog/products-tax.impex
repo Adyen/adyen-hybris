@@ -1,0 +1,14 @@
+INSERT_UPDATE ProductTaxCode; productCode[unique = true]; taxCode  ; taxArea[unique = true]
+                            ; 239999                    ; PC080601 ; PL
+                            ; 239998                    ; P0000000 ; PL
+                            ; 239997                    ; P0000000 ; PL
+                            ; 239996                    ; P0000000 ; PL
+                            ; 239995                    ; P0000000 ; PL
+                            ; 239994                    ; P0000000 ; PL
+                            ; 239993                    ; P0000000 ; PL
+                            ; 239992                    ; P0000000 ; PL
+                            ; 239991                    ; P0000000 ; PL
+                            ; 239990                    ; P0000000 ; PL
+                            ; 239989                    ; P0000000 ; PL
+                            ; 239988                    ; P0000000 ; PL
+                            ; 239987                    ; P0000000 ; PL

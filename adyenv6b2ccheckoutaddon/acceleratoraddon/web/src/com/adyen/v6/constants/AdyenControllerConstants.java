@@ -27,6 +27,7 @@ public interface AdyenControllerConstants
 	String SELECT_PAYMENT_METHOD_PREFIX = "/checkout/multi/adyen/select-payment-method";
 	String SUMMARY_CHECKOUT_PREFIX = "/checkout/multi/adyen/summary";
 	String COMPONENT_PREFIX = "/adyen/component";
+	String AMAZON_RETURN_URL = "/checkout/multi/adyen/summary/amazonpay/placeorder";
 
 	/**
 	 * Class with view name constants
@@ -43,6 +44,8 @@ public interface AdyenControllerConstants
 				String SelectPaymentMethod = ADDON_PREFIX + "pages/checkout/multi/selectPaymentMethodPage";
 				String Validate3DSPaymentPage = ADDON_PREFIX + "pages/checkout/multi/3ds_payment";
 				String BillingAddressformPage = ADDON_PREFIX + "pages/checkout/multi/billingAddressForm";
+				String AddEditDeliveryAddressPage = ADDON_PREFIX + "pages/checkout/multi/addEditDeliveryAddressPage";
+				String CountryAddressForm = ADDON_PREFIX + "pages/checkout/multi/countryAddressForm";
 			}
 		}
 
