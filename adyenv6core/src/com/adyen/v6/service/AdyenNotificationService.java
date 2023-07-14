@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.service;
 
+import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
@@ -37,9 +38,14 @@ public interface AdyenNotificationService {
     void processNotification(NotificationItemModel notificationItemModel);
 
     /**
-     * Parse HTTP request body and save NotificationItemModels
+     * Save NotificationItemModels
      */
-    void saveNotifications(String requestString);
+    void saveNotifications(NotificationRequest notificationRequest);
+
+    /**
+     * Parse HTTP request body and return NotificationRequest
+     */
+    NotificationRequest getNotificationRequestFromString(String requestString);
 
     /**
      * Create NotificationItemModel from NotificationRequestItem
