@@ -21,6 +21,7 @@
 package com.adyen.v6.service;
 
 import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
@@ -31,6 +32,7 @@ import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -45,13 +47,12 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
     private ModelService modelService;
     private CommonI18NService commonI18NService;
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactory;
+    private BaseStoreService baseStoreService;
 
     @Override
     public PaymentTransactionEntryModel createCapturedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
-        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(
-                paymentTransaction,
-                notificationItemModel
-        );
+        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(paymentTransaction, notificationItemModel);
 
         transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
 
@@ -60,19 +61,14 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
     @Override
     public PaymentTransactionEntryModel createRefundedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
-        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(
-                paymentTransaction,
-                notificationItemModel
-        );
+        final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(paymentTransaction, notificationItemModel);
 
         transactionEntryModel.setType(PaymentTransactionType.REFUND_FOLLOW_ON);
 
         return transactionEntryModel;
     }
 
-    private PaymentTransactionEntryModel createFromModificationNotification(
-            final PaymentTransactionModel paymentTransaction,
-            final NotificationItemModel notificationItemModel) {
+    private PaymentTransactionEntryModel createFromModificationNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -102,18 +98,11 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     @Override
     public PaymentTransactionModel authorizeOrderModel(final AbstractOrderModel abstractOrderModel, final String merchantTransactionCode, final String pspReference) {
         //First save the transactions to the CartModel < AbstractOrderModel
-        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
-                merchantTransactionCode,
-                pspReference,
-                abstractOrderModel);
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(merchantTransactionCode, pspReference, abstractOrderModel);
 
         modelService.save(paymentTransactionModel);
 
-        PaymentTransactionEntryModel authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(
-                paymentTransactionModel,
-                merchantTransactionCode,
-                abstractOrderModel
-        );
+        PaymentTransactionEntryModel authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(paymentTransactionModel, merchantTransactionCode, abstractOrderModel);
 
         LOG.info("Saving AUTH transaction entry with psp reference: " + pspReference);
         modelService.save(authorisedTransaction);
@@ -126,20 +115,11 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     @Override
     public PaymentTransactionModel authorizeOrderModel(AbstractOrderModel abstractOrderModel, String merchantTransactionCode, String pspReference, BigDecimal paymentAmount) {
         //First save the transactions to the CartModel < AbstractOrderModel
-        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
-                merchantTransactionCode,
-                pspReference,
-                abstractOrderModel,
-                paymentAmount);
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(merchantTransactionCode, pspReference, abstractOrderModel, paymentAmount);
 
         modelService.save(paymentTransactionModel);
 
-        PaymentTransactionEntryModel authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(
-                paymentTransactionModel,
-                merchantTransactionCode,
-                abstractOrderModel,
-                paymentAmount
-        );
+        PaymentTransactionEntryModel authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(paymentTransactionModel, merchantTransactionCode, abstractOrderModel, paymentAmount);
 
         LOG.info("Saving AUTH transaction entry with psp reference: " + pspReference);
         modelService.save(authorisedTransaction);
@@ -150,39 +130,24 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     @Override
-    public PaymentTransactionModel storeFailedAuthorizationFromNotification(NotificationItemModel notificationItemModel,
-                                                                            AbstractOrderModel abstractOrderModel) {
+    public PaymentTransactionModel storeFailedAuthorizationFromNotification(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
         boolean partialPayment = isPartialPayment(notificationItemModel, abstractOrderModel);
 
         //First save the transactions to the CartModel < AbstractOrderModel
         final PaymentTransactionModel paymentTransactionModel;
         if (partialPayment) {
-            paymentTransactionModel = createPaymentTransaction(
-                    notificationItemModel.getMerchantReference(),
-                    notificationItemModel.getPspReference(),
-                    abstractOrderModel,
-                    notificationItemModel.getAmountValue());
+            paymentTransactionModel = createPaymentTransaction(notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference(), abstractOrderModel, notificationItemModel.getAmountValue());
         } else {
-            paymentTransactionModel = createPaymentTransaction(
-                    notificationItemModel.getMerchantReference(),
-                    notificationItemModel.getPspReference(),
-                    abstractOrderModel);
+            paymentTransactionModel = createPaymentTransaction(notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference(), abstractOrderModel);
         }
 
         modelService.save(paymentTransactionModel);
 
         final PaymentTransactionEntryModel authorisedTransaction;
         if (partialPayment) {
-            authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(
-                    paymentTransactionModel,
-                    notificationItemModel.getMerchantReference(),
-                    abstractOrderModel,
-                    notificationItemModel.getAmountValue());
+            authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(paymentTransactionModel, notificationItemModel.getMerchantReference(), abstractOrderModel, notificationItemModel.getAmountValue());
         } else {
-            authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(
-                    paymentTransactionModel,
-                    notificationItemModel.getMerchantReference(),
-                    abstractOrderModel);
+            authorisedTransaction = createAuthorizationPaymentTransactionEntryModel(paymentTransactionModel, notificationItemModel.getMerchantReference(), abstractOrderModel);
         }
 
         authorisedTransaction.setTransactionStatus(TransactionStatus.REJECTED.name());
@@ -194,7 +159,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
         return paymentTransactionModel;
     }
-    
+
     /**
      * Map notification item reason to transactionStatusDetails item
      */
@@ -213,10 +178,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return transactionStatusDetails;
     }
 
-    private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(
-            final PaymentTransactionModel paymentTransaction,
-            final String merchantCode,
-            final AbstractOrderModel abstractOrderModel) {
+    private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -229,26 +191,19 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(TransactionStatus.ACCEPTED.name());
         transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-        transactionEntryModel.setAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
+        transactionEntryModel.setAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
         transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
 
         return transactionEntryModel;
     }
 
-    private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(
-            final PaymentTransactionModel paymentTransaction,
-            final String merchantCode,
-            final AbstractOrderModel abstractOrderModel,
-            final BigDecimal paymentAmount) {
+    private PaymentTransactionEntryModel createAuthorizationPaymentTransactionEntryModel(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel, final BigDecimal paymentAmount) {
         final PaymentTransactionEntryModel transactionEntryModel = createAuthorizationPaymentTransactionEntryModel(paymentTransaction, merchantCode, abstractOrderModel);
         transactionEntryModel.setAmount(paymentAmount);
         return transactionEntryModel;
     }
 
-    private PaymentTransactionModel createPaymentTransaction(
-            final String merchantCode,
-            final String pspReference,
-            final AbstractOrderModel abstractOrderModel) {
+    private PaymentTransactionModel createPaymentTransaction(final String merchantCode, final String pspReference, final AbstractOrderModel abstractOrderModel) {
         final PaymentTransactionModel paymentTransactionModel = modelService.create(PaymentTransactionModel.class);
         paymentTransactionModel.setCode(pspReference);
         paymentTransactionModel.setRequestId(pspReference);
@@ -257,16 +212,12 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         paymentTransactionModel.setOrder(abstractOrderModel);
         paymentTransactionModel.setCurrency(abstractOrderModel.getCurrency());
         paymentTransactionModel.setInfo(abstractOrderModel.getPaymentInfo());
-        paymentTransactionModel.setPlannedAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
+        paymentTransactionModel.setPlannedAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
 
         return paymentTransactionModel;
     }
 
-    private PaymentTransactionModel createPaymentTransaction(
-            final String merchantCode,
-            final String pspReference,
-            final AbstractOrderModel abstractOrderModel,
-            final BigDecimal paymentAmount) {
+    private PaymentTransactionModel createPaymentTransaction(final String merchantCode, final String pspReference, final AbstractOrderModel abstractOrderModel, final BigDecimal paymentAmount) {
         final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(merchantCode, pspReference, abstractOrderModel);
         paymentTransactionModel.setPlannedAmount(paymentAmount);
         return paymentTransactionModel;
@@ -293,23 +244,12 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     @Override
-    public PaymentTransactionModel createPaymentTransactionFromResultCode(final AbstractOrderModel abstractOrderModel,
-                                                                   final String merchantTransactionCode,
-                                                                   final String pspReference,
-                                                                   final PaymentsResponse.ResultCodeEnum resultCodeEnum) {
-        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(
-                merchantTransactionCode,
-                pspReference,
-                abstractOrderModel);
+    public PaymentTransactionModel createPaymentTransactionFromResultCode(final AbstractOrderModel abstractOrderModel, final String merchantTransactionCode, final String pspReference, final PaymentsResponse.ResultCodeEnum resultCodeEnum) {
+        final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(merchantTransactionCode, pspReference, abstractOrderModel);
 
         modelService.save(paymentTransactionModel);
 
-        PaymentTransactionEntryModel paymentTransactionEntryModel = createPaymentTransactionEntryModelFromResultCode(
-                paymentTransactionModel,
-                merchantTransactionCode,
-                abstractOrderModel,
-                resultCodeEnum
-        );
+        PaymentTransactionEntryModel paymentTransactionEntryModel = createPaymentTransactionEntryModelFromResultCode(paymentTransactionModel, merchantTransactionCode, abstractOrderModel, resultCodeEnum);
 
         LOG.info("Saving transaction entry for resultCode " + resultCodeEnum + " with psp reference:" + pspReference);
         modelService.save(paymentTransactionEntryModel);
@@ -322,11 +262,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return paymentTransactionModel;
     }
 
-    private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(
-            final PaymentTransactionModel paymentTransaction,
-            final String merchantCode,
-            final AbstractOrderModel abstractOrderModel,
-            final PaymentsResponse.ResultCodeEnum resultCode) {
+    private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel, final PaymentsResponse.ResultCodeEnum resultCode) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -339,7 +275,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(getTransactionStatusForResultCode(resultCode));
         transactionEntryModel.setTransactionStatusDetails("ResultCode: " + resultCode.getValue());
-        transactionEntryModel.setAmount(BigDecimal.valueOf(abstractOrderModel.getTotalPrice()));
+        transactionEntryModel.setAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
         transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
 
         return transactionEntryModel;
@@ -362,12 +298,16 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     private boolean isPartialPayment(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
-        BigDecimal totalOrderAmount = BigDecimal.valueOf(abstractOrderModel.getTotalPrice());
+        BigDecimal totalOrderAmount = getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel);
         BigDecimal notificationAmount = notificationItemModel.getAmountValue();
-        if(notificationAmount == null) {
+        if (notificationAmount == null) {
             return false;
         }
         return totalOrderAmount.compareTo(notificationAmount) > 0;
+    }
+
+    public AdyenPaymentService getAdyenPaymentService() {
+        return adyenPaymentServiceFactory.createFromBaseStore(baseStoreService.getCurrentBaseStore());
     }
 
     public ModelService getModelService() {
@@ -384,5 +324,21 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
     public void setCommonI18NService(CommonI18NService commonI18NService) {
         this.commonI18NService = commonI18NService;
+    }
+
+    public AdyenPaymentServiceFactory getAdyenPaymentServiceFactory() {
+        return adyenPaymentServiceFactory;
+    }
+
+    public void setAdyenPaymentServiceFactory(AdyenPaymentServiceFactory adyenPaymentServiceFactory) {
+        this.adyenPaymentServiceFactory = adyenPaymentServiceFactory;
+    }
+
+    public BaseStoreService getBaseStoreService() {
+        return baseStoreService;
+    }
+
+    public void setBaseStoreService(BaseStoreService baseStoreService) {
+        this.baseStoreService = baseStoreService;
     }
 }
