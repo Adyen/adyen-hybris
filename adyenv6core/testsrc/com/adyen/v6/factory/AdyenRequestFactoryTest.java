@@ -129,9 +129,9 @@ public class AdyenRequestFactoryTest {
     @Mock
     private PaymentDetails paymentDetailsMock;
 
-    private OrderEntryData orderEntryDataStubOne;//, orderEntryDataStubTwo,orderEntryDataStubThree;
+    private OrderEntryData orderEntryData;
 
-    private ProductData productDataStubOne;//, productDataStubTwo, productDataStubThree;
+    private ProductData productData;
 
     @Before
     public void setUp() {
@@ -351,18 +351,18 @@ public class AdyenRequestFactoryTest {
     public void shouldNotCrashWhenTotalValueCantBeDividedByQuantity() {
 
         PriceData priceData = createPriceData("100.00");
-        orderEntryDataStubOne = new OrderEntryData();
+        orderEntryData = new OrderEntryData();
 
-        productDataStubOne = new ProductData();
-        productDataStubOne.setCode("CODE");
-        productDataStubOne.setName("NAME");
-        productDataStubOne.setMultidimensional(Boolean.FALSE);
+        productData = new ProductData();
+        productData.setCode("CODE");
+        productData.setName("NAME");
+        productData.setMultidimensional(Boolean.FALSE);
 
-        orderEntryDataStubOne.setProduct(productDataStubOne);
-        orderEntryDataStubOne.setEntryNumber(0);
-        orderEntryDataStubOne.setQuantity(3L);
-        orderEntryDataStubOne.setBasePrice(createPriceData("45.00"));
-        orderEntryDataStubOne.setTaxValues(List.of( new TaxValue("VAT FULL", 19.0, false, null) ));
+        orderEntryData.setProduct(productData);
+        orderEntryData.setEntryNumber(0);
+        orderEntryData.setQuantity(3L);
+        orderEntryData.setBasePrice(createPriceData("45.00"));
+        orderEntryData.setTaxValues(List.of( new TaxValue("VAT FULL", 19.0, false, null) ));
 
         when(cartDataMock.getTotalPriceWithTax()).thenReturn(priceData);
         when(cartDataMock.getCode()).thenReturn(CART_CODE);
@@ -371,7 +371,7 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getStore()).thenReturn(STORE_NAME);
         when(cartDataMock.getAdyenTerminalId()).thenReturn(TERMINAL_ID);
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_KLARNA);
-        when(cartDataMock.getEntries()).thenReturn(List.of(orderEntryDataStubOne));
+        when(cartDataMock.getEntries()).thenReturn(List.of(orderEntryData));
 
 
         PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest(MERCHANT_ACCOUNT,
