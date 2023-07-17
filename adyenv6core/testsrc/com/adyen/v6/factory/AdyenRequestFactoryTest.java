@@ -36,11 +36,14 @@ import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuil
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.product.data.PriceData;
+import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
+import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
@@ -51,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 import static org.junit.Assert.*;
@@ -124,6 +128,10 @@ public class AdyenRequestFactoryTest {
     private CountryData billingCountryDataMock;
     @Mock
     private PaymentDetails paymentDetailsMock;
+
+    private OrderEntryData orderEntryDataStubOne;//, orderEntryDataStubTwo,orderEntryDataStubThree;
+
+    private ProductData productDataStubOne;//, productDataStubTwo, productDataStubThree;
 
     @Before
     public void setUp() {
@@ -338,4 +346,49 @@ public class AdyenRequestFactoryTest {
         assertNotNull(transactionStatusRequest.getMessageReference().getServiceID());
         assertEquals(SERVICE_ID, transactionStatusRequest.getMessageReference().getServiceID());
     }
+
+    @Test
+    public void shouldNotCrashWhenTotalValueCantBeDividedByQuantity() {
+
+        PriceData priceData = createPriceData("100.00");
+        orderEntryDataStubOne = new OrderEntryData();
+
+        productDataStubOne = new ProductData();
+        productDataStubOne.setCode("CODE");
+        productDataStubOne.setName("NAME");
+        productDataStubOne.setMultidimensional(Boolean.FALSE);
+
+        orderEntryDataStubOne.setProduct(productDataStubOne);
+        orderEntryDataStubOne.setEntryNumber(0);
+        orderEntryDataStubOne.setQuantity(3L);
+        orderEntryDataStubOne.setBasePrice(createPriceData("45.00"));
+        orderEntryDataStubOne.setTaxValues(List.of( new TaxValue("VAT FULL", 19.0, false, null) ));
+
+        when(cartDataMock.getTotalPriceWithTax()).thenReturn(priceData);
+        when(cartDataMock.getCode()).thenReturn(CART_CODE);
+        when(cartDataMock.getDeliveryAddress()).thenReturn(deliveryAddressMock);
+        when(cartDataMock.getPaymentInfo()).thenReturn(paymentInfoMock);
+        when(cartDataMock.getStore()).thenReturn(STORE_NAME);
+        when(cartDataMock.getAdyenTerminalId()).thenReturn(TERMINAL_ID);
+        when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_KLARNA);
+        when(cartDataMock.getEntries()).thenReturn(List.of(orderEntryDataStubOne));
+
+
+        PaymentRequest paymentRequest = adyenRequestFactory.createAuthorizationRequest(MERCHANT_ACCOUNT,
+                cartDataMock,
+                requestMock,
+                customerModelMock, RecurringContractMode.NONE);
+
+
+
+        assertEquals(10000L, (long) paymentRequest.getAmount().getValue());
+    }
+
+    private static PriceData createPriceData(String value) {
+        PriceData priceData = new PriceData();
+        priceData.setValue(new BigDecimal(value));
+        priceData.setCurrencyIso(CURRENCY);
+        return priceData;
+    }
+
 }
