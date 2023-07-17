@@ -13,6 +13,8 @@ package com.adyen.v6.controllers;
 import java.io.IOException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import com.adyen.model.notification.NotificationRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
@@ -44,20 +46,27 @@ public class AdyenNotificationController {
 	@ResponseBody
 	public String onReceive(@PathVariable final String baseSiteId, final HttpServletRequest request) {
 		String requestString = null;
+		NotificationRequest notificationRequest = null;
 		try {
 			//Parse response body by request input stream so that Spring doesn't try to deserialize
 			requestString = IOUtils.toString(request.getInputStream());
+			notificationRequest = adyenNotificationService.getNotificationRequestFromString(requestString);
 		} catch (IOException e) {
 			LOG.error(e);
 			return RESPONSE_NOT_ACCEPTED;
 		}
 
-		LOG.debug("Received Adyen notification:" + requestString);
-		if (! adyenNotificationAuthenticationProvider.authenticateBasic(request, baseSiteId)) {
-			throw new AccessDeniedException("Wrong credentials. Please check your basesite, username and password.");
+		if (notificationRequest == null) {
+			LOG.error("Notification request parsing failure");
+			return RESPONSE_NOT_ACCEPTED;
 		}
-		adyenNotificationService.saveNotifications(requestString);
 
-        return RESPONSE_ACCEPTED;
+		LOG.debug("Received Adyen notification:" + requestString);
+		if (!adyenNotificationAuthenticationProvider.authenticate(request, notificationRequest, baseSiteId)) {
+			throw new AccessDeniedException("Request authentication failed");
+		}
+		adyenNotificationService.saveNotifications(notificationRequest);
+
+		return RESPONSE_ACCEPTED;
     }
 }

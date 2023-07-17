@@ -96,15 +96,20 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
-    public void saveNotifications(final String requestString) {
-        NotificationHandler notificationHandler = new NotificationHandler();
-        NotificationRequest notificationRequest = notificationHandler.handleNotificationJson(requestString);
-        LOG.debug(notificationRequest);
+    public void saveNotifications(final NotificationRequest notificationRequest) {
 
         //Save the notification items to the database
         for (NotificationRequestItem notificationRequestItem : notificationRequest.getNotificationItems()) {
             saveFromNotificationRequest(notificationRequestItem);
         }
+    }
+
+    @Override
+    public NotificationRequest getNotificationRequestFromString(final String requestString) {
+        NotificationHandler notificationHandler = new NotificationHandler();
+        NotificationRequest notificationRequest = notificationHandler.handleNotificationJson(requestString);
+        LOG.debug(notificationRequest);
+        return notificationRequest;
     }
 
     @Override
