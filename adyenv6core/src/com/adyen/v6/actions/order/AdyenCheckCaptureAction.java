@@ -21,6 +21,8 @@
 package com.adyen.v6.actions.order;
 
 import com.adyen.v6.actions.AbstractWaitableAction;
+import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -30,6 +32,7 @@ import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -40,6 +43,15 @@ import java.util.Set;
  */
 public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcessModel> {
     private static final Logger LOG = Logger.getLogger(AdyenCheckCaptureAction.class);
+
+    private final AdyenPaymentServiceFactory adyenPaymentServiceFactory;
+    private final BaseStoreService baseStoreService;
+
+    public AdyenCheckCaptureAction(final AdyenPaymentServiceFactory adyenPaymentServiceFactory,
+                                         final BaseStoreService baseStoreService) {
+        this.adyenPaymentServiceFactory = adyenPaymentServiceFactory;
+        this.baseStoreService = baseStoreService;
+    }
 
     @Override
     public Set<String> getTransitions() {
@@ -64,7 +76,7 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
         order.setStatus(OrderStatus.PAYMENT_NOT_CAPTURED);
         modelService.save(order);
 
-        BigDecimal remainingAmount = new BigDecimal(order.getTotalPrice());
+        BigDecimal remainingAmount = getAdyenPaymentService(order).calculateAmountWithTaxes(order);
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
             boolean isRejected = AdyenTransactionService.getTransactionEntry(
                     paymentTransactionModel,
@@ -113,5 +125,9 @@ public class AdyenCheckCaptureAction extends AbstractWaitableAction<OrderProcess
         //By default Wait for capture result
         LOG.debug("Process: " + process.getCode() + " Order Waiting");
         return Transition.WAIT.toString();
+    }
+
+    public AdyenPaymentService getAdyenPaymentService(final OrderModel orderModel) {
+        return adyenPaymentServiceFactory.createFromBaseStore(orderModel.getStore());
     }
 }

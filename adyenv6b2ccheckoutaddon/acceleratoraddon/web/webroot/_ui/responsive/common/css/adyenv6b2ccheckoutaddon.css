@@ -99,3 +99,13 @@ div#section_break {
         display: none;
     }
 }
+
+.visible-xs.side-margins {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.adyen-checkout__dropdown__list {
+    position:relative !important;
+    max-height: 280px;
+}

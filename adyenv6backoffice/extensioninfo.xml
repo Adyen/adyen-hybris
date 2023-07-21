@@ -17,6 +17,9 @@
 		<!-- <requires-extension name="cms"/> -->
 
 		<requires-extension name="backoffice"/>
+		<requires-extension name="customersupportbackoffice"/>
+		<requires-extension name="adyenv6core"/>
+
 
 		<coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6backofficeManager" packageroot="com.adyen.v6"/>
 

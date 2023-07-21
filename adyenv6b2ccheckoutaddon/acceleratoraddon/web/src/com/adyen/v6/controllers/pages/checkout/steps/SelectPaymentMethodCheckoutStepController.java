@@ -20,6 +20,7 @@
  */
 package com.adyen.v6.controllers.pages.checkout.steps;
 
+import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AddressForm;
@@ -35,6 +36,7 @@ import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.TitleData;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,7 @@ import static com.adyen.v6.constants.AdyenControllerConstants.Views.Pages.MultiS
 import static de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants.BREADCRUMBS_KEY;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import com.adyen.service.exception.ApiException;
 
 @Controller
 @RequestMapping(value = "/checkout/multi/adyen/select-payment-method")
@@ -127,7 +130,14 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
             GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
         }
         else {
-            adyenCheckoutFacade.initializeCheckoutData(model);
+            try{
+                adyenCheckoutFacade.initializeCheckoutData(model);
+            }
+            catch(ApiException e){
+                LOGGER.debug("Invalid session Data");
+                GlobalMessages.addErrorMessage(model, "basket.error.occurred");
+            }
+
         }
 
         super.prepareDataForPage(model);
