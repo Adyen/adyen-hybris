@@ -1,48 +1,49 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
+<%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
 <html>
 <head>
-    <script src="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.js"
-            integrity="sha384-eNk32fgfYxvzNLyV19j4SLSHPQdLNR+iUS1t/D7rO4gwvbHrj6y77oJLZI7ikzBH"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet"
-          href="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.css"
-          integrity="sha384-5CDvDZiVPuf+3ZID0lh0aaUHAeky3/ACF1YAKzPbn3GEmzWgO53gP6stiYHWIdpB"
-          crossorigin="anonymous"/>
-
+    <adyen:adyenLibrary/>
+    <c:set var="initConfig">
+        <json:object escapeXml="false">
+            <json:property name="locale" value="${shopperLocale}"/>
+            <json:property name="environment" value="${environmentMode}"/>
+            <json:property name="clientKey" value="${clientKey}"/>
+            <json:object name="risk" escapeXml="false">
+                <json:property name="enabled" value="${false}"/>
+            </json:object>
+        </json:object>
+    </c:set>
     <script type="text/javascript">
-        function initiateCheckout ( locale, environmentMode, clientKey ) {
-            var configuration = {
-                clientKey: clientKey,
-                locale: locale,// shopper's locale
-                environment: environmentMode, //test or live
-                risk: {
-                    enabled: false
-                },
-                onAdditionalDetails: this.handleOnAdditionalDetails
-            };
-            this.checkout = new AdyenCheckout( configuration );
-        }
-
-        function handleOnAdditionalDetails(state, component) {
+        let checkout;
+        const handleOnAdditionalDetails = (state) => {
             document.getElementById("details").value = JSON.stringify(state.data.details);
             document.getElementById("3ds2-form").submit();
         }
 
-        function perform3DSOperations () {
-            initiateCheckout( "${shopperLocale}", "${environmentMode}", "${clientKey}");
-            var action = ${action};
-            this.checkout.createFromAction(action).mount('#threeDS');
+        const perform3DSOperations = async () => {
+            const configuration = ${initConfig};
+            configuration['onAdditionalDetails'] = this.handleOnAdditionalDetails
+            checkout = await AdyenCheckout(configuration);
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            perform3DSOperations().then(function () {
+                const action = ${action};
+                checkout.createFromAction(action).mount('#threeDS');
+            });
+        }, false);
     </script>
 </head>
-<body onload=perform3DSOperations()>
-    <div id="threeDS"/>
-    <form method="post"
-          class="create_update_payment_form"
-          id="3ds2-form"
-          action="authorise-3d-adyen-response">
-        <input type="hidden" id="details" name="details"/>
-    </form>
+<body>
+<div id="threeDS"></div>
+<form method="post"
+      class="create_update_payment_form"
+      id="3ds2-form"
+      action="authorise-3d-adyen-response"
+>
+    <input type="hidden" id="details" name="details"/>
+</form>
 </body>
 </html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<action-definition id="com.adyen.v6.backoffice.widgets.actions.adyencancelorderaction"
+                   extends="de.hybris.ordermanagementbackoffice.actions.order.cancelorderaction"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/action-definition.xsd">
+
+    <name>cancelorder.action</name>
+    <description>Cancel Order Action</description>
+    <author>hybris</author>
+    <version>0.1</version>
+
+    <actionClassName>com.adyen.v6.backoffice.widgets.actions.cancel.AdyenCancelOrderAction</actionClassName>
+    <inputType>de.hybris.platform.core.model.order.OrderModel</inputType>
+    <outputType>de.hybris.platform.core.model.order.OrderModel</outputType>
+
+    <iconUri>icons/icon_action_cancel_default.png</iconUri>
+    <iconDisabledUri>icons/icon_action_cancel_disabled.png</iconDisabledUri>
+    <iconHoverUri>icons/icon_action_cancel_hover.png</iconHoverUri>
+
+    <settings>
+        <setting key="viewMode" default-value="iconAndText"/>
+    </settings>
+
+    <!-- Sockets definition-->
+    <sockets>
+        <output id="cancelOrderContext"/>
+    </sockets>
+</action-definition>

@@ -20,19 +20,25 @@
  */
 package com.adyen.v6.actions.order;
 
+import com.adyen.v6.factory.AdyenPaymentServiceFactory;
+import com.adyen.v6.service.AdyenPaymentService;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,18 +51,25 @@ import static org.mockito.Mockito.when;
 @UnitTest
 @RunWith(MockitoJUnitRunner.class)
 public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
+
     @Mock
     private OrderProcessModel orderProcessModelMock;
-
     @Mock
     private OrderModel orderModelMock;
-
     @Mock
     private PaymentInfoModel paymentInfoModelMock;
-
     @Mock
     private ModelService modelServiceMock;
+    @Mock
+    private AdyenPaymentServiceFactory adyenPaymentServiceFactoryMock;
+    @Mock
+    private BaseStoreService baseStoreServiceMock;
+    @Mock
+    private BaseStoreModel baseStoreModelMock;
+    @Mock
+    private AdyenPaymentService adyenPaymentServiceMock;
 
+    @InjectMocks
     private AdyenCheckAuthorizationAction adyenCheckAuthorizationAction;
 
     @Before
@@ -68,8 +81,13 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
         when(orderProcessModelMock.getCode()).thenReturn("1234");
         when(orderProcessModelMock.getOrder()).thenReturn(orderModelMock);
 
-        adyenCheckAuthorizationAction = new AdyenCheckAuthorizationAction();
+        adyenCheckAuthorizationAction = new AdyenCheckAuthorizationAction(adyenPaymentServiceFactoryMock, baseStoreServiceMock);
         adyenCheckAuthorizationAction.setModelService(modelServiceMock);
+        when(adyenCheckAuthorizationAction.getAdyenPaymentService(orderModelMock)).thenReturn(adyenPaymentServiceMock);
+
+        when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
+        when(adyenPaymentServiceFactoryMock.createFromBaseStore(baseStoreModelMock)).thenReturn(adyenPaymentServiceMock);
+        when(adyenPaymentServiceMock.calculateAmountWithTaxes(orderModelMock)).thenReturn(new BigDecimal(10));
     }
 
     @After
@@ -99,9 +117,9 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
         List<PaymentTransactionModel> transactions = new ArrayList<>();
 
         PaymentTransactionModel authorizedTransaction = createAdyenTransaction();
-        transactions.add(authorizedTransaction);
-
+        authorizedTransaction.setPlannedAmount(new BigDecimal(10));
         authorizedTransaction.getEntries().add(createAuthorizedEntry());
+        transactions.add(authorizedTransaction);
 
         when(orderModelMock.getPaymentTransactions()).thenReturn(transactions);
 

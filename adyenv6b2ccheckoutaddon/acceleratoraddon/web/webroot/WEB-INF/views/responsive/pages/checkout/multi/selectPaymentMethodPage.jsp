@@ -16,94 +16,132 @@
 <c:url value="/checkout/multi/adyen/select-payment-method" var="selectPaymentMethod"/>
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
     <jsp:attribute name="pageScripts">
-        <script type="text/javascript" src="${dfUrl}"></script>
-        <script src="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.js"
-                integrity="sha384-eNk32fgfYxvzNLyV19j4SLSHPQdLNR+iUS1t/D7rO4gwvbHrj6y77oJLZI7ikzBH"
-                crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/css/chckt-default-v1.css"/>
-        <link rel="stylesheet"
-              href="https://${checkoutShopperHost}/checkoutshopper/sdk/4.3.1/adyen.css"
-              integrity="sha384-5CDvDZiVPuf+3ZID0lh0aaUHAeky3/ACF1YAKzPbn3GEmzWgO53gP6stiYHWIdpB"
-              crossorigin="anonymous"/>
+        <adyen:adyenLibrary
+                dfUrl="${dfUrl}"
+                showDefaultCss="${true}"
+        />
 
         <script type="text/javascript">
-            AdyenCheckoutHybris.initiateCheckout( "${shopperLocale}", "${environmentMode}", "${clientKey}" );
-
             <c:if test="${not empty allowedCards}">
             //Set the allowed cards
-            var allowedCards = [];
+            const allowedCards = [];
             <c:forEach items="${allowedCards}" var="allowedCard">
-            allowedCards.push( "${allowedCard.code}" );
+            allowedCards.push("${allowedCard.code}");
             </c:forEach>
-            AdyenCheckoutHybris.initiateCard( allowedCards, ${showRememberTheseDetails}, ${cardHolderNameRequired} );
 
+            const initConfig = {
+                shopperLocale: "${shopperLocale}",
+                environment: "${environmentMode}",
+                clientKey: "${clientKey}",
+                session: {
+                    id: "${sessionData.id}",
+                    sessionData: "${sessionData.sessionData}",
+                }
+            };
+            const fnCallbackArray = {};
+
+            /**
+             * Generate array of available payment methods to initialize
+             */
+            fnCallbackArray['initiateCard'] = {
+                allowedCards,
+                showRememberDetails: ${showRememberTheseDetails},
+                cardHolderNameRequired: ${cardHolderNameRequired}
+            }
+
+            <c:if test="${sepadirectdebit}">
+            fnCallbackArray['initiateSepaDirectDebit'] = null;
+            </c:if>
+
+            <c:if test="${not empty issuerLists['ideal']}">
+            fnCallbackArray['initiateIdeal'] = ${issuerLists['ideal']};
+            </c:if>
+
+            <c:if test="${not empty issuerLists['onlinebanking_IN']}">
+            fnCallbackArray['initiateOnlinebankingIN'] = null;
+            </c:if>
+
+            <c:if test="${not empty issuerLists['onlineBanking_PL']}">
+            fnCallbackArray['initiateOnlineBankingPL'] = null;
+            </c:if>
+
+            <c:if test="${not empty issuerLists['eps']}">
+            fnCallbackArray['initiateEps'] = ${issuerLists['eps']};
+            </c:if>
+
+            <c:if test="${not empty issuerLists['pix']}">
+            fnCallbackArray['initiatePix'] = {
+                label: null,
+                issuers: ${issuerLists['pix']}
+            };
+            </c:if>
+
+            <c:forEach var="paymentMethod" items="${paymentMethods}">
+
+            <c:if test="${paymentMethod.type eq 'wallet_IN'}">
+            fnCallbackArray['initiateWalletIN'] = null;
+            </c:if>
+            //TO-DO Refactor the code to get a returnUrl service and add another endpoint to manage the result
+            //Adding here paytm payment method, there is already an initiatePaytm function defined on the adyen.checkout.js
+            <c:if test="${paymentMethod.type eq 'afterpay_default'}">
+            fnCallbackArray['initiateAfterPay'] = "${countryCode}";
+            </c:if>
+
+            <c:if test="${paymentMethod.type eq 'bcmc'}">
+            fnCallbackArray['initiateBcmc'] = "${countryCode}";
+            </c:if>
+
+            </c:forEach>
+
+            let storedCardJS;
+
+            <c:forEach items="${storedCards}" var="storedCard">
+
+            storedCardJS = {
+                storedPaymentMethodId: "${storedCard.id}",
+                name: "${storedCard.name}",
+                type: "${storedCard.type}",
+                brand: "${storedCard.brand}",
+                lastFour: "${storedCard.lastFour}",
+                expiryMonth: "${storedCard.expiryMonth}",
+                expiryYear: "${storedCard.expiryYear}",
+                holderName: "${storedCard.holderName}",
+                supportedShopperInteractions: "${storedCard.supportedShopperInteractions}",
+                shopperEmail: "${storedCard.shopperEmail}"
+            };
+
+            if (fnCallbackArray['initiateOneClickCard']) {
+                fnCallbackArray['initiateOneClickCard'].push(storedCardJS);
+            } else {
+                fnCallbackArray['initiateOneClickCard'] = [storedCardJS];
+            }
+            </c:forEach>
+
+            AdyenCheckoutHybris.initiateCheckout(initConfig, fnCallbackArray);
             </c:if>
 
             //Handle form submission
-            $( ".submit_silentOrderPostForm" ).click( function ( event ) {
-                if ( !AdyenCheckoutHybris.validateForm() ) {
+            $(".submit_silentOrderPostForm").click(function () {
+                if (!AdyenCheckoutHybris.validateForm()) {
                     return false;
                 }
                 AdyenCheckoutHybris.setCustomPaymentMethodValues();
 
-                $( "#adyen-encrypted-form" ).submit();
-            } );
+                $("#adyen-encrypted-form").submit();
+            });
 
             <c:if test="${not empty selectedPaymentMethod}">
-            AdyenCheckoutHybris.togglePaymentMethod( "${selectedPaymentMethod}" );
-            $( 'input[type=radio][name=paymentMethod][value="${selectedPaymentMethod}"]' ).prop( "checked", true );
+            AdyenCheckoutHybris.togglePaymentMethod("${selectedPaymentMethod}");
+            $('input[type=radio][name=paymentMethod][value="${selectedPaymentMethod}"]').prop("checked", true);
             </c:if>
 
             // Toggle payment method specific areas (credit card form and issuers list)
-            $( 'input[type=radio][name=paymentMethod]' ).change( function () {
-                var paymentMethod = this.value;
-                AdyenCheckoutHybris.togglePaymentMethod( paymentMethod );
-            } );
+            $('input[type=radio][name=paymentMethod]').change(function () {
+                AdyenCheckoutHybris.togglePaymentMethod(this.value);
+            });
 
-            AdyenCheckoutHybris.createDobDatePicker( "p_method_adyen_hpp_dob" );
+            AdyenCheckoutHybris.createDobDatePicker("p_method_adyen_hpp_dob");
             AdyenCheckoutHybris.createDfValue();
-
-
-            <c:if test="${sepadirectdebit}">
-            AdyenCheckoutHybris.initiateSepaDirectDebit( );
-            </c:if>
-
-            <c:if test="${not empty issuerLists['ideal']}">
-            AdyenCheckoutHybris.initiateIdeal( ${issuerLists['ideal']} );
-            </c:if>
-
-            <c:if test="${not empty issuerLists['eps']}">
-            AdyenCheckoutHybris.initiateEps( ${issuerLists['eps']} );
-            </c:if>
-
-            <c:forEach var="paymentMethod" items="${paymentMethods}">
-                <c:if test="${paymentMethod.type eq 'afterpay_default'}">
-                    AdyenCheckoutHybris.initiateAfterPay("${countryCode}");
-                </c:if>
-                <c:if test="${paymentMethod.type eq 'bcmc'}">
-                    AdyenCheckoutHybris.initiateBcmc("${countryCode}");
-                </c:if>
-            </c:forEach>
-
-            <c:forEach items="${storedCards}" var="storedCard">
-
-            var storedCardJS =
-                {
-                    storedPaymentMethodId: "${storedCard.id}",
-                    name: "${storedCard.name}",
-                    type: "${storedCard.type}",
-                    brand: "${storedCard.brand}",
-                    lastFour: "${storedCard.lastFour}",
-                    expiryMonth: "${storedCard.expiryMonth}",
-                    expiryYear: "${storedCard.expiryYear}",
-                    holderName: "${storedCard.holderName}",
-                    supportedShopperInteractions: "${storedCard.supportedShopperInteractions}",
-                    shopperEmail: "${storedCard.shopperEmail}"
-                };
-            AdyenCheckoutHybris.initiateOneClickCard( storedCardJS );
-
-            </c:forEach>
-
         </script>
     </jsp:attribute>
 
@@ -118,11 +156,13 @@
                     <jsp:body>
                         <form:form method="post" modelAttribute="adyenPaymentForm"
                                    class="create_update_payment_form"
-                                   id="adyen-encrypted-form" action="${selectPaymentMethod}">
+                                   id="adyen-encrypted-form" action="${selectPaymentMethod}"
+                        >
 
                             <form:hidden path="cseToken"/>
                             <form:hidden path="selectedReference"/>
                             <form:hidden path="issuerId"/>
+                            <form:hidden path="upiVirtualAddress"/>
                             <form:hidden path="dob"/>
                             <form:hidden path="socialSecurityNumber"/>
                             <form:hidden path="firstName"/>
@@ -170,7 +210,8 @@
                                         tabindex="11"/>
                             </c:if>
 
-                            <address:billAddressFormSelector supportedCountries="${countries}" regions="${regions}" tabindex="12"/>
+                            <address:billAddressFormSelector supportedCountries="${countries}" regions="${regions}"
+                                                             tabindex="12"/>
 
                             <%-- Billing Information end --%>
 
