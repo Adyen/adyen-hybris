@@ -76,6 +76,7 @@ public class AdyenRequestFactory {
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
     private static final String PLATFORM_NAME = "Hybris";
+    private static final String INTEGRATOR = "Portaltech";
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
@@ -241,9 +242,13 @@ public class AdyenRequestFactory {
     private void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
         final CommonField version = new CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
 
-        applicationInfo.setExternalPlatform((ExternalPlatform) new ExternalPlatform()
-                .name(PLATFORM_NAME)
-                .version(getPlatformVersion()));
+        ExternalPlatform externalPlatform = new ExternalPlatform();
+
+        externalPlatform.setName(PLATFORM_NAME);
+        externalPlatform.setVersion(getPlatformVersion());
+        externalPlatform.setIntegrator(INTEGRATOR);
+
+        applicationInfo.setExternalPlatform(externalPlatform);
         applicationInfo.setMerchantApplication(version);
         applicationInfo.setAdyenPaymentSource(version);
 
