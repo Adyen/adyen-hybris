@@ -241,9 +241,13 @@ public class AdyenRequestFactory {
     private void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
         final CommonField version = new CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
 
-        applicationInfo.setExternalPlatform((ExternalPlatform) new ExternalPlatform()
-                .name(PLATFORM_NAME)
-                .version(getPlatformVersion()));
+        ExternalPlatform externalPlatform = new ExternalPlatform();
+
+        externalPlatform.setName(PLATFORM_NAME);
+        externalPlatform.setVersion(getPlatformVersion());
+        externalPlatform.setIntegrator(Adyenv6coreConstants.INTEGRATOR);
+
+        applicationInfo.setExternalPlatform(externalPlatform);
         applicationInfo.setMerchantApplication(version);
         applicationInfo.setAdyenPaymentSource(version);
 
@@ -709,8 +713,8 @@ public class AdyenRequestFactory {
             invoiceLine.setDescription("Delivery Costs");
             Amount deliveryAmount = Util.createAmount(cartData.getDeliveryCost().getValue().toString(), currency);
             invoiceLine.setItemAmount(deliveryAmount.getValue());
-            invoiceLine.setItemVATAmount(new Long("0"));
-            invoiceLine.setItemVatPercentage(new Long("0"));
+            invoiceLine.setItemVATAmount(0L);
+            invoiceLine.setItemVatPercentage(0L);
             invoiceLine.setVatCategory(VatCategory.NONE);
             invoiceLine.setNumberOfItems(1);
             LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine.toString());

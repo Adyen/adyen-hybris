@@ -405,7 +405,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentsResponse.ResultCodeEnum resultCode = paymentsResponse.getResultCode();
         CheckoutPaymentsAction action = paymentsResponse.getAction();
 
-        LOGGER.info("Authorize payment with result code: " + resultCode + " action: " + action != null ? action.getType() : "null");
+        LOGGER.info("Authorize payment with result code: " + resultCode + " action: " + (action != null ? action.getType() : "null"));
 
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode || PaymentsResponse.ResultCodeEnum.PENDING == resultCode) {
             return createAuthorizedOrder(paymentsResponse);
