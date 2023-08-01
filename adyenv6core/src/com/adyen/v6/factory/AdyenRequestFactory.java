@@ -76,7 +76,6 @@ public class AdyenRequestFactory {
     private static final Logger LOG = Logger.getLogger(AdyenRequestFactory.class);
 
     private static final String PLATFORM_NAME = "Hybris";
-    private static final String INTEGRATOR = "Portaltech";
     private static final String PLATFORM_VERSION_PROPERTY = "build.version.api";
     private static final String IS_3DS2_ALLOWED_PROPERTY = "is3DS2allowed";
     private static final String ALLOW_3DS2_PROPERTY = "allow3DS2";
@@ -246,7 +245,7 @@ public class AdyenRequestFactory {
 
         externalPlatform.setName(PLATFORM_NAME);
         externalPlatform.setVersion(getPlatformVersion());
-        externalPlatform.setIntegrator(INTEGRATOR);
+        externalPlatform.setIntegrator(Adyenv6coreConstants.INTEGRATOR);
 
         applicationInfo.setExternalPlatform(externalPlatform);
         applicationInfo.setMerchantApplication(version);
@@ -714,8 +713,8 @@ public class AdyenRequestFactory {
             invoiceLine.setDescription("Delivery Costs");
             Amount deliveryAmount = Util.createAmount(cartData.getDeliveryCost().getValue().toString(), currency);
             invoiceLine.setItemAmount(deliveryAmount.getValue());
-            invoiceLine.setItemVATAmount(new Long("0"));
-            invoiceLine.setItemVatPercentage(new Long("0"));
+            invoiceLine.setItemVATAmount(0L);
+            invoiceLine.setItemVatPercentage(0L);
             invoiceLine.setVatCategory(VatCategory.NONE);
             invoiceLine.setNumberOfItems(1);
             LOG.debug("InvoiceLine DeliveryCosts:" + invoiceLine.toString());
