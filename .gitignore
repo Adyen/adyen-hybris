@@ -9,4 +9,5 @@
 **/resources/beans.xsd
 **/resources/items.xsd
 **/*testclasses.xml
+**/*webtestclasses.xml
 */extensioninfo.xsd
