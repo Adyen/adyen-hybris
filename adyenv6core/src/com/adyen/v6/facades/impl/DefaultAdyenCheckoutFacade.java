@@ -619,6 +619,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
+    private OrderData placeAuthorisedOrder(PaymentsResponse.ResultCodeEnum resultCode) throws InvalidCartException {
+        CartModel cartModel = getCartService().getSessionCart();
+        cartModel.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
+        cartModel.setStatusInfo(resultCode.getValue());
+        getModelService().save(cartModel);
+
+        OrderData orderData = getCheckoutFacade().placeOrder();
+
+        getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
+
+        //Set new cart in session to avoid bugs (like going "back" on browser)
+        CartModel newCartModel = getCartFactory().createCart();
+        getCartService().setSessionCart(newCartModel);
+
+        return orderData;
+    }
+
     /**
      * Create order
      */

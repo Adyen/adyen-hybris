@@ -58,6 +58,11 @@
 					<editorArea:attribute qualifier="amazonpayEnvironment"/>
 					<editorArea:attribute qualifier="amazonpayRegion"/>
 				</editorArea:section>
+				<editorArea:section name="hmc.adyen.amazonpay">
+					<editorArea:attribute qualifier="amazonpayPublicKey"/>
+					<editorArea:attribute qualifier="amazonpayEnvironment"/>
+					<editorArea:attribute qualifier="amazonpayRegion"/>
+				</editorArea:section>
 				<editorArea:section name="hmc.adyen.pos">
 					<editorArea:attribute qualifier="adyenPosEnabled"/>
 					<editorArea:attribute qualifier="adyenPosApiKey" editor="com.hybris.cockpitng.editor.defaultpassword"/>

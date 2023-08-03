@@ -184,6 +184,15 @@ adyen.samesitecookie.handler.enabled=true
 
 For SAP Commerce versions 2005 and above, check how to use [SAP's SameSite Cookie Attribute Handler](https://help.sap.com/viewer/d0224eca81e249cb821f2cdf45a82ace/2005/en-US/bde41b6a42c541a08eb2a3b1993fb097.html).
 
+## Amazon Pay configuration
+To be able to complete payments in Amazon Pay, you must add your Amazon Pay private key to the following folder /adyen-hybris/adyenv6core/resources/certificates, and once done, set the correct PEM file name on /adyen-hybris/adyenv6core/src/com/adyen/v6/DefaultAdyenAmazonPayIntegratorService.java in the following line:
+```
+payConfiguration = new PayConfiguration()
+                    .setPublicKeyId(amazonpayPublicKey)
+                    .setRegion(Region.valueOf(amazonpayRegion.getCode()))
+--->                .setPrivateKey(new String(Files.readAllBytes(ResourceUtils.getFile("classpath:certificates/amazonpay/YourCertificateName.pem").toPath())).toCharArray())
+```
+
  ## Documentation
  https://github.com/Adyen/adyen-hybris/wiki
 
