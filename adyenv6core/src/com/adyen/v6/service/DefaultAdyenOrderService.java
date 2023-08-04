@@ -40,6 +40,7 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.fraud.model.FraudReportModel;
 import de.hybris.platform.fraud.model.FraudSymptomScoringModel;
 import de.hybris.platform.servicelayer.model.ModelService;
+import org.springframework.transaction.support.TransactionOperations;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO_SANTANDER;
@@ -51,6 +52,8 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
     private static final String ADDITIONAL_DATA_CARD_TYPE = "checkout.cardAddedBrand";
     private ModelService modelService;
     private PaymentsResponseConverter paymentsResponseConverter;
+    private TransactionOperations transactionTemplate;
+
 
     @Override
     public FraudReportModel createFraudReportFromPaymentsResponse(PaymentsResponse paymentsResponse) {
@@ -58,7 +61,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         FraudResult fraudResult = paymentsResponse.getFraudResult();
 
         if (fraudResult == null) {
-            LOG.debug("No fraud result found");
+            LOG.warn("No fraud result found");
             return null;
         }
 
@@ -88,7 +91,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
         fraudReport.setFraudSymptomScorings(fraudSymptomScorings);
 
-        LOG.debug("Returning fraud report with score: " + fraudResult.getAccountScore());
+        LOG.info("Returning fraud report with score: " + fraudResult.getAccountScore());
 
         return fraudReport;
 
@@ -102,12 +105,15 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
     @Override
     public void storeFraudReport(FraudReportModel fraudReport) {
-        List<FraudSymptomScoringModel> fraudSymptomScorings = fraudReport.getFraudSymptomScorings();
-        modelService.save(fraudReport);
+        transactionTemplate.execute(transactionStatus -> {
+            List<FraudSymptomScoringModel> fraudSymptomScorings = fraudReport.getFraudSymptomScorings();
+            modelService.save(fraudReport);
 
-        for (FraudSymptomScoringModel fraudSymptomScoring : fraudSymptomScorings) {
-            modelService.save(fraudSymptomScoring);
-        }
+            for (FraudSymptomScoringModel fraudSymptomScoring : fraudSymptomScorings) {
+                modelService.save(fraudSymptomScoring);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -171,9 +177,11 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         //pos receipt
         paymentInfo.setAdyenPosReceipt(paymentsResponse.getAdditionalDataByKey("pos.receipt"));
 
-        modelService.save(paymentInfo);
-
-        storeFraudReportFromPaymentsResponse(order, paymentsResponse);
+        transactionTemplate.execute(transactionStatus -> {
+            modelService.save(paymentInfo);
+            storeFraudReportFromPaymentsResponse(order, paymentsResponse);
+            return null;
+        });
     }
 
     @Override
@@ -196,5 +204,9 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
 
     public void setPaymentsResponseConverter(PaymentsResponseConverter paymentsResponseConverter) {
         this.paymentsResponseConverter = paymentsResponseConverter;
+    }
+
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }
