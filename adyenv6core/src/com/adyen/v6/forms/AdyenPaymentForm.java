@@ -378,7 +378,7 @@ public class AdyenPaymentForm {
         this.useAdyenDeliveryAddress = false;
         this.sepaIbanNumber = null;
         this.sepaOwnerName = null;
-        this.billingAddress = billingAddress;
+        this.billingAddress = null;
         this.shopperEmail = null;
         this.telephoneNumber = null;
         this.gender = null;

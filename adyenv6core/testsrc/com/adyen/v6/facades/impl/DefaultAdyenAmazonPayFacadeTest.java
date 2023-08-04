@@ -40,7 +40,7 @@ public class DefaultAdyenAmazonPayFacadeTest {
 
         final String result = testObj.getAmazonPayToken(AMAZONPAY_CHECKOUT_SESSION_ID);
 
-        assertThat(result).isEqualTo(result);
+        assertThat(result).isEqualTo(AMAZON_PAY_TOKEN);
     }
 
     @Test

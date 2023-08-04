@@ -64,6 +64,10 @@
                 fnCallbackArray['initiateMbway'] = callbackConfig
             </c:when>
 
+            <c:when test="${selectedPaymentMethod eq 'bizum'}">
+                fnCallbackArray['initiateBizum'] = callbackConfig
+            </c:when>
+
             <c:when test="${selectedPaymentMethod eq 'applepay'}">
                 fnCallbackArray['initiateApplePay'] = {
                     ...callbackConfig,

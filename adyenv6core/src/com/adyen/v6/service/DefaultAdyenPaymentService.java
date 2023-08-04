@@ -129,6 +129,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentResult authorise(final CartData cartData, final HttpServletRequest request, final CustomerModel customerModel) throws Exception {
+        LOG.debug("Authorize");
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(client.getConfig().getMerchantAccount(),
@@ -147,6 +148,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException {
+        LOG.debug("Get connected terminals");
         PosPayment posPayment = new PosPayment(posClient);
         ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
         connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
@@ -162,6 +164,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentsResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+        LOG.debug("Authorize payment");
+
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
@@ -180,6 +184,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentsResponse componentPayment(final CartData cartData, final PaymentMethodDetails paymentMethodDetails, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+        LOG.debug("Component payment");
+
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
@@ -197,6 +203,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentsDetailsResponse authorise3DSPayment(Map<String, String> details) throws Exception {
+        LOG.debug("Authorize 3DS payment");
+
         Checkout checkout = new Checkout(client);
         PaymentsDetailsRequest paymentsDetailsRequest = getAdyenRequestFactory().create3DSPaymentsRequest(details);
 
@@ -209,6 +217,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public ModificationResult capture(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception {
+        LOG.debug("Capture");
+
         Modification modification = new Modification(client);
 
         CaptureRequest captureRequest = getAdyenRequestFactory().createCaptureRequest(client.getConfig().getMerchantAccount(), amount, currency, authReference, merchantReference);
@@ -222,6 +232,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentCaptureResource captures(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception {
+        LOG.debug("Captures");
+
         final Checkout checkout = new Checkout(client);
 
         final CreatePaymentCaptureRequest captureRequest = new CreatePaymentCaptureRequest();
@@ -238,6 +250,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
+        LOG.debug("Cancel or refund");
+
         Modification modification = new Modification(client);
 
         CancelOrRefundRequest cancelRequest = getAdyenRequestFactory().createCancelOrRefundRequest(client.getConfig().getMerchantAccount(), authReference, merchantReference);
@@ -251,6 +265,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentReversalResource cancelOrRefunds(final String authReference, final String merchantReference) throws Exception {
+        LOG.debug("Cancel or refunds");
+
         final Checkout checkout = new Checkout(client);
 
         final CreatePaymentReversalRequest reversalRequest = new CreatePaymentReversalRequest();
@@ -266,6 +282,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public ModificationResult refund(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception {
+        LOG.debug("Refund");
+
         Modification modification = new Modification(client);
 
         RefundRequest refundRequest = getAdyenRequestFactory().createRefundRequest(client.getConfig().getMerchantAccount(), amount, currency, authReference, merchantReference);
@@ -279,6 +297,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentRefundResource refunds(final BigDecimal amount, final Currency currency, final String pspReference, final String reference) throws Exception {
+        LOG.debug("Refunds");
+
         final Checkout checkout = new Checkout(client);
 
         final CreatePaymentRefundRequest refundRequest = new CreatePaymentRefundRequest();
@@ -311,6 +331,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
                                                             final String countryCode,
                                                             final String shopperLocale,
                                                             final String shopperReference) throws IOException, ApiException {
+
+        LOG.debug("Get payment methods response");
+
         Checkout checkout = new Checkout(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
         request.merchantAccount(client.getConfig().getMerchantAccount()).amount(Util.createAmount(amount, currency)).countryCode(countryCode);
@@ -347,7 +370,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     @Override
     @Deprecated
     public List<RecurringDetail> getStoredCards(final String customerId) throws IOException, ApiException {
+        LOG.debug("Get stored cards");
+
         if (customerId == null) {
+            LOG.info("Customer id is null");
             return new ArrayList<>();
         }
 
@@ -370,6 +396,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public boolean disableStoredCard(final String customerId, final String recurringReference) throws IOException, ApiException {
+        LOG.debug("Disable stored card");
+
         com.adyen.service.Recurring recurring = new com.adyen.service.Recurring(client);
 
         DisableRequest request = getAdyenRequestFactory().createDisableRequest(client.getConfig().getMerchantAccount(), customerId, recurringReference);
@@ -383,6 +411,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentsDetailsResponse getPaymentDetailsFromPayload(HashMap<String, String> details) throws Exception {
+        LOG.debug("Get payment details from payload");
+
         Checkout checkout = new Checkout(client);
 
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
@@ -397,6 +427,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     public PaymentsDetailsResponse getPaymentDetailsFromPayload(Map<String, String> details, String paymentData) throws Exception {
+        LOG.debug("Get payment details from payload");
+
         Checkout checkout = new Checkout(client);
         PaymentsDetailsRequest paymentsDetailsRequest = new PaymentsDetailsRequest();
         paymentsDetailsRequest.setDetails(details);
@@ -437,6 +469,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
      */
     @Override
     public TerminalAPIResponse sendSyncPosPaymentRequest(CartData cartData, CustomerModel customer, String serviceId) throws Exception {
+        LOG.debug("Send sync pos payment request");
+
         TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
 
         RecurringContractMode recurringContractMode = getBaseStore().getAdyenPosRecurringContractMode();
@@ -454,6 +488,8 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
      */
     @Override
     public TerminalAPIResponse sendSyncPosStatusRequest(CartData cartData, String originalServiceId) throws Exception {
+        LOG.debug("Send sync pos status request");
+
         TerminalCloudAPI terminalCloudAPI = new TerminalCloudAPI(posClient);
 
         TerminalAPIRequest terminalApiRequest = adyenRequestFactory.createTerminalAPIRequestForStatus(cartData, originalServiceId);

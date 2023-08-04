@@ -1,4 +1,34 @@
-$productCatalog=electronicsProductCatalog
-$productCatalogName=Electronics Product Catalog
-$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
-$vendor=electro
+$productCatalog = electronicsProductCatalog
+$productCatalogName = Electronics Product Catalog
+$catalogVersion = catalogversion(catalog(id[default=$productCatalog]), version[default='Staged'])[unique=true, default=$productCatalog:Staged]
+$vendor = electro
+
+INSERT_UPDATE StockLevel; available; warehouse(code)[unique = true]; inStockStatus(code); maxPreOrder; maxStockLevelHistoryCount; overSelling; preOrder; productCode[unique = true]; reserved
+                        ; 100      ; warehouse_s                   ; forceInStock       ; 0          ; 0                        ; 0          ; 0       ; 239999                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239998                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239997                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239996                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239995                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239994                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239993                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239992                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239991                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239990                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239989                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239988                    ; 0
+                        ; 100      ; warehouse_e                   ; notSpecified       ; 0          ; 0                        ; 0          ; 0       ; 239987                    ; 0
+
+UPDATE Product; code[unique = true]; $catalogVersion; stockLevels(productCode, warehouse(code)); vendors(code)
+              ; 239999             ;                ; 239999:warehouse_s                       ;
+              ; 239998             ;                ; 239998:warehouse_e                       ;
+              ; 239997             ;                ; 239997:warehouse_e                       ;
+              ; 239996             ;                ; 239996:warehouse_e                       ;
+              ; 239995             ;                ; 239995:warehouse_e                       ;
+              ; 239994             ;                ; 239994:warehouse_e                       ;
+              ; 239993             ;                ; 239993:warehouse_e                       ;
+              ; 239992             ;                ; 239992:warehouse_e                       ;
+              ; 239991             ;                ; 239991:warehouse_e                       ;
+              ; 239990             ;                ; 239990:warehouse_e                       ;
+              ; 239989             ;                ; 239989:warehouse_e                       ;
+              ; 239988             ;                ; 239988:warehouse_e                       ;
+              ; 239987             ;                ; 239987:warehouse_e                       ;
