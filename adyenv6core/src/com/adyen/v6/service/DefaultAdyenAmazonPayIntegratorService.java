@@ -58,16 +58,16 @@ public class DefaultAdyenAmazonPayIntegratorService implements AdyenAmazonPayInt
             payConfiguration = new PayConfiguration()
                     .setPublicKeyId(amazonpayPublicKey)
                     .setRegion(Region.valueOf(amazonpayRegion.getCode()))
-                    .setPrivateKey(new String(Files.readAllBytes(ResourceUtils.getFile("classpath:certificates/amazonpay/DummyCertificate.pem").toPath())).toCharArray())
+                    .setPrivateKey(new String(Files.readAllBytes(ResourceUtils.getFile("classpath:certificates/amazonpay/Dummy.pem").toPath())).toCharArray())
                     .setEnvironment(Environment.valueOf(amazonpayEnvironment.getCode()));
         } catch (AmazonPayClientException e) {
             LOGGER.error("The AmazonPayConfiguration cannot be created, please, review the amazonpay configuration set on the baseStore as well as the private key",e);
             return Strings.EMPTY;
         } catch (FileNotFoundException e) {
-            LOGGER.error("The AmazonPayCertificate.pem file cannot be found under /resources/certificates/amazonpay/AmazonPayCertificate.pm path",e);
+            LOGGER.error("The Dummy.pem file cannot be found under /resources/certificates/amazonpay/AmazonPayCertificate.pm path",e);
             return Strings.EMPTY;
         } catch (IOException e) {
-            LOGGER.error("The AmazonPayCertificate.pem file cannot be readed, please provide a valid private key under /resources/certificates/amazonpay/AmazonPayCertificate.pm path",e);
+            LOGGER.error("The Dummy.pem file cannot be readed, please provide a valid private key under /resources/certificates/amazonpay/AmazonPayCertificate.pm path",e);
             return Strings.EMPTY;
         }
         try {

@@ -905,6 +905,64 @@ var AdyenCheckoutHybris = (function () {
             });
         },
 
+        initiateBizum: function (params) {
+            const {label} = params;
+            const self = this;
+
+            $(document).ready(function () {
+                $("#placeOrder-" + label).click(function () {
+                    $(this).prop('disabled', true);
+
+                    AdyenCheckoutHybris.showSpinner();
+
+                    let termsCheck = document.getElementById('terms-conditions-check-' + label).checked
+
+                    if (termsCheck === false) {
+                        self.handleResult(ErrorMessages.TermsNotAccepted, true);
+                        return;
+                    }
+
+                    const placeOrderForm = {
+                        "securityCode": null,
+                        "termsCheck": termsCheck,
+                    };
+
+                    $.ajax({
+                        url: ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/placeOrderBizum',
+                        type: "POST",
+                        data: placeOrderForm,
+                        success: function (data) {
+                            try {
+                                let response = JSON.parse(data);
+
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = response.url;
+
+                                for (const key in response.data) {
+                                    form.innerHTML+='<input type="hidden" name="' + key + '" value="' +response.data[key] + '" /> ';
+                                }
+
+                                document.body.appendChild(form);
+                                form.submit();
+                            } catch (e) {
+                                console.log('Error place order: ' + e);
+                                AdyenCheckoutHybris.hideSpinner();
+                                $("#placeOrder-" + label).prop('disabled', false);
+                                self.handleResult(data, true);
+                            }
+                        },
+                        error: function (xmlHttpResponse, exception) {
+                            console.log(exception);
+                            AdyenCheckoutHybris.hideSpinner();
+                            $("#placeOrder-" + label).prop('disabled', false);
+                            self.handleResult(responseMessage, true);
+                        }
+                    });
+                });
+            });
+        },
+
         /**
          * @param form
          * @param useSpinner
