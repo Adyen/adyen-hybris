@@ -1,5 +1,8 @@
 # Adyen SAP Commerce (Hybris) v6 plugin
 
+Latest stable version:
+https://github.com/Adyen/adyen-hybris/releases/tag/11.1.0
+
 This plugin supports SAP Commerce (Hybris) versions 6.x
 
 The plugin is using following adyen libraries and API.

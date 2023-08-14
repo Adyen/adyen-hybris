@@ -1,6 +1,21 @@
-$productCatalog=electronicsProductCatalog
-$productCatalogName=Electronics Product Catalog
-$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
-$supercategories=supercategories(code, $catalogVersion)
-$baseProduct=baseProduct(code,$catalogVersion)
-$approved=approvalstatus(code)[default='check']
+$productCatalog = electronicsProductCatalog
+$productCatalogName = Electronics Product Catalog
+$catalogVersion = catalogversion(catalog(id[default=$productCatalog]), version[default='Staged'])[unique=true, default=$productCatalog:Staged]
+$supercategories = supercategories(code, $catalogVersion)
+$baseProduct = baseProduct(code, $catalogVersion)
+$approved = approvalstatus(code)[default='approved']
+
+INSERT_UPDATE Product; code[unique = true]; $supercategories; manufacturerName; manufacturerAID; unit(code); ean; variantType(code); $catalogVersion; $approved
+                     ; 239999             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239998             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239997             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239996             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239995             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239994             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239993             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239992             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239991             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239990             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239989             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239988             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;
+                     ; 239987             ; 1288, brand_5   ; Sony            ; ACC-CSPW       ; pieces    ;

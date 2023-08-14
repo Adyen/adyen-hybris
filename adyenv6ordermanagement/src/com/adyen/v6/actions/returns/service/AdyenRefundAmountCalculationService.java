@@ -34,11 +34,9 @@ public class AdyenRefundAmountCalculationService extends DefaultRefundAmountCalc
     public BigDecimal getOriginalRefundAmount(ReturnRequestModel returnRequest) {
         ServicesUtil.validateParameterNotNull(returnRequest, "Parameter returnRequest cannot be null");
         ServicesUtil.validateParameterNotNull(returnRequest.getReturnEntries(), "Parameter Return Entries cannot be null");
-        BigDecimal refundAmount = (BigDecimal)returnRequest.getReturnEntries().stream().map((returnEntry) -> {
-            return this.getOriginalRefundEntryAmount(returnEntry);
-        }).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if(returnRequest.getRefundDeliveryCost().booleanValue()) {
-            refundAmount = refundAmount.add(new BigDecimal(returnRequest.getOrder().getDeliveryCost().doubleValue()));
+        BigDecimal refundAmount = returnRequest.getReturnEntries().stream().map(this::getOriginalRefundEntryAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(Boolean.TRUE.equals(returnRequest.getRefundDeliveryCost())) {
+            refundAmount = refundAmount.add(BigDecimal.valueOf(returnRequest.getOrder().getDeliveryCost()));
         }
 
         return refundAmount.setScale(this.getNumberOfDigits(returnRequest), RoundingMode.HALF_DOWN);
@@ -48,11 +46,9 @@ public class AdyenRefundAmountCalculationService extends DefaultRefundAmountCalc
     public BigDecimal getCustomRefundAmount(ReturnRequestModel returnRequest) {
         ServicesUtil.validateParameterNotNull(returnRequest, "Parameter returnRequest cannot be null");
         ServicesUtil.validateParameterNotNull(returnRequest.getReturnEntries(), "Parameter Return Entries cannot be null");
-        BigDecimal refundAmount = (BigDecimal)returnRequest.getReturnEntries().stream().map((returnEntry) -> {
-            return this.getCustomRefundEntryAmount(returnEntry);
-        }).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if(returnRequest.getRefundDeliveryCost().booleanValue()) {
-            refundAmount = refundAmount.add(new BigDecimal(returnRequest.getOrder().getDeliveryCost().doubleValue()));
+        BigDecimal refundAmount = returnRequest.getReturnEntries().stream().map(this::getCustomRefundEntryAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(Boolean.TRUE.equals(returnRequest.getRefundDeliveryCost())) {
+            refundAmount = refundAmount.add(BigDecimal.valueOf(returnRequest.getOrder().getDeliveryCost()));
         }
 
         return refundAmount.setScale(this.getNumberOfDigits(returnRequest), RoundingMode.HALF_DOWN);
