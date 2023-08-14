@@ -23,80 +23,59 @@ package com.adyen.v6.service;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.enums.Environment;
-import com.adyen.httpclient.HTTPClientException;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentResult;
-import com.adyen.model.checkout.PaymentMethod;
-import com.adyen.model.checkout.PaymentMethodDetails;
-import com.adyen.model.checkout.PaymentMethodsRequest;
-import com.adyen.model.checkout.PaymentMethodsResponse;
-import com.adyen.model.checkout.PaymentsDetailsRequest;
-import com.adyen.model.checkout.PaymentsDetailsResponse;
-import com.adyen.model.checkout.PaymentsRequest;
-import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.*;
 import com.adyen.model.modification.CancelOrRefundRequest;
 import com.adyen.model.modification.CaptureRequest;
 import com.adyen.model.modification.ModificationResult;
 import com.adyen.model.modification.RefundRequest;
-import com.adyen.model.recurring.DisableRequest;
-import com.adyen.model.recurring.DisableResult;
 import com.adyen.model.recurring.RecurringDetail;
-import com.adyen.model.recurring.RecurringDetailsRequest;
-import com.adyen.model.recurring.RecurringDetailsResult;
+import com.adyen.model.recurring.*;
 import com.adyen.model.terminal.ConnectedTerminalsRequest;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.model.terminal.TerminalAPIResponse;
-import com.adyen.service.Checkout;
-import com.adyen.service.Modification;
-import com.adyen.service.Payment;
-import com.adyen.service.PosPayment;
-import com.adyen.service.TerminalCloudAPI;
+import com.adyen.service.*;
 import com.adyen.service.exception.ApiException;
 import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.util.Util;
-import com.adyen.v6.converters.PaymentMethodConverter;
+import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import com.adyen.v6.model.RequestInfo;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.product.data.PriceData;
+import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.SignatureException;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 
 public class DefaultAdyenPaymentService implements AdyenPaymentService {
+
+    private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
+    private static final int POS_REQUEST_TIMEOUT = 25000;
+    private static final String CHECKOUT_ENDPOINT_LIVE_IN_SUFFIX = "-checkout-live-in.adyenpayments.com/checkout";
+
     private BaseStoreModel baseStore;
     private AdyenRequestFactory adyenRequestFactory;
     private Config config;
     private Client client;
     private Config posConfig;
     private Client posClient;
-
-    private PaymentMethodConverter paymentMethodConverter;
-
-    private static final int POS_REQUEST_TIMEOUT = 25000;
-
-    private static final Logger LOG = Logger.getLogger(DefaultAdyenPaymentService.class);
 
     /**
      * Prevent initialization without base store
@@ -107,40 +86,45 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     public DefaultAdyenPaymentService(final BaseStoreModel baseStore) {
         this.baseStore = baseStore;
 
-        String apiKey = baseStore.getAdyenAPIKey();
-        String merchantAccount = baseStore.getAdyenMerchantAccount();
-        String apiEndpointPrefix = baseStore.getAdyenAPIEndpointPrefix();
-        boolean isTestMode = baseStore.getAdyenTestMode();
-        boolean isPosEnabled = baseStore.getAdyenPosEnabled();
-        if (isPosEnabled) {
-            String posApiKey = baseStore.getAdyenPosApiKey();
-            String posMerchantAccount = baseStore.getAdyenPosMerchantAccount();
+        if (Boolean.TRUE.equals(baseStore.getAdyenPosEnabled())) {
             posConfig = new Config();
-            posConfig.setApiKey(posApiKey);
-            posConfig.setMerchantAccount(posMerchantAccount);
+            posConfig.setApiKey(baseStore.getAdyenPosApiKey());
+            posConfig.setMerchantAccount(baseStore.getAdyenPosMerchantAccount());
             posConfig.setReadTimeoutMillis(POS_REQUEST_TIMEOUT);
             posConfig.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
             posClient = new Client(posConfig);
 
-            if (isTestMode) {
+            if (Boolean.TRUE.equals(baseStore.getAdyenTestMode())) {
                 posClient.setEnvironment(Environment.TEST, null);
             } else {
                 posClient.setEnvironment(Environment.LIVE, null);
             }
         }
-        Assert.notNull(merchantAccount);
 
         config = new Config();
-        config.setApiKey(apiKey);
-        config.setMerchantAccount(merchantAccount);
+        config.setApiKey(baseStore.getAdyenAPIKey());
+        config.setMerchantAccount(baseStore.getAdyenMerchantAccount());
         config.setApplicationName(PLUGIN_NAME + " v" + PLUGIN_VERSION);
         client = new Client(config);
 
-        if (isTestMode) {
+        if (Boolean.TRUE.equals(baseStore.getAdyenTestMode())) {
             client.setEnvironment(Environment.TEST, null);
         } else {
-            client.setEnvironment(Environment.LIVE, apiEndpointPrefix);
+            createLiveEnvironment(baseStore);
         }
+
+    }
+
+    private void createLiveEnvironment(final BaseStoreModel baseStore) {
+
+        this.config.setEnvironment(Environment.LIVE);
+        this.config.setMarketPayEndpoint(Client.MARKETPAY_ENDPOINT_LIVE);
+        this.config.setHppEndpoint(Client.HPP_LIVE);
+        this.config.setCheckoutEndpoint(Client.ENDPOINT_PROTOCOL + baseStore.getAdyenAPIEndpointPrefix() + Client.CHECKOUT_ENDPOINT_LIVE_SUFFIX);
+        this.config.setEndpoint(Client.ENDPOINT_PROTOCOL + baseStore.getAdyenAPIEndpointPrefix() + Client.ENDPOINT_LIVE_SUFFIX);
+        this.config.setTerminalApiCloudEndpoint(Client.TERMINAL_API_ENDPOINT_LIVE);
+        this.config.setPosTerminalManagementApiEndpoint(Client.POS_TERMINAL_MANAGEMENT_ENDPOINT_LIVE);
+        this.config.setDataProtectionEndpoint(Client.DATA_PROTECTION_ENDPOINT_LIVE);
     }
 
     @Override
@@ -148,10 +132,10 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         Payment payment = new Payment(client);
 
         PaymentRequest paymentRequest = getAdyenRequestFactory().createAuthorizationRequest(client.getConfig().getMerchantAccount(),
-                                                                                            cartData,
-                                                                                            request,
-                                                                                            customerModel,
-                                                                                            baseStore.getAdyenRecurringContractMode());
+                cartData,
+                request,
+                customerModel,
+                baseStore.getAdyenRecurringContractMode());
 
 
         LOG.debug(paymentRequest);
@@ -162,7 +146,7 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
-    public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException  {
+    public ConnectedTerminalsResponse getConnectedTerminals() throws IOException, ApiException {
         PosPayment posPayment = new PosPayment(posClient);
         ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
         connectedTerminalsRequest.setMerchantAccount(posConfig.getMerchantAccount());
@@ -181,11 +165,11 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         Checkout checkout = new Checkout(client);
 
         PaymentsRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(client.getConfig().getMerchantAccount(),
-                                                                                         cartData,
-                                                                                         requestInfo,
-                                                                                         customerModel,
-                                                                                         baseStore.getAdyenRecurringContractMode(),
-                                                                                         baseStore.getAdyenGuestUserTokenization());
+                cartData,
+                requestInfo,
+                customerModel,
+                baseStore.getAdyenRecurringContractMode(),
+                baseStore.getAdyenGuestUserTokenization());
 
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
@@ -237,6 +221,22 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    public PaymentCaptureResource captures(final BigDecimal amount, final Currency currency, final String authReference, final String merchantReference) throws Exception {
+        final Checkout checkout = new Checkout(client);
+
+        final CreatePaymentCaptureRequest captureRequest = new CreatePaymentCaptureRequest();
+        captureRequest.setAmount(Util.createAmount(amount, currency.getCurrencyCode()));
+        captureRequest.setReference(merchantReference);
+        captureRequest.setMerchantAccount(client.getConfig().getMerchantAccount());
+
+        LOG.debug(captureRequest);
+        final PaymentCaptureResource paymentCaptureResource = checkout.paymentsCaptures(authReference, captureRequest);
+        LOG.debug(paymentCaptureResource);
+
+        return paymentCaptureResource;
+    }
+
+    @Override
     public ModificationResult cancelOrRefund(final String authReference, final String merchantReference) throws Exception {
         Modification modification = new Modification(client);
 
@@ -247,6 +247,21 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         LOG.debug(modificationResult);
 
         return modificationResult;
+    }
+
+    @Override
+    public PaymentReversalResource cancelOrRefunds(final String authReference, final String merchantReference) throws Exception {
+        final Checkout checkout = new Checkout(client);
+
+        final CreatePaymentReversalRequest reversalRequest = new CreatePaymentReversalRequest();
+        reversalRequest.setReference(merchantReference);
+        reversalRequest.setMerchantAccount(client.getConfig().getMerchantAccount());
+
+        LOG.debug(reversalRequest);
+        final PaymentReversalResource paymentReversalResource = checkout.paymentsReversals(authReference, reversalRequest);
+        LOG.debug(paymentReversalResource);
+
+        return paymentReversalResource;
     }
 
     @Override
@@ -263,36 +278,53 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
     }
 
     @Override
+    public PaymentRefundResource refunds(final BigDecimal amount, final Currency currency, final String pspReference, final String reference) throws Exception {
+        final Checkout checkout = new Checkout(client);
+
+        final CreatePaymentRefundRequest refundRequest = new CreatePaymentRefundRequest();
+        refundRequest.setAmount(Util.createAmount(amount, currency.getCurrencyCode()));
+        refundRequest.setMerchantAccount(client.getConfig().getMerchantAccount());
+        refundRequest.setReference(reference);
+
+        LOG.debug(refundRequest);
+        final PaymentRefundResource paymentRefundResource = checkout.paymentsRefunds(pspReference, refundRequest);
+        LOG.debug(paymentRefundResource);
+
+        return paymentRefundResource;
+    }
+
+
+    @Override
     public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
                                                  final String currency,
                                                  final String countryCode,
                                                  final String shopperLocale,
                                                  final String shopperReference) throws IOException, ApiException {
 
-        PaymentMethodsResponse response =getPaymentMethodsResponse(amount,currency, countryCode, shopperLocale, shopperReference);
+        final PaymentMethodsResponse response = getPaymentMethodsResponse(amount, currency, countryCode, shopperLocale, shopperReference);
         return response.getPaymentMethods();
     }
 
     @Override
     public PaymentMethodsResponse getPaymentMethodsResponse(final BigDecimal amount,
-                                                 final String currency,
-                                                 final String countryCode,
-                                                 final String shopperLocale,
-                                                 final String shopperReference) throws IOException, ApiException {
+                                                            final String currency,
+                                                            final String countryCode,
+                                                            final String shopperLocale,
+                                                            final String shopperReference) throws IOException, ApiException {
         Checkout checkout = new Checkout(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
         request.merchantAccount(client.getConfig().getMerchantAccount()).amount(Util.createAmount(amount, currency)).countryCode(countryCode);
 
-        if (! StringUtils.isEmpty(shopperLocale)) {
+        if (!StringUtils.isEmpty(shopperLocale)) {
             request.setShopperLocale(shopperLocale);
         }
 
-        if (! StringUtils.isEmpty(shopperReference)) {
+        if (!StringUtils.isEmpty(shopperReference)) {
             request.setShopperReference(shopperReference);
         }
 
         LOG.debug(request);
-        PaymentMethodsResponse response = checkout.paymentMethods(request);
+        final PaymentMethodsResponse response = checkout.paymentMethods(request);
         LOG.debug(response);
 
         return response;
@@ -300,13 +332,12 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
     @Override
     @Deprecated
-    public List<com.adyen.model.hpp.PaymentMethod> getPaymentMethods(final BigDecimal amount,
-                                                                     final String currency,
-                                                                     final String countryCode,
-                                                                     final String shopperLocale) throws HTTPClientException, SignatureException, IOException {
+    public List<PaymentMethod> getPaymentMethods(final BigDecimal amount,
+                                                 final String currency,
+                                                 final String countryCode,
+                                                 final String shopperLocale) throws IOException {
         try {
-            List<PaymentMethod> checkoutPaymentMethods = getPaymentMethods(amount, currency, countryCode, shopperLocale, null);
-            return checkoutPaymentMethods.stream().map(paymentMethodConverter::convert).collect(Collectors.toList());
+            return getPaymentMethods(amount, currency, countryCode, shopperLocale, null);
         } catch (ApiException e) {
             LOG.error(e);
         }
@@ -330,9 +361,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
 
         //Return only cards
         List<RecurringDetail> storedCards = result.getRecurringDetails()
-                                                  .stream()
-                                                  .filter(detail -> (detail.getCard() != null && detail.getRecurringDetailReference() != null))
-                                                  .collect(Collectors.toList());
+                .stream()
+                .filter(detail -> (detail.getCard() != null && detail.getRecurringDetailReference() != null))
+                .collect(Collectors.toList());
 
         return storedCards;
     }
@@ -378,6 +409,22 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return paymentsResponse;
     }
 
+
+    @Override
+    public CreateCheckoutSessionResponse getPaymentSessionData(final CartData cartData) throws IOException, ApiException {
+        final Checkout checkout = new Checkout(client);
+        final PriceData totalPriceWithTax = cartData.getTotalPriceWithTax();
+
+        final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
+        createCheckoutSessionRequest.amount(Util.createAmount(totalPriceWithTax.getValue(), totalPriceWithTax.getCurrencyIso()));
+        createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
+        createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
+        createCheckoutSessionRequest.returnUrl(Optional.ofNullable(cartData.getAdyenReturnUrl()).orElse("returnUrl"));
+        createCheckoutSessionRequest.reference(cartData.getCode());
+
+        return  checkout.sessions(createCheckoutSessionRequest);
+    }
+
     @Override
     public String getDeviceFingerprintUrl() {
         DateFormat df = new SimpleDateFormat("yyyyMMdd");
@@ -418,6 +465,16 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return terminalApiResponse;
     }
 
+    @Override
+    public BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel) {
+        final Double totalPrice = abstractOrderModel.getTotalPrice();
+        final Double totalTax = Boolean.TRUE.equals(abstractOrderModel.getNet()) ? abstractOrderModel.getTotalTax() : Double.valueOf(0d);
+        final BigDecimal totalPriceWithoutTaxBD = BigDecimal.valueOf(totalPrice == null ? 0d : totalPrice).setScale(2,
+                RoundingMode.HALF_EVEN);
+        return BigDecimal.valueOf(totalTax == null ? 0d : totalTax)
+                .setScale(2, RoundingMode.HALF_EVEN).add(totalPriceWithoutTaxBD);
+    }
+
     public AdyenRequestFactory getAdyenRequestFactory() {
         return adyenRequestFactory;
     }
@@ -450,11 +507,4 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         return config;
     }
 
-    public PaymentMethodConverter getPaymentMethodConverter() {
-        return paymentMethodConverter;
-    }
-
-    public void setPaymentMethodConverter(PaymentMethodConverter paymentMethodConverter) {
-        this.paymentMethodConverter = paymentMethodConverter;
-    }
 }

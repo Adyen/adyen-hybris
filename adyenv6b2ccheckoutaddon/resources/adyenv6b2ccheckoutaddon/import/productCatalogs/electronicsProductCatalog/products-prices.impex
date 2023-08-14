@@ -1,9 +1,36 @@
 #% impex.setLocale( Locale.GERMAN );
 
-$productCatalog=electronicsProductCatalog
-$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default='$productCatalog:Staged']
-$prices=Europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
-$taxGroup=Europe1PriceFactory_PTG(code)[default=jp-vat-full]
+$productCatalog = electronicsProductCatalog
+$catalogVersion = catalogversion(catalog(id[default=$productCatalog]), version[default='Staged'])[unique=true, default='$productCatalog:Staged']
+$prices = Europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+$taxGroup = Europe1PriceFactory_PTG(code)[default=jp-vat-full]
 
-# Set product approval status to Approved only for those products that have prices.
-$approved=approvalstatus(code)[default='approved']
+UPDATE Product; code[unique = true]; $catalogVersion; $taxGroup
+              ; 239999
+              ; 239998
+              ; 239997
+              ; 239996
+              ; 239995
+              ; 239994
+              ; 239993
+              ; 239992
+              ; 239991
+              ; 239990
+              ; 239989
+              ; 239988
+              ; 239987
+
+INSERT_UPDATE PriceRow; productId[unique = true]; unit(code[unique = true, default = pieces]); currency(isocode)[unique = true]; price  ; minqtd; unitFactor; net
+                      ; 239999                  ; pieces                                     ; PLN                             ; 10.02  ; 1     ; 1         ; false
+                      ; 239998                  ; pieces                                     ; PLN                             ; 12.12  ; 1     ; 1         ; false
+                      ; 239997                  ; pieces                                     ; PLN                             ; 20.42  ; 1     ; 1         ; false
+                      ; 239996                  ; pieces                                     ; PLN                             ; 288.00 ; 1     ; 1         ; false
+                      ; 239995                  ; pieces                                     ; PLN                             ; 192.00 ; 1     ; 1         ; false
+                      ; 239994                  ; pieces                                     ; PLN                             ; 144.00 ; 1     ; 1         ; false
+                      ; 239993                  ; pieces                                     ; PLN                             ; 216.00 ; 1     ; 1         ; false
+                      ; 239992                  ; pieces                                     ; PLN                             ; 264.00 ; 1     ; 1         ; false
+                      ; 239991                  ; pieces                                     ; PLN                             ; 360.00 ; 1     ; 1         ; false
+                      ; 239990                  ; pieces                                     ; PLN                             ; 120.00 ; 1     ; 1         ; false
+                      ; 239989                  ; pieces                                     ; PLN                             ; 312.00 ; 1     ; 1         ; false
+                      ; 239988                  ; pieces                                     ; PLN                             ; 96.00  ; 1     ; 1         ; false
+                      ; 239987                  ; pieces                                     ; PLN                             ; 336.00 ; 1     ; 1         ; false

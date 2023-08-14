@@ -20,12 +20,7 @@
  */
 package com.adyen.v6.commands;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Date;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-import com.adyen.model.modification.ModificationResult;
+import com.adyen.model.checkout.PaymentCaptureResource;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.service.AdyenPaymentService;
@@ -37,6 +32,12 @@ import de.hybris.platform.payment.commands.result.CaptureResult;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Date;
 
 /**
  * Issues a Capture request
@@ -81,16 +82,16 @@ public class AdyenCaptureCommand implements CaptureCommand {
 
         boolean isImmediateCapture = baseStore.getAdyenImmediateCapture();
 
-        boolean autoCapture = isImmediateCapture || ! supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
+        boolean autoCapture = isImmediateCapture || !supportsManualCapture(paymentInfo.getAdyenPaymentMethod());
 
         if (autoCapture) {
             result.setTransactionStatus(TransactionStatus.ACCEPTED);
             result.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL);
         } else {
             try {
-                ModificationResult modificationResult = adyenPaymentService.capture(amount, currency, originalPSPReference, reference);
+                final PaymentCaptureResource captures = adyenPaymentService.captures(amount, currency, originalPSPReference, reference);
 
-                if (modificationResult.getResponse().equals(CAPTURE_RECEIVED_RESPONSE)) {
+                if (PaymentCaptureResource.StatusEnum.RECEIVED.equals(captures.getStatus())) {
                     result.setTransactionStatus(TransactionStatus.ACCEPTED);  //Accepted so that TakePaymentAction doesn't fail
                     result.setTransactionStatusDetails(TransactionStatusDetails.REVIEW_NEEDED);
                 } else {
@@ -157,6 +158,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "maestro_applepay":
             case "paywithgoogle":
             case "amazonpay":
+            case "twint":
                 return true;
         }
 

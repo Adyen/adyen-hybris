@@ -23,30 +23,23 @@ package com.adyen.v6.converters;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.adyen.model.checkout.PaymentMethod;
 import org.springframework.core.convert.converter.Converter;
+
 import com.adyen.model.checkout.InputDetail;
 import com.adyen.model.hpp.Issuer;
 
-public class PaymentMethodConverter implements Converter<com.adyen.model.checkout.PaymentMethod, com.adyen.model.hpp.PaymentMethod> {
+public class PaymentMethodConverter implements Converter<com.adyen.model.checkout.PaymentMethod, PaymentMethod> {
     @Override
-    public com.adyen.model.hpp.PaymentMethod convert(com.adyen.model.checkout.PaymentMethod checkoutPaymentMethod) {
+    public PaymentMethod convert(com.adyen.model.checkout.PaymentMethod checkoutPaymentMethod) {
         if (checkoutPaymentMethod == null) {
             throw new IllegalArgumentException("Null PaymentMethod");
         }
-        com.adyen.model.hpp.PaymentMethod hppPaymentMethod = new com.adyen.model.hpp.PaymentMethod();
-        hppPaymentMethod.setBrandCode(checkoutPaymentMethod.getType());
+        final PaymentMethod paymentMethod = new PaymentMethod();
 
-        Optional<InputDetail> issuersInputDetail = checkoutPaymentMethod.getDetails().stream().filter(i -> "issuer".equals(i.getType())).findFirst();
-        if (issuersInputDetail.isPresent()) {
-            List<Issuer> issuers = issuersInputDetail.get().getItems().stream().map(checkoutIssuer -> {
-                Issuer issuer = new Issuer();
-                issuer.setIssuerId(checkoutIssuer.getId());
-                issuer.setName(checkoutIssuer.getName());
-                return issuer;
-            }).collect(Collectors.toList());
-            hppPaymentMethod.setIssuers(issuers);
-        }
-
-        return hppPaymentMethod;
+        paymentMethod.setIssuers(checkoutPaymentMethod.getIssuers());
+        paymentMethod.setBrand(checkoutPaymentMethod.getType());
+        return paymentMethod;
     }
 }
