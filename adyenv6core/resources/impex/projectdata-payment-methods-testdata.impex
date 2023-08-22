@@ -1,0 +1,58 @@
+INSERT_UPDATE Currency; isocode[unique = true]; conversion; digits; symbol; name[lang = en]
+                      ; CHF                   ; 1         ; 2     ; CHF   ; Swiss franc
+                      ; SEK                   ; 0,084     ; 2     ; kr    ; Swedish krona
+
+UPDATE BaseStore; uid[unique = true]; currencies(isocode) ;
+                ; electronics       ; JPY,USD,EUR,CHF,SEK ;
+
+INSERT_UPDATE PriceRow; productId[unique = true]; unit(code[unique = true, default = pieces]); currency(isocode)[unique = true]; price   ; minqtd; unitFactor; net
+                      ; 300938                  ; pieces                                     ; EUR                             ; 110.0   ; 1     ; 1         ; false
+                      ; 300938                  ; pieces                                     ; CHF                             ; 115.0   ; 1     ; 1         ; false
+                      ; 300938                  ; pieces                                     ; SEK                             ; 1310.0  ; 1     ; 1         ; false
+
+                      ; 358639                  ; pieces                                     ; USD                             ; 485,57  ; 1     ; 1         ; false
+                      ; 358639                  ; pieces                                     ; EUR                             ; 460,57  ; 1     ; 1         ; false
+                      ; 358639                  ; pieces                                     ; SEK                             ; 5476,57 ; 1     ; 1         ; false
+
+                      ; 553637                  ; pieces                                     ; USD                             ; 264,69  ; 1     ; 1         ; false
+                      ; 553637                  ; pieces                                     ; EUR                             ; 240,69  ; 1     ; 1         ; false
+                      ; 553637                  ; pieces                                     ; SEK                             ; 2857,69 ; 1     ; 1         ; false
+
+                      ; 816802                  ; pieces                                     ; USD                             ; 260,87  ; 1     ; 1         ; false
+                      ; 816802                  ; pieces                                     ; EUR                             ; 240,87  ; 1     ; 1         ; false
+                      ; 816802                  ; pieces                                     ; SEK                             ; 2860,87 ; 1     ; 1         ; false
+
+                      ; 1934793                 ; pieces                                     ; USD                             ; 99,85   ; 1     ; 1         ; false
+                      ; 1934793                 ; pieces                                     ; EUR                             ; 80,85   ; 1     ; 1         ; false
+                      ; 1934793                 ; pieces                                     ; SEK                             ; 952,85  ; 1     ; 1         ; false
+
+INSERT_UPDATE SiteMapLanguageCurrency; &siteMapLanguageCurrency; language(isoCode)[unique = true]; currency(isocode)[unique = true];
+                                     ; enUsd                   ; en                              ; USD
+                                     ; enJpy                   ; en                              ; JPY
+                                     ; enGbp                   ; en                              ; GBP
+                                     ; enEur                   ; en                              ; EUR
+                                     ; jaUsd                   ; ja                              ; USD
+                                     ; jaJpy                   ; ja                              ; JPY
+                                     ; jaGbp                   ; ja                              ; GBP
+                                     ; jaEur                   ; ja                              ; EUR
+                                     ; deUsd                   ; de                              ; USD
+                                     ; deJpy                   ; de                              ; JPY
+                                     ; deGbp                   ; de                              ; GBP
+                                     ; deEur                   ; de                              ; EUR
+                                     ; zhUsd                   ; zh                              ; USD
+                                     ; zhJpy                   ; zh                              ; JPY
+                                     ; zhGbp                   ; zh                              ; GBP
+                                     ; zhEur                   ; zh                              ; EUR
+                                     ; enChf                   ; en                              ; CHF                             ;
+                                     ; enSek                   ; en                              ; SEK                             ;
+
+$siteMapLangCur = jaJpy, jaUsd, enJpy, enUsd, deJpy, deUsd, zhJpy, zhUsd, enEur, deEur, enChf, enSek
+
+
+INSERT_UPDATE SiteMapConfig; configId[unique = true]  ; siteMapLanguageCurrencies(&siteMapLanguageCurrency)
+                           ; electronicsSiteMapConfig ; $siteMapLangCur
+
+
+INSERT_UPDATE ZoneDeliveryModeValue; deliveryMode(code)[unique = true]; zone(code)[unique = true]; currency(isocode)[unique = true]; value  ; minimum[unique = true]
+                                   ; standard-gross                   ; continentalEurope        ; CHF                             ; 9,99   ; 0,00
+                                   ; standard-gross                   ; continentalEurope        ; SEK                             ; 119,99 ; 0,00
