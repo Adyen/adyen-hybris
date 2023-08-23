@@ -54,5 +54,5 @@ INSERT_UPDATE SiteMapConfig; configId[unique = true]  ; siteMapLanguageCurrencie
 
 
 INSERT_UPDATE ZoneDeliveryModeValue; deliveryMode(code)[unique = true]; zone(code)[unique = true]; currency(isocode)[unique = true]; value  ; minimum[unique = true]
-                                   ; standard-gross                   ; continentalEurope        ; CHF                             ; 9,99   ; 0,00
-                                   ; standard-gross                   ; continentalEurope        ; SEK                             ; 119,99 ; 0,00
+                                   ; standard-gross                   ; continentalEurope        ; CHF                             ; 9.99   ; 0,00
+                                   ; standard-gross                   ; continentalEurope        ; SEK                             ; 119.99 ; 0,00
