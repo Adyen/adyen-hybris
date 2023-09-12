@@ -140,7 +140,7 @@ public class AdyenComponentController extends AbstractCheckoutController {
                 LOGGER.error("ApiException: " + e.toString());
                 throw new AdyenComponentException("checkout.error.authorization.payment.refused");
             }  catch(AdyenNonAuthorizedPaymentException e){
-                LOGGER.debug("AdyenNonAuthorizedPaymentException occurred. Payment is refused.");
+                LOGGER.warn("AdyenNonAuthorizedPaymentException occurred. Payment " + e.getPaymentResult().getPspReference() + "is refused.");
                 throw new AdyenComponentException("checkout.error.authorization.payment.refused");
             } catch(Exception e){
                 LOGGER.error("Exception", e);
