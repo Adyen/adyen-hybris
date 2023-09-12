@@ -14,6 +14,7 @@ import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commerceservices.order.CommerceCartModificationException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,8 @@ import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_P
 @RequestMapping(value = SUMMARY_CHECKOUT_PREFIX + "/amazonpay")
 
 public class AdyenAmazonpayController extends AdyenSummaryCheckoutStepController {
+
+    private static final Logger LOG = Logger.getLogger(AdyenAmazonpayController.class);
 
     @Resource(name = "adyenCheckoutFacade")
     protected AdyenCheckoutFacade adyenCheckoutFacade;
@@ -55,8 +58,9 @@ public class AdyenAmazonpayController extends AdyenSummaryCheckoutStepController
             return enterStep(model, redirectModel);
         }
 
+        final CartData cart = checkoutFlowFacade.getCheckoutCart();
+
         try {
-            final CartData cart = checkoutFlowFacade.getCheckoutCart();
             cart.setAdyenReturnUrl(adyenAmazonPayFacade.getReturnUrl(SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL));
 
             final PaymentsResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request,
@@ -71,6 +75,7 @@ public class AdyenAmazonpayController extends AdyenSummaryCheckoutStepController
             return redirectToOrderConfirmationPage(orderFacade.getOrderDetailsForCodeWithoutUser(paymentsResponse.getMerchantReference()));
 
         } catch (Exception e) {
+            LOG.warn("AmazonPay refused, exception during payment for cart: " + cart.getCode());
             GlobalMessages.addErrorMessage(model, getErrorMessageByRefusalReason(ApiConstants.RefusalReason.REFUSED));
         }
 
