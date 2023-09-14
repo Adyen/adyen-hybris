@@ -125,7 +125,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         if(isSessionCartInvalid())
         {
-            LOGGER.debug("Invalid cart found in session");
+            LOGGER.warn("Invalid cart found in session, cart code: " + cartData.getCode());
             GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
         }
         else {
@@ -133,7 +133,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 adyenCheckoutFacade.initializeCheckoutData(model);
             }
             catch(ApiException e){
-                LOGGER.debug("Invalid session Data");
+                LOGGER.warn("Invalid session Data");
                 GlobalMessages.addErrorMessage(model, "basket.error.occurred");
             }
 
