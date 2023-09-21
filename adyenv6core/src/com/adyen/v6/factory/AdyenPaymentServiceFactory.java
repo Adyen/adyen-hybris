@@ -40,4 +40,8 @@ public class AdyenPaymentServiceFactory {
         adyenPaymentService.setAdyenRequestFactory(adyenRequestFactory);
         return adyenPaymentService;
     }
+
+    public AdyenRequestFactory getAdyenRequestFactory() {
+        return adyenRequestFactory;
+    }
 }
