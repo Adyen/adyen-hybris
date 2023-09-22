@@ -542,7 +542,7 @@
         </itemtype>
 
         <itemtype code="adyenAuditTable" generate="true" autocreate="true">
-            <deployment table="adyenAuditTable" typecode="24244"/>
+            <deployment table="adyenAuditTable" typecode="22937"/>
                 <attributes>
                     <attribute qualifier="uuid" type="java.lang.String">
                         <persistence type="property"/>
