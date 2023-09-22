@@ -11,3 +11,5 @@
 **/*testclasses.xml
 **/*webtestclasses.xml
 */extensioninfo.xsd
+**/gensrc/
+**/*.class
