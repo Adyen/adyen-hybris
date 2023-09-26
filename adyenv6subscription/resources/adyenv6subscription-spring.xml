@@ -14,23 +14,12 @@
     <bean id="subscriptionAdyenPaymentServiceFactory" class="com.adyen.v6.factory.SubscriptionAdyenPaymentServiceFactory">
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
         <constructor-arg name="cartFacade" ref="cartFacade"/>
+        <constructor-arg name="baseStoreService" ref="baseStoreService"/>
     </bean>
 
     <alias name="subscriptionRequestFactory" alias="adyenRequestFactory" />
     <bean id="subscriptionRequestFactory" class="com.adyen.v6.factory.SubscriptionPaymentRequestFactory">
         <property name="cartFacade" ref="cartFacade" />
     </bean>
-	
-    <bean id="adyenv6subscriptionSystemSetup" class="com.adyen.v6.setup.Adyenv6subscriptionSystemSetup">
-        <!-- constructor arg injection example -->
-        <constructor-arg ref="adyenv6subscriptionService"/>
-    </bean>
 
-    <bean id="adyenv6subscriptionService" class="com.adyen.v6.service.impl.DefaultAdyenv6subscriptionService">
-        <!-- setter injection example -->
-        <property name="modelService" ref="modelService"/>
-        <property name="mediaService" ref="mediaService"/>
-        <property name="flexibleSearchService" ref="flexibleSearchService"/>
-    </bean>
-			
 </beans>

@@ -4,14 +4,18 @@ import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.impl.DefaultSubscriptionAdyenPaymentService;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
 
 public class SubscriptionAdyenPaymentServiceFactory extends AdyenPaymentServiceFactory {
 
-    private CartFacade cartFacade;
+    private final CartFacade cartFacade;
+    private final BaseStoreService baseStoreService;
 
-    public SubscriptionAdyenPaymentServiceFactory(SubscriptionPaymentRequestFactory adyenRequestFactory, CartFacade cartFacade) {
+    public SubscriptionAdyenPaymentServiceFactory(SubscriptionPaymentRequestFactory adyenRequestFactory,
+                                                  CartFacade cartFacade, BaseStoreService baseStoreService) {
         super(adyenRequestFactory);
         this.cartFacade = cartFacade;
+        this.baseStoreService = baseStoreService;
     }
 
     @Override
@@ -21,6 +25,7 @@ public class SubscriptionAdyenPaymentServiceFactory extends AdyenPaymentServiceF
                 baseStoreModel);
         adyenPaymentService.setAdyenRequestFactory(getAdyenRequestFactory());
         adyenPaymentService.setCartFacade(cartFacade);
+        adyenPaymentService.setBaseStoreService(baseStoreService);
         return adyenPaymentService;
     }
 }

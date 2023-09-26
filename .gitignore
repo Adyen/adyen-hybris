@@ -11,3 +11,8 @@
 **/*testclasses.xml
 **/*webtestclasses.xml
 */extensioninfo.xsd
+**/gensrc/
+**/*.class
+**/.classpath
+**/.settings/
+**/.externalToolBuilders/
