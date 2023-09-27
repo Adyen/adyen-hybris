@@ -43,40 +43,8 @@
 		<mvc:message-converters>
 			<ref bean="jsonHttpMessageConverter"/>
 			<ref bean="xmlHttpMessageConverter"/>
-<!-- 			<ref bean="customJsonHttpMessageConverter" /> -->
-<!-- 			<ref bean="customXmlHttpMessageConverter" /> -->
 		</mvc:message-converters>
-	</mvc:annotation-driven>	
-	
-	
-	<!-- 
-	Custom message converters which can override some of the default settings provided by webservicescommons.
-	 -->
-	<!-- 
-	<bean id="customJsonHttpMessageConverter" parent="jsonHttpMessageConverter">
-		<property name="jaxbContextFactory" ref="customJaxbContextFactory" />
-	</bean>
-		
-	<bean id="customXmlHttpMessageConverter" parent="xmlHttpMessageConverter">
-		<property name="jaxbContextFactory" ref="customJaxbContextFactory" />
-	</bean>
-	-->
-
-	<!-- 
-	Custom Moxy Jaxb context factory declaration.
-	Adapters can be declared here.
-	 -->	
-	<!-- 
-	<bean id="customJaxbContextFactory" parent="jaxbContextFactory">
-		<property name="metadataSourceFactory" ref="customMetadataSourceFactory" />
-	</bean>
-	
-	<bean id="customMetadataSourceFactory" parent="metadataSourceFactory">
-		<property name="nameProvider" ref="customMetadataNameProvider" />
-	</bean>
-	
-	<bean id="customMetadataNameProvider" parent="metadataNameProvider"></bean>
-	-->
+	</mvc:annotation-driven>
 
 	<!-- This tag allows for mapping the DispatcherServlet to "/" (thus overriding the mapping of the container's default Servlet), while 
 		still allowing static resource requests to be handled by the container's default Servlet. It configures a DefaultServletHttpRequestHandler 

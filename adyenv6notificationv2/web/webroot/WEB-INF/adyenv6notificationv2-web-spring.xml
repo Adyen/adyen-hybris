@@ -23,9 +23,9 @@
 	<context:component-scan base-package="com.adyen.v6"/>
 
 
-	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
-		<property name="baseStoreService" ref="baseStoreService" />
-	</bean>
+<!--	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">-->
+<!--		<property name="baseStoreService" ref="baseStoreService" />-->
+<!--	</bean>-->
 
 	<!-- Spring managed FilterChain for hybris Filter stack -->
 	<bean id="adyenv6notificationv2PlatformFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain">
