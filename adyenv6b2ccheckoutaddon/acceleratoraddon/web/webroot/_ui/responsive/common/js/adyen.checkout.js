@@ -596,7 +596,11 @@ var AdyenCheckoutHybris = (function () {
                 },
                 onError: function (error, component) {
                     // Sets your prefered status of the component when an error occurs.
-                    self.handleResult(ErrorMessages.PaymentError, true);
+                    if (error.name === 'CANCEL') {
+                        self.handleResult(ErrorMessages.PaymentCancelled, true);
+                    } else {
+                        self.handleResult(ErrorMessages.PaymentError, true);
+                    }
                 },
                 onAdditionalDetails: function (state, component) {
                     self.submitDetails(state.data, self.handleResult);
