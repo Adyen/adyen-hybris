@@ -4,3 +4,4 @@ gensrc/
 .settings/
 .externalToolBuilders/
 .springBeans
+node_modules/

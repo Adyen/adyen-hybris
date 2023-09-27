@@ -458,4 +458,7 @@
         <constructor-arg name="genericStrategy" ref="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     </bean>
 
+    <bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
+        <property name="baseStoreService" ref="baseStoreService" />
+    </bean>
 </beans>

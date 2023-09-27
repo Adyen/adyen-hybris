@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright (c) 2021 SAP SE or an SAP affiliate company. All rights reserved.
+--><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+           
+    
+    <extension abstractclassprefix="Generated" classprefix="Adyenv6notificationv2" jaloLogicFree="true" managername="Adyenv6notificationv2Manager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenv6notificationv2" usemaven="false">
+
+        <requires-extension name="webservicescommons"/>
+        <requires-extension name="adyenv6core"/>
+        <requires-extension name="addonsupport"/>
+      
+        
+        <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6notificationv2Manager" packageroot="com.adyen.v6"/>
+                      
+        
+        <webmodule jspcompile="false" webroot="/adyenv6notificationv2"/>
+
+    
+    </extension>
+              
+
+
+</extensioninfo>
