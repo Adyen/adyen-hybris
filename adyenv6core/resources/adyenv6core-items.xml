@@ -541,8 +541,8 @@
             </attributes>
         </itemtype>
 
-        <itemtype code="adyenAuditTable" generate="true" autocreate="true">
-            <deployment table="adyenAuditTable" typecode="22937"/>
+        <itemtype code="adyenNotification" generate="true" autocreate="true">
+            <deployment table="adyenNotification" typecode="22937"/>
                 <attributes>
                     <attribute qualifier="uuid" type="java.lang.String">
                         <persistence type="property"/>
