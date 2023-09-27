@@ -20,32 +20,38 @@
  */
 package com.adyen.v6.service;
 
-import java.util.Date;
-import java.util.UUID;
-
-import de.hybris.platform.core.enums.OrderStatus;
-import de.hybris.platform.payment.dto.TransactionStatus;
-import de.hybris.platform.payment.enums.PaymentTransactionType;
-import org.apache.log4j.Logger;
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
 import com.adyen.notification.NotificationHandler;
 import com.adyen.v6.constants.Adyenv6coreConstants;
+import com.adyen.v6.model.AdyenNotificationModel;
 import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.CartRepository;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
 import com.google.gson.Gson;
 import de.hybris.platform.commerceservices.order.CommercePlaceOrderStrategy;
+import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
+import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.session.SessionService;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.log4j.Logger;
 import org.springframework.transaction.support.TransactionOperations;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class DefaultAdyenNotificationService implements AdyenNotificationService {
+    public static final String PAYMENT_TRANSACTION_MODEL_IS_NULL_FOR_NOTIFICATION = "PaymentTransactionModel is null for notification: ";
+    public static final String ORDER_WITH_ORDER_CODE = "Order with orderCode: ";
+    public static final String CAUSE_AN_EXCEPTION = " cause an exception. \n";
+    public static final String EXCEPTION_DURING_PROCESSING_NOTIFICATION = "Exception during processing notification: ";
     private ModelService modelService;
     private AdyenTransactionService adyenTransactionService;
     private AdyenBusinessProcessService adyenBusinessProcessService;
@@ -89,6 +95,35 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
+    public AdyenNotificationModel createNotificationInfoModel(NotificationRequestItem notificationRequestItem) {
+        Gson gson = new Gson();
+        AdyenNotificationModel adyenNotificationInfo = modelService.create(AdyenNotificationModel.class);
+
+        if (notificationRequestItem.getAmount() != null) {
+            adyenNotificationInfo.setAmountCurrency(notificationRequestItem.getAmount().getCurrency());
+            adyenNotificationInfo.setAmountValue(notificationRequestItem.getAmount().getDecimalValue());
+        }
+
+        adyenNotificationInfo.setUuid(UUID.randomUUID().toString());
+        adyenNotificationInfo.setEventCode(notificationRequestItem.getEventCode());
+        adyenNotificationInfo.setEventDate(notificationRequestItem.getEventDate());
+        adyenNotificationInfo.setMerchantAccountCode(notificationRequestItem.getMerchantAccountCode());
+        adyenNotificationInfo.setMerchantReference(notificationRequestItem.getMerchantReference());
+        adyenNotificationInfo.setOriginalReference(notificationRequestItem.getOriginalReference());
+        adyenNotificationInfo.setPspReference(notificationRequestItem.getPspReference());
+        adyenNotificationInfo.setReason(notificationRequestItem.getReason());
+        adyenNotificationInfo.setSuccess(notificationRequestItem.isSuccess());
+        adyenNotificationInfo.setPaymentMethod(notificationRequestItem.getPaymentMethod());
+
+        String additionalDataJson = gson.toJson(notificationRequestItem.getAdditionalData());
+        adyenNotificationInfo.setAdditionalData(additionalDataJson);
+
+        adyenNotificationInfo.setCreatedAt(new Date());
+
+        return adyenNotificationInfo;
+    }
+
+    @Override
     public void saveFromNotificationRequest(NotificationRequestItem notificationRequestItem) {
         NotificationItemModel notificationItemModel = createFromNotificationRequest(notificationRequestItem);
 
@@ -113,9 +148,9 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
-    public PaymentTransactionEntryModel processCapturedEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
+    public PaymentTransactionEntryModel processCapturedEvent(AdyenNotificationModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
-            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
+            LOG.error(PAYMENT_TRANSACTION_MODEL_IS_NULL_FOR_NOTIFICATION + notificationItemModel.getPspReference());
             return null;
         }
         OrderModel orderModel = (OrderModel) paymentTransactionModel.getOrder();
@@ -132,27 +167,27 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
             return paymentTransactionEntryModel;
         }catch (Exception e){
-                LOG.error("Order with orderCode: " + orderModel.getCode() + " cause an exception. \n");
+                LOG.error(ORDER_WITH_ORDER_CODE + orderModel.getCode() + CAUSE_AN_EXCEPTION);
                 orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
-                orderModel.setStatusInfo("Exception during processing notification: " + notificationItemModel.getPspReference());
+                orderModel.setStatusInfo(EXCEPTION_DURING_PROCESSING_NOTIFICATION + notificationItemModel.getPspReference());
                 getModelService().save(orderModel);
                 throw e;
             }
     }
 
     @Override
-    public PaymentTransactionModel processAuthorisationEvent(NotificationItemModel notificationItemModel) {
+    public PaymentTransactionModel processAuthorisationEvent(AdyenNotificationModel notificationItemModel) {
         String orderCode = notificationItemModel.getMerchantReference();
         OrderModel orderModel = orderRepository.getOrderModel(orderCode);
 
         if (orderModel == null) {
-            LOG.error("Order with orderCode: " + orderCode + " was not found!");
+            LOG.error(ORDER_WITH_ORDER_CODE + orderCode + " was not found!");
             return null;
         }
 
         PaymentTransactionModel paymentTransactionModel;
         try {
-            if (notificationItemModel.getSuccess()) {
+            if (BooleanUtils.isTrue(notificationItemModel.getSuccess())) {
                 paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, notificationItemModel.getMerchantReference(), notificationItemModel.getPspReference(), notificationItemModel.getAmountValue());
                 LOG.debug("Payment authorization success");
             } else {
@@ -162,18 +197,18 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             adyenBusinessProcessService.triggerOrderProcessEvent(orderModel, Adyenv6coreConstants.PROCESS_EVENT_ADYEN_CAPTURED);
             return paymentTransactionModel;
         } catch (Exception e){
-            LOG.error("Order with orderCode: " + orderCode + " cause an exception. \n");
+            LOG.error(ORDER_WITH_ORDER_CODE + orderCode + CAUSE_AN_EXCEPTION);
             orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
-            orderModel.setStatusInfo("Exception during processing notification: " + notificationItemModel.getPspReference());
+            orderModel.setStatusInfo(EXCEPTION_DURING_PROCESSING_NOTIFICATION + notificationItemModel.getPspReference());
             getModelService().save(orderModel);
             throw e;
         }
     }
 
     @Override
-    public PaymentTransactionEntryModel processCancelEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
+    public PaymentTransactionEntryModel processCancelEvent(AdyenNotificationModel notificationItemModel, PaymentTransactionModel paymentTransactionModel) {
         if (paymentTransactionModel == null) {
-            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
+            LOG.error(PAYMENT_TRANSACTION_MODEL_IS_NULL_FOR_NOTIFICATION + notificationItemModel.getPspReference());
             return null;
         }
 
@@ -181,7 +216,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
             PaymentTransactionEntryModel paymentTransactionEntry = adyenTransactionService.createCancellationTransaction(paymentTransactionModel,
                     notificationItemModel.getMerchantReference(),
                     notificationItemModel.getPspReference());
-            if (notificationItemModel.getSuccess()) {
+            if (BooleanUtils.isTrue(notificationItemModel.getSuccess())) {
                 paymentTransactionEntry.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
                 LOG.debug("Payment cancellation success");
             } else {
@@ -196,10 +231,10 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
-    public PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItemModel) {
+    public PaymentTransactionEntryModel processRefundEvent(AdyenNotificationModel notificationItemModel) {
         PaymentTransactionModel paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
         if (paymentTransaction == null) {
-            LOG.error("PaymentTransactionModel is null for notification: " + notificationItemModel.getPspReference());
+            LOG.error(PAYMENT_TRANSACTION_MODEL_IS_NULL_FOR_NOTIFICATION + notificationItemModel.getPspReference());
             return null;
         }
 
@@ -218,9 +253,9 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
-    public PaymentTransactionModel processOfferClosedEvent(NotificationItemModel notificationItemModel) {
+    public PaymentTransactionModel processOfferClosedEvent(AdyenNotificationModel notificationItemModel) {
         String orderCode = notificationItemModel.getMerchantReference();
-        if(!notificationItemModel.getSuccess()) {
+        if(BooleanUtils.isFalse(notificationItemModel.getSuccess())) {
             LOG.error("Order " + orderCode + " received unexpected OFFER_CLOSED event with success=false");
             return null;
         }
@@ -245,9 +280,9 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         try {
             return adyenTransactionService.storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
         }catch (Exception e){
-            LOG.error("Order with orderCode: " + orderCode + " cause an exception. \n");
+            LOG.error(ORDER_WITH_ORDER_CODE + orderCode + CAUSE_AN_EXCEPTION);
             orderModel.setStatus(OrderStatus.PROCESSING_ERROR);
-            orderModel.setStatusInfo("Exception during processing notification: " + notificationItemModel.getPspReference());
+            orderModel.setStatusInfo(EXCEPTION_DURING_PROCESSING_NOTIFICATION + notificationItemModel.getPspReference());
             getModelService().save(orderModel);
             throw e;
         }
@@ -279,7 +314,11 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         return true;
     }
 
+    /**
+     * @deprecated
+     */
     @Override
+    @Deprecated(since = "11.3.0")
     public void processNotification(NotificationItemModel notificationItemModel) {
         PaymentTransactionModel paymentTransaction;
         LOG.debug("Processing notification: "+ notificationItemModel.getPspReference()+" event: "+ notificationItemModel.getEventCode());
@@ -287,27 +326,37 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         switch (notificationItemModel.getEventCode()) {
             case NotificationRequestItem.EVENT_CODE_CAPTURE:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
-                processCapturedEvent(notificationItemModel, paymentTransaction);
+                processCapturedEvent(convertFromNotificationItem(notificationItemModel), paymentTransaction);
                 break;
             case NotificationRequestItem.EVENT_CODE_AUTHORISATION:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getPspReference());
                 if (paymentTransaction == null) {
-                    processAuthorisationEvent(notificationItemModel);
+                    processAuthorisationEvent(convertFromNotificationItem(notificationItemModel));
                 } else {
                     LOG.warn("Authorisation already processed " + paymentTransaction.getRequestId());
                 }
                 break;
             case NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND:
                 paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
-                processCancelEvent(notificationItemModel, paymentTransaction);
+                processCancelEvent(convertFromNotificationItem(notificationItemModel), paymentTransaction);
                 break;
             case NotificationRequestItem.EVENT_CODE_REFUND:
-                processRefundEvent(notificationItemModel);
+                processRefundEvent(convertFromNotificationItem(notificationItemModel));
                 break;
             case NotificationRequestItem.EVENT_CODE_OFFER_CLOSED:
-                processOfferClosedEvent(notificationItemModel);
+                processOfferClosedEvent(convertFromNotificationItem(notificationItemModel));
                 break;
         }
+    }
+
+    private AdyenNotificationModel convertFromNotificationItem(NotificationItemModel notificationItemModel){
+        AdyenNotificationModel adyenNotificationInfo = new AdyenNotificationModel();
+        adyenNotificationInfo.setAdditionalData(notificationItemModel.getAdditionalData());
+        adyenNotificationInfo.setAmountCurrency(notificationItemModel.getAmountCurrency());
+        adyenNotificationInfo.setAmountValue(notificationItemModel.getAmountValue());
+        adyenNotificationInfo.setMerchantAccountCode(notificationItemModel.getMerchantAccountCode());
+        adyenNotificationInfo.setOriginalReference(notificationItemModel.getOriginalReference());
+        return adyenNotificationInfo;
     }
 
     public ModelService getModelService() {
