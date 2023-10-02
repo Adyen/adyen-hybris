@@ -20,18 +20,7 @@
  */
 package com.adyen.v6.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import com.adyen.v6.model.AdyenNotificationModel;
 import com.adyen.v6.model.NotificationItemModel;
 import com.adyen.v6.repository.OrderRepository;
 import com.adyen.v6.repository.PaymentTransactionRepository;
@@ -44,9 +33,21 @@ import de.hybris.platform.processengine.BusinessProcessService;
 import de.hybris.platform.returns.model.ReturnProcessModel;
 import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.servicelayer.model.ModelService;
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_AUTHORISATION;
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_CAPTURE;
-import static com.adyen.model.notification.NotificationRequestItem.EVENT_CODE_REFUND;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.adyen.model.notification.NotificationRequestItem.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -104,13 +105,19 @@ public class AdyenNotificationServiceTest {
 
         when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class))).thenReturn(paymentTransactionModel);
 
+        AdyenNotificationModel adyenNotificationInfo = new AdyenNotificationModel();
+        adyenNotificationInfo.setOriginalReference("123");
+        adyenNotificationInfo.setPspReference("456");
+        adyenNotificationInfo.setEventCode(EVENT_CODE_CAPTURE);
+        adyenNotificationInfo.setSuccess(true);
+
         NotificationItemModel notificationItemModel = new NotificationItemModel();
         notificationItemModel.setOriginalReference("123");
         notificationItemModel.setPspReference("456");
         notificationItemModel.setEventCode(EVENT_CODE_CAPTURE);
         notificationItemModel.setSuccess(true);
 
-        when(adyenTransactionServiceMock.createCapturedTransactionFromNotification(paymentTransactionModel, notificationItemModel)).thenReturn(paymentTransactionEntryModelMock);
+        when(adyenTransactionServiceMock.createCapturedTransactionFromNotification(paymentTransactionModel, adyenNotificationInfo)).thenReturn(paymentTransactionEntryModelMock);
 
         adyenNotificationService.processNotification(notificationItemModel);
 
@@ -169,6 +176,12 @@ public class AdyenNotificationServiceTest {
         notificationItemModel.setMerchantReference(merchantReference);
         notificationItemModel.setSuccess(false);
 
+        AdyenNotificationModel adyenNotificationModel = new AdyenNotificationModel();
+        adyenNotificationModel.setPspReference(pspReference);
+        adyenNotificationModel.setEventCode(EVENT_CODE_AUTHORISATION);
+        adyenNotificationModel.setMerchantReference(merchantReference);
+        adyenNotificationModel.setSuccess(false);
+
         when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class))).thenReturn(null);
 
         when(orderRepositoryMock.getOrderModel(Mockito.any(String.class))).thenReturn(orderModel);
@@ -179,7 +192,7 @@ public class AdyenNotificationServiceTest {
         verify(businessProcessServiceMock).triggerEvent("order_process_code_AdyenPaymentResult");
 
         //Verify that the authorizeOrderModel is called
-        verify(adyenTransactionServiceMock).storeFailedAuthorizationFromNotification(notificationItemModel, orderModel);
+        verify(adyenTransactionServiceMock).storeFailedAuthorizationFromNotification(adyenNotificationModel, orderModel);
     }
 
     /**
@@ -214,13 +227,20 @@ public class AdyenNotificationServiceTest {
 
         when(paymentTransactionRepositoryMock.getTransactionModel(Mockito.any(String.class))).thenReturn(paymentTransactionModel);
 
+
+        AdyenNotificationModel adyenNotificationModel = new AdyenNotificationModel();
+        adyenNotificationModel.setOriginalReference("123");
+        adyenNotificationModel.setPspReference("456");
+        adyenNotificationModel.setEventCode(EVENT_CODE_REFUND);
+        adyenNotificationModel.setSuccess(true);
+
         NotificationItemModel notificationItemModel = new NotificationItemModel();
         notificationItemModel.setOriginalReference("123");
         notificationItemModel.setPspReference("456");
         notificationItemModel.setEventCode(EVENT_CODE_REFUND);
         notificationItemModel.setSuccess(true);
 
-        when(adyenTransactionServiceMock.createRefundedTransactionFromNotification(paymentTransactionModel, notificationItemModel)).thenReturn(paymentTransactionEntryModelMock);
+        when(adyenTransactionServiceMock.createRefundedTransactionFromNotification(paymentTransactionModel, adyenNotificationModel)).thenReturn(paymentTransactionEntryModelMock);
 
         adyenNotificationService.processNotification(notificationItemModel);
 
