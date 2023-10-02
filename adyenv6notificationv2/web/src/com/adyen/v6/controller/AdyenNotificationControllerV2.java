@@ -13,8 +13,11 @@ package com.adyen.v6.controller;
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.v6.security.AdyenNotificationAuthenticationProvider;
 import com.adyen.v6.service.AdyenNotificationService;
+import com.adyen.v6.service.AdyenNotificationV2Service;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,8 @@ import java.io.IOException;
 @RequestMapping(value = "/adyen/v6/notification/{baseSiteId}")
 public class AdyenNotificationControllerV2 {
 	private static final Logger LOG = Logger.getLogger(AdyenNotificationControllerV2.class);
+	@Autowired
+	private AdyenNotificationV2Service adyenNotificationV2Service;
 
 	@Resource(name = "adyenNotificationAuthenticationProvider")
 	private AdyenNotificationAuthenticationProvider adyenNotificationAuthenticationProvider;
@@ -66,6 +71,7 @@ public class AdyenNotificationControllerV2 {
 		}
 
 		LOG.info(notificationRequest);
+		adyenNotificationV2Service.onRequest(notificationRequest);
 
 		return RESPONSE_ACCEPTED;
     }
