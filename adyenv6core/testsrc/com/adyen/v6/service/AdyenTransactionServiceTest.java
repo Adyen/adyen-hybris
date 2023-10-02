@@ -22,7 +22,7 @@ package com.adyen.v6.service;
 
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.model.AdyenNotificationModel;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.OrderModel;
@@ -105,7 +105,7 @@ public class AdyenTransactionServiceTest {
 
     @Test
     public void testCreateCapturedTransactionFromNotification() {
-        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        AdyenNotificationModel notificationItemModel = new AdyenNotificationModel();
         notificationItemModel.setPspReference(PSP_REFERENCE);
         notificationItemModel.setEventCode(EVENT_CODE_CAPTURE);
         notificationItemModel.setSuccess(true);
@@ -145,7 +145,7 @@ public class AdyenTransactionServiceTest {
 
     @Test
     public void testStoreFailedAuthorizationFromNotification() {
-        NotificationItemModel notificationItemModel = new NotificationItemModel();
+        AdyenNotificationModel notificationItemModel = new AdyenNotificationModel();
         notificationItemModel.setPspReference(PSP_REFERENCE);
         notificationItemModel.setMerchantReference(MERCHANT_REFERENCE);
         notificationItemModel.setEventCode(EVENT_CODE_AUTHORISATION);

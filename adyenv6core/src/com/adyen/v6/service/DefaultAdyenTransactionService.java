@@ -22,7 +22,7 @@ package com.adyen.v6.service;
 
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.model.AdyenNotificationModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
@@ -33,6 +33,7 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.store.services.BaseStoreService;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.transaction.support.TransactionOperations;
@@ -54,7 +55,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
 
 
     @Override
-    public PaymentTransactionEntryModel createCapturedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
+    public PaymentTransactionEntryModel createCapturedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final AdyenNotificationModel notificationItemModel) {
         final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(paymentTransaction, notificationItemModel);
 
         transactionEntryModel.setType(PaymentTransactionType.CAPTURE);
@@ -63,7 +64,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     @Override
-    public PaymentTransactionEntryModel createRefundedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
+    public PaymentTransactionEntryModel createRefundedTransactionFromNotification(final PaymentTransactionModel paymentTransaction, final AdyenNotificationModel notificationItemModel) {
         final PaymentTransactionEntryModel transactionEntryModel = createFromModificationNotification(paymentTransaction, notificationItemModel);
 
         transactionEntryModel.setType(PaymentTransactionType.REFUND_FOLLOW_ON);
@@ -71,7 +72,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return transactionEntryModel;
     }
 
-    private PaymentTransactionEntryModel createFromModificationNotification(final PaymentTransactionModel paymentTransaction, final NotificationItemModel notificationItemModel) {
+    private PaymentTransactionEntryModel createFromModificationNotification(final PaymentTransactionModel paymentTransaction, final AdyenNotificationModel notificationItemModel) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -87,7 +88,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         final CurrencyModel currency = getCommonI18NService().getCurrency(currencyCode);
         transactionEntryModel.setCurrency(currency);
 
-        if (notificationItemModel.getSuccess()) {
+        if (BooleanUtils.isTrue(notificationItemModel.getSuccess())) {
             transactionEntryModel.setTransactionStatus(TransactionStatus.ACCEPTED.name());
             transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
         } else {
@@ -138,7 +139,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     @Override
-    public PaymentTransactionModel storeFailedAuthorizationFromNotification(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
+    public PaymentTransactionModel storeFailedAuthorizationFromNotification(AdyenNotificationModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
         LOG.warn("Payment authorization failed for order: " + notificationItemModel.getMerchantReference() + " notification reference: " + notificationItemModel.getPspReference());
 
         return transactionTemplate.execute(transactionStatus -> {
@@ -312,7 +313,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         }
     }
 
-    private boolean isPartialPayment(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
+    private boolean isPartialPayment(AdyenNotificationModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
         BigDecimal totalOrderAmount = getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel);
         BigDecimal notificationAmount = notificationItemModel.getAmountValue();
         if (notificationAmount == null) {
