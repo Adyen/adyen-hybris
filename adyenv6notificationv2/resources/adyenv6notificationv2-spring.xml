@@ -10,4 +10,8 @@
            http://www.springframework.org/schema/aop
            http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+	<bean id="defaultAdyenNotificationV2Service" class="com.adyen.v6.service.DefaultAdyenNotificationV2Service">
+		<property name="modelService" ref="modelService"/>
+	</bean>
+
 </beans>

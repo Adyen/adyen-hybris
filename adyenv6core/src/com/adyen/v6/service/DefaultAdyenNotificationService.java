@@ -356,6 +356,10 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         adyenNotificationInfo.setAmountValue(notificationItemModel.getAmountValue());
         adyenNotificationInfo.setMerchantAccountCode(notificationItemModel.getMerchantAccountCode());
         adyenNotificationInfo.setOriginalReference(notificationItemModel.getOriginalReference());
+        adyenNotificationInfo.setMerchantReference(notificationItemModel.getMerchantReference());
+        adyenNotificationInfo.setSuccess(notificationItemModel.getSuccess());
+        adyenNotificationInfo.setEventDate(notificationItemModel.getEventDate());
+        adyenNotificationInfo.setAmountCurrency(notificationItemModel.getAmountCurrency());
         return adyenNotificationInfo;
     }
 
