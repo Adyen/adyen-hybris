@@ -1,16 +1,12 @@
-
 package com.adyen.v6.service;
 
 import de.hybris.platform.servicelayer.model.ModelService;
-
 import java.util.Date;
 import java.util.UUID;
-
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
 import com.adyen.v6.model.AdyenNotificationModel;
 import com.google.gson.Gson;
-
 
 public class DefaultAdyenNotificationV2Service implements AdyenNotificationV2Service
 {
@@ -26,7 +22,8 @@ public class DefaultAdyenNotificationV2Service implements AdyenNotificationV2Ser
 
 	}
 
-	private void save(NotificationRequestItem notificationRequestItem){
+	private void save(NotificationRequestItem notificationRequestItem)
+	{
 		getModelService().save(populate(notificationRequestItem));
 
 	}
