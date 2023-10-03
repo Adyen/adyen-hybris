@@ -22,7 +22,6 @@ package com.adyen.v6.security;
 
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
-import com.adyen.notification.NotificationHandler;
 import com.adyen.util.HMACValidator;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.site.BaseSiteService;

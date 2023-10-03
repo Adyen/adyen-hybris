@@ -36,7 +36,9 @@ import de.hybris.platform.servicelayer.model.ModelService;
 
 /**
  * Notification handling cronjob
+ * @deprecated
  */
+@Deprecated(since = "11.3.0")
 public class AdyenProcessNotificationCronJob extends AbstractJobPerformable<CronJobModel> {
     private static final Logger LOG = Logger.getLogger(AdyenProcessNotificationCronJob.class);
 

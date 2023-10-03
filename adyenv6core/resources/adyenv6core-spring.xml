@@ -459,4 +459,38 @@
         <constructor-arg name="genericStrategy" ref="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     </bean>
 
+    <bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
+        <property name="baseStoreService" ref="baseStoreService" />
+    </bean>
+
+    <bean id="captureNotificationEventListener" class="com.adyen.v6.listeners.CaptureNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="authorisationNotificationEventListener" class="com.adyen.v6.listeners.AuthorisationNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="cancelOrRefundNotificationEventListener" class="com.adyen.v6.listeners.CancelOrRefundNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+
+    <bean id="refundNotificationEventListener" class="com.adyen.v6.listeners.RefundNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="offerClosedNotificationEventListener" class="com.adyen.v6.listeners.OfferClosedNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
 </beans>
