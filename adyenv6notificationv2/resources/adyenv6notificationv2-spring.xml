@@ -12,6 +12,7 @@
 
 	<bean id="defaultAdyenNotificationV2Service" class="com.adyen.v6.service.DefaultAdyenNotificationV2Service">
 		<property name="modelService" ref="modelService"/>
+		<property name="eventService" ref="eventService"/>
 	</bean>
 
 </beans>
