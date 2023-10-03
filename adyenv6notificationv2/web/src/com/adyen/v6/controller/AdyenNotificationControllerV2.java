@@ -70,7 +70,6 @@ public class AdyenNotificationControllerV2 {
 			throw new AccessDeniedException("Request authentication failed");
 		}
 
-		LOG.info(notificationRequest);
 		adyenNotificationV2Service.onRequest(notificationRequest);
 
 		return RESPONSE_ACCEPTED;
