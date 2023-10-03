@@ -24,8 +24,7 @@ public class OfferClosedNotificationEventListener extends AbstractNotificationEv
             notificationInfoModel.setProcessedAt(new Date());
             getModelService().save(notificationInfoModel);
         }catch (Exception e) {
-            LOG.error("Notification with psp reference: " + notificationInfoModel.getPspReference() + " cause an exception. \n");
-            LOG.error("Exception: ", e);
+            logException(notificationInfoModel, e, LOG);
         }
     }
 
