@@ -29,34 +29,27 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
         super(configurationService, adyenPaymentMethodDetailsBuilderExecutor);
     }
 
-
-    @Override
-    public PaymentsRequest createPaymentsRequest(String merchantAccount, CartData cartData, PaymentMethodDetails paymentMethodDetails, RequestInfo requestInfo, CustomerModel customerModel) {
-        return super.createPaymentsRequest(merchantAccount, cartData, paymentMethodDetails, requestInfo, customerModel);
-    }
     @Override
     public PaymentsRequest createPaymentsRequest(String merchantAccount, CartData cartData, RequestInfo requestInfo, CustomerModel customerModel, RecurringContractMode recurringContractMode, Boolean guestUserTokenizationEnabled) {
         PaymentsRequest paymentsRequest = super.createPaymentsRequest(merchantAccount, cartData, requestInfo, customerModel, recurringContractMode, guestUserTokenizationEnabled);
         paymentsRequest.setShopperInteraction(PaymentsRequest.ShopperInteractionEnum.ECOMMERCE);
-        if(BooleanUtils.isTrue(SubscriptionsUtils.containsSubscription(getCartFacade().getSessionCart()))){
+        if (BooleanUtils.isTrue(SubscriptionsUtils.containsSubscription(getCartFacade().getSessionCart()))) {
             paymentsRequest.setRecurringProcessingModel(PaymentsRequest.RecurringProcessingModelEnum.SUBSCRIPTION);
-        }else{
+        } else {
             paymentsRequest.setRecurringProcessingModel(PaymentsRequest.RecurringProcessingModelEnum.CARDONFILE);
         }
 
         return paymentsRequest;
     }
 
-
     @Override
     public RecurringDetailsRequest createListRecurringDetailsRequest(String merchantAccount, String customerId) {
-        if(SubscriptionsUtils.containsSubscription(getCartFacade().getSessionCart())){
+        if (SubscriptionsUtils.containsSubscription(getCartFacade().getSessionCart())) {
             return new RecurringDetailsRequest().merchantAccount(merchantAccount).shopperReference(customerId).selectRecurringContract();
-        }else{
+        } else {
             return new RecurringDetailsRequest().merchantAccount(merchantAccount).shopperReference(customerId).selectOneClickContract();
         }
     }
-
 
 
     protected CartFacade getCartFacade() {
