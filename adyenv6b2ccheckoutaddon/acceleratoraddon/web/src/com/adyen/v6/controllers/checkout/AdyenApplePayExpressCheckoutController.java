@@ -15,8 +15,14 @@ public class AdyenApplePayExpressCheckoutController {
     @PostMapping("/expressCheckout/applePayPDP")
     public ResponseEntity applePayExpressPDP(@RequestBody ApplePayExpressPDPRequest applePayExpressPDPRequest) {
 
-        LOG.info(applePayExpressPDPRequest);
         LOG.info("applePayExpressPDPRequest");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/expressCheckout/cart")
+    public ResponseEntity cartExpressCheckout() {
+
+        LOG.info("applePayExpressCartRequest");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
