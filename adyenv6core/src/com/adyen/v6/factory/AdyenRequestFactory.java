@@ -238,7 +238,7 @@ public class AdyenRequestFactory {
         return paymentsRequest;
     }
 
-    private void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
+    protected void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
         final CommonField version = new CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
 
         ExternalPlatform externalPlatform = new ExternalPlatform();
@@ -499,7 +499,7 @@ public class AdyenRequestFactory {
     /**
      * Set Address Data into API
      */
-    private Address setAddressData(AddressData addressData) {
+    protected Address setAddressData(AddressData addressData) {
         if (addressData == null) {
             LOG.warn("Null address data");
             return null;

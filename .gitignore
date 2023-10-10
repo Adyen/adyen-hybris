@@ -13,3 +13,6 @@
 */extensioninfo.xsd
 **/gensrc/
 **/*.class
+**/.classpath
+**/.settings/
+**/.externalToolBuilders/
