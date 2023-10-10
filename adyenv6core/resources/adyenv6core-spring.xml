@@ -132,7 +132,8 @@
         <constructor-arg name="adyenPaymentMethodDetailsBuilderExecutor" ref="adyenPaymentMethodDetailsStrategyExecutorImpl" />
     </bean>
 
-    <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
+    <alias name="defaultAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
+    <bean id="defaultAdyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
     </bean>
 
