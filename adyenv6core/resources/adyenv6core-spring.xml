@@ -461,4 +461,15 @@
     <bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
         <property name="baseStoreService" ref="baseStoreService" />
     </bean>
+
+    <bean id="adyenExpressCheckoutFacade" class="com.adyen.v6.facades.impl.DefaultAdyenExpressCheckoutFacade">
+        <property name="cartFactory" ref="cartFactory"/>
+        <property name="cartService" ref="cartService"/>
+        <property name="productService" ref="productService"/>
+        <property name="addressReverseConverter" ref="addressReverseConverter"/>
+        <property name="modelService" ref="modelService"/>
+        <property name="customerFacade" ref="customerFacade"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="customerAccountService" ref="customerAccountService"/>
+    </bean>
 </beans>
