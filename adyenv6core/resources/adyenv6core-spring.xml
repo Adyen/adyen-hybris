@@ -503,5 +503,8 @@
         <property name="customerFacade" ref="customerFacade"/>
         <property name="commonI18NService" ref="commonI18NService"/>
         <property name="customerAccountService" ref="customerAccountService"/>
+        <property name="checkoutFacade" ref="checkoutFacade"/>
+        <property name="commerceCartService" ref="commerceCartService"/>
+        <property name="deliveryModeService" ref="deliveryModeService"/>
     </bean>
 </beans>
