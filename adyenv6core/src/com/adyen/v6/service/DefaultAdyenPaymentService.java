@@ -40,7 +40,6 @@ import com.adyen.service.*;
 import com.adyen.service.exception.ApiException;
 import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.util.Util;
-import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import com.adyen.v6.model.RequestInfo;
@@ -450,7 +449,9 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
         createCheckoutSessionRequest.amount(Util.createAmount(totalPriceWithTax.getValue(), totalPriceWithTax.getCurrencyIso()));
         createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
-        createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
+        if (cartData.getDeliveryAddress() != null) {
+            createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
+        }
         createCheckoutSessionRequest.returnUrl(Optional.ofNullable(cartData.getAdyenReturnUrl()).orElse("returnUrl"));
         createCheckoutSessionRequest.reference(cartData.getCode());
 
