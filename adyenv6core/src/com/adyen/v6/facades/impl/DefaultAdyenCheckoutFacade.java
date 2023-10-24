@@ -125,7 +125,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public static final String DETAILS = "details";
     private static final String LOCALE = "locale";
-    private static final String SESSION_DATA = "sessionData";
+    public static final String SESSION_DATA = "sessionData";
     private static final String REGION = "region";
     private static final String US_LOCALE = "en_US";
     private static final String GB_LOCALE = "en_GB";
@@ -843,6 +843,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_DELIVERY_ADDRESS, gson.toJson(cartData.getDeliveryAddress()));
         model.addAttribute(SESSION_DATA, getAdyenSessionData());
         model.addAttribute(LOCALE, gson.toJson(setLocale(cartData.getAdyenAmazonPayConfiguration(), shopperLocale)));
+    }
+
+    public void initializeApplePayExpressData(Model model) throws ApiException {
+        final BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        final Amount amount = Util.createAmount(cartData.getTotalPriceWithTax().getValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
+
+        model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
+        model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
+        model.addAttribute(MODEL_APPLEPAY_MERCHANT_IDENTIFIER, cartData.getAdyenApplePayMerchantIdentifier());
+        model.addAttribute(MODEL_APPLEPAY_MERCHANT_NAME, cartData.getAdyenApplePayMerchantName());
+        model.addAttribute(SESSION_DATA, getAdyenSessionData());
+        model.addAttribute(MODEL_AMOUNT, amount);
+        model.addAttribute(MODEL_DF_URL, getAdyenPaymentService().getDeviceFingerprintUrl());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
     }
 
     private String setLocale(final Map<String, String> map, final String shopperLocale) {
