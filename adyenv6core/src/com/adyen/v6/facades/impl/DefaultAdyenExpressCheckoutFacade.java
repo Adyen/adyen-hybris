@@ -1,5 +1,6 @@
 package com.adyen.v6.facades.impl;
 
+import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import de.hybris.platform.commercefacades.customer.CustomerFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
@@ -9,15 +10,16 @@ import de.hybris.platform.commerceservices.customer.DuplicateUidException;
 import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.commerceservices.order.CommerceCartService;
 import de.hybris.platform.commerceservices.service.data.CommerceCartParameter;
+import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
+import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.product.ProductModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
-import de.hybris.platform.order.CartFactory;
-import de.hybris.platform.order.CartService;
-import de.hybris.platform.order.DeliveryModeService;
-import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
+import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
+import de.hybris.platform.order.*;
 import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
@@ -26,6 +28,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import static de.hybris.platform.servicelayer.util.ServicesUtil.validateParameterNotNull;
 import static de.hybris.platform.servicelayer.util.ServicesUtil.validateParameterNotNullStandardMessage;
@@ -44,12 +49,12 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private CheckoutFacade checkoutFacade;
     private CommerceCartService commerceCartService;
     private DeliveryModeService deliveryModeService;
-
+    private ZoneDeliveryModeService zoneDeliveryModeService;
 
     private Converter<AddressData, AddressModel> addressReverseConverter;
 
 
-    public void expressPDPCheckout(AddressData addressData, String productCode) throws DuplicateUidException {
+    public void expressPDPCheckout(AddressData addressData, String productCode, String merchantId, String merchantName) throws DuplicateUidException {
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         CartModel cart = createCartForExpressCheckout(user);
 
@@ -61,12 +66,13 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
         addressModel.setOwner(user);
         addressModel.setBillingAddress(true);
-        addressModel.setShippingAddress(true);
 
         modelService.save(addressModel);
-        cart.setDeliveryAddress(addressModel);
-        cart.setPaymentAddress(addressModel);
         cart.setDeliveryMode(deliveryMode);
+
+        PaymentInfoModel paymentInfo = createPaymentInfoForCart(user, addressModel, cart,
+                Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY, merchantId, merchantName);
+        cart.setPaymentInfo(paymentInfo);
 
         ProductModel product = productService.getProductForCode(productCode);
 
@@ -93,7 +99,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         }
     }
 
-    public void expressCartCheckout(AddressData addressData) throws DuplicateUidException {
+    public void expressCartCheckout(AddressData addressData, String merchantId, String merchantName) throws DuplicateUidException {
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         cartService.changeCurrentCartUser(user);
 
@@ -105,13 +111,14 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         validateParameterNotNull(deliveryMode, "Delivery mode for Adyen express checkout not configured");
 
         addressModel.setBillingAddress(true);
-        addressModel.setShippingAddress(true);
         addressModel.setOwner(user);
         modelService.save(addressModel);
 
-        cart.setDeliveryAddress(addressModel);
-        cart.setPaymentAddress(addressModel);
         cart.setDeliveryMode(deliveryMode);
+
+        PaymentInfoModel paymentInfo = createPaymentInfoForCart(user, addressModel, cart,
+                Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY, merchantId, merchantName);
+        cart.setPaymentInfo(paymentInfo);
 
         modelService.save(cart);
 
@@ -124,6 +131,13 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         } else {
             LOG.error("Checkout attempt on empty cart");
         }
+    }
+
+    public Optional<ZoneDeliveryModeValueModel> getExpressDeliveryModePrice() {
+        ZoneDeliveryModeModel deliveryMode = (ZoneDeliveryModeModel) deliveryModeService.getDeliveryModeForCode(DELIVERY_MODE_CODE);
+        CurrencyModel currentCurrency = commonI18NService.getCurrentCurrency();
+
+        return deliveryMode.getValues().stream().filter(valueModel -> valueModel.getCurrency().equals(currentCurrency)).findFirst();
     }
 
     private CustomerModel createGuestCustomer(String emailAddress) throws DuplicateUidException {
@@ -154,6 +168,25 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         cart.setUser(guestUser);
         modelService.save(cart);
         return cart;
+    }
+
+    private PaymentInfoModel createPaymentInfoForCart(CustomerModel customerModel, AddressModel addressModel, CartModel cartModel, String paymentMethod, String merchantId, String merchantName) {
+        final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
+        paymentInfo.setUser(customerModel);
+        paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
+        paymentInfo.setBillingAddress(addressModel);
+        paymentInfo.setAdyenPaymentMethod(paymentMethod);
+
+        paymentInfo.setAdyenApplePayMerchantName(merchantName);
+        paymentInfo.setAdyenApplePayMerchantIdentifier(merchantId);
+
+        modelService.save(paymentInfo);
+
+        return paymentInfo;
+    }
+
+    protected String generateCcPaymentInfoCode(final CartModel cartModel) {
+        return cartModel.getCode() + "_" + UUID.randomUUID();
     }
 
     private boolean cartHasEntries(CartModel cartModel) {
@@ -202,5 +235,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public void setDeliveryModeService(DeliveryModeService deliveryModeService) {
         this.deliveryModeService = deliveryModeService;
+    }
+
+    public void setZoneDeliveryModeService(ZoneDeliveryModeService zoneDeliveryModeService) {
+        this.zoneDeliveryModeService = zoneDeliveryModeService;
     }
 }

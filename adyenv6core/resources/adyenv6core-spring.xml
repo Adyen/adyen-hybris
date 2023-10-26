@@ -231,6 +231,7 @@
                 <property name="transactionManager" ref="txManager"/>
             </bean>
         </property>
+        <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
@@ -506,5 +507,6 @@
         <property name="checkoutFacade" ref="checkoutFacade"/>
         <property name="commerceCartService" ref="commerceCartService"/>
         <property name="deliveryModeService" ref="deliveryModeService"/>
+        <property name="zoneDeliveryModeService" ref="zoneDeliveryModeService"/>
     </bean>
 </beans>
