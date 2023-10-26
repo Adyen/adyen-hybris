@@ -4,19 +4,10 @@ import de.hybris.platform.commercefacades.user.data.AddressData;
 
 import java.io.Serializable;
 
-public class ApplePayExpressPDPRequest implements Serializable {
-    private String productCode;
+public class ApplePayExpressCartRequest implements Serializable {
     private AddressData addressData;
     private String adyenApplePayMerchantName;
     private String adyenApplePayMerchantIdentifier;
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
-    }
 
     public AddressData getAddressData() {
         return addressData;

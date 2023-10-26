@@ -4,6 +4,12 @@ var AdyenExpressCheckoutHybris = (function () {
 
     return {
 
+    address: null,
+    adyenConfig: {
+            merchantName: null,
+            merchantId: null
+    },
+
     initiateCheckout: async function (initConfig) {
                 const configuration = {
                     ...initConfig,
@@ -29,6 +35,10 @@ var AdyenExpressCheckoutHybris = (function () {
                     const {amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label} = params;
                     const applePayNode = document.getElementById('adyen-component-button-container-' + label);
                     const self = this;
+
+                    this.adyenConfig.merchantName = applePayMerchantName;
+                    this.adyenConfig.merchantId = applePayMerchantIdentifier;
+
                     const applePayConfiguration = {
                         //onValidateMerchant is required if you're using your own Apple Pay certificate
                         onValidateMerchant: (resolve, reject, validationURL) => {
@@ -69,11 +79,13 @@ var AdyenExpressCheckoutHybris = (function () {
                                 return false;
                             }
                             //TODO: implement payment call
+
+                            this.address = null;
                         },
                         onShippingContactSelected: function(event){
-                            var shippingAddress = event.shippingContact;
+                            this.address = event.shippingContact;
                             //TODO: implement call with address
-                            console.log(shippingAddress);
+                            console.log(this.address);
                         },
                         onClick: function(resolve, reject) {
                             resolve();
