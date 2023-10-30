@@ -24,17 +24,10 @@
         <requires-extension name="commercefacades"/>
         <requires-extension name="basecommerce"/>
         <requires-extension name="adyenv6core"/>
-      
+        <requires-extension name="subscriptionservices"/>
+
         
         <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6subscriptionManager" packageroot="com.adyen.v6"/>
-                      
-        
-        <webmodule jspcompile="false" webroot="/adyenv6subscription"/>
-                					
-	
-        
-           
-    
     </extension>
               
 

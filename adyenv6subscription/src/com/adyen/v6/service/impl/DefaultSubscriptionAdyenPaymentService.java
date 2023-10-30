@@ -12,7 +12,6 @@ import com.adyen.v6.service.DefaultAdyenPaymentService;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
-import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.commons.lang3.BooleanUtils;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.adyen.v6.utils.SubscriptionsUtils.containsSubscription;
+import static com.adyen.v6.utils.SubscriptionsUtils.findRecurringProcessingModel;
 
 public class DefaultSubscriptionAdyenPaymentService extends DefaultAdyenPaymentService {
 
@@ -85,7 +85,7 @@ public class DefaultSubscriptionAdyenPaymentService extends DefaultAdyenPaymentS
 
         if (BooleanUtils.isTrue(containsSubscription(cartData))) {
             paymentsRequest.setShopperInteraction(PaymentsRequest.ShopperInteractionEnum.CONTAUTH);
-            paymentsRequest.setRecurringProcessingModel(PaymentsRequest.RecurringProcessingModelEnum.SUBSCRIPTION);
+            paymentsRequest.setRecurringProcessingModel(findRecurringProcessingModel(cartData));
         }
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);

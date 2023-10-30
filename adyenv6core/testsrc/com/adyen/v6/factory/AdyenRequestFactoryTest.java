@@ -196,7 +196,7 @@ public class AdyenRequestFactoryTest {
         testRecurringOption(RecurringContractMode.NONE, null);
         testRecurringOption(RecurringContractMode.ONECLICK, null);
         //testRecurringOption(RecurringContractMode.RECURRING, Recurring.ContractEnum.RECURRING);
-        //testRecurringOption(RecurringContractMode.ONECLICK_RECURRING, Recurring.ContractEnum.RECURRING);
+        //testRecurringOption(RecurringContractMode.RECURRING, Recurring.ContractEnum.RECURRING);
 
         //Test recurring contract when remember-me is set
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(true);

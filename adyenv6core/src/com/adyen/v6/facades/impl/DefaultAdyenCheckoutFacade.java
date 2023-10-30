@@ -406,7 +406,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CheckoutPaymentsAction action = paymentsResponse.getAction();
 
         LOGGER.info("Authorize payment with result code: " + resultCode + " action: " + (action != null ? action.getType() : "null"));
-
+        // TODO: Put token on order!
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode || PaymentsResponse.ResultCodeEnum.PENDING == resultCode) {
             return createAuthorizedOrder(paymentsResponse);
         }
@@ -533,7 +533,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException {
         final CartModel cartModel = cartService.getSessionCart();
         final String merchantTransactionCode = cartModel.getCode();
-
+        if(!paymentsResponse.getAdditionalData().isEmpty()&&paymentsResponse.getAdditionalData().containsKey("recurring.recurringDetailReference")) {
+            cartModel.getPaymentInfo().setAdyenSelectedReference(paymentsResponse.getAdditionalData().get("recurring.recurringDetailReference"));
+        }
         //First save the transactions to the CartModel < AbstractOrderModel
         getAdyenTransactionService().authorizeOrderModel(cartModel, merchantTransactionCode, paymentsResponse.getPspReference());
 
@@ -580,6 +582,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (paymentsResponse.getAdditionalData() != null) {
             orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
+            //orderData.getPaymentInfo().setgetPaymentInfo().set
         }
 
         return orderData;
