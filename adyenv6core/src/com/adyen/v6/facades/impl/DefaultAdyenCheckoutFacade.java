@@ -134,6 +134,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private static final String IT_LOCALE = "it_IT";
     private static final String ES_LOCALE = "es_ES";
     private static final String US = "US";
+    public static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
 
     private BaseStoreService baseStoreService;
     private SessionService sessionService;
@@ -406,7 +407,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CheckoutPaymentsAction action = paymentsResponse.getAction();
 
         LOGGER.info("Authorize payment with result code: " + resultCode + " action: " + (action != null ? action.getType() : "null"));
-        // TODO: Put token on order!
+
         if (PaymentsResponse.ResultCodeEnum.AUTHORISED == resultCode || PaymentsResponse.ResultCodeEnum.PENDING == resultCode) {
             return createAuthorizedOrder(paymentsResponse);
         }
@@ -533,13 +534,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private OrderData createAuthorizedOrder(final PaymentsResponse paymentsResponse) throws InvalidCartException {
         final CartModel cartModel = cartService.getSessionCart();
         final String merchantTransactionCode = cartModel.getCode();
-        if(!paymentsResponse.getAdditionalData().isEmpty()&&paymentsResponse.getAdditionalData().containsKey("recurring.recurringDetailReference")) {
-            cartModel.getPaymentInfo().setAdyenSelectedReference(paymentsResponse.getAdditionalData().get("recurring.recurringDetailReference"));
-        }
-        //First save the transactions to the CartModel < AbstractOrderModel
+
+        updateAdyenSelectedReferenceIfPresent(cartModel, paymentsResponse);
+
+        // First save the transactions to the CartModel < AbstractOrderModel
         getAdyenTransactionService().authorizeOrderModel(cartModel, merchantTransactionCode, paymentsResponse.getPspReference());
 
         return createOrderFromPaymentsResponse(paymentsResponse);
+    }
+
+    private void updateAdyenSelectedReferenceIfPresent(final CartModel cartModel, final PaymentsResponse paymentsResponse) {
+        Map<String, String> additionalData = paymentsResponse.getAdditionalData();
+        if (additionalData != null) {
+            String recurringDetailReference = additionalData.get(RECURRING_RECURRING_DETAIL_REFERENCE);
+            if (recurringDetailReference != null) {
+                cartModel.getPaymentInfo().setAdyenSelectedReference(recurringDetailReference);
+            }
+        }
     }
 
     /**
@@ -582,7 +593,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         if (paymentsResponse.getAdditionalData() != null) {
             orderData.setAdyenPosReceipt(paymentsResponse.getAdditionalData().get("pos.receipt"));
-            //orderData.getPaymentInfo().setgetPaymentInfo().set
         }
 
         return orderData;
