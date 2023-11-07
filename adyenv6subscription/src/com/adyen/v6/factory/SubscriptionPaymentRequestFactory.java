@@ -16,6 +16,7 @@ import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -132,7 +133,7 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
             paymentsRequest.setBillingAddress(setAddressData(billingAddress));
             // set PhoneNumber if it is provided
             final String phone = billingAddress.getPhone();
-            if (phone != null && !phone.isEmpty())
+            if (StringUtils.isNotBlank(phone ))
             {
                 paymentsRequest.setTelephoneNumber(phone);
             }

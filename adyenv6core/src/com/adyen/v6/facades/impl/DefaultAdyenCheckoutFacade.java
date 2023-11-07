@@ -134,7 +134,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private static final String IT_LOCALE = "it_IT";
     private static final String ES_LOCALE = "es_ES";
     private static final String US = "US";
-    public static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
+    private static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
 
     private BaseStoreService baseStoreService;
     private SessionService sessionService;
