@@ -134,6 +134,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private static final String IT_LOCALE = "it_IT";
     private static final String ES_LOCALE = "es_ES";
     private static final String US = "US";
+    private static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
 
     private BaseStoreService baseStoreService;
     private SessionService sessionService;
@@ -534,10 +535,22 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         final CartModel cartModel = cartService.getSessionCart();
         final String merchantTransactionCode = cartModel.getCode();
 
-        //First save the transactions to the CartModel < AbstractOrderModel
+        updateAdyenSelectedReferenceIfPresent(cartModel, paymentsResponse);
+
+        // First save the transactions to the CartModel < AbstractOrderModel
         getAdyenTransactionService().authorizeOrderModel(cartModel, merchantTransactionCode, paymentsResponse.getPspReference());
 
         return createOrderFromPaymentsResponse(paymentsResponse);
+    }
+
+    private void updateAdyenSelectedReferenceIfPresent(final CartModel cartModel, final PaymentsResponse paymentsResponse) {
+        Map<String, String> additionalData = paymentsResponse.getAdditionalData();
+        if (additionalData != null) {
+            String recurringDetailReference = additionalData.get(RECURRING_RECURRING_DETAIL_REFERENCE);
+            if (recurringDetailReference != null) {
+                cartModel.getPaymentInfo().setAdyenSelectedReference(recurringDetailReference);
+            }
+        }
     }
 
     /**

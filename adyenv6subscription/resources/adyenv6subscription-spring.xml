@@ -3,12 +3,12 @@
  Copyright (c) 2021 SAP SE or an SAP affiliate company. All rights reserved.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/aop
-           http://www.springframework.org/schema/aop/spring-aop.xsd">
+           http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <alias name="subscriptionAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
     <bean id="subscriptionAdyenPaymentServiceFactory" class="com.adyen.v6.factory.SubscriptionAdyenPaymentServiceFactory">
@@ -21,5 +21,84 @@
     <bean id="subscriptionRequestFactory" class="com.adyen.v6.factory.SubscriptionPaymentRequestFactory">
         <property name="cartFacade" ref="cartFacade" />
     </bean>
+
+    <bean id="subscriptionRepository" class="com.adyen.v6.repository.SubscriptionRepository" >
+        <property name="flexibleSearchService" ref="flexibleSearchService" />
+    </bean>
+
+    <bean id="subscriptionOrderExecutor" class="com.adyen.v6.service.impl.SubscriptionOrderExecutor" scope="prototype">
+        <constructor-arg value="originalOrder" />
+        <property name="cartService" ref="defaultCartService" />
+        <property name="typeService" ref="typeService" />
+        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory" />
+        <property name="adyenTransactionService" ref="adyenTransactionService" />
+        <property name="cartConverter" ref="cartConverter" />
+        <property name="commerceCheckoutService" ref="commerceCheckoutService" />
+        <property name="baseStoreService" ref="baseStoreService" />
+        <property name="modelService" ref="modelService" />
+        <property name="keyGenerator" ref="orderCodeGenerator" />
+        <property name="subscriptionAdyenPaymentServiceFactory" ref="subscriptionAdyenPaymentServiceFactory" />
+    </bean>
+
+    <alias alias="subscriptionCommercePlaceOrderMethodHook" name="adyenSubscriptionCommercePlaceOrderMethodHook"/>
+    <bean id="adyenSubscriptionCommercePlaceOrderMethodHook"
+          class="com.adyen.v6.hooks.AdyenSubscriptionCommercePlaceOrderMethodHook"
+          parent="defaultSubscriptionCommercePlaceOrderMethodHook">
+
+    </bean>
+
+    <bean id="adyenSubscriptionOrderPopulator" class="com.adyen.v6.populators.AdyenSubscriptionOrderPopulator" parent="baseOrderPopulator">
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="cartConverter"/>
+        <property name="add" ref="adyenSubscriptionOrderPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="extendedCartConverter"/>
+        <property name="add" ref="adyenSubscriptionOrderPopulator"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="orderConverter"/>
+        <property name="add" ref="adyenSubscriptionOrderPopulator"/>
+    </bean>
+
+    <bean id="recurringOrderService" class="com.adyen.v6.service.impl.DefaultRecurringOrderService">
+        <property name="impersonationService" ref="impersonationService"/>
+    </bean>
+    
+    <bean id="subscriptionCronJob" class="com.adyen.v6.job.SubscriptionCronJob" parent="abstractJobPerformable" >
+        <property name="subscriptionRepository" ref="subscriptionRepository" />
+        <property name="recurringOrderService" ref="recurringOrderService" />
+    </bean>
+
+    <alias alias="recurringOrdersCloneAbstractOrderHook" name="adyenRecurringOrdersCloneAbstractOrderHook"/>
+    <bean id="adyenRecurringOrdersCloneAbstractOrderHook" class="com.adyen.v6.hooks.AdyenRecurringOrdersCloneAbstractOrderHook">
+        <property name="itemModelCloneCreator" ref="itemModelCloneCreator"/>
+        <property name="modelService" ref="modelService"/>
+    </bean>
+
+    <util:list id="recurringOrdersCloneAbstractOrderHookList"
+               value-type="de.hybris.platform.order.strategies.ordercloning.CloneAbstractOrderHook" >
+        <ref bean="recurringOrdersCloneAbstractOrderHook"/>
+    </util:list>
+
+    <bean id="recurringOrdersCloneAbstractOrderStrategy"
+          class="de.hybris.platform.order.strategies.ordercloning.impl.DefaultCloneAbstractOrderStrategy">
+        <constructor-arg name="typeService" ref="typeService"/>
+        <constructor-arg name="itemModelCloneCreator" ref="itemModelCloneCreator"/>
+        <constructor-arg name="abstractOrderEntryTypeService" ref="abstractOrderEntryTypeService"/>
+        <constructor-arg name="skippedAttributes" ref="recurringOrdersCloneAbstractOrderSkippedAttributesList" />
+        <property name="cloneHooks" ref="recurringOrdersCloneAbstractOrderHookList" />
+    </bean>
+
+    <util:list id="recurringOrdersCloneAbstractOrderSkippedAttributesList" value-type="java.lang.String">
+        <value>paymentInfo</value>
+        <value>deliveryAddress</value>
+        <value>paymentAddress</value>
+        <value>parent</value>
+    </util:list>
 
 </beans>
