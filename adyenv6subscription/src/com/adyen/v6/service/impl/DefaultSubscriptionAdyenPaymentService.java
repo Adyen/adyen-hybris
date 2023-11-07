@@ -86,6 +86,7 @@ public class DefaultSubscriptionAdyenPaymentService extends DefaultAdyenPaymentS
         if (BooleanUtils.isTrue(containsSubscription(cartData))) {
             paymentsRequest.setShopperInteraction(PaymentsRequest.ShopperInteractionEnum.CONTAUTH);
             paymentsRequest.setRecurringProcessingModel(findRecurringProcessingModel(cartData));
+            paymentsRequest.setEnableRecurring(Boolean.TRUE);
         }
         LOG.debug(paymentsRequest);
         PaymentsResponse paymentsResponse = checkout.payments(paymentsRequest);
