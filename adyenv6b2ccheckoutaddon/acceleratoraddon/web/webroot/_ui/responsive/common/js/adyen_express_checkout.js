@@ -32,8 +32,8 @@ var AdyenExpressCheckoutHybris = (function () {
 
         initiateApplePayExpress: async function (params, config) {
                     var checkoutPromise = this.initiateCheckout(config);
-                    const {amount, countryCode, applePayMerchantIdentifier, applePayMerchantName, label} = params;
-                    const applePayNode = document.getElementById('adyen-component-button-container-' + label);
+                    const {amount, countryCode, applePayMerchantIdentifier, applePayMerchantName} = params;
+                    const applePayNode = document.getElementById('adyen-component-button-container');
                     const self = this;
 
                     this.adyenConfig.merchantName = applePayMerchantName;
