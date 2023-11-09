@@ -2,9 +2,11 @@ package com.adyen.v6.utils;
 import com.adyen.model.checkout.CreateCheckoutSessionRequest;
 import com.adyen.model.checkout.PaymentsRequest;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import org.apache.commons.collections.CollectionUtils;
+
 public class SubscriptionsUtils {
     public static boolean containsSubscription(CartData cartData){
-        return cartData.getEntries().stream().anyMatch(orderEntryData -> orderEntryData.getProduct().getSubscriptionTerm()!=null);
+            return CollectionUtils.isNotEmpty(cartData.getEntries()) && cartData.getEntries().stream().anyMatch(orderEntryData -> orderEntryData.getProduct().getSubscriptionTerm() != null);
     }
 
     public static PaymentsRequest.RecurringProcessingModelEnum findRecurringProcessingModel(CartData cartData){
