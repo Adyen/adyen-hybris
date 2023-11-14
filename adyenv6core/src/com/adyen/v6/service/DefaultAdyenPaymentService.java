@@ -23,6 +23,7 @@ package com.adyen.v6.service;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.enums.Environment;
+import com.adyen.model.Amount;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.*;
@@ -456,6 +457,18 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         createCheckoutSessionRequest.reference(cartData.getCode());
 
         return  checkout.sessions(createCheckoutSessionRequest);
+    }
+
+    @Override
+    public CreateCheckoutSessionResponse getPaymentSessionData(final Amount amount) throws IOException, ApiException {
+        final Checkout checkout = new Checkout(client);
+
+        final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
+        createCheckoutSessionRequest.amount(amount);
+        createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
+        createCheckoutSessionRequest.returnUrl("returnUrl"); //dummy url because it's required by api
+
+        return checkout.sessions(createCheckoutSessionRequest);
     }
 
     @Override

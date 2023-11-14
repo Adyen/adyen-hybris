@@ -8,6 +8,7 @@ public class ApplePayExpressCartRequest implements Serializable {
     private AddressData addressData;
     private String adyenApplePayMerchantName;
     private String adyenApplePayMerchantIdentifier;
+    private String applePayToken;
 
     public AddressData getAddressData() {
         return addressData;
@@ -31,5 +32,13 @@ public class ApplePayExpressCartRequest implements Serializable {
 
     public void setAdyenApplePayMerchantIdentifier(String adyenApplePayMerchantIdentifier) {
         this.adyenApplePayMerchantIdentifier = adyenApplePayMerchantIdentifier;
+    }
+
+    public String getApplePayToken() {
+        return applePayToken;
+    }
+
+    public void setApplePayToken(String applePayToken) {
+        this.applePayToken = applePayToken;
     }
 }
