@@ -1,9 +1,13 @@
 package com.adyen.v6.facades.impl;
 
+import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.details.ApplePayDetails;
 import com.adyen.v6.constants.Adyenv6coreConstants;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import de.hybris.platform.commercefacades.customer.CustomerFacade;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
+import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commerceservices.customer.CustomerAccountService;
 import de.hybris.platform.commerceservices.customer.DuplicateUidException;
@@ -25,10 +29,12 @@ import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,11 +56,18 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private CommerceCartService commerceCartService;
     private DeliveryModeService deliveryModeService;
     private ZoneDeliveryModeService zoneDeliveryModeService;
-
+    private AdyenCheckoutFacade adyenCheckoutFacade;
     private Converter<AddressData, AddressModel> addressReverseConverter;
+    private Converter<CartModel, CartData> cartConverter;
 
 
-    public void expressPDPCheckout(AddressData addressData, String productCode, String merchantId, String merchantName) throws DuplicateUidException {
+    public PaymentsResponse expressPDPCheckout(AddressData addressData, String productCode, String merchantId, String merchantName,
+                                               String applePayToken, HttpServletRequest request) throws Exception {
+        validateParameterNotNull(addressData, "Empty address");
+        if (StringUtils.isEmpty(addressData.getEmail())) {
+            throw new IllegalArgumentException("Empty email address");
+        }
+
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         CartModel cart = createCartForExpressCheckout(user);
 
@@ -88,18 +101,24 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
             CartModel sessionCart = cartService.getSessionCart();
             cartService.setSessionCart(cart);
-            try {
-                checkoutFacade.placeOrder();
-            } catch (InvalidCartException e) {
-                LOG.error("Invalid cart exception", e);
-            }
+
+            CartData cartData = cartConverter.convert(cart);
+
+            ApplePayDetails applePayDetails = new ApplePayDetails();
+            applePayDetails.setApplePayToken(applePayToken);
+
+            PaymentsResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
+
             cartService.setSessionCart(sessionCart);
+
+            return paymentsResponse;
         } else {
-            LOG.error("Checkout attempt on empty cart");
+            throw new InvalidCartException("Checkout attempt on empty cart");
         }
     }
 
-    public void expressCartCheckout(AddressData addressData, String merchantId, String merchantName) throws DuplicateUidException {
+    public PaymentsResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
+                                                String applePayToken, HttpServletRequest request) throws Exception {
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         cartService.changeCurrentCartUser(user);
 
@@ -123,13 +142,14 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         modelService.save(cart);
 
         if (cartHasEntries(cart)) {
-            try {
-                checkoutFacade.placeOrder();
-            } catch (InvalidCartException e) {
-                LOG.error("Invalid cart exception", e);
-            }
+            CartData cartData = cartConverter.convert(cart);
+
+            ApplePayDetails applePayDetails = new ApplePayDetails();
+            applePayDetails.setApplePayToken(applePayToken);
+
+            return adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
         } else {
-            LOG.error("Checkout attempt on empty cart");
+            throw new InvalidCartException("Checkout attempt on empty cart");
         }
     }
 
@@ -239,5 +259,13 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public void setZoneDeliveryModeService(ZoneDeliveryModeService zoneDeliveryModeService) {
         this.zoneDeliveryModeService = zoneDeliveryModeService;
+    }
+
+    public void setAdyenCheckoutFacade(AdyenCheckoutFacade adyenCheckoutFacade) {
+        this.adyenCheckoutFacade = adyenCheckoutFacade;
+    }
+
+    public void setCartConverter(Converter<CartModel, CartData> cartConverter) {
+        this.cartConverter = cartConverter;
     }
 }

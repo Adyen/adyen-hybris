@@ -823,6 +823,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
     }
 
+    private CreateCheckoutSessionResponse getAdyenSessionData(Amount amount) throws ApiException {
+        try {
+            return getAdyenPaymentService().getPaymentSessionData(amount);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Processing json failed. ", e);
+            return null;
+        } catch (IOException e) {
+            LOGGER.error("Exception during geting Adyen session data. ", e);
+            return null;
+        }
+    }
+
     @Override
     public void initializeSummaryData(Model model) throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
@@ -857,32 +869,23 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(LOCALE, gson.toJson(setLocale(cartData.getAdyenAmazonPayConfiguration(), shopperLocale)));
     }
 
-    public void initializeApplePayExpressData(Model model) throws ApiException {
+    public void initializeApplePayExpressCartPageData(Model model) throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
         final String currencyIso = cartData.getTotalPriceWithTax().getCurrencyIso();
-        final BigDecimal amountValue = cartData.getTotalPriceWithTax().getValue();
+        BigDecimal amountValue = cartData.getTotalPriceWithTax().getValue();
+        BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
+
+        amountValue = amountValue.add(expressDeliveryModeValue);
 
         initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
     }
 
-    public void initializeApplePayExpressData(Model model, ProductData productData) throws ApiException {
+    public void initializeApplePayExpressPDPData(Model model, ProductData productData) throws ApiException {
         final String currencyIso = productData.getPrice().getCurrencyIso();
         BigDecimal amountValue = productData.getPrice().getValue();
-        Optional<ZoneDeliveryModeValueModel> expressDeliveryModePrice = adyenExpressCheckoutFacade.getExpressDeliveryModePrice();
+        BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
 
-        BigDecimal deliveryValue = BigDecimal.ZERO;
-
-        if (expressDeliveryModePrice.isPresent()) {
-            ZoneDeliveryModeValueModel zoneDeliveryModeValueModel = expressDeliveryModePrice.get();
-            if (!StringUtils.equals(zoneDeliveryModeValueModel.getCurrency().getIsocode(), currencyIso)) {
-                throw new IllegalArgumentException("Delivery and product currencies are not equal");
-            }
-            deliveryValue = BigDecimal.valueOf(zoneDeliveryModeValueModel.getValue());
-        } else {
-            LOGGER.warn("Empty delivery mode price");
-        }
-
-        amountValue = amountValue.add(deliveryValue);
+        amountValue = amountValue.add(expressDeliveryModeValue);
 
         initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
     }
@@ -915,10 +918,27 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
         model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
         model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
-        model.addAttribute(SESSION_DATA, getAdyenSessionData());
+        model.addAttribute(SESSION_DATA, getAdyenSessionData(amount));
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_DF_URL, getAdyenPaymentService().getDeviceFingerprintUrl());
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
+    }
+
+    private BigDecimal getExpressDeliveryModeValue(final String currencyIso) {
+        Optional<ZoneDeliveryModeValueModel> expressDeliveryModePrice = adyenExpressCheckoutFacade.getExpressDeliveryModePrice();
+
+        BigDecimal deliveryValue = BigDecimal.ZERO;
+
+        if (expressDeliveryModePrice.isPresent()) {
+            ZoneDeliveryModeValueModel zoneDeliveryModeValueModel = expressDeliveryModePrice.get();
+            if (!StringUtils.equals(zoneDeliveryModeValueModel.getCurrency().getIsocode(), currencyIso)) {
+                throw new IllegalArgumentException("Delivery and product currencies are not equal");
+            }
+            deliveryValue = BigDecimal.valueOf(zoneDeliveryModeValueModel.getValue());
+        } else {
+            LOGGER.warn("Empty delivery mode price");
+        }
+        return deliveryValue;
     }
 
     private String setLocale(final Map<String, String> map, final String shopperLocale) {

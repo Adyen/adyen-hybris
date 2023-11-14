@@ -144,9 +144,9 @@ public interface AdyenCheckoutFacade {
 
     void initializeSummaryData(Model model) throws ApiException;
 
-    void initializeApplePayExpressData(Model model) throws ApiException;
+    void initializeApplePayExpressCartPageData(Model model) throws ApiException;
 
-    void initializeApplePayExpressData(Model model, ProductData productData) throws ApiException;
+    void initializeApplePayExpressPDPData(Model model, ProductData productData) throws ApiException;
 
     /**
      * Returns whether Boleto should be shown as an available payment method on the checkout page
