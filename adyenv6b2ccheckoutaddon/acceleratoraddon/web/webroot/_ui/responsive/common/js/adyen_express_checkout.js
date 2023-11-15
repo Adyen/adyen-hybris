@@ -146,14 +146,14 @@ var AdyenExpressCheckoutHybris = (function () {
         document.querySelector("#handleComponentResultForm").submit();
     },
     prepareData: function(event) {
-        if (this.pageType === 'PDP'){
+        if (this.adyenConfig.pageType === 'PDP'){
             return {
                 productCode: this.adyenConfig.productCode,
                 adyenApplePayMerchantName: this.adyenConfig.merchantName,
                 adyenApplePayMerchantIdentifier: this.adyenConfig.merchantId,
                 applePayToken: btoa(JSON.stringify(event.payment.token.paymentData)),
                 addressData: {
-                    email: event.payment.shippingContact.email,
+                    email: event.payment.shippingContact.emailAddress,
                     firstName: event.payment.shippingContact.givenName,
                     lastName: event.payment.shippingContact.familyName,
                     line1: event.payment.shippingContact.addressLines[0],
@@ -167,7 +167,7 @@ var AdyenExpressCheckoutHybris = (function () {
                 }
             }
         }
-        if (this.pageType === 'cart'){
+        if (this.adyenConfig.pageType === 'cart'){
             return {
                 adyenApplePayMerchantName: this.adyenConfig.merchantName,
                 adyenApplePayMerchantIdentifier: this.adyenConfig.merchantId,
@@ -191,10 +191,10 @@ var AdyenExpressCheckoutHybris = (function () {
         return {};
     },
     getUrl: function(){
-        if (this.pageType === 'PDP'){
+        if (this.adyenConfig.pageType === 'PDP'){
             return ACC.config.encodedContextPath + '/expressCheckout/applePayPDP'
         }
-        if (this.pageType === 'cart'){
+        if (this.adyenConfig.pageType === 'cart'){
             return ACC.config.encodedContextPath + '/expressCheckout/cart'
         }
         console.error('unknown page type')

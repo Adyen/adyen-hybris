@@ -79,9 +79,13 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
         addressModel.setOwner(user);
         addressModel.setBillingAddress(true);
+        addressModel.setShippingAddress(true);
 
         modelService.save(addressModel);
         cart.setDeliveryMode(deliveryMode);
+
+        cart.setDeliveryAddress(addressModel);
+        cart.setPaymentAddress(addressModel);
 
         PaymentInfoModel paymentInfo = createPaymentInfoForCart(user, addressModel, cart,
                 Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY, merchantId, merchantName);
@@ -130,10 +134,14 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         validateParameterNotNull(deliveryMode, "Delivery mode for Adyen express checkout not configured");
 
         addressModel.setBillingAddress(true);
+        addressModel.setShippingAddress(true);
         addressModel.setOwner(user);
         modelService.save(addressModel);
 
         cart.setDeliveryMode(deliveryMode);
+
+        cart.setDeliveryAddress(addressModel);
+        cart.setPaymentAddress(addressModel);
 
         PaymentInfoModel paymentInfo = createPaymentInfoForCart(user, addressModel, cart,
                 Adyenv6coreConstants.PAYMENT_METHOD_APPLEPAY, merchantId, merchantName);
