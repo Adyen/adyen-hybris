@@ -154,6 +154,10 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
         modelService.save(cart);
 
+        CommerceCartParameter commerceCartParameter = new CommerceCartParameter();
+        commerceCartParameter.setCart(cart);
+        commerceCartService.recalculateCart(commerceCartParameter);
+
         if (cartHasEntries(cart)) {
             CartData cartData = cartConverter.convert(cart);
 
