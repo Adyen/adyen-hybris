@@ -1,6 +1,12 @@
 var AdyenExpressCheckoutHybris = (function () {
     'use strict';
 
+    var ErrorMessages = {
+            PaymentCancelled: 'checkout.error.authorization.payment.cancelled',
+            PaymentError: 'checkout.error.authorization.payment.error',
+            PaymentNotAvailable: 'checkout.summary.component.notavailable',
+            TermsNotAccepted: 'checkout.error.terms.not.accepted'
+        };
 
     return {
 
@@ -87,6 +93,9 @@ var AdyenExpressCheckoutHybris = (function () {
                 onClick: function(resolve, reject) {
                     resolve();
                 },
+                onSubmit: function(state, component) {
+                    // empty to block session flow, submit logic done in onAuthorized
+                },
                 onAuthorized: (resolve, reject, event) => {
                    var data = this.prepareData(event);
                    this.makePayment(data, resolve, reject);
@@ -108,30 +117,32 @@ var AdyenExpressCheckoutHybris = (function () {
             type: "POST",
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
-            success: function (data) {
+            success: function (response) {
                 try {
-                    var response = JSON.parse(data);
+                   // var response = JSON.parse(data);
+                    console.log(response);
+
                     if (response.resultCode && (response.resultCode === 'Authorised' || response.resultCode === 'RedirectShopper')) {
                         resolve();
-                        this.handleResult(response, false);
+                        AdyenExpressCheckoutHybris.handleResult(response, false);
                     } else {
                         reject();
-                        this.handleResult(ErrorMessages.PaymentError, true);
+                        AdyenExpressCheckoutHybris.handleResult(ErrorMessages.PaymentError, true);
                     }
                 } catch (e) {
                     console.log('Error parsing makePayment response: ' + data);
                     reject();
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    AdyenExpressCheckoutHybris.handleResult(ErrorMessages.PaymentError, true);
                 }
             },
             error: function (xmlHttpResponse, exception) {
                 reject();
                 var responseMessage = xmlHttpResponse.responseJSON;
                 if (xmlHttpResponse.status === 400) {
-                    this.handleResult(responseMessage, true);
+                    AdyenExpressCheckoutHybris.handleResult(responseMessage, true);
                 } else {
                     console.log('Error on makePayment: ' + responseMessage);
-                    this.handleResult(ErrorMessages.PaymentError, true);
+                    AdyenExpressCheckoutHybris.handleResult(ErrorMessages.PaymentError, true);
                 }
             }
         })
