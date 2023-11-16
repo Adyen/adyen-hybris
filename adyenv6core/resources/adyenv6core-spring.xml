@@ -510,5 +510,6 @@
         <property name="zoneDeliveryModeService" ref="zoneDeliveryModeService"/>
         <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
         <property name="cartConverter" ref="cartConverter"/>
+        <property name="userService" ref="userService"/>
     </bean>
 </beans>
