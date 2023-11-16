@@ -184,7 +184,7 @@ var AdyenExpressCheckoutHybris = (function () {
                 adyenApplePayMerchantIdentifier: this.adyenConfig.merchantId,
                 applePayToken: btoa(JSON.stringify(event.payment.token.paymentData)),
                 addressData: {
-                    email: event.payment.shippingContact.email,
+                    email: event.payment.shippingContact.emailAddress,
                     firstName: event.payment.shippingContact.givenName,
                     lastName: event.payment.shippingContact.familyName,
                     line1: event.payment.shippingContact.addressLines[0],
