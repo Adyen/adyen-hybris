@@ -28,7 +28,6 @@ import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -58,7 +57,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private DeliveryModeService deliveryModeService;
     private ZoneDeliveryModeService zoneDeliveryModeService;
     private AdyenCheckoutFacade adyenCheckoutFacade;
-    private UserService userService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private Converter<CartModel, CartData> cartConverter;
 
@@ -71,7 +69,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         }
 
         CustomerModel user = createGuestCustomer(addressData.getEmail());
-        userService.setCurrentUser(user);
 
         CartModel cart = createCartForExpressCheckout(user);
 
@@ -128,7 +125,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     public PaymentsResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
                                                 String applePayToken, HttpServletRequest request) throws Exception {
         CustomerModel user = createGuestCustomer(addressData.getEmail());
-        userService.setCurrentUser(user);
         cartService.changeCurrentCartUser(user);
 
         CartModel cart = cartService.getSessionCart();
@@ -284,9 +280,5 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public void setCartConverter(Converter<CartModel, CartData> cartConverter) {
         this.cartConverter = cartConverter;
-    }
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 }

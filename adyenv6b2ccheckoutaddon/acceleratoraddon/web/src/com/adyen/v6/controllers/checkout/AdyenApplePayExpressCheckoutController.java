@@ -4,8 +4,8 @@ import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import com.adyen.v6.request.ApplePayExpressCartRequest;
 import com.adyen.v6.request.ApplePayExpressPDPRequest;
-import de.hybris.platform.acceleratorstorefrontcommons.security.AutoLoginStrategy;
-import de.hybris.platform.servicelayer.user.UserService;
+import de.hybris.platform.acceleratorstorefrontcommons.security.GUIDCookieStrategy;
+import de.hybris.platform.servicelayer.session.SessionService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,10 +27,10 @@ public class AdyenApplePayExpressCheckoutController {
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
 
     @Autowired
-    private UserService userService;
+    private SessionService sessionService;
 
     @Autowired
-    private AutoLoginStrategy autoLoginStrategy;
+    private GUIDCookieStrategy guidCookieStrategy;
 
     @PostMapping("/expressCheckout/applePayPDP")
     public ResponseEntity applePayExpressPDP(final HttpServletRequest request, final HttpServletResponse response, @RequestBody ApplePayExpressPDPRequest applePayExpressPDPRequest) throws Exception {
@@ -39,7 +39,8 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressPDPRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressPDPRequest.getAdyenApplePayMerchantName(),
                 applePayExpressPDPRequest.getApplePayToken(), request);
 
-        autoLoginStrategy.login(userService.getCurrentUser().getUid(), null, request, response);
+        guidCookieStrategy.setCookie(request, response);
+        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }
@@ -51,7 +52,8 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressCartRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressCartRequest.getAdyenApplePayMerchantName(),
                 applePayExpressCartRequest.getApplePayToken(), request);
 
-        autoLoginStrategy.login(userService.getCurrentUser().getUid(), null, request, response);
+        guidCookieStrategy.setCookie(request, response);
+        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }
