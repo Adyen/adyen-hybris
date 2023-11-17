@@ -4,7 +4,8 @@ import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import com.adyen.v6.request.ApplePayExpressCartRequest;
 import com.adyen.v6.request.ApplePayExpressPDPRequest;
-import de.hybris.platform.acceleratorstorefrontcommons.security.GUIDCookieStrategy;
+import de.hybris.platform.acceleratorstorefrontcommons.security.AutoLoginStrategy;
+import de.hybris.platform.servicelayer.user.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,11 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 public class AdyenApplePayExpressCheckoutController {
     private static final Logger LOG = Logger.getLogger(AdyenApplePayExpressCheckoutController.class);
 
-    @Resource(name = "guidCookieStrategy")
-    private GUIDCookieStrategy guidCookieStrategy;
-
     @Autowired
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AutoLoginStrategy autoLoginStrategy;
 
     @PostMapping("/expressCheckout/applePayPDP")
     public ResponseEntity applePayExpressPDP(final HttpServletRequest request, final HttpServletResponse response, @RequestBody ApplePayExpressPDPRequest applePayExpressPDPRequest) throws Exception {
@@ -36,7 +39,7 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressPDPRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressPDPRequest.getAdyenApplePayMerchantName(),
                 applePayExpressPDPRequest.getApplePayToken(), request);
 
-        guidCookieStrategy.setCookie(request, response);
+        autoLoginStrategy.login(userService.getCurrentUser().getUid(), null, request, response);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }
@@ -48,7 +51,7 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressCartRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressCartRequest.getAdyenApplePayMerchantName(),
                 applePayExpressCartRequest.getApplePayToken(), request);
 
-        guidCookieStrategy.setCookie(request, response);
+        autoLoginStrategy.login(userService.getCurrentUser().getUid(), null, request, response);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }

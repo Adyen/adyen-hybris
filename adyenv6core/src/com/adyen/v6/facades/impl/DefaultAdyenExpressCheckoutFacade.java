@@ -28,7 +28,6 @@ import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
-import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.servicelayer.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +59,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private ZoneDeliveryModeService zoneDeliveryModeService;
     private AdyenCheckoutFacade adyenCheckoutFacade;
     private UserService userService;
-    private SessionService sessionService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private Converter<CartModel, CartData> cartConverter;
 
@@ -74,7 +72,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         userService.setCurrentUser(user);
-        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
 
         CartModel cart = createCartForExpressCheckout(user);
 
@@ -133,7 +130,6 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         CustomerModel user = createGuestCustomer(addressData.getEmail());
         userService.setCurrentUser(user);
         cartService.changeCurrentCartUser(user);
-        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
 
         CartModel cart = cartService.getSessionCart();
         AddressModel addressModel = addressReverseConverter.convert(addressData);
@@ -292,9 +288,5 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-
-    public void setSessionService(SessionService sessionService) {
-        this.sessionService = sessionService;
     }
 }
