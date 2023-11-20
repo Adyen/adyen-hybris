@@ -28,6 +28,7 @@ import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.session.SessionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -45,6 +46,8 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private static final Logger LOG = Logger.getLogger(DefaultAdyenExpressCheckoutFacade.class);
     private static final String USER_NAME = "ApplePayExpressGuest";
     private static final String DELIVERY_MODE_CODE = "adyen-express-checkout";
+    public static final String ANONYMOUS_CHECKOUT_GUID = "anonymous_checkout_guid";
+
     private CartFactory cartFactory;
     private CartService cartService;
     private ProductService productService;
@@ -57,6 +60,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private DeliveryModeService deliveryModeService;
     private ZoneDeliveryModeService zoneDeliveryModeService;
     private AdyenCheckoutFacade adyenCheckoutFacade;
+    private SessionService sessionService;
     private Converter<AddressData, AddressModel> addressReverseConverter;
     private Converter<CartModel, CartData> cartConverter;
 
@@ -114,6 +118,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
             PaymentsResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
 
+            sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
+                    org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
+
             cartService.setSessionCart(sessionCart);
 
             return paymentsResponse;
@@ -159,6 +166,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
             ApplePayDetails applePayDetails = new ApplePayDetails();
             applePayDetails.setApplePayToken(applePayToken);
+
+            sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
+                    org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
 
             return adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
         } else {
@@ -280,5 +290,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public void setCartConverter(Converter<CartModel, CartData> cartConverter) {
         this.cartConverter = cartConverter;
+    }
+
+    public void setSessionService(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 }
