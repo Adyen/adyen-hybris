@@ -4,6 +4,7 @@ import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import com.adyen.v6.request.ApplePayExpressCartRequest;
 import com.adyen.v6.request.ApplePayExpressPDPRequest;
+import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.security.GUIDCookieStrategy;
 import de.hybris.platform.servicelayer.session.SessionService;
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressPDPRequest.getApplePayToken(), request);
 
         guidCookieStrategy.setCookie(request, response);
-        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
+        sessionService.setAttribute(WebConstants.ANONYMOUS_CHECKOUT, Boolean.TRUE);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }
@@ -53,7 +54,7 @@ public class AdyenApplePayExpressCheckoutController {
                 applePayExpressCartRequest.getApplePayToken(), request);
 
         guidCookieStrategy.setCookie(request, response);
-        sessionService.setAttribute("anonymous_checkout", Boolean.TRUE);
+        sessionService.setAttribute(WebConstants.ANONYMOUS_CHECKOUT, Boolean.TRUE);
 
         return new ResponseEntity<>(paymentsResponse, HttpStatus.OK);
     }
