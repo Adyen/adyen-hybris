@@ -21,6 +21,7 @@
 package com.adyen.v6.service;
 
 import com.adyen.httpclient.HTTPClientException;
+import com.adyen.model.Amount;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.*;
 import com.adyen.model.modification.ModificationResult;
@@ -140,4 +141,6 @@ public interface AdyenPaymentService {
     BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel);
 
     CreateCheckoutSessionResponse getPaymentSessionData(final CartData cartData) throws IOException, ApiException;
+
+    CreateCheckoutSessionResponse getPaymentSessionData(final Amount amount) throws IOException, ApiException;
 }

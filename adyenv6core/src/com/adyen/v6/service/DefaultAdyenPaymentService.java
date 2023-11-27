@@ -23,6 +23,7 @@ package com.adyen.v6.service;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.enums.Environment;
+import com.adyen.model.Amount;
 import com.adyen.model.PaymentRequest;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.*;
@@ -40,7 +41,6 @@ import com.adyen.service.*;
 import com.adyen.service.exception.ApiException;
 import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.util.Util;
-import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.factory.AdyenRequestFactory;
 import com.adyen.v6.model.RequestInfo;
@@ -450,11 +450,25 @@ public class DefaultAdyenPaymentService implements AdyenPaymentService {
         final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
         createCheckoutSessionRequest.amount(Util.createAmount(totalPriceWithTax.getValue(), totalPriceWithTax.getCurrencyIso()));
         createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
-        createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
+        if (cartData.getDeliveryAddress() != null) {
+            createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
+        }
         createCheckoutSessionRequest.returnUrl(Optional.ofNullable(cartData.getAdyenReturnUrl()).orElse("returnUrl"));
         createCheckoutSessionRequest.reference(cartData.getCode());
 
         return  checkout.sessions(createCheckoutSessionRequest);
+    }
+
+    @Override
+    public CreateCheckoutSessionResponse getPaymentSessionData(final Amount amount) throws IOException, ApiException {
+        final Checkout checkout = new Checkout(client);
+
+        final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
+        createCheckoutSessionRequest.amount(amount);
+        createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
+        createCheckoutSessionRequest.returnUrl("returnUrl"); //dummy url because it's required by api
+
+        return checkout.sessions(createCheckoutSessionRequest);
     }
 
     @Override
