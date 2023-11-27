@@ -43,6 +43,7 @@ import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -64,6 +65,7 @@ import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
@@ -80,6 +82,7 @@ import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
+import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
 import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
@@ -125,7 +128,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public static final String DETAILS = "details";
     private static final String LOCALE = "locale";
-    private static final String SESSION_DATA = "sessionData";
+    public static final String SESSION_DATA = "sessionData";
     private static final String REGION = "region";
     private static final String US_LOCALE = "en_US";
     private static final String GB_LOCALE = "en_GB";
@@ -161,6 +164,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private Populator<AddressModel, AddressData> addressPopulator;
     private AdyenBusinessProcessService adyenBusinessProcessService;
     private TransactionOperations transactionTemplate;
+    private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -689,16 +693,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         //apple pay
-        Optional<PaymentMethod> applePayMethod = alternativePaymentMethods.stream()
-                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
-                        && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
-                .findFirst();
-        if (applePayMethod.isPresent()) {
-            Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
-            if (!CollectionUtils.isEmpty(applePayConfiguration)) {
-                cartModel.setAdyenApplePayMerchantName(applePayConfiguration.get("merchantName"));
-                cartModel.setAdyenApplePayMerchantIdentifier(applePayConfiguration.get("merchantId"));
-            }
+        Map<String, String> applePayConfig = getApplePayConfigFromPaymentMethods(alternativePaymentMethods);
+        if (!CollectionUtils.isEmpty(applePayConfig)) {
+            cartModel.setAdyenApplePayMerchantName(applePayConfig.get("merchantName"));
+            cartModel.setAdyenApplePayMerchantIdentifier(applePayConfig.get("merchantId"));
         }
 
         //amazon pay
@@ -798,10 +796,36 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         modelService.save(cartModel);
     }
 
+    private Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {
+        Optional<PaymentMethod> applePayMethod = paymentMethods.stream()
+                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                        && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
+                .findFirst();
+        if (applePayMethod.isPresent()) {
+            Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
+            if (!CollectionUtils.isEmpty(applePayConfiguration)) {
+                return applePayConfiguration;
+            }
+        }
+        return new HashMap<>();
+    }
+
     private CreateCheckoutSessionResponse getAdyenSessionData() throws ApiException {
         try {
             final CartData cartData = getCheckoutFacade().getCheckoutCart();
             return getAdyenPaymentService().getPaymentSessionData(cartData);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Processing json failed. ", e);
+            return null;
+        } catch (IOException e) {
+            LOGGER.error("Exception during geting Adyen session data. ", e);
+            return null;
+        }
+    }
+
+    private CreateCheckoutSessionResponse getAdyenSessionData(Amount amount) throws ApiException {
+        try {
+            return getAdyenPaymentService().getPaymentSessionData(amount);
         } catch (JsonProcessingException e) {
             LOGGER.error("Processing json failed. ", e);
             return null;
@@ -843,6 +867,78 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_DELIVERY_ADDRESS, gson.toJson(cartData.getDeliveryAddress()));
         model.addAttribute(SESSION_DATA, getAdyenSessionData());
         model.addAttribute(LOCALE, gson.toJson(setLocale(cartData.getAdyenAmazonPayConfiguration(), shopperLocale)));
+    }
+
+    public void initializeApplePayExpressCartPageData(Model model) throws ApiException {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        final String currencyIso = cartData.getTotalPriceWithTax().getCurrencyIso();
+        BigDecimal amountValue = cartData.getTotalPriceWithTax().getValue();
+        BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
+
+        amountValue = amountValue.add(expressDeliveryModeValue);
+
+        initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
+    }
+
+    public void initializeApplePayExpressPDPData(Model model, ProductData productData) throws ApiException {
+        final String currencyIso = productData.getPrice().getCurrencyIso();
+        BigDecimal amountValue = productData.getPrice().getValue();
+        BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
+
+        amountValue = amountValue.add(expressDeliveryModeValue);
+
+        initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
+    }
+
+    private void initializeApplePayExpressDataInternal(BigDecimal amountValue, String currency, Model model) throws ApiException {
+        final BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
+
+        try {
+            PaymentMethodsResponse paymentMethodsResponse = getAdyenPaymentService().getPaymentMethodsResponse(amountValue,
+                    currency,
+                    null,
+                    getShopperLocale(),
+                    null);
+
+            Map<String, String> applePayConfig = getApplePayConfigFromPaymentMethods(paymentMethodsResponse.getPaymentMethods());
+            if (!CollectionUtils.isEmpty(applePayConfig)) {
+                model.addAttribute(MODEL_APPLEPAY_MERCHANT_IDENTIFIER, applePayConfig.get("merchantId"));
+                model.addAttribute(MODEL_APPLEPAY_MERCHANT_NAME, applePayConfig.get("merchantName"));
+            } else {
+                LOGGER.warn("Empty apple pay config");
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("Payment methods request failed", e);
+        }
+
+        final Amount amount = Util.createAmount(amountValue, currency);
+
+        model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
+        model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
+        model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
+        model.addAttribute(SESSION_DATA, getAdyenSessionData(amount));
+        model.addAttribute(MODEL_AMOUNT, amount);
+        model.addAttribute(MODEL_DF_URL, getAdyenPaymentService().getDeviceFingerprintUrl());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
+    }
+
+    private BigDecimal getExpressDeliveryModeValue(final String currencyIso) {
+        Optional<ZoneDeliveryModeValueModel> expressDeliveryModePrice = adyenExpressCheckoutFacade.getExpressDeliveryModePrice();
+
+        BigDecimal deliveryValue = BigDecimal.ZERO;
+
+        if (expressDeliveryModePrice.isPresent()) {
+            ZoneDeliveryModeValueModel zoneDeliveryModeValueModel = expressDeliveryModePrice.get();
+            if (!StringUtils.equals(zoneDeliveryModeValueModel.getCurrency().getIsocode(), currencyIso)) {
+                throw new IllegalArgumentException("Delivery and product currencies are not equal");
+            }
+            deliveryValue = BigDecimal.valueOf(zoneDeliveryModeValueModel.getValue());
+        } else {
+            LOGGER.warn("Empty delivery mode price");
+        }
+        return deliveryValue;
     }
 
     private String setLocale(final Map<String, String> map, final String shopperLocale) {
@@ -1595,5 +1691,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
+    }
+
+    public void setAdyenExpressCheckoutFacade(AdyenExpressCheckoutFacade adyenExpressCheckoutFacade) {
+        this.adyenExpressCheckoutFacade = adyenExpressCheckoutFacade;
     }
 }
