@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved.
+--><extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+        	
+    
+    <extension abstractclassprefix="Generated" classprefix="Adyenv6b2ccheckoutaddonv2" description="adyenv6b2ccheckoutaddonv2 extension" managername="Adyenv6b2ccheckoutaddonv2Manager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="adyenv6b2ccheckoutaddonv2">
+                		
+        
+        <!-- you should add all required extensions to this list, except platform extensions which are automatically required -->
+                         
+		
+        
+        <requires-extension name="addonsupport"/>
+                		
+        
+        <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6b2ccheckoutaddonv2Manager" packageroot="com.adyen.v6"/>
+                		
+        
+        		
+        
+        <meta key="classpathgen" value="false"/>
+                		
+        
+        <meta key="deprecated" value="true"/>
+                	
+    
+    </extension>
+        
+
+</extensioninfo>
