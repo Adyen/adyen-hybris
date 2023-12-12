@@ -1,4 +1,4 @@
-package com.adyen.v6.controllers.checkout;
+package com.adyen.v6.api;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Controller
 @RequestMapping(value = "/api/account")
-public class AdyenRESTDeliveryAddressCheckoutController {
+public class AdyenAddressController {
 
     @Autowired
     private UserFacade userFacade;
