@@ -24,6 +24,7 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
 import de.hybris.platform.order.*;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.i18n.CommonI18NService;
@@ -151,6 +152,18 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
             return adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
         } else {
             throw new InvalidCartException("Checkout attempt on empty cart");
+        }
+    }
+
+    public void removeDeliveryModeFromSessionCart() throws CalculationException {
+        if (cartService.hasSessionCart()) {
+            CartModel sessionCart = cartService.getSessionCart();
+            sessionCart.setDeliveryMode(null);
+            modelService.save(sessionCart);
+
+            CommerceCartParameter commerceCartParameter = new CommerceCartParameter();
+            commerceCartParameter.setCart(sessionCart);
+            commerceCartService.recalculateCart(commerceCartParameter);
         }
     }
 
