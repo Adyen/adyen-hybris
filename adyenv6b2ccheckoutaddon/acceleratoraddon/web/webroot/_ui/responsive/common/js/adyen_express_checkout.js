@@ -142,6 +142,7 @@ var AdyenExpressCheckoutHybris = (function() {
             if (error) {
                 document.querySelector("#resultData").value = data;
                 document.querySelector("#isResultError").value = error;
+                document.querySelector("#handleComponentResultForm").action += "-express"
             } else {
                 document.querySelector("#resultData").value = JSON.stringify(data);
             }
