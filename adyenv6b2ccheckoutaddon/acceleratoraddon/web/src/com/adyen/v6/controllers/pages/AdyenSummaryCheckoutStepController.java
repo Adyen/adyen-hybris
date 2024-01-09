@@ -35,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -700,7 +701,12 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         return StringUtils.EMPTY;
     }
-
+    @PostMapping(value = "/component-result-express")
+    public String handleComponentResultExpress(final RedirectAttributes redirectAttributes,
+                                         @RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer) {
+        GlobalMessages.addFlashMessage(redirectAttributes,  GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
+        return "redirect:" + referrer;
+    }
     @PostMapping(value = "/component-result")
     @RequireHardLogIn
     public String handleComponentResult(final HttpServletRequest request,
