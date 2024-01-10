@@ -125,8 +125,11 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
     public PaymentsResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
                                                 String applePayToken, HttpServletRequest request) throws Exception {
-        CustomerModel user = createGuestCustomer(addressData.getEmail());
-        cartService.changeCurrentCartUser(user);
+        CustomerModel user = (CustomerModel) userService.getCurrentUser();
+        if (userService.isAnonymousUser(user)) {
+            user = createGuestCustomer(addressData.getEmail());
+            cartService.changeCurrentCartUser(user);
+        }
 
         CartModel cart = cartService.getSessionCart();
 
