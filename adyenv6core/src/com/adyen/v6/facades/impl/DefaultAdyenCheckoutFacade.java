@@ -573,6 +573,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         OrderData orderData = getCheckoutFacade().placeOrder();
 
+        if (orderData == null) {
+            throw new InvalidCartException("Order does not exist!");
+        }
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
 
