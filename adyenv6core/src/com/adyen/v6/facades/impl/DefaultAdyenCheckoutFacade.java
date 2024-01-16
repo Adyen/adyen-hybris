@@ -54,6 +54,7 @@ import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.adyen.v6.service.cart.AdyenCartService;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
@@ -64,11 +65,16 @@ import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.order.data.ZoneDeliveryModeData;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.commercefacades.product.data.PriceDataType;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
+import de.hybris.platform.commerceservices.delivery.DeliveryService;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
@@ -76,13 +82,17 @@ import de.hybris.platform.converters.Populator;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
+import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
+import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
+import de.hybris.platform.jalo.order.Cart;
 import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
@@ -97,6 +107,7 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.util.PriceValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -165,6 +176,12 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenBusinessProcessService adyenBusinessProcessService;
     private TransactionOperations transactionTemplate;
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
+    private AdyenCartService adyenCartService;
+    private DeliveryService deliveryService;
+
+    private Converter<DeliveryModeModel, DeliveryModeData> deliveryModeConverter;
+    private Converter<ZoneDeliveryModeModel, ZoneDeliveryModeData> zoneDeliveryModeConverter;
+    private PriceDataFactory priceDataFactory;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -296,6 +313,18 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         });
 
         return paymentDetails;
+    }
+
+    @Override
+    public List<DeliveryModeData> getSupportedDeliveryModes(final String cartID) {
+        final AbstractOrderModel cartModel = adyenCartService.getAbstractOrderByCode(cartID);
+        final List<DeliveryModeData> result = new ArrayList<DeliveryModeData>();
+        if (cartModel != null) {
+            for (final DeliveryModeModel deliveryModeModel : deliveryService.getSupportedDeliveryModeListForOrder(cartModel)) {
+                result.add(convert(deliveryModeModel, (CartModel) cartModel));
+            }
+        }
+        return result;
     }
 
     private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
@@ -1491,6 +1520,24 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return holderNameRequired;
     }
 
+    private DeliveryModeData convert(final DeliveryModeModel deliveryModeModel, final CartModel cartModel) {
+        if (deliveryModeModel instanceof ZoneDeliveryModeModel) {
+            final ZoneDeliveryModeModel zoneDeliveryModeModel = (ZoneDeliveryModeModel) deliveryModeModel;
+            if (cartModel != null) {
+                final ZoneDeliveryModeData zoneDeliveryModeData = zoneDeliveryModeConverter.convert(zoneDeliveryModeModel);
+                final PriceValue deliveryCost = deliveryService.getDeliveryCostForDeliveryModeAndAbstractOrder(deliveryModeModel,
+                        cartModel);
+                if (deliveryCost != null) {
+                    zoneDeliveryModeData.setDeliveryCost(priceDataFactory.create(PriceDataType.BUY,
+                            BigDecimal.valueOf(deliveryCost.getValue()), deliveryCost.getCurrencyIso()));
+                }
+                return zoneDeliveryModeData;
+            }
+            return null;
+        }
+        return deliveryModeConverter.convert(deliveryModeModel);
+    }
+
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;
     }
@@ -1698,5 +1745,25 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAdyenExpressCheckoutFacade(AdyenExpressCheckoutFacade adyenExpressCheckoutFacade) {
         this.adyenExpressCheckoutFacade = adyenExpressCheckoutFacade;
+    }
+
+    public void setAdyenCartService(AdyenCartService adyenCartService) {
+        this.adyenCartService = adyenCartService;
+    }
+
+    public void setDeliveryService(DeliveryService deliveryService) {
+        this.deliveryService = deliveryService;
+    }
+
+    public void setDeliveryModeConverter(Converter<DeliveryModeModel, DeliveryModeData> deliveryModeConverter) {
+        this.deliveryModeConverter = deliveryModeConverter;
+    }
+
+    public void setZoneDeliveryModeConverter(Converter<ZoneDeliveryModeModel, ZoneDeliveryModeData> zoneDeliveryModeConverter) {
+        this.zoneDeliveryModeConverter = zoneDeliveryModeConverter;
+    }
+
+    public void setPriceDataFactory(PriceDataFactory priceDataFactory) {
+        this.priceDataFactory = priceDataFactory;
     }
 }

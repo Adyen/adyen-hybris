@@ -27,6 +27,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
+import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
@@ -211,4 +212,6 @@ public interface AdyenCheckoutFacade {
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 
     String getClientKey();
+
+    List<DeliveryModeData> getSupportedDeliveryModes(String cartID);
 }
