@@ -12,7 +12,7 @@
 		
         
         <requires-extension name="addonsupport"/>
-        <requires-extension name="adyenv6core"/>
+                		
         
         <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6b2ccheckoutaddonv2Manager" packageroot="com.adyen.v6"/>
                 		
