@@ -232,7 +232,6 @@
             </bean>
         </property>
         <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
-        <property name="adyenCartService" ref="adyenCartService"/>
         <property name="deliveryService" ref="deliveryService"/>
         <property name="deliveryModeConverter" ref="deliveryModeConverter"/>
         <property name="zoneDeliveryModeConverter" ref="zoneDeliveryModeConverter"/>
