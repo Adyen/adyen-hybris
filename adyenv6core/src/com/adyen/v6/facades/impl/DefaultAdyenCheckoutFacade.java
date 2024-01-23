@@ -1505,24 +1505,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return holderNameRequired;
     }
 
-    private DeliveryModeData convert(final DeliveryModeModel deliveryModeModel, final CartModel cartModel) {
-        if (deliveryModeModel instanceof ZoneDeliveryModeModel) {
-            final ZoneDeliveryModeModel zoneDeliveryModeModel = (ZoneDeliveryModeModel) deliveryModeModel;
-            if (cartModel != null) {
-                final ZoneDeliveryModeData zoneDeliveryModeData = zoneDeliveryModeConverter.convert(zoneDeliveryModeModel);
-                final PriceValue deliveryCost = deliveryService.getDeliveryCostForDeliveryModeAndAbstractOrder(deliveryModeModel,
-                        cartModel);
-                if (deliveryCost != null) {
-                    zoneDeliveryModeData.setDeliveryCost(priceDataFactory.create(PriceDataType.BUY,
-                            BigDecimal.valueOf(deliveryCost.getValue()), deliveryCost.getCurrencyIso()));
-                }
-                return zoneDeliveryModeData;
-            }
-            return null;
-        }
-        return deliveryModeConverter.convert(deliveryModeModel);
-    }
-
     public BaseStoreService getBaseStoreService() {
         return baseStoreService;
     }

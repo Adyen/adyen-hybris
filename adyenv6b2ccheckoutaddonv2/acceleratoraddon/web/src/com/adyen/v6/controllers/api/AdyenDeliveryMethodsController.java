@@ -39,7 +39,4 @@ public class AdyenDeliveryMethodsController {
         }
     }
 
-    public CheckoutFacade getCheckoutFacade() {
-        return checkoutFacade;
-    }
 }
