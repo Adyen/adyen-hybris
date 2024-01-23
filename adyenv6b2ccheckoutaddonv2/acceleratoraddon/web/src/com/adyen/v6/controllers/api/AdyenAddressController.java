@@ -1,4 +1,4 @@
-package com.adyen.v6.controllers;
+package com.adyen.v6.controllers.api;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
