@@ -1,6 +1,6 @@
 package com.adyen.v6.controllers.checkout;
 
-import com.adyen.v6.dtos.AdyenDeliveryMethodDTO;
+import com.adyen.v6.dto.AdyenDeliveryMethodDTO;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
