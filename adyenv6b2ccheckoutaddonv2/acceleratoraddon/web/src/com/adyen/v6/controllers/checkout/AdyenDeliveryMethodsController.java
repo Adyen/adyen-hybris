@@ -1,9 +1,9 @@
 package com.adyen.v6.controllers.checkout;
 
-import com.adyen.v6.dto.AdyenDeliveryMethodDTO;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,27 +14,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 
 @Controller
-@RequestMapping(value = "/checkoutApi/deliveryMethods")
+@RequestMapping(value = "/api/checkout")
 public class AdyenDeliveryMethodsController {
 
     @Autowired
     private CheckoutFacade checkoutFacade;
 
     @RequireHardLogIn
-    @GetMapping(value = "/getSupportedDeliveryMethods", produces = "application/json")
+    @GetMapping(value = "/deliveryMethods", produces = "application/json")
     public ResponseEntity<List<? extends DeliveryModeData>> getAllDeliveryMethods() {
         return new ResponseEntity<>(checkoutFacade.getSupportedDeliveryModes(), HttpStatus.OK);
     }
 
     @RequireHardLogIn
-    @PostMapping(value = "/selectDeliveryMethod", produces = "application/json")
-    public ResponseEntity<HttpStatus> selectDeliveryMethod(@RequestBody AdyenDeliveryMethodDTO deliveryMethod) {
-        if (StringUtils.isNotEmpty(deliveryMethod.getDeliveryMethodCode())) {
-            checkoutFacade.setDeliveryMode(deliveryMethod.getDeliveryMethodCode());
+    @PostMapping(value = "/selectDeliveryMethod")
+    public ResponseEntity<HttpStatus> selectDeliveryMethod(@RequestBody String deliveryMethodCode) {
+        if (StringUtils.isNotEmpty(deliveryMethodCode)) {
+            checkoutFacade.setDeliveryMode(deliveryMethodCode);
             return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
