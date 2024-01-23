@@ -1,4 +1,4 @@
-package com.adyen.v6.dtos;
+package com.adyen.v6.dto;
 
 public class AdyenDeliveryMethodDTO {
     private String deliveryMethodCode;

@@ -54,7 +54,6 @@ import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenPaymentService;
 import com.adyen.v6.service.AdyenTransactionService;
-import com.adyen.v6.service.cart.AdyenCartService;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
@@ -82,7 +81,6 @@ import de.hybris.platform.converters.Populator;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
-import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
@@ -92,7 +90,6 @@ import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
-import de.hybris.platform.jalo.order.Cart;
 import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
 import de.hybris.platform.order.CartService;
@@ -176,7 +173,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenBusinessProcessService adyenBusinessProcessService;
     private TransactionOperations transactionTemplate;
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
-    private AdyenCartService adyenCartService;
     private DeliveryService deliveryService;
 
     private Converter<DeliveryModeModel, DeliveryModeData> deliveryModeConverter;
@@ -315,17 +311,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentDetails;
     }
 
-    @Override
-    public List<DeliveryModeData> getSupportedDeliveryModes(final String cartID) {
-        final AbstractOrderModel cartModel = adyenCartService.getAbstractOrderByCode(cartID);
-        final List<DeliveryModeData> result = new ArrayList<DeliveryModeData>();
-        if (cartModel != null) {
-            for (final DeliveryModeModel deliveryModeModel : deliveryService.getSupportedDeliveryModeListForOrder(cartModel)) {
-                result.add(convert(deliveryModeModel, (CartModel) cartModel));
-            }
-        }
-        return result;
-    }
 
     private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
         String titleCode = paymentDetails.getBillingAddress().getTitleCode();
@@ -1745,10 +1730,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAdyenExpressCheckoutFacade(AdyenExpressCheckoutFacade adyenExpressCheckoutFacade) {
         this.adyenExpressCheckoutFacade = adyenExpressCheckoutFacade;
-    }
-
-    public void setAdyenCartService(AdyenCartService adyenCartService) {
-        this.adyenCartService = adyenCartService;
     }
 
     public void setDeliveryService(DeliveryService deliveryService) {

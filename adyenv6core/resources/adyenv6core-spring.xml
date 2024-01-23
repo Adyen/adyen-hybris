@@ -519,7 +519,4 @@
         <property name="userService" ref="userService"/>
     </bean>
 
-    <bean id="adyenCartService" class="com.adyen.v6.service.cart.impl.DefaultAdyenCartService">
-        <property name="flexibleSearchService" ref="flexibleSearchService"/>
-    </bean>
 </beans>
