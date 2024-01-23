@@ -1,4 +1,4 @@
-package com.adyen.v6.controllers.checkout;
+package com.adyen.v6.controllers.api;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
