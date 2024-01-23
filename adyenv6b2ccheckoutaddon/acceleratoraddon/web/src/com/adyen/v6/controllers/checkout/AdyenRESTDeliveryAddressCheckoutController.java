@@ -1,10 +1,12 @@
 package com.adyen.v6.controllers.checkout;
 
+import de.hybris.platform.acceleratorfacades.order.AcceleratorCheckoutFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.validation.AddressValidator;
 import de.hybris.platform.acceleratorstorefrontcommons.util.AddressDataUtil;
 import de.hybris.platform.commercefacades.address.AddressVerificationFacade;
+import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commerceservices.address.AddressVerificationDecision;
@@ -29,6 +31,9 @@ public class AdyenRESTDeliveryAddressCheckoutController {
 
     @Autowired
     private AddressVerificationFacade addressVerificationFacade;
+
+    @Resource(name = "acceleratorCheckoutFacade")
+    private AcceleratorCheckoutFacade checkoutFacade;
 
     @Resource(name = "addressValidator")
     private AddressValidator addressValidator;
@@ -58,6 +63,16 @@ public class AdyenRESTDeliveryAddressCheckoutController {
         if (addressVerificationFacade.verifyAddressData(addressData).getDecision().equals(AddressVerificationDecision.ACCEPT)) {
             addressData.setVisibleInAddressBook(true);
             getUserFacade().addAddress(addressData);
+
+            getUserFacade().addAddress(addressData);
+
+            final AddressData previousSelectedAddress = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
+            getCheckoutFacade().setDeliveryAddress(addressData);
+            if (previousSelectedAddress != null && !previousSelectedAddress.isVisibleInAddressBook()) {
+                getUserFacade().removeAddress(previousSelectedAddress);
+            }
+
+            getCheckoutFacade().setDeliveryAddress(addressData);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
@@ -108,6 +123,10 @@ public class AdyenRESTDeliveryAddressCheckoutController {
 
     public UserFacade getUserFacade() {
         return userFacade;
+    }
+
+    public AcceleratorCheckoutFacade getCheckoutFacade() {
+        return checkoutFacade;
     }
 
     public AddressVerificationFacade getAddressVerificationFacade() {
