@@ -64,16 +64,11 @@ import de.hybris.platform.commercefacades.i18n.comparators.CountryComparator;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
-import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
-import de.hybris.platform.commercefacades.order.data.ZoneDeliveryModeData;
-import de.hybris.platform.commercefacades.product.PriceDataFactory;
-import de.hybris.platform.commercefacades.product.data.PriceDataType;
 import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
-import de.hybris.platform.commerceservices.delivery.DeliveryService;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
@@ -83,12 +78,10 @@ import de.hybris.platform.core.model.c2l.CountryModel;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.OrderModel;
-import de.hybris.platform.core.model.order.delivery.DeliveryModeModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.user.TitleModel;
-import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
 import de.hybris.platform.order.CalculationService;
 import de.hybris.platform.order.CartFactory;
@@ -104,7 +97,6 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import de.hybris.platform.util.PriceValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -173,11 +165,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenBusinessProcessService adyenBusinessProcessService;
     private TransactionOperations transactionTemplate;
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
-    private DeliveryService deliveryService;
-
-    private Converter<DeliveryModeModel, DeliveryModeData> deliveryModeConverter;
-    private Converter<ZoneDeliveryModeModel, ZoneDeliveryModeData> zoneDeliveryModeConverter;
-    private PriceDataFactory priceDataFactory;
 
     @Resource(name = "i18NFacade")
     private I18NFacade i18NFacade;
@@ -587,9 +574,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         OrderData orderData = getCheckoutFacade().placeOrder();
 
-        if (orderData == null) {
-            throw new InvalidCartException("Order does not exist!");
-        }
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
 
