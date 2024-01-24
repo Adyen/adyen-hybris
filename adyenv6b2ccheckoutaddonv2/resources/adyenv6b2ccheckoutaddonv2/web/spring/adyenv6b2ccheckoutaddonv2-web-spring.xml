@@ -35,6 +35,7 @@
 		<property name="add" ref="getAdyenv6b2ccheckoutaddonv2BeforeViewHandler"/>
 	</bean>
 
+
 <!--	<bean id="REDIRECT_MULTI_STEP_CHECKOUT" class="java.lang.String">
 		<constructor-arg value="redirect:/checkout/multi/adyen"/>
 	</bean>-->
