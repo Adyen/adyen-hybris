@@ -8,11 +8,15 @@
 <%@ taglib prefix="address" tagdir="/WEB-INF/tags/responsive/address"%>
 <%@ taglib prefix="multi-checkout" tagdir="/WEB-INF/tags/responsive/checkout/multi"%>
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
-<%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <spring:htmlEscape defaultHtmlEscape="true" />
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
+
+<sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
+    <c:set var="isAnonymous" value="true"/>
+</sec:authorize>
 
 <div class="row">
     <div class="col-sm-6">
@@ -20,7 +24,7 @@
             <span class="glyphicon glyphicon-lock"></span>
             <spring:theme code="checkout.multi.secure.checkout" />
         </div>
-        <div id="root" context-path="${encodedContextPath}" csrf-token="${ycommerce:encodeJavaScript(CSRFToken.token)}"></div>
+        <div id="root" context-path="${encodedContextPath}" csrf-token="${ycommerce:encodeJavaScript(CSRFToken.token)}" anonymous-user="${isAnonymous}"></div>
     </div>
 
     <div class="col-sm-6 hidden-xs">
