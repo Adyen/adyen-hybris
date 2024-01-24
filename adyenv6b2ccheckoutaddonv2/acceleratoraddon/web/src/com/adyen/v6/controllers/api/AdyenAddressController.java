@@ -1,4 +1,4 @@
-package com.adyen.v6.api;
+package com.adyen.v6.controllers.api;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
@@ -37,7 +37,7 @@ public class AdyenAddressController {
     private AddressDataUtil addressDataUtil;
 
     @RequireHardLogIn
-    @GetMapping(value = "/delivery-address")
+    @GetMapping(value = "/delivery-address", produces = "application/json")
     public ResponseEntity<List<AddressData>> getAllDeliveryAddresses() {
         List<AddressData> addressDataList = getUserFacade().getAddressBook();
 
