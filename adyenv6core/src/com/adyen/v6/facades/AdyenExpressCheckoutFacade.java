@@ -3,7 +3,6 @@ package com.adyen.v6.facades;
 import com.adyen.model.checkout.PaymentsResponse;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
-import de.hybris.platform.order.exceptions.CalculationException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -18,5 +17,4 @@ public interface AdyenExpressCheckoutFacade {
 
     Optional<ZoneDeliveryModeValueModel> getExpressDeliveryModePrice();
 
-    void removeDeliveryModeFromSessionCart() throws CalculationException;
 }
