@@ -511,7 +511,7 @@
         <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
         <property name="cartConverter" ref="cartConverter"/>
         <property name="sessionService" ref="sessionService"/>
-        <property name="userService" ref="userService"/>
+
     </bean>
 
 </beans>
