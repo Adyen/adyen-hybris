@@ -1713,20 +1713,4 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public void setAdyenExpressCheckoutFacade(AdyenExpressCheckoutFacade adyenExpressCheckoutFacade) {
         this.adyenExpressCheckoutFacade = adyenExpressCheckoutFacade;
     }
-
-    public void setDeliveryService(DeliveryService deliveryService) {
-        this.deliveryService = deliveryService;
-    }
-
-    public void setDeliveryModeConverter(Converter<DeliveryModeModel, DeliveryModeData> deliveryModeConverter) {
-        this.deliveryModeConverter = deliveryModeConverter;
-    }
-
-    public void setZoneDeliveryModeConverter(Converter<ZoneDeliveryModeModel, ZoneDeliveryModeData> zoneDeliveryModeConverter) {
-        this.zoneDeliveryModeConverter = zoneDeliveryModeConverter;
-    }
-
-    public void setPriceDataFactory(PriceDataFactory priceDataFactory) {
-        this.priceDataFactory = priceDataFactory;
-    }
 }
