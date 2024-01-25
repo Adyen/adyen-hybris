@@ -46,7 +46,7 @@ public class AdyenAddressController {
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
 
     @RequireHardLogIn
-    @GetMapping(value = "/delivery-address")
+    @GetMapping(value = "/delivery-address", produces = "application/json")
     public ResponseEntity<List<AddressData>> getAllDeliveryAddresses() {
         List<AddressData> addressDataList = userFacade.getAddressBook();
 
