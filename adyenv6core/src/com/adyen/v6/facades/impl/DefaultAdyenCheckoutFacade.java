@@ -105,7 +105,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -1148,7 +1148,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult) {
+    public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, Errors errors) {
         //Validate form
         CartModel cartModel = cartService.getSessionCart();
         boolean showRememberDetails = showRememberDetails();
@@ -1160,9 +1160,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             adyenPaymentFormValidator.setTelephoneNumberRequired(true);
         }
 
-        adyenPaymentFormValidator.validate(adyenPaymentForm, bindingResult);
+        adyenPaymentFormValidator.validate(adyenPaymentForm, errors);
 
-        if (bindingResult.hasErrors()) {
+        if (errors.hasErrors()) {
             return;
         }
 
