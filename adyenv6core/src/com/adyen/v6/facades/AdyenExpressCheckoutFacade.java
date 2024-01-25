@@ -16,4 +16,5 @@ public interface AdyenExpressCheckoutFacade {
                                          String applePayToken, HttpServletRequest request) throws Exception;
 
     Optional<ZoneDeliveryModeValueModel> getExpressDeliveryModePrice();
+
 }
