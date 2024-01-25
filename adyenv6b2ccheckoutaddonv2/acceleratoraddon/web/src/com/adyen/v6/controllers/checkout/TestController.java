@@ -1,6 +1,5 @@
 package com.adyen.v6.controllers.checkout;
 
-import com.adyen.v6.request.ApplePayExpressPDPRequest;
 import com.adyen.v6.request.TestRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

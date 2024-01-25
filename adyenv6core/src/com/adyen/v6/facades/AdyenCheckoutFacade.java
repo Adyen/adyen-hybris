@@ -38,6 +38,7 @@ import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -181,7 +182,7 @@ public interface AdyenCheckoutFacade {
      * Validates the form and updates the cart based on form data
      * Updates BindingResult
      */
-    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, Errors errors);
 
     List<CountryData> getBillingCountries();
 
