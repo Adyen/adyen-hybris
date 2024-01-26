@@ -23,13 +23,13 @@ public class AdyenDeliveryMethodsController {
     private CheckoutFacade checkoutFacade;
 
     @RequireHardLogIn
-    @GetMapping(value = "/deliveryMethods", produces = "application/json")
+    @GetMapping(value = "/delivery-methods", produces = "application/json")
     public ResponseEntity<List<? extends DeliveryModeData>> getAllDeliveryMethods() {
         return new ResponseEntity<>(checkoutFacade.getSupportedDeliveryModes(), HttpStatus.OK);
     }
 
     @RequireHardLogIn
-    @PostMapping(value = "/selectDeliveryMethod")
+    @PostMapping(value = "/select-delivery-method")
     public ResponseEntity<HttpStatus> selectDeliveryMethod(@RequestBody String deliveryMethodCode) {
         if (StringUtils.isNotEmpty(deliveryMethodCode)) {
             checkoutFacade.setDeliveryMode(deliveryMethodCode);
