@@ -5,13 +5,6 @@ import {store} from "./store/store";
 
 
 function App() {
-    useEffect(() => {
-        const rootElement = document.getElementById('root');
-        const anonymousUserString = rootElement.getAttribute('anonymous-user');
-
-        store.dispatch({type: "addressConfig/setAnonymousUser", payload: anonymousUserString === 'true'})
-    })
-
 
     return (
         <div className="App">

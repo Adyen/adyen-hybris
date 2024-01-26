@@ -3,6 +3,7 @@ import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
 import {isNotEmpty} from "../util/stringUtil";
+import {AddressConfigModel} from "../reducers/addressConfigReducer";
 
 export class ShippingAddressService {
 
@@ -41,6 +42,19 @@ export class ShippingAddressService {
             }
         })
             .catch(() => console.error('Error on address select'))
+    }
+
+    static fetchAddressConfig() {
+        axios.get(urlContextPath + '/api/configuration/shipping-address', {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+            .then(response => {
+                let addressConfigModel = this.mapAddressConfigurationResponse(response.data);
+                store.dispatch({type: "addressConfig/setAddressConfig", payload: addressConfigModel})
+            })
+            .catch(() => console.error("Address config fetch error"))
     }
 
     private static mapResponseDataToModel(data: AddressBookResponseData[]): AddressModel[] {
@@ -85,10 +99,26 @@ export class ShippingAddressService {
             defaultAddress: false,
         }
     }
+
+    private static mapAddressConfigurationResponse(response: AddressConfigResponse): AddressConfigModel {
+        let titles = response.titles.map(title => {
+            return {code: title.code, value: title.name}
+        });
+
+        let countries = response.countries.map(country => {
+            return {code: country.isocode, value: country.name}
+        });
+
+        return {
+            anonymousUser: response.isAnonymous,
+            titles: titles,
+            countries: countries,
+        }
+    }
 }
 
 type AddressBookResponseData = Omit<AddressModel, 'country'> & {
-    country: { isocode: string, name: string },
+    country: CountryData,
     titleCode: string,
     town: string,
     phone: string
@@ -111,4 +141,20 @@ interface AddressForm {
     billingAddress: boolean
     editAddress: boolean
     phone: string
+}
+
+interface CountryData {
+    isocode: string,
+    name: string
+}
+
+interface TitleData {
+    code: string,
+    name: string
+}
+
+interface AddressConfigResponse {
+    isAnonymous: boolean,
+    countries: CountryData[],
+    titles: TitleData[]
 }
