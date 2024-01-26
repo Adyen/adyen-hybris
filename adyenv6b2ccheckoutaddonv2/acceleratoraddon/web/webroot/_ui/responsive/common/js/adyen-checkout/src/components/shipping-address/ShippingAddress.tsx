@@ -49,6 +49,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
 
     componentDidMount() {
         ShippingAddressService.fetchAddressBook()
+        ShippingAddressService.fetchAddressConfig()
     }
 
     private openAddressBookModal() {
@@ -112,11 +113,12 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                             <br/>
                             <InputDropdown values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
                                            onChange={(countryCode) => this.props.setCountryCode(countryCode)}
-                                           selectedValue={this.props.shippingAddress.countryCode}/>
+                                           selectedValue={this.props.shippingAddress.countryCode}
+                                            placeholderText={"Country/Region"} placeholderDisabled={true}/>
                             <InputDropdown values={this.props.addressConfig.titles} fieldName={"Title"}
-
                                            onChange={(titleCode) => this.props.setTitleCode(titleCode)}
-                                           selectedValue={this.props.shippingAddress.titleCode}/>
+                                           selectedValue={this.props.shippingAddress.titleCode}
+                                            placeholderText={"None"}/>
                             <InputText fieldName={"First name"}
                                        onChange={(firstName) => this.props.setFirstName(firstName)}
                                        value={this.props.shippingAddress.firstName}/>
