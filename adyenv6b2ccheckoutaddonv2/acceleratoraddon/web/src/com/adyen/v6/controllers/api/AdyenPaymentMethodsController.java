@@ -21,9 +21,7 @@ public class AdyenPaymentMethodsController {
     @PostMapping(value = "/select-payment-method")
     public ResponseEntity<Errors> selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {
         final Errors errors = new BeanPropertyBindingResult(adyenPaymentForm, "payment");
-        //todo check controller
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, errors);
-
 
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
