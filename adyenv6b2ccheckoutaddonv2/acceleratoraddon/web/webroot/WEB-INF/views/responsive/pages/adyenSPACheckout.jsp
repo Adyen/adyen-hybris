@@ -14,13 +14,17 @@
 
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
+<sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
+    <c:set var="isAnonymous" value="true"/>
+</sec:authorize>
+
 <div class="row">
     <div class="col-sm-6">
 	    <div class="checkout-headline">
             <span class="glyphicon glyphicon-lock"></span>
             <spring:theme code="checkout.multi.secure.checkout" />
         </div>
-        <div id="root" context-path="${encodedContextPath}" csrf-token="${ycommerce:encodeJavaScript(CSRFToken.token)}"></div>
+        <div id="root" context-path="${encodedContextPath}" csrf-token="${ycommerce:encodeJavaScript(CSRFToken.token)}" anonymous-user="${isAnonymous}"></div>
     </div>
 
     <div class="col-sm-6 hidden-xs">
