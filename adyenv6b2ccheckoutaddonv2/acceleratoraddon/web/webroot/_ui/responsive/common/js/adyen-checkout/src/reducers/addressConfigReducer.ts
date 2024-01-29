@@ -1,11 +1,9 @@
 import {PayloadAction, RootAction} from "./rootReducer";
 import {CodeValueItem} from "./types";
-import {countriesMock, titlesMock} from "./mockAddressConfig";
-
 
 export const addressConfigInitialState: AddressConfigModel = {
-    titles: titlesMock,
-    countries: countriesMock,
+    titles: [],
+    countries: [],
     anonymousUser: false
 }
 
@@ -17,6 +15,9 @@ export function addressConfigReducer(addressConfigState: AddressConfigModel, act
                 ...addressConfigState,
                 anonymousUser: action.payload
             }
+
+        case "addressConfig/setAddressConfig":
+            return action.payload
 
         default:
             return addressConfigState
@@ -31,7 +32,8 @@ export interface AddressConfigModel {
 }
 
 interface SetAnonymousUserAction extends PayloadAction<"addressConfig/setAnonymousUser", boolean> {}
+interface SetAddressConfigAction extends PayloadAction<"addressConfig/setAddressConfig", AddressConfigModel> {}
 
 
-export type AddressConfigAction = SetAnonymousUserAction
+export type AddressConfigAction = SetAnonymousUserAction | SetAddressConfigAction
 
