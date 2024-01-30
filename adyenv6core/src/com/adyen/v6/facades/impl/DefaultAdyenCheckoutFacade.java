@@ -298,6 +298,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentDetails;
     }
 
+
     private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
         String titleCode = paymentDetails.getBillingAddress().getTitleCode();
         final AddressModel billingAddress = getModelService().create(AddressModel.class);

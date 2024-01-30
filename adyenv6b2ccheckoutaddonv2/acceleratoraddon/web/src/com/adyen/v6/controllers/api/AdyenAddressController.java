@@ -1,13 +1,16 @@
-package com.adyen.v6.api;
+package com.adyen.v6.controllers.api;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.validation.AddressValidator;
 import de.hybris.platform.acceleratorstorefrontcommons.util.AddressDataUtil;
 import de.hybris.platform.commercefacades.address.AddressVerificationFacade;
+import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commerceservices.address.AddressVerificationDecision;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +39,16 @@ public class AdyenAddressController {
     @Resource(name = "addressDataUtil")
     private AddressDataUtil addressDataUtil;
 
+    @Autowired
+    private CheckoutFacade checkoutFacade;
+
+    @Resource(name = "checkoutCustomerStrategy")
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
+
     @RequireHardLogIn
-    @GetMapping(value = "/delivery-address")
+    @GetMapping(value = "/delivery-address", produces = "application/json")
     public ResponseEntity<List<AddressData>> getAllDeliveryAddresses() {
-        List<AddressData> addressDataList = getUserFacade().getAddressBook();
+        List<AddressData> addressDataList = userFacade.getAddressBook();
 
         return ResponseEntity.status(HttpStatus.OK).body(addressDataList);
     }
@@ -55,9 +64,21 @@ public class AdyenAddressController {
 
         AddressData addressData = addressDataUtil.convertToAddressData(addressForm);
 
+        processAddressVisibilityAndDefault(addressForm, addressData);
+
         if (addressVerificationFacade.verifyAddressData(addressData).getDecision().equals(AddressVerificationDecision.ACCEPT)) {
             addressData.setVisibleInAddressBook(true);
-            getUserFacade().addAddress(addressData);
+            userFacade.addAddress(addressData);
+
+            final AddressData previousSelectedAddress = checkoutFacade.getCheckoutCart().getDeliveryAddress();
+            // Set the new address as the selected checkout delivery address
+            checkoutFacade.setDeliveryAddress(addressData);
+            if (previousSelectedAddress != null && !previousSelectedAddress.isVisibleInAddressBook()) { // temporary address should be removed
+                userFacade.removeAddress(previousSelectedAddress);
+            }
+
+            // Set the new address as the selected checkout delivery address
+            checkoutFacade.setDeliveryAddress(addressData);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
@@ -78,9 +99,9 @@ public class AdyenAddressController {
 
 
         if (addressVerificationFacade.verifyAddressData(addressData).getDecision().equals(AddressVerificationDecision.ACCEPT)) {
-            if (getUserFacade().getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressData.getId()))) {
+            if (userFacade.getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressData.getId()))) {
                 addressData.setVisibleInAddressBook(true);
-                getUserFacade().editAddress(addressData);
+                userFacade.editAddress(addressData);
 
                 return ResponseEntity.status(HttpStatus.OK).build();
             } else {
@@ -94,10 +115,10 @@ public class AdyenAddressController {
     @RequireHardLogIn
     @DeleteMapping(value = "/delivery-address/{addressId}")
     public ResponseEntity<HttpStatus> removeDeliveryAddress(@PathVariable String addressId) {
-        if (getUserFacade().getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressId))) {
-            AddressData addressData = getUserFacade().getAddressForCode(addressId);
+        if (userFacade.getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressId))) {
+            AddressData addressData = userFacade.getAddressForCode(addressId);
 
-            getUserFacade().removeAddress(addressData);
+            userFacade.removeAddress(addressData);
             addressData.setVisibleInAddressBook(false);
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -106,11 +127,15 @@ public class AdyenAddressController {
         }
     }
 
-    public UserFacade getUserFacade() {
-        return userFacade;
-    }
-
-    public AddressVerificationFacade getAddressVerificationFacade() {
-        return addressVerificationFacade;
+    private void processAddressVisibilityAndDefault(final AddressForm addressForm, final AddressData newAddress) {
+        if (addressForm.getSaveInAddressBook() != null) {
+            newAddress.setVisibleInAddressBook(addressForm.getSaveInAddressBook().booleanValue());
+            if (addressForm.getSaveInAddressBook().booleanValue() && CollectionUtils.isEmpty(userFacade.getAddressBook())) {
+                newAddress.setDefaultAddress(true);
+            }
+        } else if (checkoutCustomerStrategy.isAnonymousCheckout()) {
+            newAddress.setDefaultAddress(true);
+            newAddress.setVisibleInAddressBook(true);
+        }
     }
 }
