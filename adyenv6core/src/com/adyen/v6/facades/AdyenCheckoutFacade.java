@@ -212,4 +212,5 @@ public interface AdyenCheckoutFacade {
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 
     String getClientKey();
+
 }
