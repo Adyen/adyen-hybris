@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from "axios";
+import axios from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
