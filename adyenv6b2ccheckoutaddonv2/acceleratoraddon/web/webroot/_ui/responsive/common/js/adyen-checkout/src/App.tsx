@@ -1,7 +1,6 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import './App.scss';
 import ShippingAddress from "./components/shipping-address/ShippingAddress";
-import {store} from "./store/store";
 
 
 function App() {
