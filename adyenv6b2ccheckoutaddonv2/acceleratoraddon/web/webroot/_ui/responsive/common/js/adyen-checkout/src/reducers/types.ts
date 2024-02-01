@@ -13,6 +13,24 @@ export interface AddressModel {
     phoneNumber: string
 }
 
+export interface ShippingMethodState {
+    selectedShippingMethodCode: string,
+    shippingMethods: ShippingMethodModel[]
+}
+
+export interface ShippingMethodModel {
+    code: string,
+    name: string,
+    description: string,
+    deliveryCost: PriceData
+}
+
+interface PriceData {
+    currencyIso: string,
+    value: number,
+    formattedValue: string
+}
+
 export interface CodeValueItem<CT = string, VT = string> {
     code: CT
     value: VT

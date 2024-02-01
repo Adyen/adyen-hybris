@@ -1,0 +1,53 @@
+import React from "react";
+import {CartDeliveryItems} from "./CartDeliveryItems";
+import {connect} from "react-redux";
+import {CartData} from "../../types/cartData";
+import {AppState} from "../../reducers/rootReducer";
+import {CartDetailsProduct} from "./CartDetailsProduct";
+import {OrderTotals} from "./OrderTotals";
+
+interface StoreProps {
+    cartData: CartData
+}
+
+class CartDetails extends React.Component<StoreProps, any> {
+
+    // implementation needed doesPotentialPromotionExistForOrderEntryOrOrderEntryGroup doesAppliedPromotionExistForOrderEntryOrOrderEntryGroup
+
+    // No pickup (POS support)
+    // No multivariant product
+    // No quotes
+
+    private renderEntries(): React.JSX.Element[] {
+        return this.props.cartData.entries.map(entry => <CartDetailsProduct key={entry.entryNumber} entryData={entry}/>)
+    }
+
+    render() {
+        if (this.props.cartData) {
+            return (
+                <>
+                    <div className={"checkout-summary-headline"}>Order Summary</div>
+                    <div className={"checkout-order-summary"}>
+                        <ul className="checkout-order-summary-list">
+                            <CartDeliveryItems addressData={this.props.cartData.deliveryAddress}/>
+
+                            {this.renderEntries()}
+                        </ul>
+
+                        <OrderTotals cartData={this.props.cartData} showTax={true}/>
+                    </div>
+                </>
+            )
+        }
+
+        return (<></>)
+    }
+}
+
+function mapStateToProps(appState: AppState): StoreProps {
+    return {
+        cartData: appState.cartData
+    }
+}
+
+export default connect(mapStateToProps)(CartDetails)

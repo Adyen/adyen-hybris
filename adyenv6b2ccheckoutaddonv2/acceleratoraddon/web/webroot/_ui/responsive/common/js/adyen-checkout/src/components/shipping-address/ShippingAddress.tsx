@@ -9,6 +9,9 @@ import {InputCheckbox} from "../controls/InputCheckbox";
 import {ShippingAddressService} from "../../service/shippingAddressService";
 import {AddressModel} from "../../reducers/types";
 import AddressBookSelector from "./AddressBookSelector";
+import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
+import {Navigate} from "react-router-dom";
+import {routes} from "../../router/routes";
 
 
 interface StoreProps {
@@ -29,12 +32,12 @@ interface DispatchProps {
     setPhoneNumber: (phoneNumber: string) => void
 }
 
-interface ShippingAddressProps extends StoreProps, DispatchProps {
-}
+type ShippingAddressProps = StoreProps & DispatchProps;
 
 interface ShippingAddressState {
     addressBookModalOpen: boolean
     saveInAddressBook: boolean
+    redirectToNextStep: boolean
 }
 
 class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddressState> {
@@ -43,7 +46,8 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         super(props);
         this.state = {
             addressBookModalOpen: false,
-            saveInAddressBook: false
+            saveInAddressBook: false,
+            redirectToNextStep: false
         }
     }
 
@@ -64,8 +68,11 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         this.setState({...this.state, saveInAddressBook: value})
     }
 
-    private handleSubmitButton() {
-        ShippingAddressService.addAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false)
+    private async handleSubmitButton() {
+        let success = await ShippingAddressService.addAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
+        if (success) {
+            this.setState({...this.state, redirectToNextStep: true})
+        }
     }
 
     private renderSaveAddressCheckbox(): React.JSX.Element {
@@ -94,13 +101,13 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     }
 
     render() {
+        if (this.state.redirectToNextStep) {
+            return <Navigate to={routes.shippingMethod}/>
+        }
+
         return (
             <>
-                <div className={"step-head active"}>
-                    <div className={"shippingAddress_stepHeader title"}>
-                        Shipment/Pick Up Location
-                    </div>
-                </div>
+                <ShippingAddressHeader isActive={true}/>
 
                 <div className={"step-body"}>
                     {this.renderAddressBookModal()}
@@ -114,11 +121,11 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                             <InputDropdown values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
                                            onChange={(countryCode) => this.props.setCountryCode(countryCode)}
                                            selectedValue={this.props.shippingAddress.countryCode}
-                                            placeholderText={"Country/Region"} placeholderDisabled={true}/>
+                                           placeholderText={"Country/Region"} placeholderDisabled={true}/>
                             <InputDropdown values={this.props.addressConfig.titles} fieldName={"Title"}
                                            onChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                            selectedValue={this.props.shippingAddress.titleCode}
-                                            placeholderText={"None"}/>
+                                           placeholderText={"None"}/>
                             <InputText fieldName={"First name"}
                                        onChange={(firstName) => this.props.setFirstName(firstName)}
                                        value={this.props.shippingAddress.firstName}/>
