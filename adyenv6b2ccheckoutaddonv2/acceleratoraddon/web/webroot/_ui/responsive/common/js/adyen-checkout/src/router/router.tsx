@@ -1,13 +1,32 @@
-import {createBrowserRouter} from "react-router-dom";
-import App from "../App";
+import {createBrowserRouter, Navigate} from "react-router-dom";
 import React from "react";
-import {urlContextPath} from "../util/baseUrlUtil";
+import {ShippingAddressStep} from "../components/steps/ShippingAddressStep";
+import {PaymentStep} from "../components/steps/PaymentStep";
+import {FinalStep} from "../components/steps/FinalStep";
+import {routes} from "./routes";
+import App from "../App";
+import {ShippingMethodStep} from "../components/steps/ShippingMethodStep";
 
 export const router = createBrowserRouter([
     {
-        // eslint-disable-next-line no-undef
-        path: urlContextPath + "/checkout/multi/adyen",
-        element: <App />,
+        path: routes.shippingAddress,
+        element: <App><ShippingAddressStep/></App>,
     },
+    {
+        path: routes.shippingMethod,
+        element: <App><ShippingMethodStep/></App>,
+    },
+    {
+        path: routes.paymentMethod,
+        element: <App><PaymentStep/></App>,
+    },
+    {
+        path: routes.review,
+        element: <App><FinalStep/></App>,
+    },
+    {
+        //in case url doesn't match - redirect to shipping address
+        path: "*",
+        element: <Navigate to={routes.shippingAddress}/>
+    }
 ]);
-

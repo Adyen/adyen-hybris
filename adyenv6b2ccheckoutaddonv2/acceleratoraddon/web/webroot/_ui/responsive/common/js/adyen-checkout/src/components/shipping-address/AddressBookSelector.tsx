@@ -6,6 +6,8 @@ import {StoreDispatch} from "../../store/store";
 import {isNotEmpty} from "../../util/stringUtil";
 import './AddressBookSelectorStyle.scss'
 import {ShippingAddressService} from "../../service/shippingAddressService";
+import {Link, Navigate} from "react-router-dom";
+import {routes} from "../../router/routes";
 
 interface Props {
     closeModal: () => void
@@ -22,13 +24,25 @@ interface DispatchProps {
 interface AddressBookSelectorProps extends Props, StoreProps, DispatchProps {
 }
 
-class AddressBookSelector extends React.Component<AddressBookSelectorProps, null> {
+interface AddressBookState {
+    redirectToNextStep: boolean
+}
 
+class AddressBookSelector extends React.Component<AddressBookSelectorProps, AddressBookState> {
 
-    private handleSelectAddress(address: AddressModel) {
-        this.props.setSelectedAddress(address)
-        ShippingAddressService.selectAddress(address.id);
-        //TODO: change step using router
+    constructor(props: AddressBookSelectorProps) {
+        super(props);
+        this.state = {
+            redirectToNextStep: false
+        }
+    }
+
+    private async handleSelectAddress(address: AddressModel) {
+        let success = await ShippingAddressService.selectAddress(address.id);
+        if (success) {
+            this.props.setSelectedAddress(address)
+            this.setState({...this.state, redirectToNextStep: true})
+        }
     }
 
     private renderAddressBookEntries(): React.JSX.Element[] {
@@ -45,17 +59,21 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, null
                     <br/>
                     {address.country}&nbsp;{address.postalCode}
                     <br/>
-                    <button
-                        className={"addressBookSelector_modal_addressesContainer_addressItem_button btn btn-primary btn-block"}
-                        onClick={() => this.handleSelectAddress(address)}>Use
+                    <Link to={routes.shippingMethod}
+                          className={"addressBookSelector_modal_addressesContainer_addressItem_button btn btn-primary btn-block"}
+                          onClick={() => this.handleSelectAddress(address)}>Use
                         this address
-                    </button>
+                    </Link>
                 </div>)
         })
         return result
     }
 
     render() {
+        if (this.state.redirectToNextStep) {
+            return <Navigate to={routes.shippingMethod}/>
+        }
+
         return (
             <>
                 <div className={"addressBookSelector_backdrop"} onClick={() => this.props.closeModal()}/>
@@ -80,4 +98,4 @@ const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
     setSelectedAddress: (address: AddressModel) => dispatch({type: "shippingAddress/setAddress", payload: address})
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddressBookSelector)
+export default connect(mapStateToProps, mapDispatchToProps)(AddressBookSelector);
