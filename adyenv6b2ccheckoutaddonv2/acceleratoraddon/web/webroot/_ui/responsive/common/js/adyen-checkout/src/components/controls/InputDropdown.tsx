@@ -4,7 +4,7 @@ import {isNotEmpty} from "../../util/stringUtil";
 
 interface InputDropdownProps {
     values: CodeValueItem[]
-    fieldName: string
+    fieldName?: string
     selectedValue?: string
     placeholderText?: string
     placeholderDisabled?: boolean
@@ -28,10 +28,19 @@ export class InputDropdown extends React.Component<InputDropdownProps, null> {
         return result
     }
 
+    private renderLabel(): React.JSX.Element {
+        if (isNotEmpty(this.props.fieldName)) {
+            return <label className={"form-input_name control-label"}>{this.props.fieldName}</label>
+        } else {
+            return <></>
+        }
+
+    }
+
     render() {
         return (
             <div className={"form-group"}>
-                <label className={"form-input_name control-label"}>{this.props.fieldName}</label>
+                {this.renderLabel()}
                 <select className={"form-input_input form-control"}
                         onChange={(event) => this.props.onChange(event.target.value)} value={this.props.selectedValue}>
                     {

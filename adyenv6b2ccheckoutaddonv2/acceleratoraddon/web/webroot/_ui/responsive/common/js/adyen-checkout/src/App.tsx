@@ -1,17 +1,26 @@
 import React from 'react'
 import './App.scss';
-import ShippingAddress from "./components/shipping-address/ShippingAddress";
+import CartDetails from "./components/cart-details/CartDetails";
 
 
-function App() {
+class App extends React.Component<React.PropsWithChildren, null> {
+    render() {
+        return (
+            <>
+                <div className="col-sm-6">
+                    <div className="checkout-headline">
+                        <span className="glyphicon glyphicon-lock"></span>
+                        Secure Checkout
+                    </div>
+                    {this.props.children}
+                </div>
 
-    return (
-        <div className="App">
-            <div className={"checkout-steps"}>
-                <ShippingAddress/>
-            </div>
-        </div>
-    );
+                <div className="col-sm-6 hidden-xs">
+                    <CartDetails/>
+                </div>
+            </>
+        );
+    }
 }
 
 export default App;

@@ -21,27 +21,34 @@ export class ShippingAddressService {
             .catch(() => console.error("Address book fetch error"))
     }
 
-    static selectAddress(addressId: string) {
-        axios.post(urlContextPath + '/api/checkout/delivery-address', addressId, {
+    static async selectAddress(addressId: string) {
+        return axios.post(urlContextPath + '/api/checkout/delivery-address', addressId, {
             headers: {
                 'Content-Type': 'text/plain',
                 'CSRFToken': CSRFToken
             }
         })
-            .catch(() => console.error('Error on address select'))
+            .then(() => true)
+            .catch(() => {
+                console.error('Error on address select')
+                return false
+            })
     }
 
-    static addAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
-                      editAddress: boolean) {
+    static async addAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
+                            editAddress: boolean): Promise<boolean> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
-        axios.post(urlContextPath + '/api/account/delivery-address', payload, {
+        return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 // 'Accept': 'application/json',
                 'CSRFToken': CSRFToken
             }
-        })
-            .catch(() => console.error('Error on address select'))
+        }).then(() => true)
+            .catch(() => {
+                console.error('Error on address select')
+                return false
+            })
     }
 
     static fetchAddressConfig() {
