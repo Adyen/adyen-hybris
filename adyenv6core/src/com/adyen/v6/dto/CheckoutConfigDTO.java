@@ -18,7 +18,7 @@ public class CheckoutConfigDTO {
     private final Map<String, String> issuerLists;
     private final PaymentMethod sepaDirectDebit;
     private final String creditCardLabel;
-    private final List<AdyenCardTypeEnum> allowedCards;//lista
+    private final List<AdyenCardTypeEnum> allowedCards;
     private final Amount amount;
     private final String adyenClientKey;
     private final String adyenPaypalMerchantId;
