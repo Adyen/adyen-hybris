@@ -10,7 +10,7 @@ export function shippingMethodReducer(shippingMethodState: ShippingMethodState, 
     switch (action.type) {
         case "shippingMethod/setAvailableShippingMethods":
             return {
-                selectedShippingMethodCode: action.payload.length > 0 ? action.payload[0].code : "",
+                ...shippingMethodState,
                 shippingMethods: action.payload
             }
 
