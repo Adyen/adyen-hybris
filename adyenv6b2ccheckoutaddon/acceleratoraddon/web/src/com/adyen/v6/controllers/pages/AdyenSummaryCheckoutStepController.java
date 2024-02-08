@@ -168,7 +168,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         try {
             adyenCheckoutFacade.initializeSummaryData(model);
         } catch (ApiException e) {
-            LOGGER.error("Initialize summary data failed. ",e);
+            LOGGER.error("Initialize summary data failed. ", e);
 
         }
 
@@ -274,7 +274,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (AdyenNonAuthorizedPaymentException e) {
                 LOGGER.info(HANDLING_ADYEN_NON_AUTHORIZED_PAYMENT_EXCEPTION);
                 PaymentResult paymentResult = e.getPaymentResult();
-                if (Objects.nonNull(paymentResult)){
+                if (Objects.nonNull(paymentResult)) {
                     if (paymentResult.isRefused()) {
                         errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                         LOGGER.info("Payment " + paymentResult.getPspReference() + " is refused " + errorMessage);
@@ -701,12 +701,28 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
 
         return StringUtils.EMPTY;
     }
+
     @PostMapping(value = "/component-result-express")
-    public String handleComponentResultExpress(final RedirectAttributes redirectAttributes,
-                                         @RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer) {
-        GlobalMessages.addFlashMessage(redirectAttributes,  GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
+    public String handleComponentResultExpress(final HttpServletRequest request, final RedirectAttributes redirectAttributes,
+                                               @RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer) throws Exception {
+        String resultData = request.getParameter("resultData");
+        String isResultError = request.getParameter("isResultError");
+
+        if (isValidResult(resultData, isResultError)) {
+            try {
+                OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
+                return "redirect:" + referrer;
+            }
+        }
+
+        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
         return "redirect:" + referrer;
     }
+
+
     @PostMapping(value = "/component-result")
     @RequireHardLogIn
     public String handleComponentResult(final HttpServletRequest request,
