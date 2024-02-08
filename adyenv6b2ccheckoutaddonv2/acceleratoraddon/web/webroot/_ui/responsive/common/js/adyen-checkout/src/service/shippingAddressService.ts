@@ -117,7 +117,7 @@ export class ShippingAddressService {
         });
 
         return {
-            anonymousUser: response.isAnonymous,
+            anonymousUser: response.anonymous,
             titles: titles,
             countries: countries,
         }
@@ -161,7 +161,7 @@ interface TitleData {
 }
 
 interface AddressConfigResponse {
-    isAnonymous: boolean,
+    anonymous: boolean,
     countries: CountryData[],
     titles: TitleData[]
 }
