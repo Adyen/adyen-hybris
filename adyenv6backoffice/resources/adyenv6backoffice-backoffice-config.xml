@@ -88,7 +88,7 @@
 
 	<context component="explorer-tree" merge-by="module">
 		<et:explorer-tree>
-			<et:type-node id="hmc_adyen_notification" code="NotificationItem"/>
+			<et:type-node id="hmc_adyen_notification_item" code="NotificationItem"/>
 		</et:explorer-tree>
 	</context>
 
@@ -113,6 +113,46 @@
 	</context>
 
 	<context merge-by="type" parent="GenericItem" type="NotificationItem" component="listview">
+		<lv:list-view>
+			<lv:column qualifier="uuid"/>
+			<lv:column qualifier="merchantReference"/>
+			<lv:column qualifier="pspReference"/>
+			<lv:column qualifier="amountValue"/>
+			<lv:column qualifier="amountCurrency"/>
+			<lv:column qualifier="paymentMethod"/>
+			<lv:column qualifier="eventCode"/>
+			<lv:column qualifier="success"/>
+			<lv:column qualifier="originalReference"/>
+		</lv:list-view>
+	</context>
+
+	<context component="explorer-tree" merge-by="module">
+		<et:explorer-tree>
+			<et:type-node id="hmc_adyen_notification" code="adyenNotification"/>
+		</et:explorer-tree>
+	</context>
+
+	<context type="adyenNotification" component="advanced-search" merge-by="type" parent="GenericItem">
+		<as:advanced-search>
+			<as:field-list>
+				<as:field name="uuid"/>
+				<as:field name="amountValue"/>
+				<as:field name="amountCurrency"/>
+				<as:field name="eventCode"/>
+				<as:field name="eventDate"/>
+				<as:field name="merchantAccountCode"/>
+				<as:field name="merchantReference"/>
+				<as:field name="originalReference"/>
+				<as:field name="pspReference"/>
+				<as:field name="paymentMethod"/>
+				<as:field name="createdAt"/>
+				<as:field name="processedAt"/>
+				<as:field name="success"/>
+			</as:field-list>
+		</as:advanced-search>
+	</context>
+
+	<context merge-by="type" parent="GenericItem" type="adyenNotification" component="listview">
 		<lv:list-view>
 			<lv:column qualifier="uuid"/>
 			<lv:column qualifier="merchantReference"/>
