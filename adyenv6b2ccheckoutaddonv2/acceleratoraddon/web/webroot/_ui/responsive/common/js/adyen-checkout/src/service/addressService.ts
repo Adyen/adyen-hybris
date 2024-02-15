@@ -4,9 +4,9 @@ import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
 import {isNotEmpty} from "../util/stringUtil";
 import {AddressConfigModel} from "../reducers/addressConfigReducer";
+import {AddressData} from "../types/addressData";
 
-export class ShippingAddressService {
-
+export class AddressService {
 
     static fetchAddressBook() {
         axios.get(urlContextPath + '/api/account/delivery-address', {
@@ -21,7 +21,7 @@ export class ShippingAddressService {
             .catch(() => console.error("Address book fetch error"))
     }
 
-    static async selectAddress(addressId: string) {
+    static async selectDeliveryAddress(addressId: string) {
         return axios.post(urlContextPath + '/api/checkout/delivery-address', addressId, {
             headers: {
                 'Content-Type': 'text/plain',
@@ -35,13 +35,12 @@ export class ShippingAddressService {
             })
     }
 
-    static async addAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
+    static async addDeliveryAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
                             editAddress: boolean): Promise<boolean> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
         return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                // 'Accept': 'application/json',
                 'CSRFToken': CSRFToken
             }
         }).then(() => true)
@@ -64,11 +63,11 @@ export class ShippingAddressService {
             .catch(() => console.error("Address config fetch error"))
     }
 
-    private static mapResponseDataToModel(data: AddressBookResponseData[]): AddressModel[] {
+    private static mapResponseDataToModel(data: AddressData[]): AddressModel[] {
         return data.map(it => this.mapAddressBookDataToAddressModel(it));
     }
 
-    private static mapAddressBookDataToAddressModel(responseData: AddressBookResponseData): AddressModel {
+    private static mapAddressBookDataToAddressModel(responseData: AddressData): AddressModel {
         return {
             id: responseData.id,
             firstName: responseData.firstName,
@@ -117,18 +116,11 @@ export class ShippingAddressService {
         });
 
         return {
-            anonymousUser: response.isAnonymous,
+            anonymousUser: response.anonymous,
             titles: titles,
             countries: countries,
         }
     }
-}
-
-type AddressBookResponseData = Omit<AddressModel, 'country'> & {
-    country: CountryData,
-    titleCode: string,
-    town: string,
-    phone: string
 }
 
 interface AddressForm {
@@ -161,7 +153,7 @@ interface TitleData {
 }
 
 interface AddressConfigResponse {
-    isAnonymous: boolean,
+    anonymous: boolean,
     countries: CountryData[],
     titles: TitleData[]
 }

@@ -4,6 +4,7 @@ import {PaymentHeader} from "../headers/PaymentHeader";
 import {FinalReviewHeader} from "../headers/FinalReviewHeader";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import {CartDataService} from "../../service/cartDataService";
+import Payment from "../payment/Payment";
 
 export class PaymentStep extends React.Component<{  }, null> {
 
@@ -16,8 +17,7 @@ export class PaymentStep extends React.Component<{  }, null> {
             <>
                 <ShippingAddressHeader editEnabled={true}/>
                 <ShippingMethodHeader editEnabled={true}/>
-                <PaymentHeader/>
-                Payment Step
+                <Payment/>
                 <FinalReviewHeader/>
             </>
         )

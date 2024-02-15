@@ -1,5 +1,5 @@
 import {Reducer} from "@reduxjs/toolkit";
-import {AddressAction, addressInitialState, shippingAddressReducer} from "./shippingAddressReducer";
+import {ShippingAddressAction, addressInitialState, shippingAddressReducer} from "./shippingAddressReducer";
 import {Action} from "redux";
 import {
     AddressConfigAction,
@@ -12,13 +12,18 @@ import {AddressBookAction, addressBookInitialState, addressBookReducer} from "./
 import {shippingMethodInitialState, shippingMethodReducer, ShippingModeAction} from "./shippingMethodReducer";
 import {CartData} from "../types/cartData";
 import {CartDataAction, cartDataInitialState, cartDataReducer} from "./cartDataReducer";
+import {BillingAddressAction, billingAddressReducer} from "./billingAddressReducer";
+import {AdyenConfigAction, adyenConfigInitialState, adyenConfigReducer} from "./adyenConfigReducer";
+import {AdyenConfigData} from "../types/adyenConfigData";
 
 export const initialState: AppState = {
     shippingAddress: addressInitialState,
     addressConfig: addressConfigInitialState,
     addressBook: addressBookInitialState,
     shippingMethod: shippingMethodInitialState,
-    cartData: cartDataInitialState
+    cartData: cartDataInitialState,
+    billingAddress: addressInitialState,
+    adyenConfig: adyenConfigInitialState
 }
 
 
@@ -28,7 +33,9 @@ export const rootReducer: Reducer<AppState, RootAction, AppState> = function (ap
         addressConfig: addressConfigReducer(appState.addressConfig, action),
         addressBook: addressBookReducer(appState.addressBook, action),
         shippingMethod: shippingMethodReducer(appState.shippingMethod, action),
-        cartData: cartDataReducer(appState.cartData, action)
+        cartData: cartDataReducer(appState.cartData, action),
+        billingAddress: billingAddressReducer(appState.billingAddress, action),
+        adyenConfig: adyenConfigReducer(appState.adyenConfig, action)
     }
 }
 
@@ -37,10 +44,19 @@ export interface AppState {
     addressConfig: AddressConfigModel
     addressBook: AddressModel[]
     shippingMethod: ShippingMethodState,
-    cartData: CartData
+    cartData: CartData,
+    billingAddress: AddressModel,
+    adyenConfig: AdyenConfigData
 }
 
-export type RootAction = AddressAction | AddressConfigAction | AddressBookAction | ShippingModeAction | CartDataAction
+export type RootAction =
+    ShippingAddressAction
+    | AddressConfigAction
+    | AddressBookAction
+    | ShippingModeAction
+    | CartDataAction
+    | BillingAddressAction
+    | AdyenConfigAction
 
 export interface PayloadAction<T extends string, PT = string> extends Action<T> {
     payload: PT

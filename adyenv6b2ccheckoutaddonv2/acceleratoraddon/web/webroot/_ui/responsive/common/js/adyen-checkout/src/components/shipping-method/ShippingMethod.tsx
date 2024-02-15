@@ -9,7 +9,7 @@ import HTMLReactParser from "html-react-parser";
 import {StoreDispatch} from "../../store/store";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
-import {ShippingMethodAddressHeading} from "./ShippingMethodAddressHeading";
+import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
 import {AddressData} from "../../types/addressData";
 
 interface StoreProps {
@@ -69,7 +69,7 @@ class ShippingMethod extends React.Component<Props, State> {
                     <div className={"checkout-shipping"}>
                         <div className="checkout-shipping-items row">
                             <div className={"col-sm-12"}>
-                                <ShippingMethodAddressHeading address={this.props.shippingAddress}/>
+                                <ShippingAddressHeading address={this.props.shippingAddress}/>
                             </div>
                         </div>
                         <hr/>

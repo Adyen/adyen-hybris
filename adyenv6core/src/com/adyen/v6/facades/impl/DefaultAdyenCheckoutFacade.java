@@ -39,6 +39,7 @@ import com.adyen.v6.converters.PaymentsDetailsResponseConverter;
 import com.adyen.v6.converters.PaymentsResponseConverter;
 import com.adyen.v6.converters.PosPaymentResponseConverter;
 import com.adyen.v6.dto.CheckoutConfigDTO;
+import com.adyen.v6.dto.CheckoutConfigDTOBuilder;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -98,7 +99,6 @@ import de.hybris.platform.servicelayer.search.FlexibleSearchService;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
-import javassist.NotFoundException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -652,10 +652,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public void initializeCheckoutData(Model model) throws ApiException {
         CheckoutConfigDTO checkoutConfigDTO = getCheckoutConfig();
 
-        model.addAttribute(SESSION_DATA, getAdyenSessionData());
+        model.addAttribute(SESSION_DATA, checkoutConfigDTO.getSessionData());
 
         // current selected PaymentMethod
-        model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, checkoutConfigDTO.getCartData().getAdyenPaymentMethod());
+        model.addAttribute(MODEL_SELECTED_PAYMENT_METHOD, checkoutConfigDTO.getSelectedPaymentMethod());
 
         //Set payment methods
         model.addAttribute(MODEL_PAYMENT_METHODS, checkoutConfigDTO.getAlternativePaymentMethods());
@@ -664,27 +664,27 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CREDIT_CARD_LABEL, checkoutConfigDTO.getCreditCardLabel());
         model.addAttribute(MODEL_ALLOWED_CARDS, checkoutConfigDTO.getAllowedCards());
 
-        model.addAttribute(MODEL_REMEMBER_DETAILS, showRememberDetails());
+        model.addAttribute(MODEL_REMEMBER_DETAILS, checkoutConfigDTO.isShowRememberTheseDetails());
         model.addAttribute(MODEL_STORED_CARDS, checkoutConfigDTO.getStoredPaymentMethodList());
         model.addAttribute(MODEL_DF_URL, checkoutConfigDTO.getDeviceFingerPrintUrl());
-        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
-        model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
-        model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
+        model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, checkoutConfigDTO.getCheckoutShopperHost());
+        model.addAttribute(MODEL_ENVIRONMENT_MODE, checkoutConfigDTO.getEnvironmentMode());
+        model.addAttribute(SHOPPER_LOCALE, checkoutConfigDTO.getShopperLocale());
 
         // OpenInvoice Methods
-        model.addAttribute(MODEL_OPEN_INVOICE_METHODS, OPENINVOICE_METHODS_API);
+        model.addAttribute(MODEL_OPEN_INVOICE_METHODS, checkoutConfigDTO.getOpenInvoiceMethods());
 
         // retrieve shipping Country to define if social security number needs to be shown or date of birth field for openinvoice methods
-        model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, showSocialSecurityNumber());
+        model.addAttribute(MODEL_SHOW_SOCIAL_SECURITY_NUMBER, checkoutConfigDTO.isShowSocialSecurityNumber());
 
         //Include Boleto banks
-        model.addAttribute(MODEL_SHOW_BOLETO, showBoleto());
+        model.addAttribute(MODEL_SHOW_BOLETO, checkoutConfigDTO.isShowBoleto());
 
         //Enable combo card flag
-        model.addAttribute(MODEL_SHOW_COMBO_CARD, showComboCard());
+        model.addAttribute(MODEL_SHOW_COMBO_CARD, checkoutConfigDTO.isShowComboCard());
 
         //Include POS Enable configuration
-        model.addAttribute(MODEL_SHOW_POS, showPos());
+        model.addAttribute(MODEL_SHOW_POS, checkoutConfigDTO.isShowPos());
         //Include connnected terminal List for POS
         model.addAttribute(MODEL_CONNECTED_TERMINAL_LIST, checkoutConfigDTO.getConnectedTerminalList());
         //Include Issuer Lists
@@ -693,16 +693,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         //Include information for components
         model.addAttribute(MODEL_CLIENT_KEY, checkoutConfigDTO.getAdyenClientKey());
         model.addAttribute(MODEL_AMOUNT, checkoutConfigDTO.getAmount());
-        model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
+        model.addAttribute(MODEL_IMMEDIATE_CAPTURE, checkoutConfigDTO.isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, checkoutConfigDTO.getAdyenPaypalMerchantId());
-        model.addAttribute(MODEL_COUNTRY_CODE, checkoutConfigDTO.getCartData().getDeliveryAddress().getCountry().getIsocode());
-        model.addAttribute(MODEL_CARD_HOLDER_NAME_REQUIRED, getHolderNameRequired());
-        model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, true);
-
-
+        model.addAttribute(MODEL_COUNTRY_CODE, checkoutConfigDTO.getCountryCode());
+        model.addAttribute(MODEL_CARD_HOLDER_NAME_REQUIRED, checkoutConfigDTO.isCardHolderNameRequired());
+        model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, checkoutConfigDTO.isSepaDirectDebit());
     }
 
-    public CheckoutConfigDTO getCheckoutConfig() {
+    public CheckoutConfigDTO getCheckoutConfig() throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
         AdyenPaymentService adyenPaymentService = getAdyenPaymentService();
         List<PaymentMethod> alternativePaymentMethods;
@@ -801,8 +799,35 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         modelService.save(cartModel);
 
         Amount amount = Util.createAmount(cartData.getTotalPriceWithTax().getValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
-        CheckoutConfigDTO checkoutConfigDTO = new CheckoutConfigDTO(cartData, alternativePaymentMethods, connectedTerminalList, storedPaymentMethodList, issuerLists, sepaDirectDebit, creditCardLabel, allowedCards, amount ,baseStore.getAdyenClientKey(), baseStore.getAdyenPaypalMerchantId(), adyenPaymentService.getDeviceFingerprintUrl());
-        return checkoutConfigDTO;
+
+        CheckoutConfigDTOBuilder checkoutConfigDTOBuilder = new CheckoutConfigDTOBuilder();
+
+            return checkoutConfigDTOBuilder.setAlternativePaymentMethods(alternativePaymentMethods)
+                    .setConnectedTerminalList(connectedTerminalList)
+                    .setStoredPaymentMethodList(storedPaymentMethodList)
+                    .setIssuerLists(issuerLists)
+                    .setCreditCardLabel(creditCardLabel)
+                    .setAllowedCards(allowedCards)
+                    .setAmount(amount)
+                    .setAdyenClientKey(baseStore.getAdyenClientKey())
+                    .setAdyenPaypalMerchantId(baseStore.getAdyenPaypalMerchantId())
+                    .setDeviceFingerPrintUrl(adyenPaymentService.getDeviceFingerprintUrl())
+                    .setSessionData(getAdyenSessionData())
+                    .setSelectedPaymentMethod(cartData.getAdyenPaymentMethod())
+                    .setShowRememberTheseDetails(showRememberDetails())
+                    .setCheckoutShopperHost(getCheckoutShopperHost())
+                    .setEnvironmentMode(getEnvironmentMode())
+                    .setShopperLocale(getShopperLocale())
+                    .setOpenInvoiceMethods(OPENINVOICE_METHODS_API)
+                    .setShowSocialSecurityNumber(showSocialSecurityNumber())
+                    .setShowBoleto(showBoleto())
+                    .setShowComboCard(showComboCard())
+                    .setShowPos(showPos())
+                    .setImmediateCapture(isImmediateCapture())
+                    .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
+                    .setCardHolderNameRequired(getHolderNameRequired())
+                    .setSepaDirectDebit(true)
+                    .build();
     }
 
     private Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {
