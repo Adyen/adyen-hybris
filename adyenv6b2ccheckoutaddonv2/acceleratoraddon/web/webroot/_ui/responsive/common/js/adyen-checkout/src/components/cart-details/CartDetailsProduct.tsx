@@ -2,6 +2,7 @@ import React from "react";
 import {OrderEntryData} from "../../types/cartData";
 import {ImageData} from "../../types/cartData";
 import {Price} from "../common/Price";
+import {urlContextPath} from "../../util/baseUrlUtil";
 
 interface Props {
     entryData: OrderEntryData
@@ -21,6 +22,10 @@ export class CartDetailsProduct extends React.Component<Props, null> {
         }
     }
 
+    private getProductUrl(): string {
+        return urlContextPath + this.props.entryData.product.url
+    }
+
     render() {
         if (this.props.entryData.deliveryPointOfService || !this.props.entryData) {
             return (
@@ -33,14 +38,14 @@ export class CartDetailsProduct extends React.Component<Props, null> {
         return (
             <li className="checkout-order-summary-list-items">
                 <div className="thumb">
-                    <a href={this.props.entryData.product.url}>
+                    <a href={this.getProductUrl()}>
                         <img src={primaryImage.url} alt={primaryImage.altText}/>
                     </a>
                 </div>
                 <div className="price"><Price price={this.props.entryData.totalPrice} displayFreeForZero={true}/></div>
                 <div className="details">
                     <div className="name">
-                        <a href={this.props.entryData.product.url}>{this.props.entryData.product.name}</a>
+                        <a href={this.getProductUrl()}>{this.props.entryData.product.name}</a>
                     </div>
                     <div>
                         <span className="label-spacing">Item Price:</span>

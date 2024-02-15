@@ -48,11 +48,12 @@ class ShippingMethod extends React.Component<Props, State> {
         })
     }
 
+    private onShippingMethodChange(code: string) {
+        ShippingMethodService.selectShippingMethod(code)
+    }
+
     private async handleSubmitButton() {
-        let success = await ShippingMethodService.selectShippingMethod(this.props.selectedShippingMethodCode);
-        if (success) {
-            this.setState({...this.state, redirectToNextStep: true})
-        }
+        this.setState({...this.state, redirectToNextStep: true})
     }
 
     render() {
@@ -77,7 +78,7 @@ class ShippingMethod extends React.Component<Props, State> {
                             <div className={"headline"}>Shipment Method</div>
                             <InputDropdown values={this.getDropdownItems()}
                                            onChange={(code) => {
-                                               this.props.setShippingMethod(code)
+                                               this.onShippingMethodChange(code)
                                            }}
                                            selectedValue={this.props.selectedShippingMethodCode}/>
                         </div>
