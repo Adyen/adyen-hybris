@@ -19,8 +19,10 @@ class CartDetails extends React.Component<StoreProps, any> {
     // No quotes
 
     private renderEntries(): React.JSX.Element[] {
-        if(this.props.cartData.entries){
-            return this.props.cartData.entries.map(entry => <CartDetailsProduct key={entry.entryNumber} entryData={entry}/>)
+        if (this.props.cartData.entries) {
+            return this.props.cartData.entries.map(entry => <CartDetailsProduct key={entry.entryNumber}
+                                                                                entryData={entry}
+                                                                                cartData={this.props.cartData}/>)
         }
         return []
     }

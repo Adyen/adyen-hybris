@@ -1,11 +1,14 @@
 import React from "react";
-import {OrderEntryData} from "../../types/cartData";
+import {CartData, OrderEntryData} from "../../types/cartData";
 import {ImageData} from "../../types/cartData";
 import {Price} from "../common/Price";
 import {urlContextPath} from "../../util/baseUrlUtil";
+import {PromotionService} from "../../service/promotionService";
+import HTMLReactParser from "html-react-parser";
 
 interface Props {
     entryData: OrderEntryData
+    cartData: CartData
 }
 
 export class CartDetailsProduct extends React.Component<Props, null> {
@@ -24,6 +27,24 @@ export class CartDetailsProduct extends React.Component<Props, null> {
 
     private getProductUrl(): string {
         return urlContextPath + this.props.entryData.product.url
+    }
+
+    private renderAppliedPromotions(): React.JSX.Element[] {
+        let result: React.JSX.Element[] = [];
+        if (PromotionService.doesAppliedPromotionExistForOrderEntryOrOrderEntryGroup(this.props.cartData, this.props.entryData)) {
+            for (let appliedProductPromotion of this.props.cartData.appliedProductPromotions) {
+                let displayed = false;
+                for (let consumedEntry of appliedProductPromotion.consumedEntries) {
+                    if (!displayed && PromotionService.isConsumedByEntry(consumedEntry, this.props.entryData)) {
+                        displayed = true;
+                        result.push(
+                            <span key={this.props.entryData.entryNumber} className={"promotion"}>{HTMLReactParser(appliedProductPromotion.description)}</span>
+                        )
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     render() {
@@ -54,9 +75,7 @@ export class CartDetailsProduct extends React.Component<Props, null> {
                     <div className="qty">
                         <span>Qty: {this.props.entryData.quantity}</span>
                     </div>
-                    <div>
-                        {/*TODO: promotions*/}
-                    </div>
+                    {this.renderAppliedPromotions()}
                 </div>
             </li>
         )

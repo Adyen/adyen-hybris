@@ -62,7 +62,8 @@ export const cartDataInitialState: CartData = {
     totalPriceWithTax: undefined,
     totalTax: undefined,
     pickupOrderGroups: undefined,
-    totalDiscounts: undefined
+    totalDiscounts: undefined,
+    appliedProductPromotions: undefined
 }
 
 export function cartDataReducer(cartData: CartData, action: RootAction): CartData {

@@ -2,6 +2,7 @@ import {AddressData} from "./addressData";
 
 //TODO add pickupOrderGroups appliedvouchers paymentinfo totalDiscounts
 
+
 interface AbstractOrderData {
     code: string;
     name: string;
@@ -31,7 +32,8 @@ interface AbstractOrderData {
     subscriptionOrder: boolean;
     calculated: boolean;
     pickupOrderGroups: PickupOrderEntryGroupData;
-    totalDiscounts: PriceData
+    totalDiscounts: PriceData;
+    appliedProductPromotions: PromotionResultData[]
 }
 
 interface PickupOrderEntryGroupData {
@@ -138,4 +140,13 @@ interface DeliveryModeData {
     name: string;
     description: string;
     deliveryCost: PriceData;
+}
+
+export interface PromotionResultData {
+    description: string,
+    consumedEntries: PromotionOrderEntryConsumedData[]
+}
+
+export interface PromotionOrderEntryConsumedData {
+    orderEntryNumber: number
 }
