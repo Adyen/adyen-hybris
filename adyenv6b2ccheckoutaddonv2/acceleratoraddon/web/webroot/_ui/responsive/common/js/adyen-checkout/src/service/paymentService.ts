@@ -1,7 +1,6 @@
 import axios from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
-import {AddressData} from "../types/addressData";
 import {AddressModel} from "../reducers/types";
 
 export class PaymentService {
