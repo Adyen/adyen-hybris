@@ -82,18 +82,45 @@ export function shippingAddressReducer(addressState: AddressModel, action: RootA
 }
 
 
-export interface SetFirstNameAction extends PayloadAction<"shippingAddress/setFirstName"> {}
-export interface SetLastNameAction extends PayloadAction<"shippingAddress/setLastName"> {}
-export interface SetCountryCodeAction extends PayloadAction<"shippingAddress/setCountryCode"> {}
-export interface SetTitleCodeAction extends PayloadAction<"shippingAddress/setTitleCode"> {}
-export interface SetLine1Action extends PayloadAction<"shippingAddress/setLine1"> {}
-export interface SetLine2Action extends PayloadAction<"shippingAddress/setLine2"> {}
-export interface SetCityAction extends PayloadAction<"shippingAddress/setCity"> {}
-export interface SetPostCodeAction extends PayloadAction<"shippingAddress/setPostCode"> {}
-export interface SetPhoneNumberAction extends PayloadAction<"shippingAddress/setPhoneNumber"> {}
-export interface SetAddress extends PayloadAction<"shippingAddress/setAddress", AddressModel> {}
+interface SetSAFirstNameAction extends PayloadAction<"shippingAddress/setFirstName"> {
+}
+
+interface SetSALastNameAction extends PayloadAction<"shippingAddress/setLastName"> {
+}
+
+interface SetSACountryCodeAction extends PayloadAction<"shippingAddress/setCountryCode"> {
+}
+
+interface SetSATitleCodeAction extends PayloadAction<"shippingAddress/setTitleCode"> {
+}
+
+interface SetSALine1Action extends PayloadAction<"shippingAddress/setLine1"> {
+}
+
+interface SetSALine2Action extends PayloadAction<"shippingAddress/setLine2"> {
+}
+
+interface SetSACityAction extends PayloadAction<"shippingAddress/setCity"> {
+}
+
+interface SetSAPostCodeAction extends PayloadAction<"shippingAddress/setPostCode"> {
+}
+
+interface SetSAPhoneNumberAction extends PayloadAction<"shippingAddress/setPhoneNumber"> {
+}
+
+interface SetSAAddress extends PayloadAction<"shippingAddress/setAddress", AddressModel> {
+}
 
 
-
-export type AddressAction = SetFirstNameAction | SetLastNameAction | SetCountryCodeAction | SetTitleCodeAction | SetLine1Action |
-    SetLine2Action | SetCityAction | SetPostCodeAction | SetPhoneNumberAction | SetAddress
+export type ShippingAddressAction =
+    SetSAFirstNameAction
+    | SetSALastNameAction
+    | SetSACountryCodeAction
+    | SetSATitleCodeAction
+    | SetSALine1Action
+    | SetSALine2Action
+    | SetSACityAction
+    | SetSAPostCodeAction
+    | SetSAPhoneNumberAction
+    | SetSAAddress

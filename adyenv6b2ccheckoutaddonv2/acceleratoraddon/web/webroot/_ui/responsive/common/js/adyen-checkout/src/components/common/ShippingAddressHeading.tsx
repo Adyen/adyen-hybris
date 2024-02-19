@@ -6,7 +6,7 @@ interface Props {
     address: AddressData
 }
 
-export class ShippingMethodAddressHeading extends React.Component<Props, any> {
+export class ShippingAddressHeading extends React.Component<Props, any> {
 
     render() {
         if (!this.props.address) {

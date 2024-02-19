@@ -5,7 +5,7 @@ import {AddressModel} from "../../reducers/types";
 import {StoreDispatch} from "../../store/store";
 import {isNotEmpty} from "../../util/stringUtil";
 import './AddressBookSelectorStyle.scss'
-import {ShippingAddressService} from "../../service/shippingAddressService";
+import {AddressService} from "../../service/addressService";
 import {Link, Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
 
@@ -38,7 +38,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, Addr
     }
 
     private async handleSelectAddress(address: AddressModel) {
-        let success = await ShippingAddressService.selectAddress(address.id);
+        let success = await AddressService.selectDeliveryAddress(address.id);
         if (success) {
             this.props.setSelectedAddress(address)
             this.setState({...this.state, redirectToNextStep: true})

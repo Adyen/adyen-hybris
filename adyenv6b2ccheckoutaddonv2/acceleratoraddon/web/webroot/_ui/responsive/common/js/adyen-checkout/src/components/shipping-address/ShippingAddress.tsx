@@ -1,17 +1,16 @@
 import React from "react";
-import {InputText} from "../controls/InputText";
-import {InputDropdown} from "../controls/InputDropdown";
 import {connect} from "react-redux";
 import {AppState} from "../../reducers/rootReducer";
 import {StoreDispatch} from "../../store/store";
 import {AddressConfigModel} from "../../reducers/addressConfigReducer";
 import {InputCheckbox} from "../controls/InputCheckbox";
-import {ShippingAddressService} from "../../service/shippingAddressService";
+import {AddressService} from "../../service/addressService";
 import {AddressModel} from "../../reducers/types";
 import AddressBookSelector from "./AddressBookSelector";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
+import {AddressForm} from "../common/AddressForm";
 
 
 interface StoreProps {
@@ -52,8 +51,8 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     }
 
     componentDidMount() {
-        ShippingAddressService.fetchAddressBook()
-        ShippingAddressService.fetchAddressConfig()
+        AddressService.fetchAddressBook()
+        AddressService.fetchAddressConfig()
     }
 
     private openAddressBookModal() {
@@ -69,7 +68,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     }
 
     private async handleSubmitButton() {
-        let success = await ShippingAddressService.addAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
+        let success = await AddressService.addDeliveryAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
         if (success) {
             this.setState({...this.state, redirectToNextStep: true})
         }
@@ -112,41 +111,22 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                 <div className={"step-body"}>
                     {this.renderAddressBookModal()}
 
-
                     <div className={"shippingAddress_form checkout-shipping"}>
                         <div className={"checkout-indent"}>
                             <div className={"shippingAddress_form_header headline"}>Shipping Address</div>
                             {this.renderAddressBookButton()}
                             <br/>
-                            <InputDropdown values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
-                                           onChange={(countryCode) => this.props.setCountryCode(countryCode)}
-                                           selectedValue={this.props.shippingAddress.countryCode}
-                                           placeholderText={"Country/Region"} placeholderDisabled={true}/>
-                            <InputDropdown values={this.props.addressConfig.titles} fieldName={"Title"}
-                                           onChange={(titleCode) => this.props.setTitleCode(titleCode)}
-                                           selectedValue={this.props.shippingAddress.titleCode}
-                                           placeholderText={"None"}/>
-                            <InputText fieldName={"First name"}
-                                       onChange={(firstName) => this.props.setFirstName(firstName)}
-                                       value={this.props.shippingAddress.firstName}/>
-                            <InputText fieldName={"Last name"}
-                                       onChange={(lastName) => this.props.setLastName(lastName)}
-                                       value={this.props.shippingAddress.lastName}/>
-                            <InputText fieldName={"ADDRESS LINE 1"}
-                                       onChange={(line1) => this.props.setLine1(line1)}
-                                       value={this.props.shippingAddress.line1}/>
-                            <InputText fieldName={"ADDRESS LINE 2 (OPTIONAL)"}
-                                       onChange={(line2) => this.props.setLine2(line2)}
-                                       value={this.props.shippingAddress.line2}/>
-                            <InputText fieldName={"CITY"}
-                                       onChange={(city) => this.props.setCity(city)}
-                                       value={this.props.shippingAddress.city}/>
-                            <InputText fieldName={"POST CODE"}
-                                       onChange={(postCode) => this.props.setPostCode(postCode)}
-                                       value={this.props.shippingAddress.postalCode}/>
-                            <InputText fieldName={"PHONE NUMBER"}
-                                       onChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}
-                                       value={this.props.shippingAddress.phoneNumber}/>
+                            <AddressForm addressConfig={this.props.addressConfig}
+                                         onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
+                                         address={this.props.shippingAddress}
+                                         onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
+                                         onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
+                                         onLastNameChange={(lastName) => this.props.setLastName(lastName)}
+                                         onLine1Change={(line1) => this.props.setLine1(line1)}
+                                         onLine2Change={(line2) => this.props.setLine2(line2)}
+                                         onCityChange={(city) => this.props.setCity(city)}
+                                         onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
+                                         onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}/>
                             {this.renderSaveAddressCheckbox()}
                         </div>
                     </div>

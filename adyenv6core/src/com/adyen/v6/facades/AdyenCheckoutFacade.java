@@ -214,5 +214,5 @@ public interface AdyenCheckoutFacade {
 
     String getClientKey();
 
-    CheckoutConfigDTO getCheckoutConfig();
+    CheckoutConfigDTO getCheckoutConfig() throws ApiException;
 }
