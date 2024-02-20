@@ -48,7 +48,6 @@
         const initConfig = ${initConfig};
         const callbackConfig = ${callbackConfig};
         const fnCallbackArray = {};
-        console.log("TEST: ${selectedPaymentMethod}");
         <c:choose>
         <%-- Configure components --%>
         <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
