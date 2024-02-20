@@ -145,7 +145,6 @@ var AdyenCheckoutHybris = (function () {
                     return false;
                 }
             }
-            console.log("XXX: " + paymentMethod);
             if (paymentMethod === "giftcard") {
                 $('input[name="giftCardBrand"]').val($('input[type=radio][name=paymentMethod]:checked').attr('brand'));
             }
@@ -694,7 +693,6 @@ var AdyenCheckoutHybris = (function () {
         initiateGooglePay: function (params) {
             const {amount, merchantAccount, label} = params;
             const googlePayNode = document.getElementById('adyen-component-button-container-' + label);
-            console.log(googlePayNode);
             const self = this;
             const adyenComponent = this.checkout.create("paywithgoogle", {
                 environment: this.checkout.options.environment,
