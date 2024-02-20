@@ -22,34 +22,43 @@ export class AddressForm extends React.Component<Props, any> {
 
     render() {
         return <>
-            <InputDropdown values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
-                           onChange={this.props.onCountryCodeChange}
+            <InputDropdown testId={"address.country"}
+                           values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
+                           onChange={(countryCode) => this.props.onCountryCodeChange(countryCode)}
                            selectedValue={this.props.address.countryCode}
                            placeholderText={"Country/Region"} placeholderDisabled={true}/>
-            <InputDropdown values={this.props.addressConfig.titles} fieldName={"Title"}
-                           onChange={this.props.onTitleCodeChange}
+            <InputDropdown testId={"address.title"}
+                           values={this.props.addressConfig.titles} fieldName={"Title"}
+                           onChange={(titleCode) => this.props.onTitleCodeChange(titleCode)}
                            selectedValue={this.props.address.titleCode}
                            placeholderText={"None"}/>
-            <InputText fieldName={"First name"}
-                       onChange={this.props.onFirstNameChange}
+            <InputText testId={"address.firstName"}
+                       fieldName={"First name"}
+                       onChange={(firstName) => this.props.onFirstNameChange(firstName)}
                        value={this.props.address.firstName}/>
-            <InputText fieldName={"Last name"}
-                       onChange={this.props.onLastNameChange}
+            <InputText testId={"address.surname"}
+                       fieldName={"Last name"}
+                       onChange={(lastName) => this.props.onLastNameChange(lastName)}
                        value={this.props.address.lastName}/>
-            <InputText fieldName={"ADDRESS LINE 1"}
-                       onChange={this.props.onLine1Change}
+            <InputText testId={"address.line1"}
+                       fieldName={"ADDRESS LINE 1"}
+                       onChange={(line1) => this.props.onLine1Change(line1)}
                        value={this.props.address.line1}/>
-            <InputText fieldName={"ADDRESS LINE 2 (OPTIONAL)"}
-                       onChange={this.props.onLine2Change}
+            <InputText testId={"address.line2"}
+                       fieldName={"ADDRESS LINE 2 (OPTIONAL)"}
+                       onChange={(line2) => this.props.onLine2Change(line2)}
                        value={this.props.address.line2}/>
-            <InputText fieldName={"CITY"}
-                       onChange={this.props.onCityChange}
+            <InputText testId={"address.townCity"}
+                       fieldName={"CITY"}
+                       onChange={(city) => this.props.onCityChange(city)}
                        value={this.props.address.city}/>
-            <InputText fieldName={"POST CODE"}
-                       onChange={this.props.onPostCodeChange}
+            <InputText testId={"address.postcode"}
+                       fieldName={"POST CODE"}
+                       onChange={(postCode) => this.props.onPostCodeChange(postCode)}
                        value={this.props.address.postalCode}/>
-            <InputText fieldName={"PHONE NUMBER"}
-                       onChange={this.props.onPhoneNumberChange}
+            <InputText testId={"address.phone"}
+                       fieldName={"PHONE NUMBER"}
+                       onChange={(phoneNumber) => this.props.onPhoneNumberChange(phoneNumber)}
                        value={this.props.address.phoneNumber}/>
         </>;
     }
