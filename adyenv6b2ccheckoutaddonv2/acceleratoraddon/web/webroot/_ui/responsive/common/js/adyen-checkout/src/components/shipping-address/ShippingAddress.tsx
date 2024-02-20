@@ -118,39 +118,49 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                             <div className={"shippingAddress_form_header headline"}>Shipping Address</div>
                             {this.renderAddressBookButton()}
                             <br/>
-                            <InputDropdown values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
+                            <InputDropdown testId={"address.country"}
+                                           values={this.props.addressConfig.countries} fieldName={"COUNTRY/REGION"}
                                            onChange={(countryCode) => this.props.setCountryCode(countryCode)}
                                            selectedValue={this.props.shippingAddress.countryCode}
                                            placeholderText={"Country/Region"} placeholderDisabled={true}/>
-                            <InputDropdown values={this.props.addressConfig.titles} fieldName={"Title"}
+                            <InputDropdown testId={"address.title"}
+                                           values={this.props.addressConfig.titles} fieldName={"Title"}
                                            onChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                            selectedValue={this.props.shippingAddress.titleCode}
                                            placeholderText={"None"}/>
-                            <InputText fieldName={"First name"}
+                            <InputText testId={"address.firstName"}
+                                       fieldName={"First name"}
                                        onChange={(firstName) => this.props.setFirstName(firstName)}
                                        value={this.props.shippingAddress.firstName}/>
-                            <InputText fieldName={"Last name"}
+                            <InputText testId={"address.surname"}
+                                       fieldName={"Last name"}
                                        onChange={(lastName) => this.props.setLastName(lastName)}
                                        value={this.props.shippingAddress.lastName}/>
-                            <InputText fieldName={"ADDRESS LINE 1"}
+                            <InputText testId={"address.line1"}
+                                       fieldName={"ADDRESS LINE 1"}
                                        onChange={(line1) => this.props.setLine1(line1)}
                                        value={this.props.shippingAddress.line1}/>
-                            <InputText fieldName={"ADDRESS LINE 2 (OPTIONAL)"}
+                            <InputText testId={"address.line2"}
+                                       fieldName={"ADDRESS LINE 2 (OPTIONAL)"}
                                        onChange={(line2) => this.props.setLine2(line2)}
                                        value={this.props.shippingAddress.line2}/>
-                            <InputText fieldName={"CITY"}
+                            <InputText testId={"address.townCity"}
+                                       fieldName={"CITY"}
                                        onChange={(city) => this.props.setCity(city)}
                                        value={this.props.shippingAddress.city}/>
-                            <InputText fieldName={"POST CODE"}
+                            <InputText testId={"address.postcode"}
+                                       fieldName={"POST CODE"}
                                        onChange={(postCode) => this.props.setPostCode(postCode)}
                                        value={this.props.shippingAddress.postalCode}/>
-                            <InputText fieldName={"PHONE NUMBER"}
+                            <InputText testId={"address.phone"}
+                                       fieldName={"PHONE NUMBER"}
                                        onChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}
                                        value={this.props.shippingAddress.phoneNumber}/>
                             {this.renderSaveAddressCheckbox()}
                         </div>
                     </div>
-                    <button className={"btn btn-primary btn-block checkout-next"}
+                    <button id="addressSubmit"
+                            className={"btn btn-primary btn-block checkout-next"}
                             onClick={() => this.handleSubmitButton()}>NEXT
                     </button>
                 </div>
