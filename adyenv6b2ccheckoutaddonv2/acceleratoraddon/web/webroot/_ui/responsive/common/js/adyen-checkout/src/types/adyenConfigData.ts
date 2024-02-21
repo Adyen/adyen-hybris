@@ -31,14 +31,14 @@ interface SessionData {
     sessionData: string
 }
 
-interface PaymentMethodData {
-    brand: string;
-    brands: string[];
-    configuration: Map<string, string>;
-    issuers: PaymentMethodIssuerData[];
-    fundingSource: string;
-    group: PaymentMethodGroupData;
-    inputDetails: InputDetailData[];
+export interface PaymentMethodData {
+    brand?: string;
+    brands?: string[];
+    configuration: object;
+    issuers?: PaymentMethodIssuerData[];
+    fundingSource?: string;
+    group?: PaymentMethodGroupData;
+    inputDetails?: InputDetailData[];
     name: string;
     type: string;
 }
