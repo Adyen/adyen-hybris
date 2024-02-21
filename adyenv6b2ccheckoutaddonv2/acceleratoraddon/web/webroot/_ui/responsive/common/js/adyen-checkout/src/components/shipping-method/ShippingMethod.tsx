@@ -76,15 +76,17 @@ class ShippingMethod extends React.Component<Props, State> {
                         <hr/>
                         <div className={"checkout-indent"}>
                             <div className={"headline"}>Shipment Method</div>
-                            <InputDropdown values={this.getDropdownItems()}
+                            <InputDropdown testId={"delivery_method"}
+                                           values={this.getDropdownItems()}
                                            onChange={(code) => {
-                                               this.onShippingMethodChange(code)
+                                               this.props.setShippingMethod(code)
                                            }}
                                            selectedValue={this.props.selectedShippingMethodCode}/>
                         </div>
                         <p>{HTMLReactParser("Items will ship as soon as they are available. <br> See Order Summary for more information.")}</p>
                     </div>
-                    <button className={"btn btn-primary btn-block checkout-next"}
+                    <button id="deliveryMethodSubmit"
+                            className={"btn btn-primary btn-block checkout-next"}
                             onClick={() => this.handleSubmitButton()}>NEXT
                     </button>
                 </div>
