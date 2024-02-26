@@ -43,6 +43,6 @@ public class AdyenPaymentMethodsController {
     @RequireHardLogIn
     @GetMapping(value = "/payment-methods-configuration")
     public ResponseEntity<CheckoutConfigDTO> getPaymentMethodsConfiguration() throws ApiException {
-        return ResponseEntity.ok().body(adyenCheckoutFacade.getCheckoutConfig());
+        return ResponseEntity.ok().body(adyenCheckoutFacade.getReactCheckoutConfig());
     }
 }

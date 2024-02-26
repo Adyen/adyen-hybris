@@ -13,7 +13,7 @@ import {AddressService} from "../../service/addressService";
 import {AdyenConfigService} from "../../service/adyenConfigService";
 import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
-import {AdyenConfigData, PaymentMethodData} from "../../types/adyenConfigData";
+import {AdyenConfigData} from "../../types/adyenConfigData";
 import {isEmpty, isNotEmpty} from "../../util/stringUtil";
 import {CoreOptions} from "@adyen/adyen-web/dist/types/core/types";
 import {OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
@@ -86,20 +86,6 @@ class Payment extends React.Component<Props, State> {
     }
 
     private getAdyenCheckoutConfig(): CoreOptions {
-        let brands = this.props.adyenConfig.allowedCards.map(value => value.code)
-
-        let cardPaymentMethod: PaymentMethodData = {
-            type: 'card',
-            name: 'Bank Card',
-            brands: brands,
-            configuration: {}
-        }
-
-        let paymentMethods = []
-        paymentMethods.push(cardPaymentMethod)
-        this.props.adyenConfig.alternativePaymentMethods
-            .forEach((paymentMethod) => paymentMethods.push(paymentMethod));
-
         return {
             paymentMethodsConfiguration: {
                 card: {
@@ -114,7 +100,7 @@ class Payment extends React.Component<Props, State> {
                 }
             },
             paymentMethodsResponse: {
-                paymentMethods: paymentMethods,
+                paymentMethods: this.props.adyenConfig.paymentMethods,
                 storedPaymentMethods: this.props.adyenConfig.storedPaymentMethodList
             },
             locale: this.props.adyenConfig.shopperLocale,
