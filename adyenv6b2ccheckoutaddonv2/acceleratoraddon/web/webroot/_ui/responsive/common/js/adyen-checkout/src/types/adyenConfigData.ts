@@ -1,5 +1,5 @@
 export interface AdyenConfigData {
-    alternativePaymentMethods: PaymentMethodData[];
+    paymentMethods: PaymentMethodData[];
     connectedTerminalList: string[];
     storedPaymentMethodList: StoredPaymentMethodData[];
     issuerLists: Map<string, string>;
