@@ -19,7 +19,7 @@ export const adyenConfigInitialState : AdyenConfigData = {
     adyenClientKey: "",
     adyenPaypalMerchantId: "",
     allowedCards: [],
-    alternativePaymentMethods: [],
+    paymentMethods: [],
     amount: undefined,
     connectedTerminalList: [],
     creditCardLabel: "",
