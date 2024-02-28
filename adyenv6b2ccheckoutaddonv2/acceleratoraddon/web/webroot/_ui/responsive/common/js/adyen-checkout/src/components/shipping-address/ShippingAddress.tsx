@@ -11,6 +11,7 @@ import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
 import {AddressForm} from "../common/AddressForm";
+import {translationsStore} from "../../store/translationsStore";
 
 
 interface StoreProps {
@@ -76,7 +77,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
 
     private renderSaveAddressCheckbox(): React.JSX.Element {
         if (!this.props.addressConfig.anonymousUser) {
-            return <InputCheckbox fieldName={"Save shipping address"}
+            return <InputCheckbox fieldName={translationsStore.get("checkout.summary.deliveryAddress.saveAddressInMyAddressBook")}
                                   onChange={(value) => this.onChangeSaveInAddressBook(value)}
                                   checked={this.state.saveInAddressBook}/>
         }
@@ -85,8 +86,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
 
     private renderAddressBookButton(): React.JSX.Element {
         if (this.props.addressBook.length > 0) {
-            return <button className={"btn btn-default btn-block"} onClick={() => this.openAddressBookModal()}>Address
-                Book</button>
+            return <button className={"btn btn-default btn-block"} onClick={() => this.openAddressBookModal()}>{translationsStore.get("checkout.checkout.multi.deliveryAddress.viewAddressBook")}</button>
         }
         return <></>
     }
@@ -113,7 +113,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
 
                     <div className={"shippingAddress_form checkout-shipping"}>
                         <div className={"checkout-indent"}>
-                            <div className={"shippingAddress_form_header headline"}>Shipping Address</div>
+                            <div className={"shippingAddress_form_header headline"}>{translationsStore.get("checkout.summary.shippingAddress")}</div>
                             {this.renderAddressBookButton()}
                             <br/>
                             <AddressForm addressConfig={this.props.addressConfig}
@@ -131,7 +131,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                         </div>
                     </div>
                     <button className={"btn btn-primary btn-block checkout-next"}
-                            onClick={() => this.handleSubmitButton()}>NEXT
+                            onClick={() => this.handleSubmitButton()}>{translationsStore.get("checkout.multi.deliveryAddress.continue")}
                     </button>
                 </div>
             </>

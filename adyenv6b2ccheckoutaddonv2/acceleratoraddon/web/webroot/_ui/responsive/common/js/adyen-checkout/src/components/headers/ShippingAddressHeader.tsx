@@ -1,12 +1,13 @@
 import {BaseHeader, BaseHeaderProps} from "./BaseHeader";
 import {routes} from "../../router/routes";
+import {translationsStore} from "../../store/translationsStore";
 
-const title = "Shipment/Pick Up Location";
 const redirectUrl = routes.shippingAddress;
+
 export class ShippingAddressHeader extends BaseHeader {
 
     constructor(props: BaseHeaderProps) {
-        super(props, title, redirectUrl);
+        super(props, translationsStore.get("checkout.multi.deliveryAddress"), redirectUrl);
     }
 
 }

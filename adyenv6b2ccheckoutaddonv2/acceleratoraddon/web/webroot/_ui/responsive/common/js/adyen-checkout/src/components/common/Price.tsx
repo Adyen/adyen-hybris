@@ -1,5 +1,6 @@
 import {PriceData} from "../../types/cartData";
 import React from "react";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     price: PriceData
@@ -17,7 +18,7 @@ export class Price extends React.Component<Props, null> {
             }
         } else {
             if (this.props.displayFreeForZero) {
-                return <>FREE</>
+                return <>{translationsStore.get("basket.page.free")}</>
             } else {
                 return <>{this.props.price.formattedValue}</>
             }

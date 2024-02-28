@@ -1,5 +1,5 @@
 import {Reducer} from "@reduxjs/toolkit";
-import {ShippingAddressAction, addressInitialState, shippingAddressReducer} from "./shippingAddressReducer";
+import {addressInitialState, ShippingAddressAction, shippingAddressReducer} from "./shippingAddressReducer";
 import {Action} from "redux";
 import {
     AddressConfigAction,
