@@ -28,19 +28,6 @@ public class AdyenPaymentMethodsController {
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
     @RequireHardLogIn
-    @PostMapping(value = "/select-payment-method")
-    public ResponseEntity<HttpStatus> selectPaymentMethod(@RequestBody AdyenPaymentForm adyenPaymentForm) {
-        final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(adyenPaymentForm, "payment");
-        adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            LOG.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok().build();
-    }
-
-    @RequireHardLogIn
     @GetMapping(value = "/payment-methods-configuration")
     public ResponseEntity<CheckoutConfigDTO> getPaymentMethodsConfiguration() throws ApiException {
         return ResponseEntity.ok().body(adyenCheckoutFacade.getCheckoutConfig());
