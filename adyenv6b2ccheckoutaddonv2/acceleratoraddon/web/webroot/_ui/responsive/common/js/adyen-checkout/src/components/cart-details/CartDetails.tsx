@@ -5,6 +5,7 @@ import {CartData} from "../../types/cartData";
 import {AppState} from "../../reducers/rootReducer";
 import {CartDetailsProduct} from "./CartDetailsProduct";
 import {OrderTotals} from "./OrderTotals";
+import {translationsStore} from "../../store/translationsStore";
 
 interface StoreProps {
     cartData: CartData
@@ -31,7 +32,7 @@ class CartDetails extends React.Component<StoreProps, any> {
         if (this.props.cartData) {
             return (
                 <>
-                    <div className={"checkout-summary-headline"}>Order Summary</div>
+                    <div className={"checkout-summary-headline"}>{translationsStore.get("checkout.multi.order.summary")}</div>
                     <div className={"checkout-order-summary"}>
                         <ul className="checkout-order-summary-list">
                             <CartDeliveryItems addressData={this.props.cartData.deliveryAddress}/>
