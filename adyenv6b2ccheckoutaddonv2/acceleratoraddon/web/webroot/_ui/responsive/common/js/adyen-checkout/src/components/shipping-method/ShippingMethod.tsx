@@ -6,7 +6,6 @@ import {connect} from "react-redux";
 import {AppState} from "../../reducers/rootReducer";
 import {CodeValueItem, ShippingMethodModel} from "../../reducers/types";
 import HTMLReactParser from "html-react-parser";
-import {StoreDispatch} from "../../store/store";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
 import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
@@ -19,11 +18,7 @@ interface StoreProps {
     shippingAddress: AddressData
 }
 
-interface DispatchProps {
-    setShippingMethod: (code: string) => void;
-}
-
-type Props = StoreProps & DispatchProps
+type Props = StoreProps
 
 interface State {
     redirectToNextStep: boolean
@@ -80,7 +75,7 @@ class ShippingMethod extends React.Component<Props, State> {
                             <InputDropdown testId={"delivery_method"}
                                            values={this.getDropdownItems()}
                                            onChange={(code) => {
-                                               this.props.setShippingMethod(code)
+                                               this.onShippingMethodChange(code)
                                            }}
                                            selectedValue={this.props.selectedShippingMethodCode}/>
                         </div>
@@ -102,8 +97,4 @@ const mapStateToProps = (state: AppState): StoreProps => ({
     shippingAddress: state.cartData.deliveryAddress
 })
 
-const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
-    setShippingMethod: (code: string) => dispatch({type: "shippingMethod/setShippingMethod", payload: code}),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ShippingMethod)
+export default connect(mapStateToProps)(ShippingMethod)
