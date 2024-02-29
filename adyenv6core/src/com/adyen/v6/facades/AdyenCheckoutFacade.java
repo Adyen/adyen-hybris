@@ -215,4 +215,6 @@ public interface AdyenCheckoutFacade {
     String getClientKey();
 
     CheckoutConfigDTO getCheckoutConfig() throws ApiException;
+
+    public boolean isOneClick(String adyenPaymentMethod);
 }

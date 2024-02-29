@@ -1719,6 +1719,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return paymentsDetailsResponseConverter;
     }
 
+    @Override
+    public boolean isOneClick(String adyenPaymentMethod){
+        return adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0;
+    }
+
     public void setPaymentsDetailsResponseConverter(PaymentsDetailsResponseConverter paymentsDetailsResponseConverter) {
         this.paymentsDetailsResponseConverter = paymentsDetailsResponseConverter;
     }
