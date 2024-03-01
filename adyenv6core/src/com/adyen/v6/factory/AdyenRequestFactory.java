@@ -46,6 +46,7 @@ import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.util.Util;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import com.google.gson.Gson;
@@ -61,6 +62,7 @@ import de.hybris.platform.util.TaxValue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,6 +86,9 @@ public class AdyenRequestFactory {
 
     protected final ConfigurationService configurationService;
     protected final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor;
+
+    @Autowired
+    private AdyenCheckoutFacade adyenCheckoutFacade;
 
     public AdyenRequestFactory(final ConfigurationService configurationService, final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor) {
         this.configurationService = configurationService;
@@ -177,7 +182,7 @@ public class AdyenRequestFactory {
             }
         }
         //For one click
-        else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+        else if (adyenCheckoutFacade.isOneClick(adyenPaymentMethod)) {
             Optional.ofNullable(cartData.getAdyenSelectedReference())
                     .filter(StringUtils::isNotEmpty)
                     .map(selectedReference -> getCardDetails(cartData, selectedReference))
@@ -192,7 +197,7 @@ public class AdyenRequestFactory {
             setPixData(paymentsRequest, cartData);
         }
         //Set Boleto parameters
-        else if (cartData.getAdyenPaymentMethod().indexOf(PAYMENT_METHOD_BOLETO) == 0) {
+        else if (adyenCheckoutFacade.isOneClick(adyenPaymentMethod)) {
             setBoletoData(paymentsRequest, cartData);
         }
         //For alternate payment methods like iDeal, Paypal etc.

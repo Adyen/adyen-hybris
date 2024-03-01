@@ -54,8 +54,9 @@ public class AdyenPlaceOrderController {
     @RequireHardLogIn
     @PostMapping("/place-order")
     public ResponseEntity<String> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
-
-        if (selectPaymentMethod(adyenPaymentForm)) {
+        final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
+        
+        if (!selectPaymentMethodSuccess) {
             LOGGER.warn("Payment form is invalid.");
             return ResponseEntity.badRequest().build();
         }
@@ -201,28 +202,28 @@ public class AdyenPlaceOrderController {
 
         if (bindingResult.hasErrors()) {
             LOGGER.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
-    private ResponseEntity<String> handleRedirect(String adyenPaymentMethod){
-            if (is3DSPaymentMethod(adyenPaymentMethod)) {
-                LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-
-            }
-            if (AFTERPAY_TOUCH.equals(adyenPaymentMethod)) {
-                LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to afterpaytouch page");
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-
-            }
-            LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to local payment method page");
+    private ResponseEntity<String> handleRedirect(String adyenPaymentMethod) {
+        if (is3DSPaymentMethod(adyenPaymentMethod)) {
+            LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
             return ResponseEntity.status(HttpStatus.FOUND).build();
+
+        }
+        if (AFTERPAY_TOUCH.equals(adyenPaymentMethod)) {
+            LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to afterpaytouch page");
+            return ResponseEntity.status(HttpStatus.FOUND).build();
+
+        }
+        LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to local payment method page");
+        return ResponseEntity.status(HttpStatus.FOUND).build();
     }
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
-        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || adyenCheckoutFacade.isOneClick(adyenPaymentMethod);//wydzielic metode do fasady
+        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || adyenCheckoutFacade.isOneClick(adyenPaymentMethod);
     }
 
     private boolean isCartValid() {
