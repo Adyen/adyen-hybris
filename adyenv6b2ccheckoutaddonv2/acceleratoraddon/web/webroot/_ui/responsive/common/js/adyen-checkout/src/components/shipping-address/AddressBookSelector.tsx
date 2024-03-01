@@ -8,6 +8,7 @@ import './AddressBookSelectorStyle.scss'
 import {AddressService} from "../../service/addressService";
 import {Link, Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     closeModal: () => void
@@ -61,8 +62,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, Addr
                     <br/>
                     <Link to={routes.shippingMethod}
                           className={"addressBookSelector_modal_addressesContainer_addressItem_button btn btn-primary btn-block"}
-                          onClick={() => this.handleSelectAddress(address)}>Use
-                        this address
+                          onClick={() => this.handleSelectAddress(address)}>{translationsStore.get("checkout.multi.deliveryAddress.useThisAddress")}
                     </Link>
                 </div>)
         })
@@ -80,7 +80,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, Addr
                 <dialog open className={"addressBookSelector_modal"}>
                 <span className={"addressBookSelector_modal_close glyphicon glyphicon-remove"}
                       onClick={() => this.props.closeModal()}/>
-                    <div className={"addressBookSelector_modal_header"}>Saved Addresses</div>
+                    <div className={"addressBookSelector_modal_header"}>{translationsStore.get("checkout.multi.deliveryAddress.savedAddresses")}</div>
                     <div className={"addressBookSelector_modal_addressesContainer"}>
                         {this.renderAddressBookEntries()}
                     </div>

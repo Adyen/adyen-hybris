@@ -1,6 +1,7 @@
 import React from "react";
 import {AddressData} from "../../types/addressData";
 import {isNotEmpty} from "../../util/stringUtil";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     addressData: AddressData;
@@ -14,7 +15,7 @@ export class CartDeliveryItems extends React.Component<Props, null> {
             return (
                 <li className="checkout-order-summary-list-heading">
                     <div className="title">
-                        Ship to:
+                        {translationsStore.get("checkout.pickup.items.to.be.shipped")}
                     </div>
                     <div className="address">
                         {isNotEmpty(this.props.addressData.title) ? this.props.addressData.title + "\xa0" : ""}
@@ -34,7 +35,7 @@ export class CartDeliveryItems extends React.Component<Props, null> {
 
         return (
             <li className="checkout-order-summary-list-heading">
-                Items to be delivered
+                {translationsStore.get("checkout.pickup.items.to.be.delivered")}
             </li>
         )
     }

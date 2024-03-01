@@ -21,10 +21,9 @@ import AdyenCheckoutError from "@adyen/adyen-web/dist/types/core/Errors/AdyenChe
 import Core from "@adyen/adyen-web/dist/types/core";
 import {AdyenPaymentForm} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
-import {Navigate} from "react-router-dom";
-import {routes} from "../../router/routes";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
 import {CardState} from "../../types/paymentState";
+import {translationsStore} from "../../store/translationsStore";
 
 interface State {
     useDifferentBillingAddress: boolean
@@ -184,10 +183,6 @@ class Payment extends React.Component<Props, State> {
     }
 
     render() {
-        if (this.state.redirectToNextStep) {
-            return <Navigate to={routes.review}/>
-        }
-
         return (
             <>
                 <PaymentHeader isActive={true}/>
@@ -195,7 +190,7 @@ class Payment extends React.Component<Props, State> {
 
                     <div className={"checkout-paymentmethod"}>
                         <ShippingAddressHeading address={this.props.shippingAddressFromCart}/>
-                        <InputCheckbox fieldName={"Use different billing address"}
+                        <InputCheckbox fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
                                        onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
                                        checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}

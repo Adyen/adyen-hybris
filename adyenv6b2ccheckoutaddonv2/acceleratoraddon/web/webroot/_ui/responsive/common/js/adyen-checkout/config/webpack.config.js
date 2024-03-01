@@ -562,6 +562,9 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 1,
+      }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
@@ -624,7 +627,7 @@ module.exports = function (webpackEnv) {
           // Options similar to the same options in webpackOptions.output
           // both options are optional
           filename: 'static/css/main.css',
-          chunkFilename: 'static/css/main.chunk.css',
+          // chunkFilename: 'static/css/main.chunk.css',
         }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding
