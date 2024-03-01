@@ -16,7 +16,7 @@ The SAP Commerce integrates Adyen Checkout for all card payments and local/redir
 Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
 
 ## Requirements
-SAP Commerce (Hybris) version 2105 or newer
+SAP Commerce (Hybris) version 2105 or later
 
 ## Installation
 
