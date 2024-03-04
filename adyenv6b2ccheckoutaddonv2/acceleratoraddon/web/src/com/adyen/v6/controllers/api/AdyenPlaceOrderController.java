@@ -7,6 +7,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
+import com.adyen.v6.util.AdyenUtil;
 import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -55,7 +56,7 @@ public class AdyenPlaceOrderController {
     @PostMapping("/place-order")
     public ResponseEntity<String> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
         final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
-        
+
         if (!selectPaymentMethodSuccess) {
             LOGGER.warn("Payment form is invalid.");
             return ResponseEntity.badRequest().build();
@@ -223,7 +224,7 @@ public class AdyenPlaceOrderController {
     }
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
-        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || adyenCheckoutFacade.isOneClick(adyenPaymentMethod);
+        return adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || AdyenUtil.isOneClick(adyenPaymentMethod);
     }
 
     private boolean isCartValid() {
