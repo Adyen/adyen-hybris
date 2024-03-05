@@ -7,6 +7,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
+import com.adyen.v6.response.PlaceOrderResponse;
 import com.adyen.v6.util.AdyenUtil;
 import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
@@ -54,8 +55,10 @@ public class AdyenPlaceOrderController {
 
     @RequireHardLogIn
     @PostMapping("/place-order")
-    public ResponseEntity<String> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
-        final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
+    public ResponseEntity<PlaceOrderResponse> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+
+        final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm, placeOrderResponse);
 
         if (!selectPaymentMethodSuccess) {
             LOGGER.warn("Payment form is invalid.");
@@ -70,6 +73,7 @@ public class AdyenPlaceOrderController {
         final CartData cartData = cartFacade.getSessionCart();
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         String errorMessage = "";
+        placeOrderResponse.setOrderNumber(cartData.getPurchaseOrderNumber());
 
         switch (adyenPaymentMethod) {
             case RATEPAY: {
@@ -79,13 +83,13 @@ public class AdyenPlaceOrderController {
                 return handlePOS(request, cartData, errorMessage);
             }
             default: {
-                return handleOther(request, cartData, errorMessage, adyenPaymentMethod);
+                return handleOther(request, cartData, errorMessage, adyenPaymentMethod, placeOrderResponse);
             }
         }
     }
 
 
-    private ResponseEntity<String> handleRatepay(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handleRatepay(HttpServletRequest request, CartData cartData, String errorMessage) {
         try {
             OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
             LOGGER.debug("Redirecting to confirmation!");
@@ -111,7 +115,7 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.badRequest().build();
     }
 
-    private ResponseEntity<String> handlePOS(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handlePOS(HttpServletRequest request, CartData cartData, String errorMessage) {
         try {
             String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
             request.setAttribute("originalServiceId", originalServiceId);
@@ -152,7 +156,7 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.badRequest().build();
     }
 
-    private ResponseEntity<String> handleOther(HttpServletRequest request, CartData cartData, String errorMessage, String adyenPaymentMethod) {
+    private ResponseEntity<PlaceOrderResponse> handleOther(HttpServletRequest request, CartData cartData, String errorMessage, String adyenPaymentMethod, PlaceOrderResponse placeOrderResponse) {
 
         try {
             cartData.setAdyenReturnUrl("Todo in 3Ds.");
@@ -165,7 +169,7 @@ public class AdyenPlaceOrderController {
                 LOGGER.info("Multibanco.");
 
             }
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            return ResponseEntity.status(HttpStatus.FOUND).body(placeOrderResponse);
 
         } catch (ApiException e) {
             LOGGER.error("API exception: ", e);
@@ -197,9 +201,11 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.ok().build();
     }
 
-    private boolean selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {
+    private boolean selectPaymentMethod(AdyenPaymentForm adyenPaymentForm, PlaceOrderResponse placeOrderResponse) {
         final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(adyenPaymentForm, "payment");
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
+
+        placeOrderResponse.setErrors(bindingResult.getAllErrors());     //
 
         if (bindingResult.hasErrors()) {
             LOGGER.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
@@ -208,7 +214,7 @@ public class AdyenPlaceOrderController {
         return true;
     }
 
-    private ResponseEntity<String> handleRedirect(String adyenPaymentMethod) {
+    private ResponseEntity<PlaceOrderResponse> handleRedirect(String adyenPaymentMethod) {
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
             LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
             return ResponseEntity.status(HttpStatus.FOUND).build();
