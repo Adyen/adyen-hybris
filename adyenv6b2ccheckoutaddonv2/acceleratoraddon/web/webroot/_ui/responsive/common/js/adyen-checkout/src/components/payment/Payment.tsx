@@ -145,8 +145,8 @@ class Payment extends React.Component<Props, State> {
         await this.executePaymentRequest(adyenPaymentForm)
     }
 
-    private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
-        let success = await PaymentService.selectPaymentMethod(adyenPaymentForm);
+    private async handleSubmitButton() {
+            let success = await PaymentService.placeOrder(this.prepareAdyenPaymentForm());
 
         if (success) {
             this.setState({...this.state, redirectToNextStep: true})
@@ -183,6 +183,10 @@ class Payment extends React.Component<Props, State> {
     }
 
     render() {
+        if (this.state.redirectToNextStep) {
+            return <Navigate to={routes.thankYouPage}/>
+        }
+
         return (
             <>
                 <PaymentHeader isActive={true}/>
