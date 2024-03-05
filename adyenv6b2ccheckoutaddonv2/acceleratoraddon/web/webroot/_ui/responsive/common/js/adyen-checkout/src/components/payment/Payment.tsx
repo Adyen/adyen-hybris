@@ -177,7 +177,7 @@ class Payment extends React.Component<Props, State> {
 
     private async handleSubmitButton() {
         if (this.state.cardState.isValid) {
-            let success = await PaymentService.selectPaymentMethod(this.prepareAdyenPaymentForm());
+            let success = await PaymentService.placeOrder(this.prepareAdyenPaymentForm());
 
             if (success) {
                 this.setState({...this.state, redirectToNextStep: true})
