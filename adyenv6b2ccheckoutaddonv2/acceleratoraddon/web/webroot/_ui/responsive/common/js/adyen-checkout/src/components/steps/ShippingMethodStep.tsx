@@ -1,6 +1,5 @@
 import React from "react";
 import {PaymentHeader} from "../headers/PaymentHeader";
-import {FinalReviewHeader} from "../headers/FinalReviewHeader";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import {CartDataService} from "../../service/cartDataService";
 import {ScrollHere} from "../common/ScrollTo";
@@ -20,7 +19,6 @@ export class ShippingMethodStep extends React.Component<{ }, null> {
                 <ShippingAddressHeader editEnabled={true}/>
                 <ShippingMethod/>
                 <PaymentHeader/>
-                <FinalReviewHeader/>
             </>
         )
     }

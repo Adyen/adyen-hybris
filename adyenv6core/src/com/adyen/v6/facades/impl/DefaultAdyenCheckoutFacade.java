@@ -700,6 +700,99 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(PAYMENT_METHOD_SEPA_DIRECTDEBIT, checkoutConfigDTO.isSepaDirectDebit());
     }
 
+    public CheckoutConfigDTO getReactCheckoutConfig() throws ApiException {
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+        AdyenPaymentService adyenPaymentService = getAdyenPaymentService();
+        List<PaymentMethod> paymentMethods;
+        List<String> connectedTerminalList = null;
+        List<StoredPaymentMethod> storedPaymentMethodList = null;
+        BaseStoreModel baseStore;
+        CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
+        PaymentMethodsResponse response = new PaymentMethodsResponse();
+        CartModel cartModel = cartService.getSessionCart();
+
+        //to remove unwanted payment methods insert them here
+        List<String> excludedPaymentMethods = new ArrayList<>();
+
+        try {
+            if (showPos()) {
+                connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
+            }
+
+            response = getPaymentMethods(adyenPaymentService, cartData, customerModel, excludedPaymentMethods);
+        } catch (ApiException | IOException e) {
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
+        }
+
+        paymentMethods = response.getPaymentMethods();
+
+        //apple pay
+        Map<String, String> applePayConfig = getApplePayConfigFromPaymentMethods(paymentMethods);
+        if (!CollectionUtils.isEmpty(applePayConfig)) {
+            cartModel.setAdyenApplePayMerchantName(applePayConfig.get("merchantName"));
+            cartModel.setAdyenApplePayMerchantIdentifier(applePayConfig.get("merchantId"));
+        }
+
+        baseStore = baseStoreService.getCurrentBaseStore();
+
+        //Verify allowedCards
+        PaymentMethod cardsPaymentMethod = paymentMethods.stream()
+                .filter(paymentMethod -> PAYMENT_METHOD_SCHEME.equals(paymentMethod.getType()))
+                .findAny().orElse(null);
+
+        if (cardsPaymentMethod != null) {
+            List<String> allowedCards = baseStore.getAdyenAllowedCards().stream().map(AdyenCardTypeEnum::getCode).toList();
+
+            List<String> cardBrands = cardsPaymentMethod.getBrands();
+            allowedCards = allowedCards.stream()
+                    .filter(cardBrands::contains)
+                    .toList();
+
+            cardsPaymentMethod.setBrands(allowedCards);
+        }
+
+        if (showRememberDetails()) {
+            //Include stored one-click cards
+            storedPaymentMethodList = getStoredOneClickPaymentMethods(response);
+            Set<String> recurringDetailReferences = new HashSet<>();
+            if (storedPaymentMethodList != null) {
+                recurringDetailReferences = storedPaymentMethodList.stream().map(StoredPaymentMethod::getId).collect(Collectors.toSet());
+            }
+            cartModel.setAdyenStoredCards(recurringDetailReferences);
+        }
+
+        modelService.save(cartModel);
+
+        Amount amount = Util.createAmount(cartData.getTotalPriceWithTax().getValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
+
+        CheckoutConfigDTOBuilder checkoutConfigDTOBuilder = new CheckoutConfigDTOBuilder();
+
+        return checkoutConfigDTOBuilder
+                .setPaymentMethods(paymentMethods)
+                .setConnectedTerminalList(connectedTerminalList)
+                .setStoredPaymentMethodList(storedPaymentMethodList)
+                .setAmount(amount)
+                .setAdyenClientKey(baseStore.getAdyenClientKey())
+                .setAdyenPaypalMerchantId(baseStore.getAdyenPaypalMerchantId())
+                .setDeviceFingerPrintUrl(adyenPaymentService.getDeviceFingerprintUrl())
+                .setSessionData(getAdyenSessionData())
+                .setSelectedPaymentMethod(cartData.getAdyenPaymentMethod())
+                .setShowRememberTheseDetails(showRememberDetails())
+                .setCheckoutShopperHost(getCheckoutShopperHost())
+                .setEnvironmentMode(getEnvironmentMode())
+                .setShopperLocale(getShopperLocale())
+                .setOpenInvoiceMethods(OPENINVOICE_METHODS_API)
+                .setShowSocialSecurityNumber(showSocialSecurityNumber())
+                .setShowBoleto(showBoleto())
+                .setShowComboCard(showComboCard())
+                .setShowPos(showPos())
+                .setImmediateCapture(isImmediateCapture())
+                .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
+                .setCardHolderNameRequired(getHolderNameRequired())
+                .build();
+    }
+
+    @Deprecated
     public CheckoutConfigDTO getCheckoutConfig() throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
         AdyenPaymentService adyenPaymentService = getAdyenPaymentService();
@@ -717,31 +810,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 connectedTerminalList = adyenPaymentService.getConnectedTerminals().getUniqueTerminalIds();
             }
 
-            response = adyenPaymentService.getPaymentMethodsResponse(cartData.getTotalPriceWithTax().getValue(),
-                    cartData.getTotalPriceWithTax().getCurrencyIso(),
-                    cartData.getDeliveryAddress().getCountry().getIsocode(),
-                    getShopperLocale(),
-                    customerModel.getCustomerID());
+            response = getPaymentMethods(adyenPaymentService, cartData, customerModel);
         } catch (ApiException | IOException e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
         alternativePaymentMethods = response.getPaymentMethods();
 
-        final List<PaymentMethod> issuerPaymentMethods = alternativePaymentMethods.stream()
-                .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(issuerPaymentMethods)) {
-            Gson gson = new Gson();
-            for (PaymentMethod paymentMethod : issuerPaymentMethods) {
-                issuerLists.put(paymentMethod.getType(), gson.toJson(paymentMethod.getIssuers()));
-            }
-        }
-
-        PaymentMethod sepaDirectDebit = alternativePaymentMethods.stream().
-                filter(paymentMethod -> !paymentMethod.getType().isEmpty() &&
-                        PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType())).findFirst().orElse(null);
-
+        final List<PaymentMethod> issuerPaymentMethods = getIssuerPaymentMethods(alternativePaymentMethods);
+        updateIssuerList(issuerPaymentMethods, issuerLists);
 
         //apple pay
         Map<String, String> applePayConfig = getApplePayConfigFromPaymentMethods(alternativePaymentMethods);
@@ -750,17 +827,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             cartModel.setAdyenApplePayMerchantIdentifier(applePayConfig.get("merchantId"));
         }
 
+        boolean sepaDirectDebit = isSepaDirectDebit(alternativePaymentMethods);
+
         //amazon pay
-        Optional<PaymentMethod> amazonPayMethod = alternativePaymentMethods.stream()
-                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
-                        && PAYMENT_METHOD_AMAZONPAY.contains(paymentMethod.getType()))
-                .findFirst();
-        if (amazonPayMethod.isPresent()) {
-            Map<String, String> amazonPayConfiguration = amazonPayMethod.get().getConfiguration();
-            if (!CollectionUtils.isEmpty(amazonPayConfiguration)) {
-                cartModel.setAdyenAmazonPayConfiguration(amazonPayConfiguration);
-            }
-        }
+        Optional<PaymentMethod> amazonPayMethod = getAmazonPayMethod(alternativePaymentMethods);
+        amazonPayMethod.ifPresent(paymentMethod -> updateCartWithAmazonPay(paymentMethod, cartModel));
 
         baseStore = baseStoreService.getCurrentBaseStore();
 
@@ -778,13 +849,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             List<String> cardBrands = cardsPaymentMethod.getBrands();
             allowedCards = allowedCards.stream()
                     .filter(adyenCardTypeEnum -> cardBrands.contains(adyenCardTypeEnum.getCode()))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         //Exclude cards, boleto and iDeal
         alternativePaymentMethods = alternativePaymentMethods.stream()
                 .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && !isHiddenPaymentMethod(paymentMethod))
-                .collect(Collectors.toList());
+                .toList();
 
         if (showRememberDetails()) {
             //Include stored one-click cards
@@ -826,8 +897,62 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                     .setImmediateCapture(isImmediateCapture())
                     .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
                     .setCardHolderNameRequired(getHolderNameRequired())
-                    .setSepaDirectDebit(true)
+                    .setSepaDirectDebit(sepaDirectDebit)
                     .build();
+    }
+
+    @Deprecated
+    private static boolean isSepaDirectDebit(List<PaymentMethod> alternativePaymentMethods) {
+        return alternativePaymentMethods.stream().
+                anyMatch(paymentMethod -> !paymentMethod.getType().isEmpty() &&
+                        PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType()));
+    }
+
+    private static void updateCartWithAmazonPay(PaymentMethod amazonPayMethod, CartModel cartModel) {
+        Map<String, String> amazonPayConfiguration = amazonPayMethod.getConfiguration();
+        if (!CollectionUtils.isEmpty(amazonPayConfiguration)) {
+            cartModel.setAdyenAmazonPayConfiguration(amazonPayConfiguration);
+        }
+    }
+
+    private static Optional<PaymentMethod> getAmazonPayMethod(List<PaymentMethod> alternativePaymentMethods) {
+        return alternativePaymentMethods.stream()
+                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                        && PAYMENT_METHOD_AMAZONPAY.contains(paymentMethod.getType()))
+                .findFirst();
+    }
+
+    @Deprecated
+    private static void updateIssuerList(List<PaymentMethod> issuerPaymentMethods, Map<String, String> issuerLists) {
+        if (!CollectionUtils.isEmpty(issuerPaymentMethods)) {
+            Gson gson = new Gson();
+            for (PaymentMethod paymentMethod : issuerPaymentMethods) {
+                issuerLists.put(paymentMethod.getType(), gson.toJson(paymentMethod.getIssuers()));
+            }
+        }
+    }
+
+    @Deprecated
+    private static List<PaymentMethod> getIssuerPaymentMethods(List<PaymentMethod> alternativePaymentMethods) {
+        return alternativePaymentMethods.stream()
+                .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
+                .toList();
+    }
+
+    private PaymentMethodsResponse getPaymentMethods(AdyenPaymentService adyenPaymentService, CartData cartData, CustomerModel customerModel) throws IOException, ApiException {
+        return adyenPaymentService.getPaymentMethodsResponse(cartData.getTotalPriceWithTax().getValue(),
+                cartData.getTotalPriceWithTax().getCurrencyIso(),
+                cartData.getDeliveryAddress().getCountry().getIsocode(),
+                getShopperLocale(),
+                customerModel.getCustomerID());
+    }
+
+    private PaymentMethodsResponse getPaymentMethods(AdyenPaymentService adyenPaymentService, CartData cartData, CustomerModel customerModel, List<String> excludedPaymentMethods) throws IOException, ApiException {
+        return adyenPaymentService.getPaymentMethodsResponse(cartData.getTotalPriceWithTax().getValue(),
+                cartData.getTotalPriceWithTax().getCurrencyIso(),
+                cartData.getDeliveryAddress().getCountry().getIsocode(),
+                getShopperLocale(),
+                customerModel.getCustomerID(), excludedPaymentMethods);
     }
 
     private Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {

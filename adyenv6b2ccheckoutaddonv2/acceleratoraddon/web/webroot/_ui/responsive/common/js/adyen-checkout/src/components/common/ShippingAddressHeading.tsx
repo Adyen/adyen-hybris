@@ -1,6 +1,7 @@
 import React from "react";
 import {isNotEmpty} from "../../util/stringUtil";
 import {AddressData} from "../../types/addressData";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     address: AddressData
@@ -15,7 +16,7 @@ export class ShippingAddressHeading extends React.Component<Props, any> {
 
         return (
             <>
-                <div className="checkout-shipping-items-header"> SHIPPING ADDRESS</div>
+                <div className="checkout-shipping-items-header">{translationsStore.get("checkout.summary.shippingAddress")}</div>
                 <span>
                     <b>{isNotEmpty(this.props.address.title) ? this.props.address.title + '\xa0' : ''}{this.props.address.firstName}&nbsp;{this.props.address.lastName}&nbsp;</b>
                     <br/>

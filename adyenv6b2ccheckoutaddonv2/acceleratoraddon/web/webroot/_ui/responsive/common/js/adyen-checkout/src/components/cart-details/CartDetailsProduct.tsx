@@ -5,6 +5,7 @@ import {Price} from "../common/Price";
 import {urlContextPath} from "../../util/baseUrlUtil";
 import {PromotionService} from "../../service/promotionService";
 import HTMLReactParser from "html-react-parser";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     entryData: OrderEntryData
@@ -69,11 +70,11 @@ export class CartDetailsProduct extends React.Component<Props, null> {
                         <a href={this.getProductUrl()}>{this.props.entryData.product.name}</a>
                     </div>
                     <div>
-                        <span className="label-spacing">Item Price:</span>
+                        <span className="label-spacing">{translationsStore.get("order.itemPrice")}</span>
                         <Price price={this.props.entryData.basePrice} displayFreeForZero={true}/>
                     </div>
                     <div className="qty">
-                        <span>Qty: {this.props.entryData.quantity}</span>
+                        <span>{translationsStore.get("basket.page.qty")} {this.props.entryData.quantity}</span>
                     </div>
                     {this.renderAppliedPromotions()}
                 </div>

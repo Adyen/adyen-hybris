@@ -19,33 +19,15 @@ import {CoreOptions} from "@adyen/adyen-web/dist/types/core/types";
 import {OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
 import AdyenCheckoutError from "@adyen/adyen-web/dist/types/core/Errors/AdyenCheckoutError";
 import Core from "@adyen/adyen-web/dist/types/core";
-import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
 import {AdyenPaymentForm} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
-import {Navigate} from "react-router-dom";
-import {routes} from "../../router/routes";
+import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
+import {CardState} from "../../types/paymentState";
+import {translationsStore} from "../../store/translationsStore";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
-    cardState: CardState
-}
-
-interface CardState {
-    isValid: boolean,
-    data: {
-        paymentMethod: {
-            type: string,
-            encryptedCardNumber: string,
-            encryptedExpiryMonth: string,
-            encryptedExpiryYear: string,
-            encryptedSecurityCode: string,
-            holderName: string,
-            brand: string
-        },
-        browserInfo: any,
-        storePaymentMethod?: boolean
-    }
 }
 
 interface StoreProps {
@@ -71,30 +53,15 @@ type Props = StoreProps & DispatchProps
 
 class Payment extends React.Component<Props, State> {
 
-    cardRef: RefObject<HTMLDivElement>
+    paymentRef: RefObject<HTMLDivElement>
 
     constructor(props: Props) {
         super(props);
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
-            cardState: {
-                isValid: false,
-                data: {
-                    paymentMethod: {
-                        type: '',
-                        encryptedCardNumber: '',
-                        encryptedExpiryMonth: '',
-                        encryptedExpiryYear: '',
-                        encryptedSecurityCode: '',
-                        holderName: '',
-                        brand: ''
-                    },
-                    browserInfo: {},
-                }
-            }
         }
-        this.cardRef = React.createRef();
+        this.paymentRef = React.createRef();
     }
 
     async componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -114,11 +81,27 @@ class Payment extends React.Component<Props, State> {
     private async initializeWebComponentsCheckout() {
         let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
 
-        this.initiateBankCard(adyenCheckout)
+        this.initiateDropIn(adyenCheckout)
     }
 
     private getAdyenCheckoutConfig(): CoreOptions {
         return {
+            paymentMethodsConfiguration: {
+                card: {
+                    type: 'card',
+                    hasHolderName: true,
+                    holderNameRequired: this.props.adyenConfig.cardHolderNameRequired,
+                    enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails,
+                    onSubmit: (state: CardState, element: UIElement) => this.handleBankCardPayment(state)
+                },
+                storedCard: {
+                    onSubmit: (state: CardState, element: UIElement) => this.handleStoredCardPayment(state)
+                }
+            },
+            paymentMethodsResponse: {
+                paymentMethods: this.props.adyenConfig.paymentMethods,
+                storedPaymentMethods: this.props.adyenConfig.storedPaymentMethodList
+            },
             locale: this.props.adyenConfig.shopperLocale,
             environment: this.props.adyenConfig.environmentMode,
             clientKey: this.props.adyenConfig.adyenClientKey,
@@ -134,62 +117,49 @@ class Payment extends React.Component<Props, State> {
             },
             onError(error: AdyenCheckoutError, element?: UIElement) {
                 console.error(error.name, error.message, error.stack, element);
+            },
+            onSubmit(state: any, element: UIElement) {
+                console.warn('not implemented payment method')
             }
         }
     }
 
-    private initiateBankCard(adyenCheckout: Core) {
-        let brands = this.props.adyenConfig.allowedCards.map(value => value.code)
+    private initiateDropIn(adyenCheckout: Core) {
 
-        let card = adyenCheckout.create("card", {
-            type: 'card',
-            hasHolderName: true,
-            holderNameRequired: this.props.adyenConfig.cardHolderNameRequired,
-            enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails,
-            brands: brands,
-            onChange: (cardState) => this.onCardChange(cardState)
-        });
+        let dropIn = adyenCheckout.create("dropin");
 
-        card.mount(this.cardRef.current)
+        dropIn.mount(this.paymentRef.current)
     }
 
-    private onCardChange(cardState: CardState) {
-        this.setState({
-            ...this.state, cardState
-        })
+    private async handleBankCardPayment(cardState: CardState) {
+        let adyenPaymentForm = PaymentService.prepareBankCardAdyenPaymentForm(cardState,
+            this.state.useDifferentBillingAddress, this.props.billingAddress);
+
+        await this.executePaymentRequest(adyenPaymentForm)
     }
 
-    private prepareAdyenPaymentForm(): AdyenPaymentForm {
-        return {
-            paymentMethod: "adyen_cc",
-            useAdyenDeliveryAddress: !this.state.useDifferentBillingAddress,
-            billingAddress: this.state.useDifferentBillingAddress ? PaymentService.convertBillingAddress(this.props.billingAddress) : null,
-            encryptedCardNumber: this.state.cardState.data.paymentMethod.encryptedCardNumber,
-            encryptedSecurityCode: this.state.cardState.data.paymentMethod.encryptedSecurityCode,
-            encryptedExpiryMonth: this.state.cardState.data.paymentMethod.encryptedExpiryMonth,
-            encryptedExpiryYear: this.state.cardState.data.paymentMethod.encryptedExpiryYear,
-            cardHolder: this.state.cardState.data.paymentMethod.holderName,
-            browserInfo: JSON.stringify(this.state.cardState.data.browserInfo),
-            rememberTheseDetails: this.state.cardState.data.storePaymentMethod,
-            cardBrand: this.state.cardState.data.paymentMethod.brand
+    private async handleStoredCardPayment(cardState: CardState) {
+        let adyenPaymentForm = PaymentService.prepareStoredCardAdyenPaymentForm(cardState,
+            this.state.useDifferentBillingAddress, this.props.billingAddress);
+
+        await this.executePaymentRequest(adyenPaymentForm)
+    }
+
+    private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
+        let success = await PaymentService.selectPaymentMethod(adyenPaymentForm);
+
+        if (success) {
+            this.setState({...this.state, redirectToNextStep: true})
+        } else {
+            console.error("payment error")
         }
-    }
-
-    private async handleSubmitButton() {
-        if (this.state.cardState.isValid) {
-            let success = await PaymentService.selectPaymentMethod(this.prepareAdyenPaymentForm());
-
-            if (success) {
-                this.setState({...this.state, redirectToNextStep: true})
-            }
-        }
-
     }
 
     private renderBillingAddressForm(): React.JSX.Element {
         if (this.state.useDifferentBillingAddress) {
             return (
                 <>
+                    <hr/>
                     <div className={"headline"}>Billing Address</div>
                     <AddressForm addressConfig={this.props.addressConfig} address={this.props.billingAddress}
                                  onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
@@ -201,6 +171,7 @@ class Payment extends React.Component<Props, State> {
                                  onCityChange={(city) => this.props.setCity(city)}
                                  onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
                                  onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}/>
+                    <hr/>
                 </>
             )
         }
@@ -212,10 +183,6 @@ class Payment extends React.Component<Props, State> {
     }
 
     render() {
-        if (this.state.redirectToNextStep) {
-            return <Navigate to={routes.review}/>
-        }
-
         return (
             <>
                 <PaymentHeader isActive={true}/>
@@ -223,16 +190,12 @@ class Payment extends React.Component<Props, State> {
 
                     <div className={"checkout-paymentmethod"}>
                         <ShippingAddressHeading address={this.props.shippingAddressFromCart}/>
-                        <InputCheckbox fieldName={"Use different billing address"}
+                        <InputCheckbox fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
                                        onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
                                        checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}
-
-                        <div ref={this.cardRef}/>
+                        <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
-                    <button className={"btn btn-primary btn-block checkout-next"}
-                            onClick={() => this.handleSubmitButton()}>NEXT
-                    </button>
                 </div>
             </>
         )

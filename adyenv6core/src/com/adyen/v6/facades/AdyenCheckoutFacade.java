@@ -216,4 +216,5 @@ public interface AdyenCheckoutFacade {
 
     CheckoutConfigDTO getCheckoutConfig() throws ApiException;
 
+    CheckoutConfigDTO getReactCheckoutConfig() throws ApiException;
 }
