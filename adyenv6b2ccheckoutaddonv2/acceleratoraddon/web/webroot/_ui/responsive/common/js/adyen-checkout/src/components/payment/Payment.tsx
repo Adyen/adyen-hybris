@@ -213,7 +213,7 @@ class Payment extends React.Component<Props, State> {
 
     render() {
         if (this.state.redirectToNextStep) {
-            return <Navigate to={routes.review}/>
+            return <Navigate to={routes.thankYouPage}/>
         }
 
         return (
