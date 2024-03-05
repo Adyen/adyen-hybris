@@ -5,6 +5,7 @@ import {PaymentStep} from "../components/steps/PaymentStep";
 import {routes} from "./routes";
 import App from "../App";
 import {ShippingMethodStep} from "../components/steps/ShippingMethodStep";
+import ThankYouPage from "../components/thank-you-page/ThankYouPage";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
     {
         path: routes.paymentMethod,
         element: <App><PaymentStep/></App>,
+    },
+    {
+        path: routes.thankYouPage,
+        element: <ThankYouPage/>,
     },
     {
         //in case url doesn't match - redirect to shipping address

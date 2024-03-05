@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PlaceOrderResponse {
     private String orderNumber;
-    private List<ObjectError> errors = new ArrayList();
+    private String error;
 
     public String getOrderNumber() {
         return orderNumber;
@@ -17,11 +17,11 @@ public class PlaceOrderResponse {
         this.orderNumber = orderNumber;
     }
 
-    public List<ObjectError> getErrors() {
-        return errors;
+    public String getError() {
+        return error;
     }
 
-    public void setErrors(List<ObjectError> errors) {
-        this.errors = errors;
+    public void setError(String error) {
+        this.error = error;
     }
 }
