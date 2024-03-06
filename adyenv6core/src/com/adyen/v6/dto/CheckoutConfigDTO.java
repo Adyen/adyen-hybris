@@ -10,11 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public class CheckoutConfigDTO {
+    @Deprecated
     private List<PaymentMethod> alternativePaymentMethods;
+    private List<PaymentMethod> paymentMethods;
     private List<String> connectedTerminalList;
     private List<StoredPaymentMethod> storedPaymentMethodList;
+    @Deprecated
     private Map<String, String> issuerLists;
+    @Deprecated
     private String creditCardLabel;
+    @Deprecated
     private List<AdyenCardTypeEnum> allowedCards;
     private Amount amount;
     private String adyenClientKey;
@@ -235,5 +240,13 @@ public class CheckoutConfigDTO {
 
     public void setSepaDirectDebit(boolean sepadirectdebit) {
         this.sepaDirectDebit = sepadirectdebit;
+    }
+
+    public List<PaymentMethod> getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
+        this.paymentMethods = paymentMethods;
     }
 }

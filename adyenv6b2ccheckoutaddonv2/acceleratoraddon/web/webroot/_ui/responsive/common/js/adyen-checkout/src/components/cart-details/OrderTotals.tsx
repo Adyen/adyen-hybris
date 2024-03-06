@@ -2,6 +2,7 @@ import {CartData} from "../../types/cartData";
 import React from "react";
 import {Price} from "../common/Price";
 import {formatStringWithPlaceholders} from "../../util/stringUtil";
+import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
     cartData: CartData
@@ -14,7 +15,7 @@ export class OrderTotals extends React.Component<Props, null> {
         if (this.props.cartData.totalDiscounts && (this.props.cartData.totalDiscounts.value > 0)) {
             return (
                 <div className="subtotals__item--state-discount">
-                    Order Discounts:
+                    {translationsStore.get("text.account.order.discount")}
                     <span>
                         <Price price={this.props.cartData.totalDiscounts} displayNegativeForDiscount={true}/>
                     </span>
@@ -29,7 +30,7 @@ export class OrderTotals extends React.Component<Props, null> {
         if (this.props.cartData.deliveryCost && (this.props.cartData.deliveryCost.value > 0)) {
             return (
                 <div className="shipping">
-                    Delivery:
+                    {translationsStore.get("basket.page.totals.delivery")}
                     <span>
                         <Price price={this.props.cartData.deliveryCost} displayFreeForZero={true}/>
                     </span>
@@ -45,7 +46,7 @@ export class OrderTotals extends React.Component<Props, null> {
             && this.props.cartData.totalTax.value > 0) {
             return (
                 <div className="tax">
-                    Tax:
+                    {translationsStore.get("basket.page.totals.netTax")}
                     <span>
                         <Price price={this.props.cartData.totalTax}/>
 			        </span>
@@ -74,7 +75,7 @@ export class OrderTotals extends React.Component<Props, null> {
             return (
                 <div className="realTotals">
                     <p>
-                        {formatStringWithPlaceholders("Your order includes {0} tax.", this.props.cartData.totalTax.formattedValue)}
+                        {formatStringWithPlaceholders(translationsStore.get("basket.page.totals.grossTax"), this.props.cartData.totalTax.formattedValue)}
                     </p>
                 </div>
             )
@@ -84,7 +85,7 @@ export class OrderTotals extends React.Component<Props, null> {
             return (
                 <div className="realTotals">
                     <p>
-                        *No taxes are included in the total
+                        {translationsStore.get("basket.page.totals.noNetTax")}
                     </p>
                 </div>
             )
@@ -105,7 +106,7 @@ export class OrderTotals extends React.Component<Props, null> {
         return (
             <div className="subtotals">
                 <div className="subtotal">
-                    Subtotal:
+                    {translationsStore.get("basket.page.totals.subtotal")}
                     <span>
                         <Price price={this.props.cartData.subTotal}/>
             </span>
@@ -114,7 +115,7 @@ export class OrderTotals extends React.Component<Props, null> {
                 {this.renderDelivery()}
                 {this.renderTax()}
                 <div className="totals">
-                    Order Total
+                    {translationsStore.get("basket.page.totals.total")}
                     <span>
                         {this.renderOrderTotal()}
                     </span>

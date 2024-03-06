@@ -6,11 +6,11 @@ import {connect} from "react-redux";
 import {AppState} from "../../reducers/rootReducer";
 import {CodeValueItem, ShippingMethodModel} from "../../reducers/types";
 import HTMLReactParser from "html-react-parser";
-import {StoreDispatch} from "../../store/store";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
 import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
 import {AddressData} from "../../types/addressData";
+import {translationsStore} from "../../store/translationsStore";
 
 interface StoreProps {
     shippingMethods: ShippingMethodModel[],
@@ -18,11 +18,7 @@ interface StoreProps {
     shippingAddress: AddressData
 }
 
-interface DispatchProps {
-    setShippingMethod: (code: string) => void;
-}
-
-type Props = StoreProps & DispatchProps
+type Props = StoreProps
 
 interface State {
     redirectToNextStep: boolean
@@ -75,17 +71,19 @@ class ShippingMethod extends React.Component<Props, State> {
                         </div>
                         <hr/>
                         <div className={"checkout-indent"}>
-                            <div className={"headline"}>Shipment Method</div>
-                            <InputDropdown values={this.getDropdownItems()}
+                            <div className={"headline"}>{translationsStore.get("checkout.summary.deliveryMode.selectDeliveryMethodForOrder")}</div>
+                            <InputDropdown testId={"delivery_method"}
+                                           values={this.getDropdownItems()}
                                            onChange={(code) => {
                                                this.onShippingMethodChange(code)
                                            }}
                                            selectedValue={this.props.selectedShippingMethodCode}/>
                         </div>
-                        <p>{HTMLReactParser("Items will ship as soon as they are available. <br> See Order Summary for more information.")}</p>
+                        <p>{HTMLReactParser(translationsStore.get("checkout.multi.deliveryMethod.message"))}</p>
                     </div>
-                    <button className={"btn btn-primary btn-block checkout-next"}
-                            onClick={() => this.handleSubmitButton()}>NEXT
+                    <button id="deliveryMethodSubmit"
+                            className={"btn btn-primary btn-block checkout-next"}
+                            onClick={() => this.handleSubmitButton()}>{translationsStore.get("checkout.multi.deliveryMethod.continue")}
                     </button>
                 </div>
             </>
@@ -99,8 +97,4 @@ const mapStateToProps = (state: AppState): StoreProps => ({
     shippingAddress: state.cartData.deliveryAddress
 })
 
-const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
-    setShippingMethod: (code: string) => dispatch({type: "shippingMethod/setShippingMethod", payload: code}),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ShippingMethod)
+export default connect(mapStateToProps)(ShippingMethod)

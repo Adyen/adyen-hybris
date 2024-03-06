@@ -3,6 +3,7 @@ import {CodeValueItem} from "../../reducers/types";
 import {isNotEmpty} from "../../util/stringUtil";
 
 interface InputDropdownProps {
+    testId?: string
     values: CodeValueItem[]
     fieldName?: string
     selectedValue?: string
@@ -12,6 +13,26 @@ interface InputDropdownProps {
 }
 
 export class InputDropdown extends React.Component<InputDropdownProps, null> {
+
+    private renderInput(): React.JSX.Element {
+        if (isNotEmpty(this.props.testId)) {
+            return <select id={this.props.testId}
+                           className={"form-input_input form-control"}
+                           onChange={(event) => this.props.onChange(event.target.value)}
+                           value={this.props.selectedValue}>
+                {
+                    this.renderOptions()
+                }
+            </select>
+        }
+        return <select className={"form-input_input form-control"}
+                       onChange={(event) => this.props.onChange(event.target.value)} value={this.props.selectedValue}>
+            {
+                this.renderOptions()
+            }
+        </select>
+
+    }
 
     private renderOptions(): React.JSX.Element[] {
         let result: React.JSX.Element[] = []
@@ -41,12 +62,7 @@ export class InputDropdown extends React.Component<InputDropdownProps, null> {
         return (
             <div className={"form-group"}>
                 {this.renderLabel()}
-                <select className={"form-input_input form-control"}
-                        onChange={(event) => this.props.onChange(event.target.value)} value={this.props.selectedValue}>
-                    {
-                        this.renderOptions()
-                    }
-                </select>
+                {this.renderInput()}
             </div>
         )
     }

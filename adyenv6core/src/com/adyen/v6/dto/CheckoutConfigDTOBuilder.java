@@ -22,6 +22,11 @@ public class CheckoutConfigDTOBuilder {
         return this;
     }
 
+    public CheckoutConfigDTOBuilder setPaymentMethods(List<PaymentMethod> paymentMethods) {
+        checkoutConfigDTO.setPaymentMethods(paymentMethods);
+        return this;
+    }
+
     public CheckoutConfigDTOBuilder setConnectedTerminalList(List<String> connectedTerminalList) {
         checkoutConfigDTO.setConnectedTerminalList(connectedTerminalList);
         return this;

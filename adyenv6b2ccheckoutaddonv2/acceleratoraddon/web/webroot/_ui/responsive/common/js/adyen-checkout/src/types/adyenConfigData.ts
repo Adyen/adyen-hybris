@@ -1,5 +1,5 @@
 export interface AdyenConfigData {
-    alternativePaymentMethods: PaymentMethodData[];
+    paymentMethods: PaymentMethodData[];
     connectedTerminalList: string[];
     storedPaymentMethodList: StoredPaymentMethodData[];
     issuerLists: Map<string, string>;
@@ -31,14 +31,14 @@ interface SessionData {
     sessionData: string
 }
 
-interface PaymentMethodData {
-    brand: string;
-    brands: string[];
-    configuration: Map<string, string>;
-    issuers: PaymentMethodIssuerData[];
-    fundingSource: string;
-    group: PaymentMethodGroupData;
-    inputDetails: InputDetailData[];
+export interface PaymentMethodData {
+    brand?: string;
+    brands?: string[];
+    configuration: object;
+    issuers?: PaymentMethodIssuerData[];
+    fundingSource?: string;
+    group?: PaymentMethodGroupData;
+    inputDetails?: InputDetailData[];
     name: string;
     type: string;
 }
