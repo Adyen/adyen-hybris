@@ -1,6 +1,5 @@
 import React, {RefObject} from "react";
 import {PaymentHeader} from "../headers/PaymentHeader";
-import {connect} from "react-redux";
 import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
 import {AddressModel} from "../../reducers/types";
 import {AppState} from "../../reducers/rootReducer";
@@ -19,11 +18,13 @@ import {CoreOptions} from "@adyen/adyen-web/dist/types/core/types";
 import {OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
 import AdyenCheckoutError from "@adyen/adyen-web/dist/types/core/Errors/AdyenCheckoutError";
 import Core from "@adyen/adyen-web/dist/types/core";
-import {AdyenPaymentForm} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
-import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
+import {AdyenPaymentForm} from "../../types/paymentForm";
+import {routes} from "../../router/routes";
+import {Navigate} from "react-router-dom";
+import {connect} from "react-redux";
 
 interface State {
     useDifferentBillingAddress: boolean
@@ -164,6 +165,22 @@ class Payment extends React.Component<Props, State> {
         dropIn.mount(this.paymentRef.current)
     }
 
+    private prepareAdyenPaymentForm(): AdyenPaymentForm {
+        return {
+            paymentMethod: "adyen_cc",
+            useAdyenDeliveryAddress: !this.state.useDifferentBillingAddress,
+            billingAddress: this.state.useDifferentBillingAddress ? PaymentService.convertBillingAddress(this.props.billingAddress) : null,
+            encryptedCardNumber: this.state.cardState.data.paymentMethod.encryptedCardNumber,
+            encryptedSecurityCode: this.state.cardState.data.paymentMethod.encryptedSecurityCode,
+            encryptedExpiryMonth: this.state.cardState.data.paymentMethod.encryptedExpiryMonth,
+            encryptedExpiryYear: this.state.cardState.data.paymentMethod.encryptedExpiryYear,
+            cardHolder: this.state.cardState.data.paymentMethod.holderName,
+            browserInfo: JSON.stringify(this.state.cardState.data.browserInfo),
+            rememberTheseDetails: this.state.cardState.data.storePaymentMethod,
+            cardBrand: this.state.cardState.data.paymentMethod.brand
+        }
+    }
+
     private async handleBankCardPayment(cardState: CardState) {
         let adyenPaymentForm = PaymentService.prepareBankCardAdyenPaymentForm(cardState,
             this.state.useDifferentBillingAddress, this.props.billingAddress);
@@ -178,16 +195,17 @@ class Payment extends React.Component<Props, State> {
         await this.executePaymentRequest(adyenPaymentForm)
     }
 
-    private async handleSubmitButton() {
+    private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
         if (this.state.cardState.isValid) {
             let success = await PaymentService.placeOrder(this.prepareAdyenPaymentForm());
 
-        if (success) {
-            this.setState({...this.state, redirectToNextStep: true})
-        } else {
-            console.error("payment error")
-        }
+            if (success) {
+                this.setState({...this.state, redirectToNextStep: true})
+            } else {
+                console.error("payment error")
+            }
 
+        }
     }
 
     private renderBillingAddressForm(): React.JSX.Element {
@@ -229,14 +247,15 @@ class Payment extends React.Component<Props, State> {
 
                     <div className={"checkout-paymentmethod"}>
                         <ShippingAddressHeading address={this.props.shippingAddressFromCart}/>
-                        <InputCheckbox fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
-                                       onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
-                                       checked={this.state.useDifferentBillingAddress}/>
+                        <InputCheckbox
+                            fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
+                            onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
+                            checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}
                         <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
                     <button className={"btn btn-primary btn-block checkout-next"}
-                            onClick={() => this.handleSubmitButton()}>NEXT
+                            onClick={() => this.executePaymentRequest(this.prepareAdyenPaymentForm())}>NEXT
                     </button>
                 </div>
             </>

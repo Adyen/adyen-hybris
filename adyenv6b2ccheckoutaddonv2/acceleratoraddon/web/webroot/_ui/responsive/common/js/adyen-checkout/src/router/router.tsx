@@ -2,7 +2,6 @@ import {createBrowserRouter, Navigate} from "react-router-dom";
 import React from "react";
 import {ShippingAddressStep} from "../components/steps/ShippingAddressStep";
 import {PaymentStep} from "../components/steps/PaymentStep";
-import {FinalStep} from "../components/steps/FinalStep";
 import {routes} from "./routes";
 import App from "../App";
 import {ShippingMethodStep} from "../components/steps/ShippingMethodStep";
