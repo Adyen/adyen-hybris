@@ -2,17 +2,22 @@ import axios from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
+import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
 
 export class PaymentService {
-    static async selectPaymentMethod(paymentForm: AdyenPaymentForm) {
-        return axios.post(urlContextPath + '/api/checkout/select-payment-method', paymentForm, {
+    static async placeOrder(paymentForm: AdyenPaymentForm) {
+        return axios.post(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
                 'CSRFToken': CSRFToken
             }
         })
-            .then(() => true)
+            .then(response => {
+                let placeOrderData = (response.data);
+                store.dispatch({type: "placeOrderData/setPlaceOrderData", payload: placeOrderData})
+                return true
+            })
             .catch(() => {
                 console.error('Error on shipping method select')
                 return false

@@ -7,6 +7,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
+import com.adyen.v6.response.PlaceOrderResponse;
 import com.adyen.v6.util.AdyenUtil;
 import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
@@ -40,6 +41,12 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 public class AdyenPlaceOrderController {
     private static final Logger LOGGER = Logger.getLogger(AdyenPlaceOrderController.class);
 
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED = "checkout.error.authorization.payment.refused";
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_NOT_FOUND = "checkout.error.authorization.payment.detail.not.found";
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_RESTRICTED_CARD = "checkout.error.authorization.restricted.card";
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_CVC_DECLINED = "checkout.error.authorization.cvc.declined";
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_NOT_PERMITTED = "checkout.error.authorization.transaction.not.permitted";
+
     @Autowired
     private CheckoutFlowFacade checkoutFlowFacade;
 
@@ -54,12 +61,15 @@ public class AdyenPlaceOrderController {
 
     @RequireHardLogIn
     @PostMapping("/place-order")
-    public ResponseEntity<String> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
+    public ResponseEntity<PlaceOrderResponse> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
+
         final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
 
         if (!selectPaymentMethodSuccess) {
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setError("checkout.error.paymentethod.formentry.invalid");
             LOGGER.warn("Payment form is invalid.");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(placeOrderResponse);
         }
 
         if (!isCartValid()) {
@@ -85,7 +95,7 @@ public class AdyenPlaceOrderController {
     }
 
 
-    private ResponseEntity<String> handleRatepay(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handleRatepay(HttpServletRequest request, CartData cartData, String errorMessage) {
         try {
             OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
             LOGGER.debug("Redirecting to confirmation!");
@@ -111,7 +121,7 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.badRequest().build();
     }
 
-    private ResponseEntity<String> handlePOS(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handlePOS(HttpServletRequest request, CartData cartData, String errorMessage) {
         try {
             String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
             request.setAttribute("originalServiceId", originalServiceId);
@@ -152,8 +162,7 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.badRequest().build();
     }
 
-    private ResponseEntity<String> handleOther(HttpServletRequest request, CartData cartData, String errorMessage, String adyenPaymentMethod) {
-
+    private ResponseEntity<PlaceOrderResponse> handleOther(HttpServletRequest request, CartData cartData, String errorMessage, String adyenPaymentMethod) {
         try {
             cartData.setAdyenReturnUrl("Todo in 3Ds.");
             OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
@@ -165,7 +174,9 @@ public class AdyenPlaceOrderController {
                 LOGGER.info("Multibanco.");
 
             }
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setOrderNumber(orderData.getCode());
+            return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
 
         } catch (ApiException e) {
             LOGGER.error("API exception: ", e);
@@ -201,6 +212,7 @@ public class AdyenPlaceOrderController {
         final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(adyenPaymentForm, "payment");
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
+
         if (bindingResult.hasErrors()) {
             LOGGER.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
             return false;
@@ -208,7 +220,7 @@ public class AdyenPlaceOrderController {
         return true;
     }
 
-    private ResponseEntity<String> handleRedirect(String adyenPaymentMethod) {
+    private ResponseEntity<PlaceOrderResponse> handleRedirect(String adyenPaymentMethod) {
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
             LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
             return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -268,19 +280,19 @@ public class AdyenPlaceOrderController {
         if (refusalReason != null) {
             switch (refusalReason) {
                 case ApiConstants.RefusalReason.TRANSACTION_NOT_PERMITTED:
-                    errorMessage = "The transaction is not permitted.";
+                    errorMessage = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_NOT_PERMITTED;
                     break;
                 case ApiConstants.RefusalReason.CVC_DECLINED:
-                    errorMessage = "The payment is REFUSED. Please check your Card details.";
+                    errorMessage = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_CVC_DECLINED;
                     break;
                 case ApiConstants.RefusalReason.RESTRICTED_CARD:
-                    errorMessage = "The card is restricted.";
+                    errorMessage = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_RESTRICTED_CARD;
                     break;
                 case ApiConstants.RefusalReason.PAYMENT_DETAIL_NOT_FOUND:
-                    errorMessage = "The payment is REFUSED because the saved card is removed. Please try an other payment method.";
+                    errorMessage = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_NOT_FOUND;
                     break;
                 default:
-                    errorMessage = "Payment refused.";
+                    errorMessage = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED;
             }
         }
         return errorMessage;
