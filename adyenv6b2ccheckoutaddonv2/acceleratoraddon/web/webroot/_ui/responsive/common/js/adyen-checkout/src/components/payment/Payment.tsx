@@ -24,10 +24,12 @@ import {AdyenPaymentForm} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
 import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
+import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
+    redirectTo3DS: boolean
     cardState: CardState
 }
 
@@ -72,12 +74,14 @@ type Props = StoreProps & DispatchProps
 class Payment extends React.Component<Props, State> {
 
     cardRef: RefObject<HTMLDivElement>
+    threeDSRef: RefObject<HTMLDivElement>
 
     constructor(props: Props) {
         super(props);
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
+            redirectTo3DS: false,
             cardState: {
                 isValid: false,
                 data: {
@@ -95,6 +99,7 @@ class Payment extends React.Component<Props, State> {
             }
         }
         this.cardRef = React.createRef();
+        this.threeDSRef = React.createRef();
     }
 
     async componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -177,13 +182,24 @@ class Payment extends React.Component<Props, State> {
 
     private async handleSubmitButton() {
         if (this.state.cardState.isValid) {
-            let success = await PaymentService.selectPaymentMethod(this.prepareAdyenPaymentForm());
+            let responseData = await PaymentService.placeOrder(this.prepareAdyenPaymentForm());
+            console.log(responseData)
 
-            if (success) {
-                this.setState({...this.state, redirectToNextStep: true})
+            if (responseData.success) {
+                if (responseData.is3DSRedirect) {
+                    await this.mount3DSComponent(responseData.paymentsAction)
+                } else {
+                    this.setState({...this.state, redirectToNextStep: true})
+                }
             }
         }
 
+    }
+
+    private async mount3DSComponent(paymentAction: PaymentAction) {
+        console.log("mount 3ds")
+        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
+        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
     private renderBillingAddressForm(): React.JSX.Element {
@@ -234,6 +250,8 @@ class Payment extends React.Component<Props, State> {
                             onClick={() => this.handleSubmitButton()}>NEXT
                     </button>
                 </div>
+                <div ref={this.threeDSRef}/>
+
             </>
         )
     }
