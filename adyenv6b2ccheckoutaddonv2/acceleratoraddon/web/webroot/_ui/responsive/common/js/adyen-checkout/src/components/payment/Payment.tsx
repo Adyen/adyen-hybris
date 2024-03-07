@@ -26,10 +26,12 @@ import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
+import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
+    redirectTo3DS: boolean
 }
 
 interface StoreProps {
@@ -56,14 +58,17 @@ type Props = StoreProps & DispatchProps
 class Payment extends React.Component<Props, State> {
 
     paymentRef: RefObject<HTMLDivElement>
+    threeDSRef: RefObject<HTMLDivElement>
 
     constructor(props: Props) {
         super(props);
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
+            redirectTo3DS: false
         }
         this.paymentRef = React.createRef();
+        this.threeDSRef = React.createRef();
     }
 
     async componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -148,13 +153,23 @@ class Payment extends React.Component<Props, State> {
     }
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
-        let success = await PaymentService.placeOrder(adyenPaymentForm);
+        let responseData = await PaymentService.placeOrder(adyenPaymentForm);
 
-        if (success) {
-            this.setState({...this.state, redirectToNextStep: true})
-        } else {
-            console.error("payment error")
+
+        if (responseData.success) {
+            if (responseData.is3DSRedirect) {
+                await this.mount3DSComponent(responseData.paymentsAction)
+            } else {
+                this.setState({...this.state, redirectToNextStep: true})
+            }
         }
+
+    }
+
+    private async mount3DSComponent(paymentAction: PaymentAction) {
+        console.log("mount 3ds")
+        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
+        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
     private renderBillingAddressForm(): React.JSX.Element {
@@ -204,6 +219,8 @@ class Payment extends React.Component<Props, State> {
                         <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
                 </div>
+                <div ref={this.threeDSRef}/>
+
             </>
         )
     }

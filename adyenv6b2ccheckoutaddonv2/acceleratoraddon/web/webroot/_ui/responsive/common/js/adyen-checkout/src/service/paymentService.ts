@@ -1,26 +1,38 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
+import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
+
+export interface PaymentResponse {
+    success: boolean,
+    is3DSRedirect?: boolean,
+    paymentsAction?: PaymentAction
+}
 
 export class PaymentService {
     static async placeOrder(paymentForm: AdyenPaymentForm) {
-        return axios.post(urlContextPath + '/api/checkout/place-order', paymentForm, {
+        return axios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
                 'CSRFToken': CSRFToken
             }
         })
-            .then(response => {
+            .then((response: AxiosResponse<any>): PaymentResponse => {
                 let placeOrderData = (response.data);
                 store.dispatch({type: "placeOrderData/setPlaceOrderData", payload: placeOrderData})
-                return true
+
+                return {
+                    success: true,
+                    is3DSRedirect: response.data.redirectTo3DS,
+                    paymentsAction: response.data.paymentsAction
+                }
             })
-            .catch(() => {
+            .catch((): PaymentResponse => {
                 console.error('Error on shipping method select')
-                return false
+                return {success: false}
             })
     }
 
