@@ -216,5 +216,5 @@ public interface AdyenCheckoutFacade {
 
     CheckoutConfigDTO getCheckoutConfig() throws ApiException;
 
-    public boolean isOneClick(String adyenPaymentMethod);
+    CheckoutConfigDTO getReactCheckoutConfig() throws ApiException;
 }

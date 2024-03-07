@@ -5,6 +5,14 @@
     font-weight: 700;
 }
 
+.checkout-paymentmethod .dropin-payment {
+    margin-top: 25px;
+}
+
+.checkout-paymentmethod .headline {
+    margin-top: 25px;
+}
+
 .adyen-checkout__card-input img {
     vertical-align: unset;
 }
