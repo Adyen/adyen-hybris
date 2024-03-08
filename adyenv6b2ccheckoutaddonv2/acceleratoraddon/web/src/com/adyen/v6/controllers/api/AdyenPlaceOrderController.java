@@ -1,5 +1,6 @@
 package com.adyen.v6.controllers.api;
 
+import com.adyen.constants.ApiConstants;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
@@ -247,7 +248,8 @@ public class AdyenPlaceOrderController {
     }
 
     private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentsResponse paymentsResponse) {
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse(true);
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+        placeOrderResponse.setRedirectTo3DS(true);
         placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
 
         return ResponseEntity.ok(placeOrderResponse);

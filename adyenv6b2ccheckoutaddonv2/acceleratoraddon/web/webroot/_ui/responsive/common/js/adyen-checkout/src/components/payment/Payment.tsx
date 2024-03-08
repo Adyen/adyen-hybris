@@ -155,7 +155,6 @@ class Payment extends React.Component<Props, State> {
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
         let responseData = await PaymentService.placeOrder(adyenPaymentForm);
 
-
         if (responseData.success) {
             if (responseData.is3DSRedirect) {
                 await this.mount3DSComponent(responseData.paymentsAction)
@@ -167,7 +166,6 @@ class Payment extends React.Component<Props, State> {
     }
 
     private async mount3DSComponent(paymentAction: PaymentAction) {
-        console.log("mount 3ds")
         let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
         adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
@@ -220,7 +218,6 @@ class Payment extends React.Component<Props, State> {
                     </div>
                 </div>
                 <div ref={this.threeDSRef}/>
-
             </>
         )
     }

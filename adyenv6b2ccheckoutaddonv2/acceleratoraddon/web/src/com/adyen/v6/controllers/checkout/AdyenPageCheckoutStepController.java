@@ -47,7 +47,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         return  "addon:/adyenv6b2ccheckoutaddonv2/pages/adyenSPACheckout";
     }
 
-    @GetMapping(value = ADYEN_CHECKOUT_ORDER_CONFIRMATION)
+    @GetMapping(value = {ADYEN_CHECKOUT_ORDER_CONFIRMATION, ADYEN_CHECKOUT_ORDER_CONFIRMATION + "/**"})
     @RequireHardLogIn
     public String enterOrderConfirmationStep(final Model model) throws CMSItemNotFoundException {
         final ContentPageModel multiCheckoutSummaryPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
