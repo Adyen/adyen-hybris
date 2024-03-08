@@ -1,5 +1,6 @@
 package com.adyen.v6.controllers.api;
 
+import com.adyen.constants.ApiConstants;
 import com.adyen.model.PaymentResult;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
@@ -7,6 +8,7 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.response.PlaceOrderResponse;
+import com.adyen.v6.util.AdyenUtil;
 import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
@@ -247,7 +249,8 @@ public class AdyenPlaceOrderController {
     }
 
     private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentsResponse paymentsResponse) {
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse(true);
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+        placeOrderResponse.setRedirectTo3DS(true);
         placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
 
         return ResponseEntity.ok(placeOrderResponse);

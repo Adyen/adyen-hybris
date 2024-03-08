@@ -41,7 +41,6 @@ public class Adyen3DSResponseController {
     private static final String ORDER_CONFIRMATION_URL = ADYEN_CHECKOUT_PAGE_PREFIX + ADYEN_CHECKOUT_ORDER_CONFIRMATION;
 
 
-
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
@@ -70,11 +69,8 @@ public class Adyen3DSResponseController {
             OrderData orderData = adyenCheckoutFacade.handle3DSResponse(details);
             LOGGER.debug("Redirecting to confirmation");
 
-            LOGGER.info("Redirecting to confirmation"); //TODO: remove
+            return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL + '/' + orderData.getCode();
 
-            return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL;
-
-//            return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug(NON_AUTHORIZED_ERROR);
             String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
@@ -89,7 +85,7 @@ public class Adyen3DSResponseController {
                             + response.getRefusalReason());
                 }
             }
-//            return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
+//implement in 3ds error handling           return redirectToSelectPaymentMethodWithError(errorMessage);
         } catch (CalculationException | InvalidCartException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {

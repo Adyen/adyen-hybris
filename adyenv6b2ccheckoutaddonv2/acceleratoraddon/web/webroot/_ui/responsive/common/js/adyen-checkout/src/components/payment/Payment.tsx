@@ -151,7 +151,7 @@ class Payment extends React.Component<Props, State> {
     }
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
-        let responseData = await PaymentService.placeOrder(this.prepareAdyenPaymentForm());
+        let responseData = await PaymentService.placeOrder(adyenPaymentForm);
 
         if (responseData.success) {
             if (responseData.is3DSRedirect) {

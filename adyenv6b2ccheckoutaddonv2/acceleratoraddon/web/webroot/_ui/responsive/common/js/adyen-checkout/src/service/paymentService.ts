@@ -31,7 +31,7 @@ export class PaymentService {
                 }
             })
             .catch((): PaymentResponse => {
-                console.error('Error on shipping method select')
+                console.error('Error on place order')
                 return {success: false}
             })
     }
@@ -70,6 +70,7 @@ export class PaymentService {
     static prepareStoredCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
         return {
             paymentMethod: "adyen_oneclick_" + cardState.data.paymentMethod.storedPaymentMethodId,
+            selectedReference: cardState.data.paymentMethod.storedPaymentMethodId,
             useAdyenDeliveryAddress: !useDifferentBillingAddress,
             billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress) : null,
             encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
