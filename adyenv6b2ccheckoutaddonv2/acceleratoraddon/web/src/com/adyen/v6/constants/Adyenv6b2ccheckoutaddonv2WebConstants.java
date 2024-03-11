@@ -13,5 +13,9 @@ public final class Adyenv6b2ccheckoutaddonv2WebConstants
 		//empty to avoid instantiating this constant class
 	}
 
-	// implement here constants used by this extension
+	public static final String ADYEN_CHECKOUT_API_PREFIX = "/api/checkout";
+	public static final String ADYEN_CHECKOUT_PAGE_PREFIX = "/checkout/multi";
+	public static final String ADYEN_CHECKOUT_ORDER_CONFIRMATION = "/adyen/order-confirmation";
+	public static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
+
 }

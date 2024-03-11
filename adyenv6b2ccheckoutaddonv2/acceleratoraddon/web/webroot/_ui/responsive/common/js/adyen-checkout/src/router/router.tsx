@@ -5,7 +5,8 @@ import {PaymentStep} from "../components/steps/PaymentStep";
 import {routes} from "./routes";
 import App from "../App";
 import {ShippingMethodStep} from "../components/steps/ShippingMethodStep";
-import ThankYouPage from "../components/thank-you-page/ThankYouPage";
+import {ThankYouPageUrlWrapper} from "../components/thank-you-page/ThankYouPageUrlWrapper";
+import ThankYouPageStoreWrapper from "../components/thank-you-page/ThankYouPageStoreWrapper";
 
 export const router = createBrowserRouter([
     {
@@ -22,7 +23,11 @@ export const router = createBrowserRouter([
     },
     {
         path: routes.thankYouPage,
-        element: <ThankYouPage/>,
+        element: <ThankYouPageStoreWrapper/>,
+    },
+    {
+        path: routes.thankYouPage + "/:orderCode",
+        element: <ThankYouPageUrlWrapper/>,
     },
     {
         //in case url doesn't match - redirect to shipping address
