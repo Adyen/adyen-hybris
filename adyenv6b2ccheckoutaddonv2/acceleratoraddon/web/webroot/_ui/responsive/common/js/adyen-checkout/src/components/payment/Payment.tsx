@@ -170,6 +170,11 @@ class Payment extends React.Component<Props, State> {
         adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
+    private async mount3DSComponent(paymentAction: PaymentAction) {
+        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
+        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
+    }
+
     private renderBillingAddressForm(): React.JSX.Element {
         if (this.state.useDifferentBillingAddress) {
             return (
