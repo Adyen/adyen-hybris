@@ -104,7 +104,7 @@ export interface OrderEntryData {
     deliveryMode: DeliveryModeData;
     entries: OrderEntryData[];
     taxValues: TaxValue[];
-     deliveryPointOfService: PointOfServiceData
+    deliveryPointOfService: PointOfServiceData
 }
 
 interface ProductData {

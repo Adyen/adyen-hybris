@@ -40,9 +40,11 @@ export class ShippingMethodService {
                 if (response.data.deliveryMode) {
                     store.dispatch({type: "shippingMethod/setShippingMethod", payload: response.data.deliveryMode.code})
                 }
+                return true;
             })
             .catch(() => {
                 console.error('Error on shipping method select')
+                return false;
             })
     }
 
