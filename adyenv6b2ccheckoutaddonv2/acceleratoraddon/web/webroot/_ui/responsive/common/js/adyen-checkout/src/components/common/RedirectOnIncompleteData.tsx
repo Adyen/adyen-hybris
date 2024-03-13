@@ -38,7 +38,7 @@ class RedirectOnIncompleteData extends React.Component<Props, State> {
         if (prevProps.cartDataLoading === true && this.props.cartDataLoading === false) {
             let noRedirect = this.evaluateRedirects();
             if (noRedirect) {
-                this.setState({...this.state, renderChildren: true})
+                this.setState({renderChildren: true})
             }
         }
     }
@@ -47,16 +47,16 @@ class RedirectOnIncompleteData extends React.Component<Props, State> {
         let noRedirect = true;
         if (this.props.currentCheckoutStep === CheckoutSteps.SHIPPING_METHOD) {
             if (!this.props.cartData.deliveryAddress) {
-                this.setState({...this.state, redirectToShippingAddress: true})
+                this.setState({redirectToShippingAddress: true})
                 noRedirect = false;
             }
         }
         if (this.props.currentCheckoutStep === CheckoutSteps.PAYMENT_METHOD) {
             if (!this.props.cartData.deliveryAddress) {
-                this.setState({...this.state, redirectToShippingAddress: true})
+                this.setState({redirectToShippingAddress: true})
                 noRedirect = false;
             } else if (!this.props.cartData.deliveryMode) {
-                this.setState({...this.state, redirectToShippingMethod: true})
+                this.setState({redirectToShippingMethod: true})
                 noRedirect = false;
             }
         }

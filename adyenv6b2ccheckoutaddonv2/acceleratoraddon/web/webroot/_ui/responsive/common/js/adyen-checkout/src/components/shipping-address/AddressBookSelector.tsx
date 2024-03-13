@@ -42,7 +42,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, Addr
         let success = await AddressService.selectDeliveryAddress(address.id);
         if (success) {
             this.props.setSelectedAddress(address)
-            this.setState({...this.state, redirectToNextStep: true})
+            this.setState({redirectToNextStep: true})
         }
     }
 
