@@ -16,3 +16,9 @@
 .adyen-checkout__card-input img {
     vertical-align: unset;
 }
+
+.payment-error.alert {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 12px;
+}

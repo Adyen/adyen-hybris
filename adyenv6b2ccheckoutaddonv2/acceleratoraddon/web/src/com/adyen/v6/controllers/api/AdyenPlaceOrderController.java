@@ -48,6 +48,11 @@ import static com.adyen.v6.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
 public class AdyenPlaceOrderController {
     private static final Logger LOGGER = Logger.getLogger(AdyenPlaceOrderController.class);
 
+    private static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
+    private static final String CHECKOUT_ERROR_POS_CONFIGURATION = "checkout.error.authorization.pos.configuration";
+    private static final String CHECKOUT_ERROR_FORM_ENTRY_INVALID = "checkout.error.paymentethod.formentry.invalid";
+
+
     @Autowired
     private CheckoutFlowFacade checkoutFlowFacade;
 
@@ -74,39 +79,44 @@ public class AdyenPlaceOrderController {
 
         if (!selectPaymentMethodSuccess) {
             PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-            placeOrderResponse.setError("checkout.error.paymentethod.formentry.invalid");
+            placeOrderResponse.setError(CHECKOUT_ERROR_FORM_ENTRY_INVALID);
             LOGGER.warn("Payment form is invalid.");
             return ResponseEntity.badRequest().body(placeOrderResponse);
         }
 
         if (!isCartValid()) {
             LOGGER.warn("Cart is invalid.");
-            return ResponseEntity.badRequest().build();
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setError(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
+            return ResponseEntity.badRequest().body(placeOrderResponse);
         }
 
         final CartData cartData = cartFacade.getSessionCart();
         String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
-        String errorMessage = "";
 
         switch (adyenPaymentMethod) {
             case RATEPAY: {
-                return handleRatepay(request, cartData, errorMessage);
+                return handleRatepay(request, cartData);
             }
             case PAYMENT_METHOD_POS: {
-                return handlePOS(request, cartData, errorMessage);
+                return handlePOS(request, cartData);
             }
             default: {
-                return handleOther(request, cartData, errorMessage, adyenPaymentMethod);
+                return handleOther(request, cartData, adyenPaymentMethod);
             }
         }
     }
 
 
-    private ResponseEntity<PlaceOrderResponse> handleRatepay(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handleRatepay(HttpServletRequest request, CartData cartData) {
+        String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
+
         try {
             OrderData orderData = adyenCheckoutFacade.authorisePayment(request, cartData);
             LOGGER.debug("Redirecting to confirmation!");
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setOrderNumber(orderData.getCode());
+            return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
         } catch (ApiException e) {
             LOGGER.error("API Exception: " + e.getError(), e);
         } catch (AdyenNonAuthorizedPaymentException e) {
@@ -125,10 +135,15 @@ public class AdyenPlaceOrderController {
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
-        return ResponseEntity.badRequest().build();
+
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+        placeOrderResponse.setError(errorMessage);
+        return ResponseEntity.badRequest().body(placeOrderResponse);
     }
 
-    private ResponseEntity<PlaceOrderResponse> handlePOS(HttpServletRequest request, CartData cartData, String errorMessage) {
+    private ResponseEntity<PlaceOrderResponse> handlePOS(HttpServletRequest request, CartData cartData) {
+        String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
+
         try {
             String originalServiceId = Long.toString(System.currentTimeMillis() % 10000000000L);
             request.setAttribute("originalServiceId", originalServiceId);
@@ -136,7 +151,9 @@ public class AdyenPlaceOrderController {
             request.setAttribute("paymentStartTime", paymentStartTime);
             OrderData orderData = adyenCheckoutFacade.initiatePosPayment(request, cartData);
             LOGGER.debug("Redirecting to confirmation.");
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setOrderNumber(orderData.getCode());
+            return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
 
         } catch (SocketTimeoutException e) {
             try {
@@ -148,13 +165,15 @@ public class AdyenPlaceOrderController {
                 request.setAttribute("totalTimeout", totalTimeout);
                 OrderData orderData = adyenCheckoutFacade.checkPosPaymentStatus(request, cartData);
                 LOGGER.debug("Redirecting to confirmation.");
-                return ResponseEntity.status(HttpStatus.FOUND).build();
+                PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+                placeOrderResponse.setOrderNumber(orderData.getCode());
+                return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
             } catch (AdyenNonAuthorizedPaymentException nx) {
                 errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(nx.getTerminalApiResponse());
                 LOGGER.warn("AdyenNonAuthorizedPaymentException " + errorMessage + " pspReference: " + nx.getPaymentResult().getPspReference());
             } catch (SocketTimeoutException to) {
                 LOGGER.error("POS Status request timed out. Returning error message.");
-                errorMessage = "checkout.error.authorization.pos.configuration";
+                errorMessage = CHECKOUT_ERROR_POS_CONFIGURATION;
             } catch (Exception ex) {
                 LOGGER.error("Exception", ex);
             }
@@ -166,10 +185,14 @@ public class AdyenPlaceOrderController {
         } catch (Exception e) {
             LOGGER.error("Exception", e);
         }
-        return ResponseEntity.badRequest().build();
+
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+        placeOrderResponse.setError(errorMessage);
+        return ResponseEntity.badRequest().body(placeOrderResponse);
     }
 
-    private ResponseEntity<PlaceOrderResponse> handleOther(HttpServletRequest request, CartData cartData, String errorMessage, String adyenPaymentMethod) {
+    private ResponseEntity<PlaceOrderResponse> handleOther(HttpServletRequest request, CartData cartData, String adyenPaymentMethod) {
+        String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
 
         try {
             cartData.setAdyenReturnUrl(get3DSReturnUrl());
@@ -188,7 +211,6 @@ public class AdyenPlaceOrderController {
 
         } catch (ApiException e) {
             LOGGER.error("API exception: ", e);
-            return ResponseEntity.badRequest().build();
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.info("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
             PaymentsResponse paymentsResponse = e.getPaymentsResponse();
@@ -197,23 +219,22 @@ public class AdyenPlaceOrderController {
             }
             if (REFUSED == paymentsResponse.getResultCode()) {
                 LOGGER.info("PaymentResponse is REFUSED, pspReference: " + paymentsResponse.getPspReference());
-                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());     //will be used in error handling
-                return ResponseEntity.badRequest().build();
+                errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
             if (CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
                 LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS2 flow");
                 return redirectTo3DSValidation(paymentsResponse);
-
             }
             if (ERROR == paymentsResponse.getResultCode()) {
                 LOGGER.error("PaymentResponse is ERROR, reason: " + paymentsResponse.getRefusalReason() + " pspReference: " + paymentsResponse.getPspReference());
-                return ResponseEntity.badRequest().build();
             }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
-            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().build();
+
+        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+        placeOrderResponse.setError(errorMessage);
+        return ResponseEntity.badRequest().body(placeOrderResponse);
     }
 
     private boolean selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {

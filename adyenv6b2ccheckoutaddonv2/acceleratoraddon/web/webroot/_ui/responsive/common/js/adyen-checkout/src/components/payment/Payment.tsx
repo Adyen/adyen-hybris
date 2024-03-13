@@ -27,11 +27,15 @@ import {translationsStore} from "../../store/translationsStore";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
+import {PaymentError} from "./PaymentError";
+import {ScrollHere} from "../common/ScrollTo";
+import DropinElement from "@adyen/adyen-web/dist/types/components/Dropin";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
     redirectTo3DS: boolean
+    errorCode: string
 }
 
 interface StoreProps {
@@ -59,13 +63,15 @@ class Payment extends React.Component<Props, State> {
 
     paymentRef: RefObject<HTMLDivElement>
     threeDSRef: RefObject<HTMLDivElement>
+    dropIn: DropinElement
 
     constructor(props: Props) {
         super(props);
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
-            redirectTo3DS: false
+            redirectTo3DS: false,
+            errorCode: ""
         }
         this.paymentRef = React.createRef();
         this.threeDSRef = React.createRef();
@@ -133,9 +139,9 @@ class Payment extends React.Component<Props, State> {
 
     private initiateDropIn(adyenCheckout: Core) {
 
-        let dropIn = adyenCheckout.create("dropin");
+        this.dropIn = adyenCheckout.create("dropin");
 
-        dropIn.mount(this.paymentRef.current)
+        this.dropIn.mount(this.paymentRef.current)
     }
 
     private async handleBankCardPayment(cardState: CardState) {
@@ -159,15 +165,17 @@ class Payment extends React.Component<Props, State> {
             if (responseData.is3DSRedirect) {
                 await this.mount3DSComponent(responseData.paymentsAction)
             } else {
-                this.setState({...this.state, redirectToNextStep: true})
+                this.setState({redirectToNextStep: true})
             }
+        } else {
+            this.resetDropInComponent()
         }
-
+        this.setState({errorCode: responseData.error})
     }
 
-    private async mount3DSComponent(paymentAction: PaymentAction) {
-        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
-        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
+    private resetDropInComponent() {
+        this.dropIn.unmount();
+        this.dropIn.mount(this.paymentRef.current)
     }
 
     private async mount3DSComponent(paymentAction: PaymentAction) {
@@ -199,7 +207,17 @@ class Payment extends React.Component<Props, State> {
     }
 
     private onChangeUseDifferentBillingAddress(value: boolean): void {
-        this.setState({...this.state, useDifferentBillingAddress: value})
+        this.setState({useDifferentBillingAddress: value})
+    }
+
+    private renderErrorMessage(): React.JSX.Element {
+        if (isNotEmpty(this.state.errorCode)) {
+            return <>
+                <ScrollHere/>
+                <PaymentError errorCode={this.state.errorCode}/>
+            </>
+        }
+        return <></>
     }
 
     render() {
@@ -219,6 +237,8 @@ class Payment extends React.Component<Props, State> {
                             onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
                             checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}
+
+                        {this.renderErrorMessage()}
                         <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
                 </div>
