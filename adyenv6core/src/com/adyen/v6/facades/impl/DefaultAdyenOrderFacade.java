@@ -6,6 +6,7 @@ import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.core.model.ItemModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.exceptions.ModelNotFoundException;
@@ -17,10 +18,10 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
     private static final String ORDER_NOT_FOUND_FOR_USER_AND_BASE_STORE = "Order with guid %s not found for current user in current BaseStore";
-
     private BaseStoreService baseStoreService;
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
     private CustomerAccountService customerAccountService;
@@ -31,11 +32,10 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         OrderModel orderModel = getOrderDetailsForCodeInternal(orderCode, sessionGuid);
         List<PaymentTransactionModel> paymentTransactions = orderModel.getPaymentTransactions();
         if (paymentTransactions.isEmpty()) {
-            return getMessageFromStatus("REVIEW");
+            return getMessageFromStatus(TransactionStatus.REVIEW.name());
         }
         return getStatus(paymentTransactions);
     }
-
 
     private OrderModel getOrderDetailsForCodeInternal(final String code, final Object sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
@@ -62,27 +62,34 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return orderModel;
     }
 
-
     private String getStatus(List<PaymentTransactionModel> paymentTransactions) {
-        List<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
-                .sorted(Comparator.comparing(ItemModel::getCreationtime))
-                .toList();
+        Optional<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
+                .max(Comparator.comparing(ItemModel::getCreationtime));
+        if (paymentTransactionModelList.isPresent()) {
+            Optional<PaymentTransactionEntryModel> paymentTransactionEntryModel = paymentTransactionModelList.get().getEntries().stream()
+                    .max(Comparator.comparing(ItemModel::getCreationtime));
+            if (paymentTransactionEntryModel.isPresent()) {
+                return getMessageFromStatus(paymentTransactionEntryModel.get().getTransactionStatus());
+            }
+        }
+        return getMessageFromStatus(TransactionStatus.ERROR.name());
 
-        List<PaymentTransactionEntryModel> paymentTransactionEntryModelList = paymentTransactionModelList.get(paymentTransactionModelList.size() - 1).getEntries().stream()
-                .sorted(Comparator.comparing(ItemModel::getCreationtime))
-                .toList();
-
-        return getMessageFromStatus(paymentTransactionEntryModelList.get(paymentTransactionEntryModelList.size() - 1).getTransactionStatus());
     }
 
     private String getMessageFromStatus(String transactionStatus) {
-        return switch (transactionStatus) {
-            case "ACCEPTED" -> "completed";
-            case "REJECTED" -> "rejected";
-            case "REVIEW" -> "waiting";
-            case "ERROR" -> "error";
-            default -> "unknown";
-        };
+        if (transactionStatus.equals(TransactionStatus.ACCEPTED.name())) {
+            return "completed";
+        }
+        if (transactionStatus.equals(TransactionStatus.REJECTED.name())) {
+            return "rejected";
+        }
+        if (transactionStatus.equals(TransactionStatus.REVIEW.name())) {
+            return "waiting";
+        }
+        if (transactionStatus.equals(TransactionStatus.ERROR.name())) {
+            return "error";
+        }
+        return "unknown";
     }
 
     public void setBaseStoreService(BaseStoreService baseStoreService) {
@@ -96,7 +103,6 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
     public void setCustomerAccountService(CustomerAccountService customerAccountService) {
         this.customerAccountService = customerAccountService;
     }
-
 
     public void setUserService(UserService userService) {
         this.userService = userService;
