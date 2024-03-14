@@ -18,6 +18,8 @@
 
 	<context:component-scan base-package="com.adyen.v6.controllers"/>
 
+	<import resource="reactCheckoutFlowGroup.xml"/>
+
 	<!-- Expose /acceleratoraddon/web/webroot/WEB-INF/messages/base.js.properties  resource bundle as javascript variables -->
 	<bean id="defaultAdyenv6b2ccheckoutaddonv2JavaScriptMessageResourceAccessor" parent="abstractJavaScriptMessageResourceAccessor">
 		<property name="addOnName" value="adyenv6b2ccheckoutaddonv2"/>
@@ -205,12 +207,5 @@
 
 	<alias name="adyenAddressValidator" alias="addressValidator"/>
 	<bean id="adyenAddressValidator" class="com.adyen.v6.validator.AdyenAddressValidator"/>
-
-	<!--<alias name="adyenPaymentMethodCheckoutStepController" alias="paymentMethodCheckoutStepController"/>
-	<bean id="adyenPaymentMethodCheckoutStepController" class="com.adyen.v6.controllers.pages.checkout.steps.AdyenPaymentMethodCheckoutStepController"/>-->
-
-	<alias name="adyenDeliveryAddressCheckoutStepController" alias="deliveryAddressCheckoutStepController"/>
-	<bean id="adyenDeliveryAddressCheckoutStepController" class="com.adyen.v6.controllers.pages.checkout.steps.AdyenDeliveryAddressCheckoutStepController"/>
-
 
 </beans>
