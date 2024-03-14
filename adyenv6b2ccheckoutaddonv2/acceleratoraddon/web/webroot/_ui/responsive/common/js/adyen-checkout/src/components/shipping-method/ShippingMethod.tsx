@@ -51,7 +51,7 @@ class ShippingMethod extends React.Component<Props, State> {
     private async handleSubmitButton() {
         let result = await ShippingMethodService.selectShippingMethod(this.props.selectedShippingMethodCode);
         if (result) {
-            this.setState({...this.state, redirectToNextStep: true})
+            this.setState({redirectToNextStep: true})
         }
     }
 

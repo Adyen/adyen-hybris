@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
@@ -9,7 +9,8 @@ import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 export interface PaymentResponse {
     success: boolean,
     is3DSRedirect?: boolean,
-    paymentsAction?: PaymentAction
+    paymentsAction?: PaymentAction,
+    error?: string
 }
 
 export class PaymentService {
@@ -30,9 +31,12 @@ export class PaymentService {
                     paymentsAction: response.data.paymentsAction
                 }
             })
-            .catch((): PaymentResponse => {
+            .catch((error: AxiosError<any>): PaymentResponse => {
                 console.error('Error on place order')
-                return {success: false}
+                return {
+                    success: false,
+                    error: error.response.data.error
+                }
             })
     }
 
@@ -59,7 +63,7 @@ export class PaymentService {
             encryptedCardNumber: cardState.data.paymentMethod.encryptedCardNumber,
             encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
             encryptedExpiryMonth: cardState.data.paymentMethod.encryptedExpiryMonth,
-            encryptedExpiryYear:cardState.data.paymentMethod.encryptedExpiryYear,
+            encryptedExpiryYear: cardState.data.paymentMethod.encryptedExpiryYear,
             cardHolder: cardState.data.paymentMethod.holderName,
             browserInfo: JSON.stringify(cardState.data.browserInfo),
             rememberTheseDetails: cardState.data.storePaymentMethod,

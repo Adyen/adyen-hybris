@@ -57,21 +57,21 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     }
 
     private openAddressBookModal() {
-        this.setState({...this.state, addressBookModalOpen: true})
+        this.setState({addressBookModalOpen: true})
     }
 
     private closeAddressBookModal() {
-        this.setState({...this.state, addressBookModalOpen: false})
+        this.setState({addressBookModalOpen: false})
     }
 
     private onChangeSaveInAddressBook(value: boolean) {
-        this.setState({...this.state, saveInAddressBook: value})
+        this.setState({saveInAddressBook: value})
     }
 
     private async handleSubmitButton() {
         let success = await AddressService.addDeliveryAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
         if (success) {
-            this.setState({...this.state, redirectToNextStep: true})
+            this.setState({redirectToNextStep: true})
         }
     }
 

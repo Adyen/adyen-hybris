@@ -47,6 +47,15 @@ export const translationKeys: string[] = [
     "checkout.multi.deliveryMethod.continue",
 
     //payment
-    "checkout.multi.payment.useDifferentBillingAddress"
+    "checkout.multi.payment.useDifferentBillingAddress",
 
+    //error messages
+    "checkout.error.authorization.failed",
+    "checkout.error.authorization.pos.configuration",
+    "checkout.error.paymentethod.formentry.invalid",
+    "checkout.error.authorization.payment.refused",
+    "checkout.error.authorization.payment.detail.not.found",
+    "checkout.error.authorization.restricted.card",
+    "checkout.error.authorization.cvc.declined",
+    "checkout.error.authorization.transaction.not.permitted",
 ]
