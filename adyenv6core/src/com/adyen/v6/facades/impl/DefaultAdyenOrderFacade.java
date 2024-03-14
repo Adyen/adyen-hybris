@@ -15,20 +15,23 @@ import de.hybris.platform.servicelayer.user.UserService;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
+    private static final Logger LOG = Logger.getLogger(DefaultAdyenOrderFacade.class);
     private static final String ORDER_NOT_FOUND_FOR_USER_AND_BASE_STORE = "Order with guid %s not found for current user in current BaseStore";
+
     private BaseStoreService baseStoreService;
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
     private CustomerAccountService customerAccountService;
     private UserService userService;
 
     @Override
-    public String getPaymentStatus(final String orderCode, final Object sessionGuid) {
+    public String getPaymentStatus(final String orderCode, final String sessionGuid) {
         OrderModel orderModel = getOrderDetailsForCodeInternal(orderCode, sessionGuid);
         List<PaymentTransactionModel> paymentTransactions = orderModel.getPaymentTransactions();
         if (paymentTransactions.isEmpty()) {
@@ -37,7 +40,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return getStatus(paymentTransactions);
     }
 
-    private OrderModel getOrderDetailsForCodeInternal(final String code, final Object sessionGuid) {
+    private OrderModel getOrderDetailsForCodeInternal(final String code, final String sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
 
         OrderModel orderModel = null;
@@ -65,15 +68,17 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
     private String getStatus(List<PaymentTransactionModel> paymentTransactions) {
         Optional<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
                 .max(Comparator.comparing(ItemModel::getCreationtime));
+
         if (paymentTransactionModelList.isPresent()) {
             Optional<PaymentTransactionEntryModel> paymentTransactionEntryModel = paymentTransactionModelList.get().getEntries().stream()
                     .max(Comparator.comparing(ItemModel::getCreationtime));
+
             if (paymentTransactionEntryModel.isPresent()) {
                 return getMessageFromStatus(paymentTransactionEntryModel.get().getTransactionStatus());
             }
         }
-        return getMessageFromStatus(TransactionStatus.ERROR.name());
 
+        throw new ModelNotFoundException("No entries in payment transaction model.");
     }
 
     private String getMessageFromStatus(String transactionStatus) {
@@ -89,6 +94,8 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         if (transactionStatus.equals(TransactionStatus.ERROR.name())) {
             return "error";
         }
+
+        LOG.warn("Unknown transaction status.");
         return "unknown";
     }
 
