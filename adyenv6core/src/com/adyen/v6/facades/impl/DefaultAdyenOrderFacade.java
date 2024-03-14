@@ -1,14 +1,13 @@
 package com.adyen.v6.facades.impl;
 
 import com.adyen.v6.facades.AdyenOrderFacade;
-import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commerceservices.customer.CustomerAccountService;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
+import de.hybris.platform.core.model.ItemModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
-import de.hybris.platform.servicelayer.dto.converter.Converter;
 import de.hybris.platform.servicelayer.exceptions.ModelNotFoundException;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
 import de.hybris.platform.servicelayer.user.UserService;
@@ -16,6 +15,7 @@ import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
@@ -25,7 +25,6 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
     private CustomerAccountService customerAccountService;
     private UserService userService;
-    private Converter<OrderModel, OrderData> orderConverter;
 
     @Override
     public String getPaymentStatus(final String orderCode, final Object sessionGuid) {
@@ -34,15 +33,9 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         if (paymentTransactions.isEmpty()) {
             return getMessageFromStatus("REVIEW");
         }
-        String status = getStatus(paymentTransactions);
-        return status;
+        return getStatus(paymentTransactions);
     }
 
-    @Override
-    public OrderData getOrderDetailsForCode(final String code, final Object sessionGuid) {
-        OrderModel orderModel = getOrderDetailsForCodeInternal(code, sessionGuid);
-        return orderConverter.convert(orderModel);
-    }
 
     private OrderModel getOrderDetailsForCodeInternal(final String code, final Object sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
@@ -71,27 +64,15 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
 
 
     private String getStatus(List<PaymentTransactionModel> paymentTransactions) {
-        PaymentTransactionModel tempTransactionModel = paymentTransactions.get(0);
+        List<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
+                .sorted(Comparator.comparing(ItemModel::getCreationtime))
+                .toList();
 
-        for (PaymentTransactionModel paymentTransactionModel : paymentTransactions) {
-            if (tempTransactionModel.getCreationtime().before(paymentTransactionModel.getCreationtime())) {
+        List<PaymentTransactionEntryModel> paymentTransactionEntryModelList = paymentTransactionModelList.get(paymentTransactionModelList.size() - 1).getEntries().stream()
+                .sorted(Comparator.comparing(ItemModel::getCreationtime))
+                .toList();
 
-            } else {
-                tempTransactionModel = paymentTransactionModel;
-            }
-        }
-
-        List<PaymentTransactionEntryModel> paymentTransactionEntries = tempTransactionModel.getEntries();
-        PaymentTransactionEntryModel temp = tempTransactionModel.getEntries().get(0);
-        for (PaymentTransactionEntryModel paymentTransactionEntry : paymentTransactionEntries) {
-            if (temp.getCreationtime().before(paymentTransactionEntry.getCreationtime())) {
-
-            } else {
-                temp = paymentTransactionEntry;
-            }
-        }
-
-        return getMessageFromStatus(temp.getTransactionStatus());
+        return getMessageFromStatus(paymentTransactionEntryModelList.get(paymentTransactionEntryModelList.size() - 1).getTransactionStatus());
     }
 
     private String getMessageFromStatus(String transactionStatus) {
@@ -116,9 +97,6 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         this.customerAccountService = customerAccountService;
     }
 
-    public void setOrderConverter(Converter<OrderModel, OrderData> orderConverter) {
-        this.orderConverter = orderConverter;
-    }
 
     public void setUserService(UserService userService) {
         this.userService = userService;

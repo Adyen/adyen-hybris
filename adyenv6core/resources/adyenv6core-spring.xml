@@ -515,7 +515,6 @@
     </bean>
 
     <bean id="adyenOrderFacade" class="com.adyen.v6.facades.impl.DefaultAdyenOrderFacade">
-
         <property name="baseStoreService" ref="baseStoreService"/>
         <property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
         <property name="customerAccountService" ref="customerAccountService"/>
