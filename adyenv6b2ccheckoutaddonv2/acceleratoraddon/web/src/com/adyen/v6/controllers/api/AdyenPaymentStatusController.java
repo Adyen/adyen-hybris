@@ -3,7 +3,6 @@ package com.adyen.v6.controllers.api;
 import com.adyen.v6.facades.AdyenOrderFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
-import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
 import de.hybris.platform.servicelayer.session.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api/checkout")
 public class AdyenPaymentStatusController {
-
 
     @Autowired
     private SessionService sessionService;
@@ -32,8 +30,6 @@ public class AdyenPaymentStatusController {
         try {
             String paymentStatus = adyenOrderFacade.getPaymentStatus(orderCode, attribute);
             return ResponseEntity.ok().body(paymentStatus);
-        } catch (UnknownIdentifierException unknownIdentifierException) {
-            return ResponseEntity.badRequest().build();
         } catch (Exception exception) {
             return ResponseEntity.badRequest().build();
         }
