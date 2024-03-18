@@ -14,19 +14,23 @@ interface InputDropdownProps {
 
 export class InputDropdown extends React.Component<InputDropdownProps, null> {
 
+    private getSelectedValue(): string{
+        return this.props.selectedValue?this.props.selectedValue:""
+    }
+
     private renderInput(): React.JSX.Element {
         if (isNotEmpty(this.props.testId)) {
             return <select id={this.props.testId}
                            className={"form-input_input form-control"}
                            onChange={(event) => this.props.onChange(event.target.value)}
-                           value={this.props.selectedValue}>
+                           value={this.getSelectedValue()}>
                 {
                     this.renderOptions()
                 }
             </select>
         }
         return <select className={"form-input_input form-control"}
-                       onChange={(event) => this.props.onChange(event.target.value)} value={this.props.selectedValue}>
+                       onChange={(event) => this.props.onChange(event.target.value)} value={this.getSelectedValue()}>
             {
                 this.renderOptions()
             }
