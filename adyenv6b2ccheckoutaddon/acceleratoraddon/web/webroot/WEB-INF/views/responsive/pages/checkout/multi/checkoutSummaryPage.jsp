@@ -153,7 +153,8 @@
                            class="create_update_payment_form"
                            action="${handleComponentResult}"
                            method="post">
-                    <input type="hidden" id="resultData" name="resultData"/>
+                    <input type="hidden" id="resultCode" name="resultCode"/>
+                    <input type="hidden" id="merchantReference" name="merchantReference"/>
                     <input type="hidden" id="isResultError" name="isResultError" value="false"/>
                 </form:form>
             </multi-checkout:checkoutSteps>

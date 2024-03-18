@@ -1,7 +1,8 @@
 package com.adyen.v6.facades.impl;
 
-import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.model.checkout.details.ApplePayDetails;
+import com.adyen.model.checkout.ApplePayDetails;
+import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
@@ -23,7 +24,11 @@ import de.hybris.platform.core.model.user.AddressModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeModel;
 import de.hybris.platform.deliveryzone.model.ZoneDeliveryModeValueModel;
-import de.hybris.platform.order.*;
+import de.hybris.platform.order.CartFactory;
+import de.hybris.platform.order.CartService;
+import de.hybris.platform.order.DeliveryModeService;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.ZoneDeliveryModeService;
 import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.product.ProductService;
 import de.hybris.platform.servicelayer.dto.converter.Converter;
@@ -68,8 +73,8 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     private Converter<CartModel, CartData> cartConverter;
 
 
-    public PaymentsResponse expressPDPCheckout(AddressData addressData, String productCode, String merchantId, String merchantName,
-                                               String applePayToken, HttpServletRequest request) throws Exception {
+    public PaymentResponse expressPDPCheckout(AddressData addressData, String productCode, String merchantId, String merchantName,
+                                              String applePayToken, HttpServletRequest request) throws Exception {
         validateParameterNotNull(addressData, "Empty address");
         if (StringUtils.isEmpty(addressData.getEmail())) {
             throw new IllegalArgumentException("Empty email address");
@@ -107,8 +112,8 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
             ApplePayDetails applePayDetails = new ApplePayDetails();
             applePayDetails.setApplePayToken(applePayToken);
-
-            PaymentsResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
+            CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(applePayDetails);
+            PaymentResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, checkoutPaymentMethod);
 
             sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
                     org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
@@ -123,7 +128,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         }
     }
 
-    public PaymentsResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
+    public PaymentResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
                                                 String applePayToken, HttpServletRequest request) throws Exception {
         CustomerModel user = (CustomerModel) userService.getCurrentUser();
         if (userService.isAnonymousUser(user)) {
@@ -156,7 +161,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
             sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
                     org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
 
-            return adyenCheckoutFacade.componentPayment(request, cartData, applePayDetails);
+            return adyenCheckoutFacade.componentPayment(request, cartData, new CheckoutPaymentMethod(applePayDetails));
         } else {
             throw new InvalidCartException("Checkout attempt on empty cart");
         }

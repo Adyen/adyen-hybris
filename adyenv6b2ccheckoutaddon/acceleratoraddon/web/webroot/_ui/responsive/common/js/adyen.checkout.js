@@ -587,7 +587,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return false;
                     }
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onCancel: function (data, component) {
                     // Sets your prefered status of the component when a PayPal payment is cancelled.
@@ -663,7 +663,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return false;
                     }
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onClick: function(resolve, reject) {
                     if (self.isTermsAccepted(label)) {
@@ -716,7 +716,7 @@ var AdyenCheckoutHybris = (function () {
                         return false;
                     }
                     self.showSpinner();
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onClick: function (resolve, reject) {
                     if (self.isTermsAccepted(label)) {
@@ -808,7 +808,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return;
                     }
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onAdditionalDetails: function (state, component) {
                     self.submitDetails(state.data, self.handleResult);
@@ -844,7 +844,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return;
                     }
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onAdditionalDetails: function (state, component) {
                     self.submitDetails(state.data, self.handleResult);
@@ -880,7 +880,7 @@ var AdyenCheckoutHybris = (function () {
                         self.enablePlaceOrder(label);
                         return;
                     }
-                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                    self.makePayment(state.data, component, self.handleResult, label);
                 },
                 onAdditionalDetails: function (state, component) {
                     self.submitDetails(state.data, self.handleResult);
@@ -1003,7 +1003,7 @@ var AdyenCheckoutHybris = (function () {
                     };
 
                     $.ajax({
-                        url: ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/placeOrderBizum',
+                        url: ACC.config.encodedContextPath + '/checkout/multi/adyen/summary/placeOrder',
                         type: "POST",
                         data: placeOrderForm,
                         success: function (data) {
@@ -1059,14 +1059,10 @@ var AdyenCheckoutHybris = (function () {
             $.ajax({
                 url: ACC.config.encodedContextPath + '/adyen/component/payment',
                 type: "POST",
-                data: JSON.stringify({
-                    paymentMethodDetails: data,
-                    termsCheck: document.getElementById('terms-conditions-check-' + label).checked
-                }),
+                data: JSON.stringify( data ),
                 contentType: "application/json; charset=utf-8",
-                success: function (data) {
+                success: function (response) {
                     try {
-                        var response = JSON.parse(data);
                         if (response.resultCode && response.resultCode === 'Pending' && response.action) {
                             component.handleAction(response.action);
                         } else if (response.resultCode && (response.resultCode === 'Authorised' || response.resultCode === 'RedirectShopper')) {
@@ -1075,7 +1071,7 @@ var AdyenCheckoutHybris = (function () {
                             handleResult(ErrorMessages.PaymentError, true);
                         }
                     } catch (e) {
-                        console.log('Error parsing makePayment response: ' + data);
+                        console.log('Error parsing makePayment response: ' + response);
                         handleResult(ErrorMessages.PaymentError, true);
                     }
                 },
@@ -1097,16 +1093,15 @@ var AdyenCheckoutHybris = (function () {
                 type: "POST",
                 data: JSON.stringify(data),
                 contentType: "application/json; charset=utf-8",
-                success: function (data) {
+                success: function (response) {
                     try {
-                        var response = JSON.parse(data);
                         if (response.resultCode) {
                             handleResult(response, false);
                         } else {
                             handleResult(ErrorMessages.PaymentError, true);
                         }
                     } catch (e) {
-                        console.log('Error parsing submitDetails response: ' + data);
+                        console.log('Error parsing submitDetails response: ' + response);
                         handleResult(ErrorMessages.PaymentError, true);
                     }
                 },
@@ -1129,10 +1124,12 @@ var AdyenCheckoutHybris = (function () {
 
         handleResult: function (data, error) {
             if (error) {
-                document.querySelector("#resultData").value = data;
+                document.querySelector("#resultCode").value = data.resultCode;
+                document.querySelector("#merchantReference").value = data.merchantReference;
                 document.querySelector("#isResultError").value = error;
             } else {
-                document.querySelector("#resultData").value = JSON.stringify(data);
+                document.querySelector("#resultCode").value = data.resultCode;
+                document.querySelector("#merchantReference").value = data.merchantReference;
             }
             document.querySelector("#handleComponentResultForm").submit();
         },

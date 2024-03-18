@@ -13,11 +13,8 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans.xsd
-           http://www.springframework.org/schema/util
-           http://www.springframework.org/schema/util/spring-util.xsd">
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!--
 	The hybris platform provides one single Spring application context for beans located at the jalo layer.
@@ -129,7 +126,7 @@
 
     <bean id="adyenRequestFactory" class="com.adyen.v6.factory.AdyenRequestFactory">
         <constructor-arg name="configurationService" ref="configurationService" />
-        <constructor-arg name="adyenPaymentMethodDetailsBuilderExecutor" ref="adyenPaymentMethodDetailsStrategyExecutorImpl" />
+<!--        <constructor-arg name="adyenPaymentMethodDetailsBuilderExecutor" ref="adyenPaymentMethodDetailsStrategyExecutorImpl" />-->
     </bean>
 
     <alias name="defaultAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
@@ -137,11 +134,8 @@
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
     </bean>
 
-    <bean id="adyenPaymentsResponseConverter" class="com.adyen.v6.converters.PaymentsResponseConverter" />
-    <bean id="adyenPaymentsDetailsResponseConverter" class="com.adyen.v6.converters.PaymentsDetailsResponseConverter" />
-    <bean id="adyenPaymentMethodConverter" class="com.adyen.v6.converters.PaymentMethodConverter" />
-    <bean id="adyenPosPaymentResponseConverter" class="com.adyen.v6.converters.PosPaymentResponseConverter" />
 
+    <bean id="adyenPosPaymentResponseConverter" class="com.adyen.v6.converters.PosPaymentResponseConverter" />
 
     <alias name="defaultAdyenNotificationService" alias="adyenNotificationService"/>
     <bean id="defaultAdyenNotificationService" class="com.adyen.v6.service.DefaultAdyenNotificationService">
@@ -323,6 +317,7 @@
     <bean id="adyenDefaultOmsOrderFacade" parent="defaultOmsOrderFacade"
           class="com.adyen.v6.ordermanagement.impl.AdyenDefaultOmsOrderFacade"/>
 
+<!--
     <alias name="defaultPaypalAdyenPaymentMethodDetailsBuilderStrategy" alias="paypalAdyenPaymentMethodDetailsBuilderStrategy"/>
     <bean id="defaultPaypalAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.PaypalAdyenPaymentMethodDetailsBuilderStrategy"/>
 
@@ -409,8 +404,9 @@
 
     <alias name="defaultGenericAdyenPaymentMethodDetailsBuilderStrategy" alias="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     <bean id="defaultGenericAdyenPaymentMethodDetailsBuilderStrategy" class="com.adyen.v6.paymentmethoddetails.builders.impl.GenericAdyenPaymentMethodDetailsBuilderStrategy"/>
+-->
 
-    <util:list id="adyenPaymentMethodDetailsBuilderStrategies">
+<!--    <util:list id="adyenPaymentMethodDetailsBuilderStrategies">
         <ref bean="clearpayPaymentMethodDetailsBuilderStrategy"/>
         <ref bean="trustyPaymentMethodDetailsBuilderStrategy"/>
         <ref bean="paypalAdyenPaymentMethodDetailsBuilderStrategy"/>
@@ -440,7 +436,7 @@
         <ref bean="walletsIndiaPaymentMethodDetailsBuilderStrategy"/>
         <ref bean="paytmPaymentMethodDetailsBuilderStrategy"/>
         <ref bean="amazonpayPaymentMethodDetailsBuilderStrategy"/>
-    </util:list>
+    </util:list>-->
 
     <alias name="defaultAdyenAmazonPayIntegratorService" alias="adyenAmazonPayIntegratorService"/>
     <bean id="defaultAdyenAmazonPayIntegratorService" class="com.adyen.v6.service.DefaultAdyenAmazonPayIntegratorService">
@@ -454,11 +450,13 @@
         <constructor-arg name="siteBaseUrlResolutionService" ref="siteBaseUrlResolutionService"/>
     </bean>
 
+<!--
     <alias name="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" alias="adyenPaymentMethodDetailsStrategyExecutorImpl"/>
     <bean id="defaultAdyenPaymentMethodDetailsStrategyExecutorImpl" class="com.adyen.v6.paymentmethoddetails.executors.impl.AdyenPaymentMethodDetailsStrategyExecutorImpl">
         <constructor-arg name="strategies" ref="adyenPaymentMethodDetailsBuilderStrategies"/>
         <constructor-arg name="genericStrategy" ref="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     </bean>
+-->
 
     <bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
         <property name="baseStoreService" ref="baseStoreService" />

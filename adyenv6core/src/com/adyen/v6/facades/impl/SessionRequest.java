@@ -1,5 +1,7 @@
 package com.adyen.v6.facades.impl;
 
+import com.adyen.model.checkout.Amount;
+
 public class SessionRequest {
     private String merchantAccount;
     private String returnUrl;

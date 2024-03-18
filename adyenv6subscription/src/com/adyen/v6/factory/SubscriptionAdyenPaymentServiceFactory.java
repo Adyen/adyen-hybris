@@ -1,7 +1,7 @@
 package com.adyen.v6.factory;
 
-import com.adyen.v6.service.AdyenPaymentService;
-import com.adyen.v6.service.impl.DefaultSubscriptionAdyenPaymentService;
+import com.adyen.v6.service.AdyenCheckoutApiService;
+import com.adyen.v6.service.impl.DefaultSubscriptionAdyenCheckoutApiService;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.store.services.BaseStoreService;
@@ -19,9 +19,9 @@ public class SubscriptionAdyenPaymentServiceFactory extends AdyenPaymentServiceF
     }
 
     @Override
-    public AdyenPaymentService createFromBaseStore(final BaseStoreModel baseStoreModel)
+    public AdyenCheckoutApiService createAdyenCheckoutApiService(final BaseStoreModel baseStoreModel)
     {
-        final DefaultSubscriptionAdyenPaymentService adyenPaymentService = new DefaultSubscriptionAdyenPaymentService(
+        final DefaultSubscriptionAdyenCheckoutApiService adyenPaymentService = new DefaultSubscriptionAdyenCheckoutApiService(
                 baseStoreModel);
         adyenPaymentService.setAdyenRequestFactory(getAdyenRequestFactory());
         adyenPaymentService.setCartFacade(cartFacade);

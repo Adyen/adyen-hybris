@@ -1,14 +1,11 @@
 package com.adyen.v6.factory;
 
-import com.adyen.model.checkout.PaymentMethodDetails;
-import com.adyen.model.checkout.PaymentsRequest;
-import com.adyen.model.checkout.details.CardDetails;
+import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.recurring.RecurringDetailsRequest;
 import com.adyen.util.Util;
-import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
-import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import com.adyen.v6.utils.SubscriptionsUtils;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -28,14 +25,14 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
 
     private CartFacade cartFacade;
 
-    public SubscriptionPaymentRequestFactory(ConfigurationService configurationService, AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor) {
-        super(configurationService, adyenPaymentMethodDetailsBuilderExecutor);
+    public SubscriptionPaymentRequestFactory(ConfigurationService configurationService) {
+        super(configurationService);
     }
 
     @Override
-    public PaymentsRequest createPaymentsRequest(String merchantAccount, CartData cartData, RequestInfo requestInfo,
-                                                 CustomerModel customerModel, RecurringContractMode recurringContractMode,
-                                                 Boolean guestUserTokenizationEnabled) {
+    public PaymentRequest createPaymentsRequest(String merchantAccount, CartData cartData, CheckoutPaymentMethod checkoutPaymentMethod, RequestInfo requestInfo,
+                                                CustomerModel customerModel, RecurringContractMode recurringContractMode,
+                                                Boolean guestUserTokenizationEnabled) {
 
         LOG.info("Creating PaymentsRequest for merchant account: {}", merchantAccount);
 
@@ -48,31 +45,31 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
                 recurringContractMode, guestUserTokenizationEnabled);
     }
 
-    private PaymentsRequest createRegularPaymentsRequest(String merchantAccount, CartData cartData, RequestInfo requestInfo,
+    private PaymentRequest createRegularPaymentsRequest(String merchantAccount, CartData cartData, RequestInfo requestInfo,
                                                          CustomerModel customerModel, RecurringContractMode recurringContractMode,
                                                          Boolean guestUserTokenizationEnabled) {
         LOG.info("Creating regular PaymentsRequest...");
-        PaymentsRequest paymentsRequest = super.createPaymentsRequest(merchantAccount, cartData, requestInfo,
+        PaymentRequest paymentsRequest = super.createPaymentsRequest(merchantAccount, cartData,null, requestInfo,
                 customerModel, recurringContractMode, guestUserTokenizationEnabled);
-        paymentsRequest.setShopperInteraction(PaymentsRequest.ShopperInteractionEnum.CONTAUTH);
+        paymentsRequest.setShopperInteraction(PaymentRequest.ShopperInteractionEnum.CONTAUTH);
 
-        PaymentsRequest.RecurringProcessingModelEnum recurringProcessingModel = BooleanUtils.isTrue(
+        PaymentRequest.RecurringProcessingModelEnum recurringProcessingModel = BooleanUtils.isTrue(
                 SubscriptionsUtils.containsSubscription(getCartFacade().getSessionCart()))
-                ? PaymentsRequest.RecurringProcessingModelEnum.SUBSCRIPTION
-                : PaymentsRequest.RecurringProcessingModelEnum.CARDONFILE;
+                ? PaymentRequest.RecurringProcessingModelEnum.SUBSCRIPTION
+                : PaymentRequest.RecurringProcessingModelEnum.CARDONFILE;
 
         paymentsRequest.setRecurringProcessingModel(recurringProcessingModel);
         return paymentsRequest;
     }
 
-    protected PaymentsRequest createRecurringPaymentsRequest(final String merchantAccount, final CartData cartData,
+    protected PaymentRequest createRecurringPaymentsRequest(final String merchantAccount, final CartData cartData,
                                                              final RequestInfo requestInfo, final CustomerModel customerModel, final RecurringContractMode recurringContractMode,
                                                              final Boolean guestUserTokenizationEnabled)
     {
 
         LOG.info("Creating RecurringPaymentsRequest for merchant account: {}", merchantAccount);
 
-        final PaymentsRequest paymentsRequest = new PaymentsRequest();
+        final PaymentRequest paymentsRequest = new PaymentRequest();
         final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
 
         if (adyenPaymentMethod == null)
@@ -82,12 +79,12 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
 
         updatePaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
 
-        final PaymentMethodDetails paymentMethod = adyenPaymentMethodDetailsBuilderExecutor.createPaymentMethodDetails(cartData);
+/*        final PaymentMethodDetails paymentMethod = adyenPaymentMethodDetailsBuilderExecutor.createPaymentMethodDetails(cartData);
         if(paymentMethod instanceof CardDetails) {
             ((CardDetails) paymentMethod).setStoredPaymentMethodId(cartData.getAdyenSelectedReference());
         }
         paymentMethod.setType(Adyenv6coreConstants.PAYMENT_METHOD_SCHEME);
-        paymentsRequest.setPaymentMethod(paymentMethod);
+        paymentsRequest.setPaymentMethod(paymentMethod);*/
 
 
         updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
@@ -125,12 +122,12 @@ public class SubscriptionPaymentRequestFactory extends AdyenRequestFactory {
         // if address details are provided, set it to the PaymentRequest
         if (deliveryAddress != null)
         {
-            paymentsRequest.setDeliveryAddress(setAddressData(deliveryAddress));
+            paymentsRequest.setDeliveryAddress(convertToDeliveryAddress(deliveryAddress));
         }
 
         if (billingAddress != null)
         {
-            paymentsRequest.setBillingAddress(setAddressData(billingAddress));
+            paymentsRequest.setBillingAddress(convertToDeliveryAddress(billingAddress));
             // set PhoneNumber if it is provided
             final String phone = billingAddress.getPhone();
             if (StringUtils.isNotBlank(phone ))

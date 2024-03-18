@@ -22,7 +22,7 @@ package com.adyen.v6.service;
 
 import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
-import com.adyen.notification.NotificationHandler;
+import com.adyen.notification.WebhookHandler;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.model.AdyenNotificationModel;
 import com.adyen.v6.model.NotificationItemModel;
@@ -44,6 +44,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.support.TransactionOperations;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -140,8 +141,8 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
     }
 
     @Override
-    public NotificationRequest getNotificationRequestFromString(final String requestString) {
-        NotificationHandler notificationHandler = new NotificationHandler();
+    public NotificationRequest getNotificationRequestFromString(final String requestString) throws IOException {
+        WebhookHandler notificationHandler = new WebhookHandler();
         NotificationRequest notificationRequest = notificationHandler.handleNotificationJson(requestString);
         LOG.debug(notificationRequest);
         return notificationRequest;
