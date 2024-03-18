@@ -4,11 +4,9 @@ import {connect} from "react-redux";
 import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
 import {AddressModel} from "../../reducers/types";
 import {AppState} from "../../reducers/rootReducer";
-import {AddressConfigModel} from "../../reducers/addressConfigReducer";
 import {StoreDispatch} from "../../store/store";
 import {AddressData} from "../../types/addressData";
 import {InputCheckbox} from "../controls/InputCheckbox";
-import {AddressForm} from "../common/AddressForm";
 import {AddressService} from "../../service/addressService";
 import {AdyenConfigService} from "../../service/adyenConfigService";
 import AdyenCheckout from '@adyen/adyen-web';
@@ -24,15 +22,16 @@ import {PaymentService} from "../../service/paymentService";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
 import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
+import AddressSection from "../common/AddressSection";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
+    saveInAddressBook: boolean
 }
 
 interface StoreProps {
     billingAddress: AddressModel,
-    addressConfig: AddressConfigModel,
     shippingAddressFromCart: AddressData,
     adyenConfig: AdyenConfigData
 }
@@ -47,6 +46,7 @@ interface DispatchProps {
     setCity: (city: string) => void
     setPostCode: (postCode: string) => void
     setPhoneNumber: (phoneNumber: string) => void
+    setSelectedAddress: (address: AddressModel) => void
 }
 
 type Props = StoreProps & DispatchProps
@@ -60,6 +60,7 @@ class Payment extends React.Component<Props, State> {
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
+            saveInAddressBook: false,
         }
         this.paymentRef = React.createRef();
     }
@@ -133,16 +134,20 @@ class Payment extends React.Component<Props, State> {
 
     private async handleBankCardPayment(cardState: CardState) {
         let adyenPaymentForm = PaymentService.prepareBankCardAdyenPaymentForm(cardState,
-            this.state.useDifferentBillingAddress, this.props.billingAddress);
+            this.state.useDifferentBillingAddress, this.isSaveInAddressBook(), this.props.billingAddress);
 
         await this.executePaymentRequest(adyenPaymentForm)
     }
 
     private async handleStoredCardPayment(cardState: CardState) {
         let adyenPaymentForm = PaymentService.prepareStoredCardAdyenPaymentForm(cardState,
-            this.state.useDifferentBillingAddress, this.props.billingAddress);
+            this.state.useDifferentBillingAddress, this.isSaveInAddressBook(), this.props.billingAddress);
 
         await this.executePaymentRequest(adyenPaymentForm)
+    }
+
+    private isSaveInAddressBook(): boolean {
+        return this.state.saveInAddressBook && this.state.useDifferentBillingAddress
     }
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
@@ -161,21 +166,29 @@ class Payment extends React.Component<Props, State> {
                 <>
                     <hr/>
                     <div className={"headline"}>Billing Address</div>
-                    <AddressForm addressConfig={this.props.addressConfig} address={this.props.billingAddress}
-                                 onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
-                                 onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
-                                 onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
-                                 onLastNameChange={(lastName) => this.props.setLastName(lastName)}
-                                 onLine1Change={(line1) => this.props.setLine1(line1)}
-                                 onLine2Change={(line2) => this.props.setLine2(line2)}
-                                 onCityChange={(city) => this.props.setCity(city)}
-                                 onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
-                                 onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}/>
+                    <AddressSection address={this.props.billingAddress}
+                                    saveInAddressBook={this.state.saveInAddressBook}
+                                    onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
+                                    onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
+                                    onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
+                                    onLastNameChange={(lastName) => this.props.setLastName(lastName)}
+                                    onLine1Change={(line1) => this.props.setLine1(line1)}
+                                    onLine2Change={(line2) => this.props.setLine2(line2)}
+                                    onCityChange={(city) => this.props.setCity(city)}
+                                    onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
+                                    onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}
+                                    onChangeSaveInAddressBook={(saveInAddressBook) => this.onChangeSaveInAddressBook(saveInAddressBook)}
+                                    onSelectAddress={(address) => this.props.setSelectedAddress(address)}
+                    />
                     <hr/>
                 </>
             )
         }
         return <></>
+    }
+
+    private onChangeSaveInAddressBook(value: boolean) {
+        this.setState({saveInAddressBook: value})
     }
 
     private onChangeUseDifferentBillingAddress(value: boolean): void {
@@ -190,9 +203,10 @@ class Payment extends React.Component<Props, State> {
 
                     <div className={"checkout-paymentmethod"}>
                         <ShippingAddressHeading address={this.props.shippingAddressFromCart}/>
-                        <InputCheckbox fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
-                                       onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
-                                       checked={this.state.useDifferentBillingAddress}/>
+                        <InputCheckbox
+                            fieldName={translationsStore.get("checkout.multi.payment.useDifferentBillingAddress")}
+                            onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
+                            checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}
                         <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
@@ -222,12 +236,12 @@ function mapDispatchToProps(dispatch: StoreDispatch): DispatchProps {
             type: "billingAddress/setPhoneNumber",
             payload: phoneNumber
         }),
+        setSelectedAddress: (address: AddressModel) => dispatch({type: "billingAddress/setAddress", payload: address})
     }
 }
 
 function mapStateToProps(state: AppState): StoreProps {
     return {
-        addressConfig: state.addressConfig,
         billingAddress: state.billingAddress,
         shippingAddressFromCart: state.cartData.deliveryAddress,
         adyenConfig: state.adyenConfig
