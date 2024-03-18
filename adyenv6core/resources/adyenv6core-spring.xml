@@ -232,6 +232,9 @@
             </bean>
         </property>
         <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
+        <property name="i18NFacade" ref="i18NFacade"/>
+        <property name="userFacade" ref="userFacade"/>
+        <property name="configurationService" ref="configurationService"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">

@@ -18,6 +18,7 @@ public class AddressForm {
     private String postcode;
     private String countryIsoCode;
     private String phoneNumber;
+    private boolean saveInAddressBook;
 
 
     @NotNull(message = "{address.title.invalid}")
@@ -122,6 +123,14 @@ public class AddressForm {
 		this.addressId = addressId;
 	}
 
+
+    public boolean isSaveInAddressBook() {
+        return saveInAddressBook;
+    }
+
+    public void setSaveInAddressBook(boolean saveInAddressBook) {
+        this.saveInAddressBook = saveInAddressBook;
+    }
 
     @Override
     public String toString() {

@@ -2,22 +2,17 @@ import React from "react";
 import {connect} from "react-redux";
 import {AppState} from "../../reducers/rootReducer";
 import {StoreDispatch} from "../../store/store";
-import {AddressConfigModel} from "../../reducers/addressConfigReducer";
-import {InputCheckbox} from "../controls/InputCheckbox";
 import {AddressService} from "../../service/addressService";
 import {AddressModel} from "../../reducers/types";
-import AddressBookSelector from "./AddressBookSelector";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
-import {AddressForm} from "../common/AddressForm";
 import {translationsStore} from "../../store/translationsStore";
+import AddressSection from "../common/AddressSection";
 
 
 interface StoreProps {
     shippingAddress: AddressModel
-    addressConfig: AddressConfigModel
-    addressBook: AddressModel[]
 }
 
 interface DispatchProps {
@@ -30,12 +25,12 @@ interface DispatchProps {
     setCity: (city: string) => void
     setPostCode: (postCode: string) => void
     setPhoneNumber: (phoneNumber: string) => void
+    setSelectedAddress: (address: AddressModel) => void
 }
 
 type ShippingAddressProps = StoreProps & DispatchProps;
 
 interface ShippingAddressState {
-    addressBookModalOpen: boolean
     saveInAddressBook: boolean
     redirectToNextStep: boolean
 }
@@ -45,23 +40,9 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     constructor(props: ShippingAddressProps) {
         super(props);
         this.state = {
-            addressBookModalOpen: false,
             saveInAddressBook: false,
             redirectToNextStep: false
         }
-    }
-
-    componentDidMount() {
-        AddressService.fetchAddressBook()
-        AddressService.fetchAddressConfig()
-    }
-
-    private openAddressBookModal() {
-        this.setState({addressBookModalOpen: true})
-    }
-
-    private closeAddressBookModal() {
-        this.setState({addressBookModalOpen: false})
     }
 
     private onChangeSaveInAddressBook(value: boolean) {
@@ -75,28 +56,13 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         }
     }
 
-    private renderSaveAddressCheckbox(): React.JSX.Element {
-        if (!this.props.addressConfig.anonymousUser) {
-            return <InputCheckbox fieldName={translationsStore.get("checkout.summary.deliveryAddress.saveAddressInMyAddressBook")}
-                                  onChange={(value) => this.onChangeSaveInAddressBook(value)}
-                                  checked={this.state.saveInAddressBook}/>
+    private async onSelectAddress(address: AddressModel) {
+        let success = await AddressService.selectDeliveryAddress(address.id);
+        if (success) {
+            this.props.setSelectedAddress(address)
+            this.setState({ redirectToNextStep: true})
         }
-        return <></>
-    }
 
-    private renderAddressBookButton(): React.JSX.Element {
-        if (this.props.addressBook.length > 0) {
-            return <button className={"btn btn-default btn-block"} onClick={() => this.openAddressBookModal()}>{translationsStore.get("checkout.checkout.multi.deliveryAddress.viewAddressBook")}</button>
-        }
-        return <></>
-    }
-
-    private renderAddressBookModal(): React.JSX.Element {
-        if (this.state.addressBookModalOpen) {
-            return <AddressBookSelector closeModal={() => this.closeAddressBookModal()}/>
-        } else {
-            return <></>
-        }
     }
 
     render() {
@@ -109,25 +75,24 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                 <ShippingAddressHeader isActive={true}/>
 
                 <div className={"step-body"}>
-                    {this.renderAddressBookModal()}
 
                     <div className={"shippingAddress_form checkout-shipping"}>
                         <div className={"checkout-indent"}>
-                            <div className={"shippingAddress_form_header headline"}>{translationsStore.get("checkout.summary.shippingAddress")}</div>
-                            {this.renderAddressBookButton()}
-                            <br/>
-                            <AddressForm addressConfig={this.props.addressConfig}
-                                         onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
-                                         address={this.props.shippingAddress}
-                                         onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
-                                         onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
-                                         onLastNameChange={(lastName) => this.props.setLastName(lastName)}
-                                         onLine1Change={(line1) => this.props.setLine1(line1)}
-                                         onLine2Change={(line2) => this.props.setLine2(line2)}
-                                         onCityChange={(city) => this.props.setCity(city)}
-                                         onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
-                                         onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}/>
-                            {this.renderSaveAddressCheckbox()}
+                            <div
+                                className={"shippingAddress_form_header headline"}>{translationsStore.get("checkout.summary.shippingAddress")}</div>
+                            <AddressSection address={this.props.shippingAddress}
+                                            saveInAddressBook={this.state.saveInAddressBook}
+                                            onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
+                                            onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
+                                            onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
+                                            onLastNameChange={(lastName) => this.props.setLastName(lastName)}
+                                            onLine1Change={(line1) => this.props.setLine1(line1)}
+                                            onLine2Change={(line2) => this.props.setLine2(line2)}
+                                            onCityChange={(city) => this.props.setCity(city)}
+                                            onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
+                                            onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}
+                                            onChangeSaveInAddressBook={(saveInAddressBook) => this.onChangeSaveInAddressBook(saveInAddressBook)}
+                                            onSelectAddress={(address)=>this.onSelectAddress(address)}/>
                         </div>
                     </div>
                     <button className={"btn btn-primary btn-block checkout-next"}
@@ -140,9 +105,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
 }
 
 const mapStateToProps = (state: AppState): StoreProps => ({
-    shippingAddress: state.shippingAddress,
-    addressConfig: state.addressConfig,
-    addressBook: state.addressBook
+    shippingAddress: state.shippingAddress
 })
 
 const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
@@ -155,6 +118,7 @@ const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
     setCity: (city: string) => dispatch({type: "shippingAddress/setCity", payload: city}),
     setPostCode: (postCode: string) => dispatch({type: "shippingAddress/setPostCode", payload: postCode}),
     setPhoneNumber: (phoneNumber: string) => dispatch({type: "shippingAddress/setPhoneNumber", payload: phoneNumber}),
+    setSelectedAddress:(address:AddressModel) => dispatch({type:"shippingAddress/setAddress", payload: address})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShippingAddress)
