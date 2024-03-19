@@ -21,8 +21,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonv2WebConstants.ADYEN_CHECKOUT_ORDER_CONFIRMATION;
+import static com.adyen.v6.constants.Adyenv6b2ccheckoutaddonv2WebConstants.ADYEN_CHECKOUT_PAGE_PREFIX;
+
 @Controller
-@RequestMapping(value = "/checkout/multi/")
+@RequestMapping(value = ADYEN_CHECKOUT_PAGE_PREFIX)
 public class AdyenPageCheckoutStepController extends AbstractCheckoutStepController {
     private static final String DELIVERY_ADDRESS = "delivery-address";
     private static final String SHOW_SAVE_TO_ADDRESS_BOOK_ATTR = "showSaveToAddressBook";
@@ -40,6 +43,16 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         populateCommonModelAttributes(model, cartData, new AddressForm());
+
+        return  "addon:/adyenv6b2ccheckoutaddonv2/pages/adyenSPACheckout";
+    }
+
+    @GetMapping(value = {ADYEN_CHECKOUT_ORDER_CONFIRMATION, ADYEN_CHECKOUT_ORDER_CONFIRMATION + "/**"})
+    @RequireHardLogIn
+    public String enterOrderConfirmationStep(final Model model) throws CMSItemNotFoundException {
+        final ContentPageModel multiCheckoutSummaryPage = getContentPageForLabelOrId(MULTI_CHECKOUT_SUMMARY_CMS_PAGE_LABEL);
+        storeCmsPageInModel(model, multiCheckoutSummaryPage);
+        setUpMetaDataForContentPage(model, multiCheckoutSummaryPage);
 
         return  "addon:/adyenv6b2ccheckoutaddonv2/pages/adyenSPACheckout";
     }

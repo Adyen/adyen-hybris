@@ -15,6 +15,10 @@ import {CartDataAction, cartDataInitialState, cartDataReducer} from "./cartDataR
 import {BillingAddressAction, billingAddressReducer} from "./billingAddressReducer";
 import {AdyenConfigAction, adyenConfigInitialState, adyenConfigReducer} from "./adyenConfigReducer";
 import {AdyenConfigData} from "../types/adyenConfigData";
+import {PlaceOrderData} from "../types/placeOrderData";
+import {PlaceOrderDataAction, placeOrderDataInitialState, placeOrderDataReducer} from "./placeOrderDataReducer";
+import {LoadingAction, loadingReducer, loadingStateInitialState} from "./loadingReducer";
+import {LoadingState} from "../types/loadingState";
 
 export const initialState: AppState = {
     shippingAddress: addressInitialState,
@@ -23,7 +27,9 @@ export const initialState: AppState = {
     shippingMethod: shippingMethodInitialState,
     cartData: cartDataInitialState,
     billingAddress: addressInitialState,
-    adyenConfig: adyenConfigInitialState
+    adyenConfig: adyenConfigInitialState,
+    placeOrderData: placeOrderDataInitialState,
+    loadingState: loadingStateInitialState
 }
 
 
@@ -35,7 +41,9 @@ export const rootReducer: Reducer<AppState, RootAction, AppState> = function (ap
         shippingMethod: shippingMethodReducer(appState.shippingMethod, action),
         cartData: cartDataReducer(appState.cartData, action),
         billingAddress: billingAddressReducer(appState.billingAddress, action),
-        adyenConfig: adyenConfigReducer(appState.adyenConfig, action)
+        adyenConfig: adyenConfigReducer(appState.adyenConfig, action),
+        placeOrderData: placeOrderDataReducer(appState.placeOrderData, action),
+        loadingState: loadingReducer(appState.loadingState, action)
     }
 }
 
@@ -46,7 +54,9 @@ export interface AppState {
     shippingMethod: ShippingMethodState,
     cartData: CartData,
     billingAddress: AddressModel,
-    adyenConfig: AdyenConfigData
+    adyenConfig: AdyenConfigData,
+    placeOrderData: PlaceOrderData,
+    loadingState: LoadingState
 }
 
 export type RootAction =
@@ -57,6 +67,8 @@ export type RootAction =
     | CartDataAction
     | BillingAddressAction
     | AdyenConfigAction
+    | PlaceOrderDataAction
+    | LoadingAction
 
 export interface PayloadAction<T extends string, PT = string> extends Action<T> {
     payload: PT

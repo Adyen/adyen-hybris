@@ -23,11 +23,18 @@ import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
 import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
 import AddressSection from "../common/AddressSection";
+import {routes} from "../../router/routes";
+import {Navigate} from "react-router-dom";
+import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
+import {PaymentError} from "./PaymentError";
+import {ScrollHere} from "../common/ScrollTo";
+import DropinElement from "@adyen/adyen-web/dist/types/components/Dropin";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
     saveInAddressBook: boolean
+    errorCode: string
 }
 
 interface StoreProps {
@@ -54,6 +61,8 @@ type Props = StoreProps & DispatchProps
 class Payment extends React.Component<Props, State> {
 
     paymentRef: RefObject<HTMLDivElement>
+    threeDSRef: RefObject<HTMLDivElement>
+    dropIn: DropinElement
 
     constructor(props: Props) {
         super(props);
@@ -61,8 +70,10 @@ class Payment extends React.Component<Props, State> {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
             saveInAddressBook: false,
+            errorCode: ""
         }
         this.paymentRef = React.createRef();
+        this.threeDSRef = React.createRef();
     }
 
     async componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -127,9 +138,9 @@ class Payment extends React.Component<Props, State> {
 
     private initiateDropIn(adyenCheckout: Core) {
 
-        let dropIn = adyenCheckout.create("dropin");
+        this.dropIn = adyenCheckout.create("dropin");
 
-        dropIn.mount(this.paymentRef.current)
+        this.dropIn.mount(this.paymentRef.current)
     }
 
     private async handleBankCardPayment(cardState: CardState) {
@@ -151,13 +162,28 @@ class Payment extends React.Component<Props, State> {
     }
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
-        let success = await PaymentService.selectPaymentMethod(adyenPaymentForm);
+        let responseData = await PaymentService.placeOrder(adyenPaymentForm);
 
-        if (success) {
-            this.setState({...this.state, redirectToNextStep: true})
+        if (responseData.success) {
+            if (responseData.is3DSRedirect) {
+                await this.mount3DSComponent(responseData.paymentsAction)
+            } else {
+                this.setState({redirectToNextStep: true})
+            }
         } else {
-            console.error("payment error")
+            this.resetDropInComponent()
         }
+        this.setState({errorCode: responseData.error})
+    }
+
+    private resetDropInComponent() {
+        this.dropIn.unmount();
+        this.dropIn.mount(this.paymentRef.current)
+    }
+
+    private async mount3DSComponent(paymentAction: PaymentAction) {
+        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
+        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
     private renderBillingAddressForm(): React.JSX.Element {
@@ -192,10 +218,24 @@ class Payment extends React.Component<Props, State> {
     }
 
     private onChangeUseDifferentBillingAddress(value: boolean): void {
-        this.setState({...this.state, useDifferentBillingAddress: value})
+        this.setState({useDifferentBillingAddress: value})
+    }
+
+    private renderErrorMessage(): React.JSX.Element {
+        if (isNotEmpty(this.state.errorCode)) {
+            return <>
+                <ScrollHere/>
+                <PaymentError errorCode={this.state.errorCode}/>
+            </>
+        }
+        return <></>
     }
 
     render() {
+        if (this.state.redirectToNextStep) {
+            return <Navigate to={routes.thankYouPage}/>
+        }
+
         return (
             <>
                 <PaymentHeader isActive={true}/>
@@ -208,9 +248,12 @@ class Payment extends React.Component<Props, State> {
                             onChange={(checkboxState) => this.onChangeUseDifferentBillingAddress(checkboxState)}
                             checked={this.state.useDifferentBillingAddress}/>
                         {this.renderBillingAddressForm()}
+
+                        {this.renderErrorMessage()}
                         <div className={"dropin-payment"} ref={this.paymentRef}/>
                     </div>
                 </div>
+                <div ref={this.threeDSRef}/>
             </>
         )
     }

@@ -49,7 +49,10 @@ class ShippingMethod extends React.Component<Props, State> {
     }
 
     private async handleSubmitButton() {
-        this.setState({...this.state, redirectToNextStep: true})
+        let result = await ShippingMethodService.selectShippingMethod(this.props.selectedShippingMethodCode);
+        if (result) {
+            this.setState({redirectToNextStep: true})
+        }
     }
 
     render() {
@@ -71,7 +74,8 @@ class ShippingMethod extends React.Component<Props, State> {
                         </div>
                         <hr/>
                         <div className={"checkout-indent"}>
-                            <div className={"headline"}>{translationsStore.get("checkout.summary.deliveryMode.selectDeliveryMethodForOrder")}</div>
+                            <div
+                                className={"headline"}>{translationsStore.get("checkout.summary.deliveryMode.selectDeliveryMethodForOrder")}</div>
                             <InputDropdown testId={"delivery_method"}
                                            values={this.getDropdownItems()}
                                            onChange={(code) => {
