@@ -14,8 +14,8 @@ interface InputDropdownProps {
 
 export class InputDropdown extends React.Component<InputDropdownProps, null> {
 
-    private getSelectedValue(): string{
-        return this.props.selectedValue?this.props.selectedValue:""
+    private getSelectedValue(): string {
+        return this.props.selectedValue ? this.props.selectedValue : ""
     }
 
     private renderInput(): React.JSX.Element {
