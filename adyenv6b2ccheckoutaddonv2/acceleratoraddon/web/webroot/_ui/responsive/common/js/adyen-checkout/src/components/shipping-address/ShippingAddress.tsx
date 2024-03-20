@@ -45,18 +45,6 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         }
     }
 
-    componentDidMount() {
-        AddressService.fetchAddressBook()
-        AddressService.fetchAddressConfig()
-    }
-
-    private openAddressBookModal() {
-        this.setState({addressBookModalOpen: true})
-    }
-
-    private closeAddressBookModal() {
-        this.setState({addressBookModalOpen: false})
-    }
 
     private onChangeSaveInAddressBook(value: boolean) {
         this.setState({saveInAddressBook: value})

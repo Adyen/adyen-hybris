@@ -22,20 +22,20 @@ import {PaymentService} from "../../service/paymentService";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
 import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
+import AddressSection from "../common/AddressSection";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {PaymentError} from "./PaymentError";
 import {ScrollHere} from "../common/ScrollTo";
 import DropinElement from "@adyen/adyen-web/dist/types/components/Dropin";
-import AddressSection from "../common/AddressSection";
 
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
     redirectTo3DS: boolean
-    errorCode: string
     saveInAddressBook: boolean
+    errorCode: string
 }
 
 interface StoreProps {
