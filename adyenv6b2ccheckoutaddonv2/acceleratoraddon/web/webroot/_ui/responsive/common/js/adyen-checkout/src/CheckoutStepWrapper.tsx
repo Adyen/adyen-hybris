@@ -1,34 +1,11 @@
 import React from 'react'
 import './App.scss';
 import CartDetails from "./components/cart-details/CartDetails";
-import {TranslationService} from "./service/translationService";
 import {translationsStore} from "./store/translationsStore";
 
-interface State {
-    translationsInitialized: boolean
-}
-
-class App extends React.Component<React.PropsWithChildren, State> {
-
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            translationsInitialized: false
-        }
-    }
-
-    async componentDidMount() {
-        let success = await TranslationService.fetchTranslations();
-        if (success) {
-            this.setState({translationsInitialized: true})
-        }
-    }
+class CheckoutStepWrapper extends React.Component<React.PropsWithChildren, null> {
 
     render() {
-        if (!this.state.translationsInitialized) {
-            return <></>
-        }
-
         return (
             <>
                 <div className="col-sm-6">
@@ -49,4 +26,4 @@ class App extends React.Component<React.PropsWithChildren, State> {
     }
 }
 
-export default App;
+export default CheckoutStepWrapper;
