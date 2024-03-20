@@ -20,7 +20,7 @@ interface ComponentProps {
     addressBook: AddressModel[]
     saveInAddressBook: boolean
 
-    onSelectAddress: (address:AddressModel)=>void
+    onSelectAddress: (address: AddressModel) => void
 
     onCountryCodeChange: (countryCode: string) => void,
     onTitleCodeChange: (titleCode: string) => void,
@@ -55,11 +55,11 @@ class AddressSection extends React.Component<Props, State> {
     }
 
     private openAddressBookModal() {
-        this.setState({...this.state, addressBookModalOpen: true})
+        this.setState({addressBookModalOpen: true})
     }
 
     private closeAddressBookModal() {
-        this.setState({...this.state, addressBookModalOpen: false})
+        this.setState({addressBookModalOpen: false})
     }
 
     private renderSaveAddressCheckbox(): React.JSX.Element {
@@ -82,7 +82,8 @@ class AddressSection extends React.Component<Props, State> {
 
     private renderAddressBookModal(): React.JSX.Element {
         if (this.state.addressBookModalOpen) {
-            return <AddressBookSelector closeModal={() => this.closeAddressBookModal()} onSelectAddress={this.props.onSelectAddress}/>
+            return <AddressBookSelector closeModal={() => this.closeAddressBookModal()}
+                                        onSelectAddress={this.props.onSelectAddress}/>
         } else {
             return <></>
         }

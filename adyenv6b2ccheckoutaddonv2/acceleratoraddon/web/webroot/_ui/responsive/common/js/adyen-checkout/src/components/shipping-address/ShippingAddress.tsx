@@ -73,7 +73,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         let success = await AddressService.selectDeliveryAddress(address.id);
         if (success) {
             this.props.setSelectedAddress(address)
-            this.setState({ redirectToNextStep: true})
+            this.setState({redirectToNextStep: true})
         }
 
     }
@@ -105,7 +105,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                                             onPostCodeChange={(postCode) => this.props.setPostCode(postCode)}
                                             onPhoneNumberChange={(phoneNumber) => this.props.setPhoneNumber(phoneNumber)}
                                             onChangeSaveInAddressBook={(saveInAddressBook) => this.onChangeSaveInAddressBook(saveInAddressBook)}
-                                            onSelectAddress={(address)=>this.onSelectAddress(address)}/>
+                                            onSelectAddress={(address) => this.onSelectAddress(address)}/>
                         </div>
                     </div>
                     <button className={"btn btn-primary btn-block checkout-next"}
@@ -131,7 +131,7 @@ const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
     setCity: (city: string) => dispatch({type: "shippingAddress/setCity", payload: city}),
     setPostCode: (postCode: string) => dispatch({type: "shippingAddress/setPostCode", payload: postCode}),
     setPhoneNumber: (phoneNumber: string) => dispatch({type: "shippingAddress/setPhoneNumber", payload: phoneNumber}),
-    setSelectedAddress:(address:AddressModel) => dispatch({type:"shippingAddress/setAddress", payload: address})
+    setSelectedAddress: (address: AddressModel) => dispatch({type: "shippingAddress/setAddress", payload: address})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShippingAddress)
