@@ -68,6 +68,7 @@ import de.hybris.platform.commercefacades.order.OrderFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.product.data.ProductData;
+import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.RegionData;
@@ -167,11 +168,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenBusinessProcessService adyenBusinessProcessService;
     private TransactionOperations transactionTemplate;
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
-
-    @Resource(name = "i18NFacade")
+    private UserFacade userFacade;
     private I18NFacade i18NFacade;
-
-    @Resource(name = "configurationService")
     private ConfigurationService configurationService;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
@@ -873,32 +871,32 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         CheckoutConfigDTOBuilder checkoutConfigDTOBuilder = new CheckoutConfigDTOBuilder();
 
-            return checkoutConfigDTOBuilder.setAlternativePaymentMethods(alternativePaymentMethods)
-                    .setConnectedTerminalList(connectedTerminalList)
-                    .setStoredPaymentMethodList(storedPaymentMethodList)
-                    .setIssuerLists(issuerLists)
-                    .setCreditCardLabel(creditCardLabel)
-                    .setAllowedCards(allowedCards)
-                    .setAmount(amount)
-                    .setAdyenClientKey(baseStore.getAdyenClientKey())
-                    .setAdyenPaypalMerchantId(baseStore.getAdyenPaypalMerchantId())
-                    .setDeviceFingerPrintUrl(adyenPaymentService.getDeviceFingerprintUrl())
-                    .setSessionData(getAdyenSessionData())
-                    .setSelectedPaymentMethod(cartData.getAdyenPaymentMethod())
-                    .setShowRememberTheseDetails(showRememberDetails())
-                    .setCheckoutShopperHost(getCheckoutShopperHost())
-                    .setEnvironmentMode(getEnvironmentMode())
-                    .setShopperLocale(getShopperLocale())
-                    .setOpenInvoiceMethods(OPENINVOICE_METHODS_API)
-                    .setShowSocialSecurityNumber(showSocialSecurityNumber())
-                    .setShowBoleto(showBoleto())
-                    .setShowComboCard(showComboCard())
-                    .setShowPos(showPos())
-                    .setImmediateCapture(isImmediateCapture())
-                    .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
-                    .setCardHolderNameRequired(getHolderNameRequired())
-                    .setSepaDirectDebit(sepaDirectDebit)
-                    .build();
+        return checkoutConfigDTOBuilder.setAlternativePaymentMethods(alternativePaymentMethods)
+                .setConnectedTerminalList(connectedTerminalList)
+                .setStoredPaymentMethodList(storedPaymentMethodList)
+                .setIssuerLists(issuerLists)
+                .setCreditCardLabel(creditCardLabel)
+                .setAllowedCards(allowedCards)
+                .setAmount(amount)
+                .setAdyenClientKey(baseStore.getAdyenClientKey())
+                .setAdyenPaypalMerchantId(baseStore.getAdyenPaypalMerchantId())
+                .setDeviceFingerPrintUrl(adyenPaymentService.getDeviceFingerprintUrl())
+                .setSessionData(getAdyenSessionData())
+                .setSelectedPaymentMethod(cartData.getAdyenPaymentMethod())
+                .setShowRememberTheseDetails(showRememberDetails())
+                .setCheckoutShopperHost(getCheckoutShopperHost())
+                .setEnvironmentMode(getEnvironmentMode())
+                .setShopperLocale(getShopperLocale())
+                .setOpenInvoiceMethods(OPENINVOICE_METHODS_API)
+                .setShowSocialSecurityNumber(showSocialSecurityNumber())
+                .setShowBoleto(showBoleto())
+                .setShowComboCard(showComboCard())
+                .setShowPos(showPos())
+                .setImmediateCapture(isImmediateCapture())
+                .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
+                .setCardHolderNameRequired(getHolderNameRequired())
+                .setSepaDirectDebit(sepaDirectDebit)
+                .build();
     }
 
     @Deprecated
@@ -1324,6 +1322,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
+        if (!checkoutCustomerStrategy.isAnonymousCheckout() && adyenPaymentForm.getBillingAddress().isSaveInAddressBook()) {
+            AddressData addressData = convertToAddressData(adyenPaymentForm.getBillingAddress());
+            addressData.setVisibleInAddressBook(true);
+            addressData.setShippingAddress(true);
+            userFacade.addAddress(addressData);
+        }
+
         //Put encrypted data to session
         if (!StringUtils.isEmpty(adyenPaymentForm.getCseToken())) {
             getSessionService().setAttribute(SESSION_CSE_TOKEN, adyenPaymentForm.getCseToken());
@@ -1364,6 +1369,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     public AddressModel convertToAddressModel(final AddressForm addressForm) {
+        final AddressData addressData = convertToAddressData(addressForm);
+        final AddressModel billingAddress = getModelService().create(AddressModel.class);
+        getAddressReverseConverter().convert(addressData, billingAddress);
+
+        return billingAddress;
+    }
+
+    private AddressData convertToAddressData(AddressForm addressForm) {
         final AddressData addressData = new AddressData();
         final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIsoCode());
         addressData.setTitleCode(addressForm.getTitleCode());
@@ -1381,10 +1394,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIsoCode(), addressForm.getRegionIso());
             addressData.setRegion(regionData);
         }
-        final AddressModel billingAddress = getModelService().create(AddressModel.class);
-        getAddressReverseConverter().convert(addressData, billingAddress);
-
-        return billingAddress;
+        return addressData;
     }
 
     @Override
@@ -1854,5 +1864,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAdyenExpressCheckoutFacade(AdyenExpressCheckoutFacade adyenExpressCheckoutFacade) {
         this.adyenExpressCheckoutFacade = adyenExpressCheckoutFacade;
+    }
+
+    public void setUserFacade(UserFacade userFacade) {
+        this.userFacade = userFacade;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 }

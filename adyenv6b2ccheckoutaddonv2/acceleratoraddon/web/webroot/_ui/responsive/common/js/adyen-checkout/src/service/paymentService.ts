@@ -40,7 +40,7 @@ export class PaymentService {
             })
     }
 
-    static convertBillingAddress(address: AddressModel): AdyenAddressForm {
+    static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AdyenAddressForm {
         return {
             addressId: address.id,
             countryIsoCode: address.countryCode,
@@ -51,15 +51,16 @@ export class PaymentService {
             phoneNumber: address.phoneNumber,
             postcode: address.postalCode,
             titleCode: address.titleCode,
-            townCity: address.city
+            townCity: address.city,
+            saveInAddressBook: saveInAddressBook,
         }
     }
 
-    static prepareBankCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
+    static prepareBankCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, saveInAddressBook: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
         return {
             paymentMethod: "adyen_cc",
             useAdyenDeliveryAddress: !useDifferentBillingAddress,
-            billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress) : null,
+            billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress, saveInAddressBook) : null,
             encryptedCardNumber: cardState.data.paymentMethod.encryptedCardNumber,
             encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
             encryptedExpiryMonth: cardState.data.paymentMethod.encryptedExpiryMonth,
@@ -71,12 +72,12 @@ export class PaymentService {
         }
     }
 
-    static prepareStoredCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
+    static prepareStoredCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, saveInAddressBook: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
         return {
             paymentMethod: "adyen_oneclick_" + cardState.data.paymentMethod.storedPaymentMethodId,
             selectedReference: cardState.data.paymentMethod.storedPaymentMethodId,
             useAdyenDeliveryAddress: !useDifferentBillingAddress,
-            billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress) : null,
+            billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress, saveInAddressBook) : null,
             encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
             browserInfo: JSON.stringify(cardState.data.browserInfo),
             cardBrand: cardState.data.paymentMethod.brand
