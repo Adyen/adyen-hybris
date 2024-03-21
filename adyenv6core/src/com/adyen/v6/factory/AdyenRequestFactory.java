@@ -118,7 +118,7 @@ public class AdyenRequestFactory {
         final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         final Boolean is3DS2allowed = is3DS2Allowed();
         final PaymentRequest paymentsRequest = new PaymentRequest();
-        //Blik
+
         if (adyenPaymentMethod == null) {
             throw new IllegalArgumentException("Payment method is null");
         }
@@ -339,7 +339,7 @@ public class AdyenRequestFactory {
     }
 
     public RecurringDetailsRequest createListRecurringDetailsRequest(final String merchantAccount, final String customerId) {
-        return new RecurringDetailsRequest().merchantAccount(merchantAccount).shopperReference(customerId);//.setRecurring(new Recurring());//.selectOneClickContract();
+        return new RecurringDetailsRequest().merchantAccount(merchantAccount).shopperReference(customerId);
     }
 
     /**
@@ -392,7 +392,18 @@ public class AdyenRequestFactory {
                 saleToAcquirerData.setShopperReference(shopperReference);
                 saleToAcquirerData.setRecurringContract(recurringContract.getContract().toString());
             }
-            //updateApplicationInfoEcom(saleToAcquirerData.getApplicationInfo());
+            com.adyen.model.applicationinfo.ApplicationInfo applicationInfo = saleToAcquirerData.getApplicationInfo();
+            com.adyen.model.applicationinfo.CommonField version = new com.adyen.model.applicationinfo.CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
+
+            com.adyen.model.applicationinfo.ExternalPlatform externalPlatform = new com.adyen.model.applicationinfo.ExternalPlatform();
+
+            externalPlatform.setName(PLATFORM_NAME);
+            externalPlatform.setVersion(getPlatformVersion());
+            externalPlatform.setIntegrator(Adyenv6coreConstants.INTEGRATOR);
+
+            applicationInfo.setExternalPlatform(externalPlatform);
+            applicationInfo.setMerchantApplication(version);
+            applicationInfo.setAdyenPaymentSource(version);
             saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 
@@ -479,23 +490,23 @@ public class AdyenRequestFactory {
         address.setStreet("NA");
 
         // set the actual values if they are available
-        if (addressData.getTown() != null && !addressData.getTown().isEmpty()) {
+        if (StringUtils.isNotEmpty(addressData.getTown())) {
             address.setCity(addressData.getTown());
         }
 
-        if (addressData.getCountry() != null && !addressData.getCountry().getIsocode().isEmpty()) {
+        if (addressData.getCountry() != null && StringUtils.isNotEmpty(addressData.getCountry().getIsocode())) {
             address.setCountry(addressData.getCountry().getIsocode());
         }
 
-        if (addressData.getLine1() != null && !addressData.getLine1().isEmpty()) {
+        if (StringUtils.isNotEmpty(addressData.getLine1())) {
             address.setStreet(addressData.getLine1());
         }
 
-        if (addressData.getLine2() != null && !addressData.getLine2().isEmpty()) {
+        if (StringUtils.isNotEmpty(addressData.getLine2())) {
             address.setHouseNumberOrName(addressData.getLine2());
         }
 
-        if (addressData.getPostalCode() != null && !address.getPostalCode().isEmpty()) {
+        if (StringUtils.isNotEmpty(addressData.getPostalCode())) {
             address.setPostalCode(addressData.getPostalCode());
         }
 
@@ -691,7 +702,7 @@ public class AdyenRequestFactory {
             invoiceLines.add(invoiceLine);
         }
 
-       // paymentsRequest.setLineItems(invoiceLines);
+        paymentsRequest.setLineItems(invoiceLines);
     }
 
     private Name getAfterPayShopperName(final CartData cartData) {

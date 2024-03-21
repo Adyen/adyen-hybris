@@ -162,7 +162,6 @@
     <alias name="defaultAdyenOrderService" alias="adyenOrderService"/>
     <bean id="defaultAdyenOrderService" class="com.adyen.v6.service.DefaultAdyenOrderService">
         <property name="modelService" ref="modelService" />
-        <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
         <property name="transactionTemplate">
             <bean class="org.springframework.transaction.support.TransactionTemplate">
                 <property name="transactionManager" ref="txManager"/>
@@ -209,11 +208,9 @@
         <property name="modelService" ref="modelService"/>
         <property name="commonI18NService" ref="commonI18NService"/>
         <property name="keyGenerator" ref="orderCodeGenerator"/>
-        <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
         <property name="flexibleSearchService" ref="flexibleSearchService"/>
         <property name="addressReverseConverter" ref="addressReverseConverter"/>
         <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
-        <property name="paymentsDetailsResponseConverter" ref="adyenPaymentsDetailsResponseConverter"/>
         <property name="orderConverter" ref="orderConverter" />
         <property name="cartFactory" ref="cartFactory" />
         <property name="calculationService" ref="calculationService" />

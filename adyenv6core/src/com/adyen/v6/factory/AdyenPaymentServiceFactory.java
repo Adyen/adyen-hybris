@@ -25,7 +25,6 @@ import com.adyen.v6.service.AdyenModificationsApiService;
 import com.adyen.v6.service.DefaultAdyenCheckoutApiService;
 import com.adyen.v6.service.DefaultAdyenModificationsApiService;
 import de.hybris.platform.store.BaseStoreModel;
-import org.springframework.cache.annotation.Cacheable;
 
 /**
  * Factory class for AdyenPaymentService
@@ -38,8 +37,7 @@ public class AdyenPaymentServiceFactory {
     public AdyenPaymentServiceFactory(final AdyenRequestFactory adyenRequestFactory) {
         this.adyenRequestFactory = adyenRequestFactory;
     }
-
-    @Cacheable("adyenCheckoutApiService")
+    
     public AdyenCheckoutApiService createAdyenCheckoutApiService(final BaseStoreModel baseStoreModel) {
         DefaultAdyenCheckoutApiService defaultAdyenCheckoutApiService = new DefaultAdyenCheckoutApiService(baseStoreModel);
         defaultAdyenCheckoutApiService.setAdyenRequestFactory(adyenRequestFactory);

@@ -120,7 +120,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
     @Override
     public PaymentResponse componentPayment(final CartData cartData, CheckoutPaymentMethod checkoutPaymentMethod, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         LOG.debug("Component payment");
-        //Blik
+
         PaymentsApi checkoutApi = new PaymentsApi(client);
 
         com.adyen.model.checkout.PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(baseStore.getAdyenMerchantAccount(),
