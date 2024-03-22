@@ -50,6 +50,12 @@ import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.model.RequestInfo;
+import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
+import com.adyen.v6.util.AdyenUtil;
+import com.google.gson.Gson;
+import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderEntryData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
@@ -84,6 +90,7 @@ public class AdyenRequestFactory {
 
     protected final ConfigurationService configurationService;
     protected final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor;
+
 
     public AdyenRequestFactory(final ConfigurationService configurationService, final AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor) {
         this.configurationService = configurationService;
@@ -177,7 +184,7 @@ public class AdyenRequestFactory {
             }
         }
         //For one click
-        else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+        else if (AdyenUtil.isOneClick(adyenPaymentMethod)) {
             Optional.ofNullable(cartData.getAdyenSelectedReference())
                     .filter(StringUtils::isNotEmpty)
                     .map(selectedReference -> getCardDetails(cartData, selectedReference))

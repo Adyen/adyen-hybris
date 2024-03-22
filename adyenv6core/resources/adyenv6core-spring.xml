@@ -232,6 +232,9 @@
             </bean>
         </property>
         <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
+        <property name="i18NFacade" ref="i18NFacade"/>
+        <property name="userFacade" ref="userFacade"/>
+        <property name="configurationService" ref="configurationService"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
@@ -511,6 +514,13 @@
         <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
         <property name="cartConverter" ref="cartConverter"/>
         <property name="sessionService" ref="sessionService"/>
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean id="adyenOrderFacade" class="com.adyen.v6.facades.impl.DefaultAdyenOrderFacade">
+        <property name="baseStoreService" ref="baseStoreService"/>
+        <property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
+        <property name="customerAccountService" ref="customerAccountService"/>
         <property name="userService" ref="userService"/>
     </bean>
 </beans>

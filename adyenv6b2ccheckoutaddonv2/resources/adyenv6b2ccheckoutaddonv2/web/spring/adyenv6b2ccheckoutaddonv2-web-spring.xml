@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+           
+    <context:annotation-config/>
+
+	<context:component-scan base-package="com.adyen.v6.controllers"/>
+
+	<import resource="reactCheckoutFlowGroup.xml"/>
+
+	<!-- Expose /acceleratoraddon/web/webroot/WEB-INF/messages/base.js.properties  resource bundle as javascript variables -->
+	<bean id="defaultAdyenv6b2ccheckoutaddonv2JavaScriptMessageResourceAccessor" parent="abstractJavaScriptMessageResourceAccessor">
+		<property name="addOnName" value="adyenv6b2ccheckoutaddonv2"/>
+	</bean>
+
+	<bean id="defaultAdyenv6b2ccheckoutaddonv2BeforeViewJsPropsHandlerAdaptee" parent="abstractBeforeViewJsPropsHandlerAdaptee" class="de.hybris.platform.addonsupport.interceptors.ExportJsPropertiesBeforeViewHandler">
+		<property name="messageSource" ref="defaultAdyenv6b2ccheckoutaddonv2JavaScriptMessageResourceAccessor"/>
+	</bean>
+
+	<bean id="getAdyenv6b2ccheckoutaddonv2BeforeViewHandler" parent="beforeViewHandlerAdapter">
+		<property name="adaptee">
+			<ref bean="defaultAdyenv6b2ccheckoutaddonv2BeforeViewJsPropsHandlerAdaptee"/>
+		</property>
+	</bean>
+	<bean id="Adyenv6b2ccheckoutaddonv2BeforeViewHandlerListMergeDirective" depends-on="beforeViewHandlersList" parent="listMergeDirective">
+		<property name="add" ref="getAdyenv6b2ccheckoutaddonv2BeforeViewHandler"/>
+	</bean>
+
+	<bean id="sameSiteCookieAttributeAppenderUtils" class="com.adyen.v6.utils.SameSiteCookieAttributeAppenderUtils" >
+		<property name="configurationService" ref="configurationService" />
+	</bean>
+
+	<!-- SameSite cookie Authentication Handler -->
+	<bean id="loginGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
+		<property name="authenticationSuccessHandler" ref="loginAuthenticationSuccessHandler" />
+		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+	<bean id="loginCheckoutGuidAuthenticationSuccessHandler" class="com.adyen.v6.security.AdyenGUIDAuthenticationSuccessHandler" >
+		<property name="authenticationSuccessHandler" ref="loginCheckoutAuthenticationSuccessHandler" />
+		<property name="guidCookieStrategy" ref="guidCookieStrategy" />
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+
+	<!-- SameSite cookie Filter -->
+	<bean id="sameSiteCookiePostProcessFilter" class="com.adyen.v6.filters.SameSiteCookiePostProcessFilter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+	<bean id="sameSiteCookiePostProcessFilterListMergeDirective" depends-on="defaultStorefrontTenantDefaultFilterChainList" parent="listMergeDirective">
+		<property name="add" ref="sameSiteCookiePostProcessFilter"/>
+	</bean>
+
+	<!-- SameSite cookie Handler Interceptor -->
+	<bean id="sameSiteCookieHandlerInterceptorAdapter" class="com.adyen.v6.interceptors.SameSiteCookieHandlerInterceptorAdapter" >
+		<property name="sameSiteCookieAttributeAppenderUtils" ref="sameSiteCookieAttributeAppenderUtils" />
+	</bean>
+
+	<alias name="adyenAddressValidator" alias="addressValidator"/>
+	<bean id="adyenAddressValidator" class="com.adyen.v6.validator.AdyenAddressValidator"/>
+
+</beans>

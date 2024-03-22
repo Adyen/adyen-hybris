@@ -122,6 +122,14 @@ var AdyenCheckoutHybris = (function () {
                     window.alert("Invalid SEPA Owner Name and IBAN number");
                     return false;
                 }
+                var state = this.bcmc.data.paymentMethod;
+                $('input[name="encryptedCardNumber"]').val(state.encryptedCardNumber);
+                $('input[name="encryptedExpiryMonth"]').val(state.encryptedExpiryMonth);
+                $('input[name="encryptedExpiryYear"]').val(state.encryptedExpiryYear);
+                $('input[name="cardHolder"]').val(state.holderName);
+                $('input[name="cardBrand"]').val('bcmc');
+                $('input[name="cardType"]').val('debit');
+                $('input[name="browserInfo"]').val(JSON.stringify(this.bcmc.data.browserInfo));
             }
 
             if (paymentMethod === "afterpay_default") {

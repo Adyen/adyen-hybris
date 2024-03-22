@@ -25,6 +25,7 @@ import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
+import com.adyen.v6.dto.CheckoutConfigDTO;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
@@ -38,6 +39,7 @@ import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -82,7 +84,7 @@ public interface AdyenCheckoutFacade {
      * @param details consisting of parameters present in response query string
      * @return PaymentsResponse
      */
-    PaymentsDetailsResponse handleRedirectPayload(HashMap<String,String> details) throws Exception;
+    PaymentsDetailsResponse handleRedirectPayload(HashMap<String, String> details) throws Exception;
 
     /**
      * Authorizes a payment using Adyen API
@@ -181,7 +183,7 @@ public interface AdyenCheckoutFacade {
      * Validates the form and updates the cart based on form data
      * Updates BindingResult
      */
-    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, Errors errors);
 
     List<CountryData> getBillingCountries();
 
@@ -211,4 +213,8 @@ public interface AdyenCheckoutFacade {
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 
     String getClientKey();
+
+    CheckoutConfigDTO getCheckoutConfig() throws ApiException;
+
+    CheckoutConfigDTO getReactCheckoutConfig() throws ApiException;
 }

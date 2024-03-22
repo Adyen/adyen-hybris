@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -129,144 +130,145 @@ public class AdyenComponentController extends AbstractCheckoutController {
                 paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), CardDetails.class);
                 paymentMethodDetails.setType(paymentMethod);
             } else {
-                throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
+                    throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
+                }
+
+                cartData.setAdyenReturnUrl(getReturnUrl(paymentMethod));
+
+                PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, paymentMethodDetails);
+                return gson.toJson(paymentsResponse);
+            } catch(InvalidCartException e){
+                LOGGER.error("InvalidCartException: " + e.getMessage());
+                throw new AdyenComponentException(e.getMessage());
+            }
+        catch(ApiException e){
+                LOGGER.error("ApiException: " + e.toString());
+                throw new AdyenComponentException("checkout.error.authorization.payment.refused");
+            }  catch(AdyenNonAuthorizedPaymentException e){
+                LOGGER.warn("AdyenNonAuthorizedPaymentException occurred. Payment " + e.getPaymentResult().getPspReference() + "is refused.");
+                throw new AdyenComponentException("checkout.error.authorization.payment.refused");
+            } catch(Exception e){
+                LOGGER.error("Exception", e);
+                throw new AdyenComponentException("checkout.error.authorization.payment.error");
+            }
+        }
+
+        @RequestMapping(value = "/submit-details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+        @ResponseBody
+        public String submitDetails ( final HttpServletRequest request) throws AdyenComponentException {
+            try {
+                String requestJsonString = IOUtils.toString(request.getInputStream(), String.valueOf(StandardCharsets.UTF_8));
+                JsonObject requestJson = new JsonParser().parse(requestJsonString).getAsJsonObject();
+
+                Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                Type mapType = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> details = gson.fromJson(requestJson.get("details"), mapType);
+                String paymentData = gson.fromJson(requestJson.get("paymentData"), String.class);
+
+                PaymentsDetailsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
+                return gson.toJson(paymentsResponse);
+            } catch (ApiException e) {
+                LOGGER.error("ApiException: " + e.toString());
+                throw new AdyenComponentException("checkout.error.authorization.payment.refused");
+            } catch (Exception e) {
+                LOGGER.error("Exception", e);
+                throw new AdyenComponentException("checkout.error.authorization.payment.error");
+            }
+        }
+
+        @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+        @ExceptionHandler(value = AdyenComponentException.class)
+        public String adyenComponentExceptionHandler (AdyenComponentException e){
+            return e.getMessage();
+        }
+
+        /**
+         * Validates the order form before to filter out invalid order states
+         *
+         * @return True if the order form is invalid and false if everything is valid.
+         * @param requestJson
+         */
+        protected void validateOrderForm (JsonObject requestJson) throws InvalidCartException {
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            Boolean termsCheck = gson.fromJson(requestJson.get("termsCheck"), Boolean.class);
+            JsonObject paymentMethodDetails = requestJson.get("paymentMethodDetails").getAsJsonObject();
+            String paymentMethod = gson.fromJson(paymentMethodDetails.get("type"), String.class);
+
+            // Some methods already have the terms validated on a previous step
+            if (!PAYMENT_METHODS_WITH_VALIDATED_TERMS.contains(paymentMethod)
+                    && (termsCheck == null || !termsCheck)) {
+                throw new InvalidCartException("checkout.error.terms.not.accepted");
             }
 
-            cartData.setAdyenReturnUrl(getReturnUrl(paymentMethod));
+            if (getCheckoutFlowFacade().hasNoDeliveryAddress()) {
+                throw new InvalidCartException("checkout.deliveryAddress.notSelected");
+            }
 
-            PaymentsResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, paymentMethodDetails);
-            return gson.toJson(paymentsResponse);
-        } catch (InvalidCartException e) {
-            LOGGER.error("InvalidCartException: " + e.getMessage());
-            throw new AdyenComponentException(e.getMessage());
-        } catch (ApiException e) {
-            LOGGER.error("ApiException: " + e.toString());
-            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        } catch (AdyenNonAuthorizedPaymentException e) {
-            LOGGER.warn("AdyenNonAuthorizedPaymentException occurred. Payment " + e.getPaymentResult().getPspReference() + "is refused.");
-            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            throw new AdyenComponentException("checkout.error.authorization.payment.error");
-        }
-    }
+            if (getCheckoutFlowFacade().hasNoDeliveryMode()) {
+                throw new InvalidCartException("checkout.deliveryMethod.notSelected");
+            }
 
-    @RequestMapping(value = "/submit-details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String submitDetails(final HttpServletRequest request) throws AdyenComponentException {
-        try {
-            String requestJsonString = IOUtils.toString(request.getInputStream(), String.valueOf(StandardCharsets.UTF_8));
-            JsonObject requestJson = new JsonParser().parse(requestJsonString).getAsJsonObject();
+            if (getCheckoutFlowFacade().hasNoPaymentInfo()) {
+                throw new InvalidCartException("checkout.paymentMethod.notSelected");
+            }
 
-            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-            Type mapType = new TypeToken<Map<String, String>>() {
-            }.getType();
-            Map<String, String> details = gson.fromJson(requestJson.get("details"), mapType);
-            String paymentData = gson.fromJson(requestJson.get("paymentData"), String.class);
+            final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
-            PaymentsDetailsResponse paymentsResponse = getAdyenCheckoutFacade().componentDetails(request, details, paymentData);
-            return gson.toJson(paymentsResponse);
-        } catch (ApiException e) {
-            LOGGER.error("ApiException: " + e.toString());
-            throw new AdyenComponentException("checkout.error.authorization.payment.refused");
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            throw new AdyenComponentException("checkout.error.authorization.payment.error");
-        }
-    }
+            if (!getCheckoutFacade().containsTaxValues()) {
+                LOGGER.error(String.format("Cart %s does not have any tax values, which means the tax cacluation was not properly done, placement of order can't continue", cartData.getCode()));
+                throw new InvalidCartException("checkout.error.tax.missing");
+            }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = AdyenComponentException.class)
-    public String adyenComponentExceptionHandler(AdyenComponentException e) {
-        return e.getMessage();
-    }
-
-    /**
-     * Validates the order form before to filter out invalid order states
-     *
-     * @param requestJson
-     * @return True if the order form is invalid and false if everything is valid.
-     */
-    protected void validateOrderForm(JsonObject requestJson) throws InvalidCartException {
-        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        Boolean termsCheck = gson.fromJson(requestJson.get("termsCheck"), Boolean.class);
-        JsonObject paymentMethodDetails = requestJson.get("paymentMethodDetails").getAsJsonObject();
-        String paymentMethod = gson.fromJson(paymentMethodDetails.get("type"), String.class);
-
-        // Some methods already have the terms validated on a previous step
-        if (!PAYMENT_METHODS_WITH_VALIDATED_TERMS.contains(paymentMethod)
-                && (termsCheck == null || !termsCheck)) {
-            throw new InvalidCartException("checkout.error.terms.not.accepted");
+            if (!cartData.isCalculated()) {
+                LOGGER.error(String.format("Cart %s has a calculated flag of FALSE, placement of order can't continue", cartData.getCode()));
+                throw new InvalidCartException("checkout.error.cart.notcalculated");
+            }
         }
 
-        if (getCheckoutFlowFacade().hasNoDeliveryAddress()) {
-            throw new InvalidCartException("checkout.deliveryAddress.notSelected");
+        private String getReturnUrl (String paymentMethod){
+            String url;
+            if (GooglePayDetails.GOOGLEPAY.equals(paymentMethod)) {
+                //Google Pay will only use returnUrl if redirected to 3DS authentication
+                url = SUMMARY_CHECKOUT_PREFIX + "/authorise-3d-adyen-response";
+            } else {
+                url = COMPONENT_PREFIX + "/submit-details";
+            }
+            BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
+            return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
         }
 
-        if (getCheckoutFlowFacade().hasNoDeliveryMode()) {
-            throw new InvalidCartException("checkout.deliveryMethod.notSelected");
+        public AdyenCheckoutFacade getAdyenCheckoutFacade () {
+            return adyenCheckoutFacade;
         }
 
-        if (getCheckoutFlowFacade().hasNoPaymentInfo()) {
-            throw new InvalidCartException("checkout.paymentMethod.notSelected");
+        public void setAdyenCheckoutFacade (AdyenCheckoutFacade adyenCheckoutFacade){
+            this.adyenCheckoutFacade = adyenCheckoutFacade;
         }
 
-        final CartData cartData = getCheckoutFacade().getCheckoutCart();
-
-        if (!getCheckoutFacade().containsTaxValues()) {
-            LOGGER.error(String.format("Cart %s does not have any tax values, which means the tax cacluation was not properly done, placement of order can't continue", cartData.getCode()));
-            throw new InvalidCartException("checkout.error.tax.missing");
+        public CheckoutFlowFacade getCheckoutFlowFacade () {
+            return checkoutFlowFacade;
         }
 
-        if (!cartData.isCalculated()) {
-            LOGGER.error(String.format("Cart %s has a calculated flag of FALSE, placement of order can't continue", cartData.getCode()));
-            throw new InvalidCartException("checkout.error.cart.notcalculated");
+        public void setCheckoutFlowFacade (CheckoutFlowFacade checkoutFlowFacade){
+            this.checkoutFlowFacade = checkoutFlowFacade;
+        }
+
+        public AcceleratorCheckoutFacade getCheckoutFacade () {
+            return checkoutFacade;
+        }
+
+        public void setCheckoutFacade (AcceleratorCheckoutFacade checkoutFacade){
+            this.checkoutFacade = checkoutFacade;
+        }
+
+        private boolean isValidateSessionCart () {
+            CartData cart = getCheckoutFacade().getCheckoutCart();
+            final AddressData deliveryAddress = cart.getDeliveryAddress();
+            if (deliveryAddress == null || deliveryAddress.getCountry() == null || deliveryAddress.getCountry().getIsocode() == null) {
+                return false;
+            }
+            return true;
+
         }
     }
-
-    private String getReturnUrl(String paymentMethod) {
-        String url;
-        if (GooglePayDetails.GOOGLEPAY.equals(paymentMethod)) {
-            //Google Pay will only use returnUrl if redirected to 3DS authentication
-            url = SUMMARY_CHECKOUT_PREFIX + "/authorise-3d-adyen-response";
-        } else {
-            url = COMPONENT_PREFIX + "/submit-details";
-        }
-        BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
-        return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
-    }
-
-    public AdyenCheckoutFacade getAdyenCheckoutFacade() {
-        return adyenCheckoutFacade;
-    }
-
-    public void setAdyenCheckoutFacade(AdyenCheckoutFacade adyenCheckoutFacade) {
-        this.adyenCheckoutFacade = adyenCheckoutFacade;
-    }
-
-    public CheckoutFlowFacade getCheckoutFlowFacade() {
-        return checkoutFlowFacade;
-    }
-
-    public void setCheckoutFlowFacade(CheckoutFlowFacade checkoutFlowFacade) {
-        this.checkoutFlowFacade = checkoutFlowFacade;
-    }
-
-    public AcceleratorCheckoutFacade getCheckoutFacade() {
-        return checkoutFacade;
-    }
-
-    public void setCheckoutFacade(AcceleratorCheckoutFacade checkoutFacade) {
-        this.checkoutFacade = checkoutFacade;
-    }
-
-    private boolean isValidateSessionCart() {
-        CartData cart = getCheckoutFacade().getCheckoutCart();
-        final AddressData deliveryAddress = cart.getDeliveryAddress();
-        if (deliveryAddress == null || deliveryAddress.getCountry() == null || deliveryAddress.getCountry().getIsocode() == null) {
-            return false;
-        }
-        return true;
-
-    }
-}

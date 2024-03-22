@@ -9,11 +9,13 @@
         <requires-extension name="webservicescommons"/>
         <requires-extension name="adyenv6core"/>
         <requires-extension name="addonsupport"/>
+
         
         <coremodule generated="true" manager="com.adyen.v6.jalo.Adyenv6notificationv2Manager" packageroot="com.adyen.v6"/>
                       
         
         <webmodule jspcompile="false" webroot="/adyenv6notificationv2"/>
+
 
         <meta key="backoffice-module" value="true"/>
 

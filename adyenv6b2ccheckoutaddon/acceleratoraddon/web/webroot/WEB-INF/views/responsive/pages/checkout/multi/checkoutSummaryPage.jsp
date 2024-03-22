@@ -8,6 +8,7 @@
 <%@ taglib prefix="ycommerce" uri="http://hybris.com/tld/ycommercetags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="order" tagdir="/WEB-INF/tags/responsive/order" %>
+<%@ taglib prefix="adyen" tagdir="/WEB-INF/tags/addons/adyenv6b2ccheckoutaddon/responsive" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
 <spring:url value="/checkout/multi/adyen/summary/component-result" var="handleComponentResult"/>
@@ -21,98 +22,99 @@
 
     <script type="text/javascript">
         <c:set var="initConfig">
-        <json:object escapeXml="false">
-        <json:property name="shopperLocale" value="${shopperLocale}"/>
-        <json:property name="environment" value="${environmentMode}"/>
-        <json:property name="clientKey" value="${clientKey}"/>
-        <json:property name="sessionId" value="${sessionData.id}"/>
-        <json:property name="sessionData" value="${sessionData.sessionData}"/>
-        <json:object escapeXml="false" name="session">
-        <json:property name="id" value="${sessionData.id}"/>
-        <json:property name="sessionData" value="${sessionData.sessionData}"/>
-        </json:object>
-        </json:object>
+            <json:object escapeXml="false">
+                <json:property name="shopperLocale" value="${shopperLocale}"/>
+                <json:property name="environment" value="${environmentMode}"/>
+                <json:property name="clientKey" value="${clientKey}"/>
+                <json:property name="sessionId" value="${sessionData.id}"/>
+                <json:property name="sessionData" value="${sessionData.sessionData}"/>
+                <json:object escapeXml="false" name="session">
+                    <json:property name="id" value="${sessionData.id}"/>
+                    <json:property name="sessionData" value="${sessionData.sessionData}"/>
+                </json:object>
+            </json:object>
         </c:set>
 
         <c:set var="callbackConfig">
-        <json:object escapeXml="false" name="callbackConfig">
-        <json:object escapeXml="false" name="amount">
-        <json:property name="value" value="${amount.value}"/>
-        <json:property name="currency" value="${amount.currency}"/>
-        </json:object>
-        <json:property name="merchantAccount" value="${merchantAccount}"/>
-        <json:array name="label" items="${['visible-xs', 'hidden-xs']}"/>
-        </json:object>
+            <json:object escapeXml="false" name="callbackConfig">
+                <json:object escapeXml="false" name="amount">
+                    <json:property name="value" value="${amount.value}"/>
+                    <json:property name="currency" value="${amount.currency}"/>
+                </json:object>
+                <json:property name="merchantAccount" value="${merchantAccount}"/>
+                <json:array name="label" items="${['visible-xs', 'hidden-xs']}"/>
+            </json:object>
         </c:set>
 
         const initConfig = ${initConfig};
         const callbackConfig = ${callbackConfig};
         const fnCallbackArray = {};
+
         <c:choose>
-        <%-- Configure components --%>
-        <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
-        fnCallbackArray['initiatePaypal'] = {
-            ...callbackConfig,
-            isImmediateCapture: ${immediateCapture},
-            paypalMerchantId: "${paypalMerchantId}"
-        }
-        </c:when>
+            <%-- Configure components --%>
+            <c:when test="${selectedPaymentMethod eq 'paypal' && (not empty paypalMerchantId || environmentMode eq 'test')}">
+                fnCallbackArray['initiatePaypal'] = {
+                    ...callbackConfig,
+                    isImmediateCapture: ${immediateCapture},
+                    paypalMerchantId: "${paypalMerchantId}"
+                }
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'mbway'}">
-        fnCallbackArray['initiateMbway'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'mbway'}">
+                fnCallbackArray['initiateMbway'] = callbackConfig
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'bizum'}">
-        fnCallbackArray['initiateBizum'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'bizum'}">
+                fnCallbackArray['initiateBizum'] = callbackConfig
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'applepay'}">
-        fnCallbackArray['initiateApplePay'] = {
-            ...callbackConfig,
-            countryCode: "${countryCode}",
-            applePayMerchantIdentifier: "${applePayMerchantIdentifier}",
-            applePayMerchantName: "${applePayMerchantName}",
-        }
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'applepay'}">
+                fnCallbackArray['initiateApplePay'] = {
+                    ...callbackConfig,
+                    countryCode: "${countryCode}",
+                    applePayMerchantIdentifier: "${applePayMerchantIdentifier}",
+                    applePayMerchantName: "${applePayMerchantName}",
+                }
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'pix'}">
-        fnCallbackArray['initiatePix'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'pix'}">
+                fnCallbackArray['initiatePix'] = callbackConfig
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'googlepay'}">
-        fnCallbackArray['initiateGooglePay'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'paywithgoogle'}">
+                fnCallbackArray['initiateGooglePay'] = callbackConfig
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'amazonpay'}">
-        fnCallbackArray['initiateAmazonPay'] = {
-            ...callbackConfig,
-            deliveryAddress: ${deliveryAddress},
-            amazonPayConfiguration: ${amazonPayConfiguration},
-            locale: ${locale},
-            label: null,
-        };
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'amazonpay'}">
+                fnCallbackArray['initiateAmazonPay'] = {
+                    ...callbackConfig,
+                    deliveryAddress: ${deliveryAddress},
+                    amazonPayConfiguration: ${amazonPayConfiguration},
+                    locale: ${locale},
+                    label: null,
+                };
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'upi'}">
-        fnCallbackArray['initiateUPI'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'upi'}">
+                fnCallbackArray['initiateUPI'] = callbackConfig
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'bcmc_mobile'}">
-        fnCallbackArray['initiateBcmcMobile'] = callbackConfig;
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'bcmc_mobile'}">
+                fnCallbackArray['initiateBcmcMobile'] = callbackConfig;
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'giftcard'}">
-        fnCallbackArray['initiateGiftCard'] = callbackConfig;
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'giftcard'}">
+                fnCallbackArray['initiateGiftCard'] = callbackConfig;
+            </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'blik'}">
-        fnCallbackArray['initiateBlik'] = callbackConfig
-        </c:when>
+            <c:when test="${selectedPaymentMethod eq 'blik'}">
+                fnCallbackArray['initiateBlik'] = callbackConfig
+            </c:when>
 
-        <%-- API only payments methods --%>
-        <c:otherwise>
-        AdyenCheckoutHybris.configureButton($("#placeOrderForm-hidden-xs"), true, "hidden-xs");
-        AdyenCheckoutHybris.configureButton($("#placeOrderForm-visible-xs"), true, "visible-xs");
+            <%-- API only payments methods --%>
+            <c:otherwise>
+                AdyenCheckoutHybris.configureButton($( "#placeOrderForm-hidden-xs" ), true, "hidden-xs");
+                AdyenCheckoutHybris.configureButton($( "#placeOrderForm-visible-xs" ), true, "visible-xs");
         </c:otherwise>
         </c:choose>
 
@@ -121,10 +123,10 @@
     </script>
 </jsp:attribute>
 
-    <jsp:body>
-        <div id="spinner_wrapper" style="display: none">
-            <div id="spinner"></div>
-            <div id="spinner_text">
+<jsp:body>
+    <div id="spinner_wrapper" style="display: none">
+        <div id="spinner"></div>
+        <div id="spinner_text">
             <p>
                 <spring:theme code="checkout.summary.spinner.message"/>
             </p>
