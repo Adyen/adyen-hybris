@@ -58,4 +58,13 @@ export const translationKeys: string[] = [
     "checkout.error.authorization.restricted.card",
     "checkout.error.authorization.cvc.declined",
     "checkout.error.authorization.transaction.not.permitted",
+
+    //thank you page
+    "checkout.orderConfirmation.thankYouForOrder",
+    "text.account.order.orderNumberLabel",
+    "checkout.error.authorization.payment.success",
+    "checkout.error.authorization.payment.failed",
+    "checkout.error.authorization.payment.rejected",
+    "checkout.error.authorization.payment.timeout",
+    "checkout.error.authorization.payment.pending"
 ]
