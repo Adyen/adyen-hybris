@@ -24,21 +24,50 @@ SAP Commerce (Hybris) version 6.x or 1905
 
 ### 2. Add the Adyen extensions to the config/localextensions.xml file
 
-Required for the checkout:
+#### Checkout
+
+Required for accelerator checkout:
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6core"/>
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6b2ccheckoutaddon"/>
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6backoffice"/>
 ```
+
+Required for headless checkout:
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6core"/>
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyencheckoutaddonapi"/>
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6backoffice"/>
+```
+
+Required for headless checkout api with example React SPA checkout:
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6core"/>
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyencheckoutaddonapi"/>
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyencheckoutaddonspa"/>
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6backoffice"/>
+```
+
+#### Notifications
+
 Required for the notifications:
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notification"/>
 ```
 
+Required for the event driven notifications:
+```
+<extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6notificationv2"/>
+```
+
+#### Order management
+
 Additionally, required when using yacceleratorordermanagement (b2c_acc_oms recipe for 6.x and b2c_b2b_acc_oms recipe for 1905) :
 ```
 <extension dir="${HYBRIS_BIN_DIR}/custom/adyen-hybris/adyenv6ordermanagement"/>
 ```
+
+#### Fulfilment
 
 Additionally, required when using yacceleratorfulfilment (b2c_acc recipe for 6.x and b2c_acc_plus for 1905):
 ```
