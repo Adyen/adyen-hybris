@@ -124,7 +124,12 @@ public class AdyenComponentController extends AbstractCheckoutController {
             } else if (PAYMENT_METHOD_PIX.equals(paymentMethod) || PAYMENT_METHOD_BCMC_MOBILE.equals(paymentMethod)) {
                 paymentMethodDetails = new CardDetails();
                 paymentMethodDetails.setType(paymentMethod);
-                } else {
+            } else if (BlikDetails.BLIK.equals(paymentMethod)) {
+                paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), BlikDetails.class);
+            } else if (CardDetails.GIFTCARD.equals(paymentMethod)) {
+                paymentMethodDetails = gson.fromJson(requestJson.get("paymentMethodDetails"), CardDetails.class);
+                paymentMethodDetails.setType(paymentMethod);
+            } else {
                     throw new InvalidCartException("checkout.error.paymentethod.formentry.invalid");
                 }
 

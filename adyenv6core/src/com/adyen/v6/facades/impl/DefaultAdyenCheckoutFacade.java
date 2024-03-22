@@ -170,6 +170,11 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private AdyenExpressCheckoutFacade adyenExpressCheckoutFacade;
     private UserFacade userFacade;
     private I18NFacade i18NFacade;
+
+    @Resource(name = "i18NFacade")
+    private I18NFacade i18NFacade;
+
+    @Resource(name = "configurationService")
     private ConfigurationService configurationService;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
@@ -574,6 +579,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         OrderData orderData = getCheckoutFacade().placeOrder();
 
+        if (orderData == null) {
+            throw new InvalidCartException("Order does not exist!");
+        }
         OrderModel orderModel = orderRepository.getOrderModel(orderData.getCode());
         getAdyenOrderService().updateOrderFromPaymentsResponse(orderModel, paymentsResponse);
 

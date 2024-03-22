@@ -103,6 +103,14 @@
                 fnCallbackArray['initiateBcmcMobile'] = callbackConfig;
             </c:when>
 
+            <c:when test="${selectedPaymentMethod eq 'giftcard'}">
+                fnCallbackArray['initiateGiftCard'] = callbackConfig;
+            </c:when>
+
+            <c:when test="${selectedPaymentMethod eq 'blik'}">
+                fnCallbackArray['initiateBlik'] = callbackConfig
+            </c:when>
+
             <%-- API only payments methods --%>
             <c:otherwise>
                 AdyenCheckoutHybris.configureButton($( "#placeOrderForm-hidden-xs" ), true, "hidden-xs");

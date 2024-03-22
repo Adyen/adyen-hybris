@@ -122,6 +122,14 @@ var AdyenCheckoutHybris = (function () {
                     window.alert("Invalid SEPA Owner Name and IBAN number");
                     return false;
                 }
+                var state = this.bcmc.data.paymentMethod;
+                $('input[name="encryptedCardNumber"]').val(state.encryptedCardNumber);
+                $('input[name="encryptedExpiryMonth"]').val(state.encryptedExpiryMonth);
+                $('input[name="encryptedExpiryYear"]').val(state.encryptedExpiryYear);
+                $('input[name="cardHolder"]').val(state.holderName);
+                $('input[name="cardBrand"]').val('bcmc');
+                $('input[name="cardType"]').val('debit');
+                $('input[name="browserInfo"]').val(JSON.stringify(this.bcmc.data.browserInfo));
             }
 
             if (paymentMethod === "afterpay_default") {
@@ -145,7 +153,6 @@ var AdyenCheckoutHybris = (function () {
                     return false;
                 }
             }
-
             if (paymentMethod === "giftcard") {
                 $('input[name="giftCardBrand"]').val($('input[type=radio][name=paymentMethod]:checked').attr('brand'));
             }
@@ -825,6 +832,78 @@ var AdyenCheckoutHybris = (function () {
                 self.configureButton(adyenComponent, false, label);
             } catch (e) {
                 console.log('Something went wrong trying to mount the MBWay component: ' + e);
+            }
+        },
+
+        initiateBlik: function (params) {
+            const {label} = params;
+            var blikNode = document.getElementById('adyen-component-container-' + label);
+            var self = this;
+
+            var adyenComponent = this.checkout.create("blik", {
+                showPayButton: false,
+                onChange: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                    }
+                },
+                onSubmit: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                        return;
+                    }
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                },
+                onAdditionalDetails: function (state, component) {
+                    self.submitDetails(state.data, self.handleResult);
+                },
+                onError: function (error, component) {
+                    console.log('Something went wrong trying to make the BLIK payment: ' + error);
+                    self.handleResult(ErrorMessages.PaymentError, true);
+                }
+            });
+
+            try {
+                adyenComponent.mount(blikNode);
+                self.configureButton(adyenComponent, false, label);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the BLIK component: ' + e);
+            }
+        },
+
+        initiateGiftCard: function (params) {
+            const {label} = params;
+            var giftCardNode = document.getElementById('adyen-component-container-' + label);
+            var self = this;
+
+            var adyenComponent = this.checkout.create("giftcard", {
+                showPayButton: false,
+                onChange: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                    }
+                },
+                onSubmit: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                        return;
+                    }
+                    self.makePayment(state.data.paymentMethod, component, self.handleResult, label);
+                },
+                onAdditionalDetails: function (state, component) {
+                    self.submitDetails(state.data, self.handleResult);
+                },
+                onError: function (error, component) {
+                    console.log('Something went wrong trying to make the Gift Card payment: ' + error);
+                    self.handleResult(ErrorMessages.PaymentError, true);
+                }
+            });
+
+            try {
+                adyenComponent.mount(giftCardNode);
+                self.configureButton(adyenComponent, false, label);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the Gift Card component: ' + e);
             }
         },
 
