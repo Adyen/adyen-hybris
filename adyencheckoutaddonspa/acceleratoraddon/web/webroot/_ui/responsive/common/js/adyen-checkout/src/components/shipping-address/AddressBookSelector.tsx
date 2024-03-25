@@ -28,6 +28,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, null
         this.props.closeModal()
     }
 
+
     private renderAddressBookEntries(): React.JSX.Element[] {
         let result: React.JSX.Element[] = []
 
