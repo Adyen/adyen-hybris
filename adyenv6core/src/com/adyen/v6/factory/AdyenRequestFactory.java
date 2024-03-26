@@ -49,7 +49,9 @@ import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.model.RequestInfo;
+import com.adyen.v6.util.AdyenUtil;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -104,6 +106,7 @@ public class AdyenRequestFactory {
 
     protected final ConfigurationService configurationService;
 
+
     public AdyenRequestFactory(final ConfigurationService configurationService) {
         this.configurationService = configurationService;
     }
@@ -146,7 +149,7 @@ public class AdyenRequestFactory {
             }
         }
         //For one click
-        else if (adyenPaymentMethod.indexOf(PAYMENT_METHOD_ONECLICK) == 0) {
+        else if (AdyenUtil.isOneClick(adyenPaymentMethod)) {
             Optional.ofNullable(cartData.getAdyenSelectedReference())
                     .filter(StringUtils::isNotEmpty)
                     .map(selectedReference -> new CheckoutPaymentMethod(getCardDetails(cartData, selectedReference)))

@@ -19,4 +19,5 @@ public interface AdyenExpressCheckoutFacade {
     Optional<ZoneDeliveryModeValueModel> getExpressDeliveryModePrice();
 
     void removeDeliveryModeFromSessionCart() throws CalculationException;
+
 }

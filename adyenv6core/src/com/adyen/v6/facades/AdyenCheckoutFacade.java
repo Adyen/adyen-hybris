@@ -27,6 +27,7 @@ import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
+import com.adyen.v6.dto.CheckoutConfigDTO;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
@@ -38,6 +39,7 @@ import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -177,7 +179,7 @@ public interface AdyenCheckoutFacade {
      * Validates the form and updates the cart based on form data
      * Updates BindingResult
      */
-    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, BindingResult bindingResult);
+    void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, Errors errors);
 
     /**
      * Initiate POS Payment using Adyen Terminal API
@@ -203,4 +205,8 @@ public interface AdyenCheckoutFacade {
     void restoreCartFromOrderCodeInSession() throws InvalidCartException, CalculationException;
 
     String getClientKey();
+
+    CheckoutConfigDTO getCheckoutConfig() throws ApiException;
+
+    CheckoutConfigDTO getReactCheckoutConfig() throws ApiException;
 }
