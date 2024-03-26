@@ -16,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
@@ -31,11 +30,8 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
     private static final String DELIVERY_ADDRESS = "delivery-address";
     private static final String SHOW_SAVE_TO_ADDRESS_BOOK_ATTR = "showSaveToAddressBook";
 
-    @Resource(name = "addressDataUtil")
-    private AddressDataUtil addressDataUtil;
 
-
-    @GetMapping(value = "/adyen/*")
+    @GetMapping(value = {"/adyen/*", "/adyen/**"})
     @RequireHardLogIn
     @PreValidateQuoteCheckoutStep
     @PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS)
@@ -63,9 +59,9 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         model.addAttribute("cartData", cartData);
         model.addAttribute("addressForm", addressForm);
         model.addAttribute("deliveryAddresses", getDeliveryAddresses(cartData.getDeliveryAddress()));
-        model.addAttribute("noAddress", Boolean.valueOf(getCheckoutFlowFacade().hasNoDeliveryAddress()));
-        model.addAttribute("addressFormEnabled", Boolean.valueOf(getCheckoutFacade().isNewAddressEnabledForCart()));
-        model.addAttribute("removeAddressEnabled", Boolean.valueOf(getCheckoutFacade().isRemoveAddressEnabledForCart()));
+        model.addAttribute("noAddress", getCheckoutFlowFacade().hasNoDeliveryAddress());
+        model.addAttribute("addressFormEnabled", getCheckoutFacade().isNewAddressEnabledForCart());
+        model.addAttribute("removeAddressEnabled", getCheckoutFacade().isRemoveAddressEnabledForCart());
         model.addAttribute(SHOW_SAVE_TO_ADDRESS_BOOK_ATTR, Boolean.TRUE);
         model.addAttribute(WebConstants.BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(getBreadcrumbKey()));
         model.addAttribute("metaRobots", "noindex,nofollow");

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class Adyen3DSResponseController {
     private static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
     private static final String REDIRECTING_TO_CART_PAGE = "Redirecting to cart page...";
     private static final String ORDER_CONFIRMATION_URL = ADYEN_CHECKOUT_PAGE_PREFIX + ADYEN_CHECKOUT_ORDER_CONFIRMATION;
+    private static final String SELECT_PAYMENT_METHOD_URL = ADYEN_CHECKOUT_PAGE_PREFIX + ADYEN_CHECKOUT_SELECT_PAYMENT;
 
 
     @Resource(name = "adyenCheckoutFacade")
@@ -84,7 +86,7 @@ public class Adyen3DSResponseController {
                             + response.getRefusalReason());
                 }
             }
-//implement in 3ds error handling           return redirectToSelectPaymentMethodWithError(errorMessage);
+            return getErrorRedirectUrl(errorMessage);
         } catch (CalculationException | InvalidCartException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {
@@ -93,6 +95,10 @@ public class Adyen3DSResponseController {
 
         LOGGER.warn(REDIRECTING_TO_CART_PAGE);
         return REDIRECT_PREFIX + CART_PREFIX;
+    }
+
+    private String getErrorRedirectUrl(String errorMessage) {
+        return REDIRECT_PREFIX + SELECT_PAYMENT_METHOD_URL + "/error/" + Base64.getUrlEncoder().encodeToString(errorMessage.getBytes());
     }
 
     private Map<String, String> parseDetailsFromComponent(String details) {
