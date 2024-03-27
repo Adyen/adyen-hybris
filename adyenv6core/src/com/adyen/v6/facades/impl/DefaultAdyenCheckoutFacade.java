@@ -1303,7 +1303,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return;
         }
 
-        if (!checkoutCustomerStrategy.isAnonymousCheckout() && adyenPaymentForm.getBillingAddress().isSaveInAddressBook()) {
+        if (!checkoutCustomerStrategy.isAnonymousCheckout() && adyenPaymentForm.getBillingAddress() != null
+                && adyenPaymentForm.getBillingAddress().isSaveInAddressBook()) {
             AddressData addressData = convertToAddressData(adyenPaymentForm.getBillingAddress());
             addressData.setVisibleInAddressBook(true);
             addressData.setShippingAddress(true);
