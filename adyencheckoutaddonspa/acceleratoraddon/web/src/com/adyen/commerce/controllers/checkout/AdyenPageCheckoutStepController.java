@@ -31,12 +31,24 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
     private static final String SHOW_SAVE_TO_ADDRESS_BOOK_ATTR = "showSaveToAddressBook";
 
 
-    @GetMapping(value = {"/adyen/*", "/adyen/**"})
+    @GetMapping(value = "/adyen/*")
     @RequireHardLogIn
     @PreValidateQuoteCheckoutStep
     @PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS)
     public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
         getCheckoutFacade().setDeliveryAddressIfAvailable();
+        final CartData cartData = getCheckoutFacade().getCheckoutCart();
+
+        populateCommonModelAttributes(model, cartData, new AddressForm());
+
+        return  "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
+    }
+
+    @GetMapping(value = "/adyen/payment-method/error/*")
+    @RequireHardLogIn
+    @PreValidateQuoteCheckoutStep
+    @PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS)
+    public String enterPaymentStepWithError(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
 
         populateCommonModelAttributes(model, cartData, new AddressForm());
