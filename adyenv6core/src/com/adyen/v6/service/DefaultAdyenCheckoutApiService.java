@@ -55,6 +55,7 @@ import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.store.BaseStoreModel;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -167,7 +168,16 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
                                                             final String countryCode,
                                                             final String shopperLocale,
                                                             final String shopperReference) throws IOException, ApiException {
+        return getPaymentMethodsResponse(amount, currency, countryCode, shopperLocale, shopperReference, null);
+    }
 
+    @Override
+    public PaymentMethodsResponse getPaymentMethodsResponse(final BigDecimal amount,
+                                                            final String currency,
+                                                            final String countryCode,
+                                                            final String shopperLocale,
+                                                            final String shopperReference,
+                                                            final List<String> excludedPaymentMethods) throws IOException, ApiException {
         LOG.debug("Get payment methods response");
 
         PaymentsApi checkout = new PaymentsApi(client);
@@ -182,6 +192,10 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         if (!StringUtils.isEmpty(shopperReference)) {
             request.setShopperReference(shopperReference);
+        }
+
+        if (CollectionUtils.isNotEmpty(excludedPaymentMethods)) {
+            request.setBlockedPaymentMethods(excludedPaymentMethods);
         }
 
         LOG.debug(request);
