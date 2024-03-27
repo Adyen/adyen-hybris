@@ -29,6 +29,7 @@ import static com.adyen.commerce.constants.AdyencheckoutaddonspaWebConstants.ADY
 public class AdyenPageCheckoutStepController extends AbstractCheckoutStepController {
     private static final String DELIVERY_ADDRESS = "delivery-address";
     private static final String SHOW_SAVE_TO_ADDRESS_BOOK_ATTR = "showSaveToAddressBook";
+    public static final String SPA_CHECKOUT_PAGE = "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
 
 
     @GetMapping(value = "/adyen/*")
@@ -41,7 +42,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
 
         populateCommonModelAttributes(model, cartData, new AddressForm());
 
-        return  "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
+        return SPA_CHECKOUT_PAGE;
     }
 
     @GetMapping(value = "/adyen/payment-method/error/*")
@@ -53,7 +54,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
 
         populateCommonModelAttributes(model, cartData, new AddressForm());
 
-        return  "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
+        return SPA_CHECKOUT_PAGE;
     }
 
     @GetMapping(value = {ADYEN_CHECKOUT_ORDER_CONFIRMATION, ADYEN_CHECKOUT_ORDER_CONFIRMATION + "/**"})
@@ -63,7 +64,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         storeCmsPageInModel(model, multiCheckoutSummaryPage);
         setUpMetaDataForContentPage(model, multiCheckoutSummaryPage);
 
-        return  "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
+        return SPA_CHECKOUT_PAGE;
     }
 
     protected void populateCommonModelAttributes(final Model model, final CartData cartData, final AddressForm addressForm)
@@ -87,6 +88,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         setUpMetaDataForContentPage(model, multiCheckoutSummaryPage);
         setCheckoutStepLinksForModel(model, getCheckoutStep());
     }
+
     protected String getBreadcrumbKey() {
         return "checkout.multi." + getCheckoutStep().getProgressBarId() + ".breadcrumb";
     }
