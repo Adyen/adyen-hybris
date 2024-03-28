@@ -1,12 +1,10 @@
 package com.adyen.commerce.response;
 
-import com.adyen.model.checkout.CheckoutPaymentsAction;
 
 public class PlaceOrderResponse {
     private String orderNumber;
     private String error;
     private boolean isRedirectTo3DS;
-    private CheckoutPaymentsAction paymentsAction;
 
     public String getOrderNumber() {
         return orderNumber;
@@ -32,11 +30,4 @@ public class PlaceOrderResponse {
         isRedirectTo3DS = redirectTo3DS;
     }
 
-    public CheckoutPaymentsAction getPaymentsAction() {
-        return paymentsAction;
-    }
-
-    public void setPaymentsAction(CheckoutPaymentsAction paymentsAction) {
-        this.paymentsAction = paymentsAction;
-    }
 }

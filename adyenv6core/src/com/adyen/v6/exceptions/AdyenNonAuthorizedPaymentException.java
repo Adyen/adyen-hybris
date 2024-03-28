@@ -63,7 +63,7 @@ public class AdyenNonAuthorizedPaymentException extends Exception {
         return paymentsResponse;
     }
 
-    public void setPaymentsResponse(PaymentResponse paymentsResponse) {
+    public void setPaymentResponse(PaymentResponse paymentsResponse) {
         this.paymentsResponse = paymentsResponse;
     }
 
