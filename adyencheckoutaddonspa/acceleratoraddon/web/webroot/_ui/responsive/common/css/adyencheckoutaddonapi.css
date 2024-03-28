@@ -1,0 +1,24 @@
+.checkout-paymentmethod .checkout-shipping-items-header {
+    text-transform: uppercase;
+    padding: 25px 0 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.checkout-paymentmethod .dropin-payment {
+    margin-top: 25px;
+}
+
+.checkout-paymentmethod .headline {
+    margin-top: 25px;
+}
+
+.adyen-checkout__card-input img {
+    vertical-align: unset;
+}
+
+.payment-error.alert {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 12px;
+}

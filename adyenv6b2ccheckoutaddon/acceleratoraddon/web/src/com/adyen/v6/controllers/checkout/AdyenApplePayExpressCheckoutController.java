@@ -1,6 +1,6 @@
 package com.adyen.v6.controllers.checkout;
 
-import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
 import com.adyen.v6.request.ApplePayExpressCartRequest;
 import com.adyen.v6.request.ApplePayExpressPDPRequest;
@@ -36,7 +36,7 @@ public class AdyenApplePayExpressCheckoutController {
     @PostMapping("/expressCheckout/applePayPDP")
     public ResponseEntity applePayExpressPDP(final HttpServletRequest request, final HttpServletResponse response, @RequestBody ApplePayExpressPDPRequest applePayExpressPDPRequest) throws Exception {
 
-        PaymentsResponse paymentsResponse = adyenExpressCheckoutFacade.expressPDPCheckout(applePayExpressPDPRequest.getAddressData(), applePayExpressPDPRequest.getProductCode(),
+        PaymentResponse paymentsResponse = adyenExpressCheckoutFacade.expressPDPCheckout(applePayExpressPDPRequest.getAddressData(), applePayExpressPDPRequest.getProductCode(),
                 applePayExpressPDPRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressPDPRequest.getAdyenApplePayMerchantName(),
                 applePayExpressPDPRequest.getApplePayToken(), request);
 
@@ -49,7 +49,7 @@ public class AdyenApplePayExpressCheckoutController {
     @PostMapping("/expressCheckout/cart")
     public ResponseEntity cartExpressCheckout(final HttpServletRequest request, final HttpServletResponse response, @RequestBody ApplePayExpressCartRequest applePayExpressCartRequest) throws Exception {
 
-        PaymentsResponse paymentsResponse = adyenExpressCheckoutFacade.expressCartCheckout(applePayExpressCartRequest.getAddressData(),
+        PaymentResponse paymentsResponse = adyenExpressCheckoutFacade.expressCartCheckout(applePayExpressCartRequest.getAddressData(),
                 applePayExpressCartRequest.getAdyenApplePayMerchantIdentifier(), applePayExpressCartRequest.getAdyenApplePayMerchantName(),
                 applePayExpressCartRequest.getApplePayToken(), request);
 
