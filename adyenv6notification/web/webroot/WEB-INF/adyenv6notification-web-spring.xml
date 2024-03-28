@@ -24,9 +24,9 @@
 
 
 
-	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
-		<property name="baseStoreService" ref="baseStoreService" />
-	</bean>
+<!--	<bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">-->
+<!--		<property name="baseStoreService" ref="baseStoreService" />-->
+<!--	</bean>-->
 
 	<!-- Spring managed FilterChain for hybris Filter stack -->
 	<bean id="adyenv6notificationPlatformFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain">

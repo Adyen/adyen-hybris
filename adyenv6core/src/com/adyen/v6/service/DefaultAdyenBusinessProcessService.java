@@ -40,7 +40,7 @@ public class DefaultAdyenBusinessProcessService implements AdyenBusinessProcessS
     public void triggerOrderProcessEvent(OrderModel orderModel, String event) {
         final Collection<OrderProcessModel> orderProcesses = orderModel.getOrderProcess();
         for (final OrderProcessModel orderProcess : orderProcesses) {
-            LOG.debug("Order process code: " + orderProcess.getCode());
+            LOG.info("Triggering order process with code: " + orderProcess.getCode());
 
             final String eventName = orderProcess.getCode() + "_" + event;
             LOG.debug("Sending event:" + eventName);
@@ -54,7 +54,7 @@ public class DefaultAdyenBusinessProcessService implements AdyenBusinessProcessS
         for (ReturnRequestModel returnRequest : returnRequests) {
             Collection<ReturnProcessModel> returnProcesses = returnRequest.getReturnProcess();
             for (ReturnProcessModel returnProcess : returnProcesses) {
-                LOG.debug("Return process code: " + returnProcess.getCode());
+                LOG.info("Triggering return process with code: " + returnProcess.getCode());
 
                 final String eventName = returnProcess.getCode() + "_" + event;
                 LOG.debug("Sending event:" + eventName);

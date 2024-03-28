@@ -1,0 +1,10 @@
+$contentCatalog=electronicsContentCatalog
+$contentCVS=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$contentCVO=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+
+INSERT_UPDATE JspIncludeComponent;uid[unique=true];page;$contentCVS[unique=true]
+                                 ;CartComponent;/WEB-INF/views/responsive/pages/cart/cartDisplay.jsp
+
+
+INSERT_UPDATE JspIncludeComponent;uid[unique=true];page;$contentCVO[unique=true]
+                                 ;CartComponent;/WEB-INF/views/responsive/pages/cart/cartDisplay.jsp

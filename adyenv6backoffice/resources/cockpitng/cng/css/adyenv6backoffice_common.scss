@@ -13,7 +13,7 @@
     .ya-com_adyen_v6_backoffice_widgets_actions_adyencancelorderaction{
         &:hover {
             background: $white;
-            color: $warehousing-action-buttons--color;
+            color: $blue__default--100;
             transition: background-color 0.3s ease 0s;
         }
         &.cng-action-disabled:hover {

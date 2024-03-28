@@ -12,5 +12,10 @@
 	<bean name="defaultAdyenCaptureRefundAction" class="com.adyen.v6.actions.returns.AdyenCaptureRefundAction" parent="abstractAction">
 		<property name="paymentService" ref="paymentService"/>
 		<property name="refundAmountCalculationService" ref="refundAmountCalculationService"/>
+		<property name="transactionTemplate">
+			<bean class="org.springframework.transaction.support.TransactionTemplate">
+				<property name="transactionManager" ref="txManager"/>
+			</bean>
+		</property>
 	</bean>
 </beans>

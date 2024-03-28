@@ -25,10 +25,10 @@ import com.adyen.model.checkout.PaymentsDetailsResponse;
 import com.adyen.model.checkout.PaymentsResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
-import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercefacades.product.data.ProductData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsListWsDTO;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
@@ -143,6 +143,10 @@ public interface AdyenCheckoutFacade {
     void initializeCheckoutData(Model model) throws ApiException;
 
     void initializeSummaryData(Model model) throws ApiException;
+
+    void initializeApplePayExpressCartPageData(Model model) throws ApiException;
+
+    void initializeApplePayExpressPDPData(Model model, ProductData productData) throws ApiException;
 
     /**
      * Returns whether Boleto should be shown as an available payment method on the checkout page

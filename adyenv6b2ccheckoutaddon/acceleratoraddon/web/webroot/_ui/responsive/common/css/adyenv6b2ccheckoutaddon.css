@@ -109,3 +109,8 @@ div#section_break {
     position:relative !important;
     max-height: 280px;
 }
+
+.adyen-checkout__applepay__button {
+    width: 100% !important;
+    border-radius: 0;
+}

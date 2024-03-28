@@ -21,9 +21,8 @@
 package com.adyen.v6.service;
 
 import com.adyen.model.checkout.PaymentsResponse;
-import com.adyen.v6.model.NotificationItemModel;
+import com.adyen.v6.model.AdyenNotificationModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
-import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
 import de.hybris.platform.payment.enums.PaymentTransactionType;
@@ -37,15 +36,13 @@ public interface AdyenTransactionService {
      * Get TX entry by type and status
      */
     static PaymentTransactionEntryModel getTransactionEntry(PaymentTransactionModel paymentTransactionModel, PaymentTransactionType paymentTransactionType, TransactionStatus transactionStatus) {
-        PaymentTransactionEntryModel result = paymentTransactionModel.getEntries().stream()
+        return paymentTransactionModel.getEntries().stream()
                 .filter(
                         entry -> paymentTransactionType.equals(entry.getType())
                                 && transactionStatus.name().equals(entry.getTransactionStatus())
                 )
                 .findFirst()
                 .orElse(null);
-
-        return result;
     }
 
     /**
@@ -55,7 +52,7 @@ public interface AdyenTransactionService {
                                                             PaymentTransactionType paymentTransactionType,
                                                             TransactionStatus transactionStatus,
                                                             TransactionStatusDetails transactionStatusDetails) {
-        PaymentTransactionEntryModel result = paymentTransactionModel.getEntries().stream()
+        return paymentTransactionModel.getEntries().stream()
                 .filter(
                         entry -> paymentTransactionType.equals(entry.getType())
                                 && transactionStatus.name().equals(entry.getTransactionStatus())
@@ -63,19 +60,17 @@ public interface AdyenTransactionService {
                 )
                 .findFirst()
                 .orElse(null);
-
-        return result;
     }
 
     /**
      * Creates a PaymentTransactionEntryModel with type=CAPTURE from NotificationItemModel
      */
-    PaymentTransactionEntryModel createCapturedTransactionFromNotification(PaymentTransactionModel paymentTransaction, NotificationItemModel notificationItemModel);
+    PaymentTransactionEntryModel createCapturedTransactionFromNotification(PaymentTransactionModel paymentTransaction, AdyenNotificationModel notificationItemModel);
 
     /**
      * Creates a PaymentTransactionEntryModel with type=REFUND_FOLLOW_ON from NotificationItemModel
      */
-    PaymentTransactionEntryModel createRefundedTransactionFromNotification(PaymentTransactionModel paymentTransaction, NotificationItemModel notificationItemModel);
+    PaymentTransactionEntryModel createRefundedTransactionFromNotification(PaymentTransactionModel paymentTransaction, AdyenNotificationModel notificationItemModel);
 
     /**
      * Stores the authorization transactions for an order
@@ -85,7 +80,7 @@ public interface AdyenTransactionService {
     /**
      * Store failed authorization transaction entry
      */
-    PaymentTransactionModel storeFailedAuthorizationFromNotification(NotificationItemModel notificationItemModel, AbstractOrderModel abstractOrderModel);
+    PaymentTransactionModel storeFailedAuthorizationFromNotification(AdyenNotificationModel notificationItemModel, AbstractOrderModel abstractOrderModel);
 
     /**
      * Creates a PaymentTransactionEntryModel with type=CANCEL

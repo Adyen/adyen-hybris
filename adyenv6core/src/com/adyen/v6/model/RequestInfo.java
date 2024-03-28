@@ -41,7 +41,7 @@ public class RequestInfo {
         this.origin = getOrigin(request);
     }
 
-    private RequestInfo() {
+    public RequestInfo() {
     }
 
     public String getOrigin(HttpServletRequest request) {

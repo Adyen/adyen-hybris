@@ -37,6 +37,8 @@ import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.returns.model.ReturnProcessModel;
 import de.hybris.platform.returns.model.ReturnRequestModel;
 import de.hybris.platform.warehousing.returns.service.RefundAmountCalculationService;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Refund step of the return-process
@@ -46,6 +48,7 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
 
     private PaymentService paymentService;
     private RefundAmountCalculationService refundAmountCalculationService;
+    private TransactionOperations transactionTemplate;
 
     @Override
     public String execute(final ReturnProcessModel process) {
@@ -149,12 +152,15 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
      * @param status        - the return status
      */
     protected void setReturnRequestStatus(final ReturnRequestModel returnRequest, final ReturnStatus status) {
-        returnRequest.setStatus(status);
-        returnRequest.getReturnEntries().stream().forEach(entry -> {
-            entry.setStatus(status);
-            getModelService().save(entry);
+        transactionTemplate.execute(transactionStatus -> {
+            returnRequest.setStatus(status);
+            returnRequest.getReturnEntries().stream().forEach(entry -> {
+                entry.setStatus(status);
+                getModelService().save(entry);
+            });
+            getModelService().save(returnRequest);
+            return null;
         });
-        getModelService().save(returnRequest);
     }
 
     protected PaymentService getPaymentService() {
@@ -173,5 +179,9 @@ public class AdyenCaptureRefundAction extends AbstractWaitableAction<ReturnProce
     @Required
     public void setRefundAmountCalculationService(RefundAmountCalculationService refundAmountCalculationService) {
         this.refundAmountCalculationService = refundAmountCalculationService;
+    }
+
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }

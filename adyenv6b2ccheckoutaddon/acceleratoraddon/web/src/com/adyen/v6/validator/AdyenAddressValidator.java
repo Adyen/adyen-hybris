@@ -11,7 +11,6 @@ import org.springframework.validation.Errors;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -23,7 +22,8 @@ public class AdyenAddressValidator extends AddressValidator {
     private static final int MAX_FIELD_LENGTH = 255;
     private static final int MAX_POSTCODE_LENGTH = 10;
     private static final int POSTCODE_BR_LENGTH = 8;
-
+    private static final String REGEX_INDIAN_PHONE = "^(?:(?:\\+|0{0,2})91[-\\s]*)?[789]\\d{9}$|^(\\d[-\\s]?){10}\\d$";
+    private static final Pattern VALIDATE_INDIAN_PHONE_FIELD_PATTERN = Pattern.compile(REGEX_INDIAN_PHONE);
 
     @Override
     public boolean supports(final Class<?> aClass) {
@@ -51,9 +51,7 @@ public class AdyenAddressValidator extends AddressValidator {
         final String isoCode = addressForm.getCountryIso();
         if (isoCode != null) {
             switch (CountryCode.lookup(isoCode)) {
-                case CHINA:
-                case CANADA:
-                case USA:
+                case CHINA, CANADA, USA:
                     validateStringFieldLength(addressForm.getTitleCode(), AddressField.TITLE, MAX_FIELD_LENGTH, errors);
                     validateFieldNotNull(addressForm.getRegionIso(), AddressField.REGION, errors);
                     break;
@@ -68,7 +66,9 @@ public class AdyenAddressValidator extends AddressValidator {
                     validateStringFieldLengthPostalCodeBR(addressForm.getPostcode(), AddressField.POSTCODE_BR, POSTCODE_BR_LENGTH, errors);
                     break;
                 case INDIA:
+                    validateStringFieldLength(addressForm.getTitleCode(), AddressField.TITLE, MAX_FIELD_LENGTH, errors);
                     validateIndianPhoneField(addressForm.getPhone(),AddressField.PHONE_IN,errors);
+                    break;
                 default:
                     validateStringFieldLength(addressForm.getTitleCode(), AddressField.TITLE, MAX_FIELD_LENGTH, errors);
                     break;
@@ -83,9 +83,8 @@ public class AdyenAddressValidator extends AddressValidator {
         }
     }
     protected static void validateIndianPhoneField(final String addressField, final AddressField fieldType, final Errors errors) {
-        final String regexIndianPhone = "^(?:(?:\\+|0{0,2})91(\\s*[\\ -]\\s*)?|[0]?)?[789]\\d{9}|(\\d[ -]?){10}\\d$";
-        final Pattern pattern = Pattern.compile(regexIndianPhone);
-        if(!pattern.matcher(addressField).matches()){
+
+        if(!VALIDATE_INDIAN_PHONE_FIELD_PATTERN.matcher(addressField).matches()){
             errors.rejectValue(fieldType.getFieldKey(), fieldType.getErrorKey());
         }
     }

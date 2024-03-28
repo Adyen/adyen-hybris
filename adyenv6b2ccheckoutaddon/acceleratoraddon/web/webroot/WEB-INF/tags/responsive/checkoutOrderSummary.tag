@@ -51,6 +51,20 @@
     <div id="adyen-component-container-${label}"></div>
 </c:if>
 
+<c:if test="${componentPaymentMethod eq '[blik]'}">
+    <div class="chckt-pm__header js-chckt-pm__header">
+        <spring:theme code="checkout.summary.component.blik.payment"/>
+    </div>
+    <div id="adyen-component-container-${label}"></div>
+</c:if>
+
+<c:if test="${componentPaymentMethod eq '[giftcard]'}">
+    <div class="chckt-pm__header js-chckt-pm__header">
+        <spring:theme code="checkout.summary.component.giftcard.payment"/>
+    </div>
+    <div id="adyen-component-container-${label}"></div>
+</c:if>
+
 <%-- For components that do not have it's own button --%>
 <c:if test="${not fn:contains(componentsWithPayButton, componentPaymentMethod)}">
     <form:form action="${placeOrderUrl}" id="placeOrderForm-${label}" modelAttribute="placeOrderForm">

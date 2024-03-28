@@ -35,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import de.hybris.platform.acceleratorservices.enums.CheckoutPciOptionEnum;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,10 +74,7 @@ import java.net.SocketTimeoutException;
 import java.util.*;
 
 import static com.adyen.constants.HPPConstants.Response.SHOPPER_LOCALE;
-import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.CHALLENGESHOPPER;
-import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.IDENTIFYSHOPPER;
-import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REDIRECTSHOPPER;
-import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.REFUSED;
+import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.*;
 import static com.adyen.v6.constants.AdyenControllerConstants.CART_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SELECT_PAYMENT_METHOD_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
@@ -170,7 +168,8 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         try {
             adyenCheckoutFacade.initializeSummaryData(model);
         } catch (ApiException e) {
-            e.printStackTrace();
+            LOGGER.error("Initialize summary data failed. ", e);
+
         }
 
         return AdyenControllerConstants.Views.Pages.MultiStepCheckout.CheckoutSummaryPage;
@@ -212,7 +211,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         } catch (ApiException e) {
             LOGGER.error(API_EXCEPTION_START_MESSAGE, e);
         } catch (AdyenNonAuthorizedPaymentException e) {
-            LOGGER.debug(NON_AUTHORIZED_ERROR);
+            LOGGER.info(NON_AUTHORIZED_ERROR);
             final PaymentsResponse paymentsResponse = e.getPaymentsResponse();
             if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 if (is3DSPaymentMethod(adyenPaymentMethod)) {
@@ -226,12 +225,16 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 return makeGetRedirect(paymentsResponse);
             }
             if (REFUSED == paymentsResponse.getResultCode()) {
-                LOGGER.debug("PaymentResponse is REFUSED");
+                LOGGER.info("PaymentResponse is REFUSED, pspReference: " + paymentsResponse.getPspReference());
                 return getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
             }
             if (CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
                 LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS2 flow");
                 return PAYMENT_NOT_SUPPORTED;
+            }
+            if (ERROR == paymentsResponse.getResultCode()) {
+                LOGGER.error("PaymentResponse is ERROR, reason: " + paymentsResponse.getRefusalReason()
+                        + " pspReference: " + paymentsResponse.getPspReference());
             }
         } catch (Exception e) {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -240,7 +243,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return CHECKOUT_ERROR_AUTHORIZATION_FAILED;
     }
 
-    @RequestMapping({"/placeOrder"})
+    @PostMapping({"/placeOrder"})
     @RequireHardLogIn
     public String placeOrder(@ModelAttribute("placeOrderForm") final PlaceOrderForm placeOrderForm,
                              final Model model,
@@ -269,12 +272,19 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (ApiException e) {
                 LOGGER.error(API_EXCEPTION_START_MESSAGE + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
-                LOGGER.debug(HANDLING_ADYEN_NON_AUTHORIZED_PAYMENT_EXCEPTION);
+                LOGGER.info(HANDLING_ADYEN_NON_AUTHORIZED_PAYMENT_EXCEPTION);
                 PaymentResult paymentResult = e.getPaymentResult();
-                if (Objects.nonNull(paymentResult) && paymentResult.isRefused()) {
-                    errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
-                    LOGGER.debug("Payment is refused " + errorMessage);
+                if (Objects.nonNull(paymentResult)) {
+                    if (paymentResult.isRefused()) {
+                        errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
+                        LOGGER.info("Payment " + paymentResult.getPspReference() + " is refused " + errorMessage);
+                    }
+                    if (PaymentResult.ResultCodeEnum.ERROR.equals(paymentResult.getResultCode())) {
+                        LOGGER.error("Payment " + paymentResult.getPspReference() + " result is error, reason:  "
+                                + paymentResult.getRefusalReason());
+                    }
                 }
+
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
             }
@@ -300,9 +310,9 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     return redirectToOrderConfirmationPage(orderData);
                 } catch (AdyenNonAuthorizedPaymentException nx) {
                     errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(nx.getTerminalApiResponse());
-                    LOGGER.debug("AdyenNonAuthorizedPaymentException " + errorMessage);
+                    LOGGER.warn("AdyenNonAuthorizedPaymentException " + errorMessage + " pspReference: " + nx.getPaymentResult().getPspReference());
                 } catch (SocketTimeoutException to) {
-                    LOGGER.debug("POS Status request timed out. Returning error message.");
+                    LOGGER.error("POS Status request timed out. Returning error message.");
                     errorMessage = "checkout.error.authorization.pos.configuration";
                 } catch (Exception ex) {
                     LOGGER.error("Exception", ex);
@@ -311,7 +321,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                 LOGGER.error(API_EXCEPTION_START_MESSAGE + e.getError(), e);
             } catch (AdyenNonAuthorizedPaymentException e) {
                 errorMessage = TerminalAPIUtil.getErrorMessageForNonAuthorizedPosPayment(e.getTerminalApiResponse());
-                LOGGER.debug("AdyenNonAuthorizedPaymentException" + errorMessage);
+                LOGGER.warn("AdyenNonAuthorizedPaymentException" + errorMessage + " pspReference: " + e.getPaymentResult().getPspReference());
             } catch (Exception e) {
                 LOGGER.error("Exception", e);
             }
@@ -329,7 +339,7 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             } catch (ApiException e) {
                 LOGGER.error(API_EXCEPTION_START_MESSAGE, e);
             } catch (AdyenNonAuthorizedPaymentException e) {
-                LOGGER.debug(NON_AUTHORIZED_ERROR);
+                LOGGER.info(NON_AUTHORIZED_ERROR);
                 PaymentsResponse paymentsResponse = e.getPaymentsResponse();
                 if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                     if (is3DSPaymentMethod(adyenPaymentMethod)) {
@@ -344,12 +354,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                     return REDIRECT_PREFIX + paymentsResponse.getAction().getUrl();
                 }
                 if (REFUSED == paymentsResponse.getResultCode()) {
-                    LOGGER.debug("PaymentResponse is REFUSED");
+                    LOGGER.info("PaymentResponse is REFUSED, pspReference: " + paymentsResponse.getPspReference());
                     errorMessage = getErrorMessageByRefusalReason(paymentsResponse.getRefusalReason());
                 }
                 if (CHALLENGESHOPPER == paymentsResponse.getResultCode() || IDENTIFYSHOPPER == paymentsResponse.getResultCode()) {
                     LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS2 flow");
                     return redirectTo3DSValidation(model, paymentsResponse);
+                }
+                if (ERROR == paymentsResponse.getResultCode()) {
+                    LOGGER.error("PaymentResponse is ERROR, reason: " + paymentsResponse.getRefusalReason() + " pspReference: " + paymentsResponse.getPspReference());
                 }
             } catch (Exception e) {
                 LOGGER.error(ExceptionUtils.getStackTrace(e));
@@ -385,12 +398,18 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             LOGGER.debug("Redirecting to confirmation");
             return redirectToOrderConfirmationPage(orderData);
         } catch (AdyenNonAuthorizedPaymentException e) {
-            LOGGER.debug(HANDLING_ADYEN_NON_AUTHORIZED_PAYMENT_EXCEPTION);
+            LOGGER.info(HANDLING_ADYEN_NON_AUTHORIZED_PAYMENT_EXCEPTION);
             String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
             PaymentsDetailsResponse response = e.getPaymentsDetailsResponse();
-            if (response != null && response.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED) {
-                LOGGER.debug("PaymentResponse is REFUSED: " + response);
-                errorMessage = getErrorMessageByRefusalReason(response.getRefusalReason());
+            if (response != null) {
+                if (REFUSED.equals(response.getResultCode())) {
+                    LOGGER.info("PaymentResponse " + response.getPspReference() + " is REFUSED: " + response);
+                    errorMessage = getErrorMessageByRefusalReason(response.getRefusalReason());
+                }
+                if (ERROR.equals(response.getResultCode())) {
+                    LOGGER.error("Payment " + response.getPspReference() + " result is error, reason:  "
+                            + response.getRefusalReason());
+                }
             }
             LOGGER.debug("Redirecting to select payment method..");
             return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
@@ -418,10 +437,16 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug(NON_AUTHORIZED_ERROR);
             String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
-            PaymentsDetailsResponse paymentsDetailsResponse = e.getPaymentsDetailsResponse();
-            if ((paymentsDetailsResponse != null) && (paymentsDetailsResponse.getResultCode() == PaymentsResponse.ResultCodeEnum.REFUSED)) {
-                errorMessage = getErrorMessageByRefusalReason(paymentsDetailsResponse.getRefusalReason());
-                LOGGER.debug("PaymentResponse is REFUSED: " + errorMessage);
+            PaymentsDetailsResponse response = e.getPaymentsDetailsResponse();
+            if (response != null) {
+                if (REFUSED.equals(response.getResultCode())) {
+                    LOGGER.info("PaymentResponse " + response.getPspReference() + " is REFUSED: " + response);
+                    errorMessage = getErrorMessageByRefusalReason(response.getRefusalReason());
+                }
+                if (ERROR.equals(response.getResultCode())) {
+                    LOGGER.error("Payment " + response.getPspReference() + " result is error, reason:  "
+                            + response.getRefusalReason());
+                }
             }
             return redirectToSelectPaymentMethodWithError(redirectModel, errorMessage);
         } catch (CalculationException | InvalidCartException e) {
@@ -450,19 +475,22 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
             PaymentsDetailsResponse response = adyenCheckoutFacade.handleRedirectPayload(details);
 
             switch (response.getResultCode()) {
-                case AUTHORISED:
-                case RECEIVED:
+                case AUTHORISED, RECEIVED:
                     LOGGER.debug("Redirecting to order confirmation");
                     OrderData orderData = orderFacade.getOrderDetailsForCodeWithoutUser(response.getMerchantReference());
                     if (orderData == null) {
+                        LOGGER.error("Order " + response.getMerchantReference() + " not found");
                         throw new Exception("Order not found");
                     }
                     return redirectToOrderConfirmationPage(orderData);
                 case REFUSED:
+                    LOGGER.info("PaymentResponse " + response.getPspReference() + " is REFUSED");
                     return redirectToSelectPaymentMethodWithError(redirectModel, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED);
                 case CANCELLED:
+                    LOGGER.info("PaymentResponse " + response.getPspReference() + " is CANCELLED");
                     return redirectToSelectPaymentMethodWithError(redirectModel, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_CANCELLED);
                 default:
+                    LOGGER.error("PaymentResponse " + response.getPspReference() + " - error occurred");
                     return redirectToSelectPaymentMethodWithError(redirectModel, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
             }
         } catch (CalculationException | InvalidCartException e) {
@@ -674,6 +702,27 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
         return StringUtils.EMPTY;
     }
 
+    @PostMapping(value = "/component-result-express")
+    public String handleComponentResultExpress(final HttpServletRequest request, final RedirectAttributes redirectAttributes,
+                                               @RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer) throws Exception {
+        String resultData = request.getParameter("resultData");
+        String isResultError = request.getParameter("isResultError");
+
+        if (isValidResult(resultData, isResultError)) {
+            try {
+                OrderData orderData = adyenCheckoutFacade.handleComponentResult(resultData);
+                return redirectToOrderConfirmationPage(orderData);
+            } catch (AdyenNonAuthorizedPaymentException e) {
+                GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
+                return "redirect:" + referrer;
+            }
+        }
+
+        GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER, CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_ERROR);
+        return "redirect:" + referrer;
+    }
+
+
     @PostMapping(value = "/component-result")
     @RequireHardLogIn
     public String handleComponentResult(final HttpServletRequest request,
@@ -700,12 +749,15 @@ public class AdyenSummaryCheckoutStepController extends AbstractCheckoutStepCont
                             LOGGER.debug("Component PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
                             return redirectTo3DSValidation(model, paymentsResponse);
                         case REFUSED:
+                            LOGGER.info("PaymentResponse " + paymentsResponse.getPspReference() + " is REFUSED");
                             errorMessageKey = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED;
                             break;
                         case CANCELLED:
+                            LOGGER.info("PaymentResponse " + paymentsResponse.getPspReference() + " is CANCELLED");
                             errorMessageKey = CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_CANCELLED;
                             break;
                         default:
+                            LOGGER.error("PaymentResponse " + paymentsResponse.getPspReference() + " - error occurred");
                             break;
                     }
                 }
