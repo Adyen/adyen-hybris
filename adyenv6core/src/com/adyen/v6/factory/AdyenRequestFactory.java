@@ -49,7 +49,6 @@ import com.adyen.model.terminal.SaleToAcquirerData;
 import com.adyen.model.terminal.TerminalAPIRequest;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
-import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.util.AdyenUtil;
 import com.google.gson.Gson;
@@ -88,7 +87,6 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BOLETO;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_KLARNA;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_ONECLICK;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
@@ -127,7 +125,8 @@ public class AdyenRequestFactory {
         }
         //Update payment request for generic information for all payment method types
         setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
-        updateApplicationInfoEcom(paymentsRequest.getApplicationInfo());
+        paymentsRequest.setApplicationInfo(createApplicationInfo());
+
 
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
@@ -196,7 +195,8 @@ public class AdyenRequestFactory {
         return paymentsRequest;
     }
 
-    protected void updateApplicationInfoEcom(final ApplicationInfo applicationInfo) {
+    protected ApplicationInfo createApplicationInfo() {
+        final ApplicationInfo applicationInfo = new ApplicationInfo();
         final CommonField version = new CommonField().name(PLUGIN_NAME).version(PLUGIN_VERSION);
 
         ExternalPlatform externalPlatform = new ExternalPlatform();
@@ -208,7 +208,7 @@ public class AdyenRequestFactory {
         applicationInfo.setExternalPlatform(externalPlatform);
         applicationInfo.setMerchantApplication(version);
         applicationInfo.setAdyenPaymentSource(version);
-
+        return applicationInfo;
     }
 
     protected void setCommonInfoOnPaymentRequest(final String merchantAccount, final CartData cartData,
