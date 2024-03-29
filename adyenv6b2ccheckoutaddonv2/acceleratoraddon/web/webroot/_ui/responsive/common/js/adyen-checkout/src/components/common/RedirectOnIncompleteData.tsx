@@ -5,6 +5,9 @@ import {AppState} from "../../reducers/rootReducer";
 import {CartData} from "../../types/cartData";
 import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
+import {StoreDispatch} from "../../store/store";
+import {Notification} from "../../reducers/types";
+import {createResponseData, createWarn} from "../../util/notificationUtil";
 
 interface ComponentProps {
     currentCheckoutStep: CheckoutSteps
@@ -15,7 +18,11 @@ interface StoreProps {
     cartDataLoading: boolean
 }
 
-type Props = ComponentProps & StoreProps & React.PropsWithChildren;
+interface DispatchProps {
+    addNotification: (notification: Notification) => void
+}
+
+type Props = ComponentProps & StoreProps & React.PropsWithChildren & DispatchProps;
 
 interface State {
     redirectToShippingAddress: boolean;
@@ -43,21 +50,34 @@ class RedirectOnIncompleteData extends React.Component<Props, State> {
         }
     }
 
+    private sendRedirectToShippingAddress() {
+        const notification = createWarn("checkout.deliveryAddress.notSelected", true)
+        this.props.addNotification(notification)
+    }
+
+    private sendRedirectToShippingMethod() {
+        const notification = createWarn("checkout.deliveryMethod.notSelected", true)
+        this.props.addNotification(notification)
+    }
+
     private evaluateRedirects() {
         let noRedirect = true;
         if (this.props.currentCheckoutStep === CheckoutSteps.SHIPPING_METHOD) {
             if (!this.props.cartData.deliveryAddress) {
                 this.setState({redirectToShippingAddress: true})
                 noRedirect = false;
+                this.sendRedirectToShippingAddress()
             }
         }
         if (this.props.currentCheckoutStep === CheckoutSteps.PAYMENT_METHOD) {
             if (!this.props.cartData.deliveryAddress) {
                 this.setState({redirectToShippingAddress: true})
                 noRedirect = false;
+                this.sendRedirectToShippingAddress()
             } else if (!this.props.cartData.deliveryMode) {
                 this.setState({redirectToShippingMethod: true})
                 noRedirect = false;
+                this.sendRedirectToShippingMethod()
             }
         }
         return noRedirect;
@@ -65,10 +85,10 @@ class RedirectOnIncompleteData extends React.Component<Props, State> {
 
     render() {
         if (this.state.redirectToShippingAddress) {
-            return <Navigate to={routes.shippingAddress}/>
+            return <Navigate to={routes.shippingAddress + "/missingDataRedirect"}/>
         }
         if (this.state.redirectToShippingMethod) {
-            return <Navigate to={routes.shippingMethod}/>
+            return <Navigate to={routes.shippingMethod + "/missingDataRedirect"}/>
         }
         if (this.state.renderChildren) {
             return <>{this.props.children}</>
@@ -84,4 +104,13 @@ function mapStateToProps(appState: AppState): StoreProps {
     }
 }
 
-export default connect(mapStateToProps)(RedirectOnIncompleteData)
+function mapDispatchToProps(dispatch: StoreDispatch): DispatchProps {
+    return {
+        addNotification: (notification: Notification) => dispatch({
+            type: "notifications/addNotification",
+            payload: notification
+        }),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RedirectOnIncompleteData)

@@ -22,7 +22,9 @@ export class CartDataService {
                     store.dispatch({type: "shippingMethod/setShippingMethod", payload: response.data.deliveryMode.code})
                 }
             })
-            .catch(() => {
+            .
+
+            catch(() => {
                 store.dispatch({type: "loading/cartData/end"})
                 console.error("Cart data fetch error")
             })

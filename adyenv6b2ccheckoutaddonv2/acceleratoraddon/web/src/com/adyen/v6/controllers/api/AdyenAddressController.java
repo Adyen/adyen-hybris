@@ -1,5 +1,6 @@
 package com.adyen.v6.controllers.api;
 
+import com.adyen.v6.response.ErrorResponse;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.validation.AddressValidator;
@@ -55,11 +56,12 @@ public class AdyenAddressController {
 
     @RequireHardLogIn
     @PostMapping(value = "/delivery-address")
-    public ResponseEntity<AddressData> addDeliveryAddress(@RequestBody AddressForm addressForm) {
+    public ResponseEntity<ErrorResponse> addDeliveryAddress(@RequestBody AddressForm addressForm) {
         final Errors errors = new BeanPropertyBindingResult(addressForm, "address");
         addressValidator.validate(addressForm, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("errorcode",List.of("field1","field2"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         AddressData addressData = addressDataUtil.convertToAddressData(addressForm);
