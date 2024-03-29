@@ -1,3 +1,6 @@
+import {ErrorResponse} from "../types/errorResponse";
+import {NotificationType} from "../types/notificationType";
+
 export interface AddressModel {
     id: string
     country: string
@@ -29,6 +32,12 @@ interface PriceData {
     currencyIso: string,
     value: number,
     formattedValue: string
+}
+
+export interface Notification {
+    errorResponse: ErrorResponse,
+    notificationType?: NotificationType,
+    isRedirect: boolean
 }
 
 export interface CodeValueItem<CT = string, VT = string> {
