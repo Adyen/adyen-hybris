@@ -2,8 +2,7 @@ package com.adyen.commerce.controllers.api;
 
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.constants.ApiConstants;
-import com.adyen.model.PaymentResult;
-import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
@@ -39,8 +38,12 @@ import java.util.Objects;
 import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.ADYEN_CHECKOUT_API_PREFIX;
 import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.AUTHORISE_3D_SECURE_PAYMENT_URL;
 import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
-import static com.adyen.model.checkout.PaymentsResponse.ResultCodeEnum.*;
 
+
+import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER;
+import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER;
+import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER;
+import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 
 
@@ -122,13 +125,13 @@ public class AdyenPlaceOrderController {
             LOGGER.error("API Exception: " + e.getError(), e);
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.info("Handling AdyenNonAuthorizedPaymentException");
-            PaymentResult paymentResult = e.getPaymentResult();
+            PaymentResponse paymentResult = e.getPaymentsResponse();
             if (Objects.nonNull(paymentResult)) {
-                if (paymentResult.isRefused()) {
+                if (REFUSED.equals(paymentResult.getResultCode())) {
                     errorMessage = getErrorMessageByRefusalReason(paymentResult.getRefusalReason());
                     LOGGER.info("Payment " + paymentResult.getPspReference() + " is refused " + errorMessage);
                 }
-                if (PaymentResult.ResultCodeEnum.ERROR.equals(paymentResult.getResultCode())) {
+                if (PaymentResponse.ResultCodeEnum.ERROR.equals(paymentResult.getResultCode())) {
                     LOGGER.error("Payment " + paymentResult.getPspReference() + " result is error, reason:  "
                             + paymentResult.getRefusalReason());
                 }
@@ -214,7 +217,7 @@ public class AdyenPlaceOrderController {
             LOGGER.error("API exception: ", e);
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.info("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
-            PaymentsResponse paymentsResponse = e.getPaymentsResponse();
+            PaymentResponse paymentsResponse = e.getPaymentsResponse();
             if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 return handleRedirect(adyenPaymentMethod, paymentsResponse);
             }
@@ -226,7 +229,7 @@ public class AdyenPlaceOrderController {
                 LOGGER.debug("PaymentResponse is " + paymentsResponse.getResultCode() + ", redirecting to 3DS2 flow");
                 return redirectTo3DSValidation(paymentsResponse);
             }
-            if (ERROR == paymentsResponse.getResultCode()) {
+            if (PaymentResponse.ResultCodeEnum.ERROR == paymentsResponse.getResultCode()) {
                 LOGGER.error("PaymentResponse is ERROR, reason: " + paymentsResponse.getRefusalReason() + " pspReference: " + paymentsResponse.getPspReference());
             }
         } catch (Exception e) {
@@ -250,10 +253,10 @@ public class AdyenPlaceOrderController {
         return true;
     }
 
-    private ResponseEntity<PlaceOrderResponse> handleRedirect(String adyenPaymentMethod, PaymentsResponse paymentsResponse) {
+    private ResponseEntity<PlaceOrderResponse> handleRedirect(String adyenPaymentMethod, PaymentResponse paymentResponse) {
         if (is3DSPaymentMethod(adyenPaymentMethod)) {
             LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to 3DS flow");
-            return redirectTo3DSValidation(paymentsResponse);
+            return redirectTo3DSValidation(paymentResponse);
         }
         if (AFTERPAY_TOUCH.equals(adyenPaymentMethod)) {
             LOGGER.debug("PaymentResponse resultCode is REDIRECTSHOPPER, redirecting shopper to afterpaytouch page");
@@ -264,10 +267,10 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.status(HttpStatus.FOUND).build();
     }
 
-    private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentsResponse paymentsResponse) {
+    private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentResponse paymentsResponse) {
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
         placeOrderResponse.setRedirectTo3DS(true);
-        placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
+        //placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
 
         return ResponseEntity.ok(placeOrderResponse);
     }

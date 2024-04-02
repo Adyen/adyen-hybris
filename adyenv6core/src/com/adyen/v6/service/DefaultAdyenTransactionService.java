@@ -20,7 +20,7 @@
  */
 package com.adyen.v6.service;
 
-import com.adyen.model.checkout.PaymentsResponse;
+import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.model.AdyenNotificationModel;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
@@ -257,7 +257,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     @Override
-    public PaymentTransactionModel createPaymentTransactionFromResultCode(final AbstractOrderModel abstractOrderModel, final String merchantTransactionCode, final String pspReference, final PaymentsResponse.ResultCodeEnum resultCodeEnum) {
+    public PaymentTransactionModel createPaymentTransactionFromResultCode(final AbstractOrderModel abstractOrderModel, final String merchantTransactionCode, final String pspReference, final PaymentDetailsResponse.ResultCodeEnum resultCodeEnum) {
         return transactionTemplate.execute(transactionStatus -> {
 
             final PaymentTransactionModel paymentTransactionModel = createPaymentTransaction(merchantTransactionCode, pspReference, abstractOrderModel);
@@ -278,7 +278,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         });
     }
 
-    private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel, final PaymentsResponse.ResultCodeEnum resultCode) {
+    private PaymentTransactionEntryModel createPaymentTransactionEntryModelFromResultCode(final PaymentTransactionModel paymentTransaction, final String merchantCode, final AbstractOrderModel abstractOrderModel, final PaymentDetailsResponse.ResultCodeEnum resultCode) {
         final PaymentTransactionEntryModel transactionEntryModel = modelService.create(PaymentTransactionEntryModel.class);
 
         String code = paymentTransaction.getRequestId() + "_" + paymentTransaction.getEntries().size();
@@ -297,7 +297,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return transactionEntryModel;
     }
 
-    private String getTransactionStatusForResultCode(PaymentsResponse.ResultCodeEnum resultCode) {
+    private String getTransactionStatusForResultCode(PaymentDetailsResponse.ResultCodeEnum resultCode) {
         switch (resultCode) {
             case AUTHORISED:
             case RECEIVED:
@@ -322,8 +322,8 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         return totalOrderAmount.compareTo(notificationAmount) > 0;
     }
 
-    public AdyenPaymentService getAdyenPaymentService() {
-        return adyenPaymentServiceFactory.createFromBaseStore(baseStoreService.getCurrentBaseStore());
+    public AdyenCheckoutApiService getAdyenPaymentService() {
+        return adyenPaymentServiceFactory.createAdyenCheckoutApiService(baseStoreService.getCurrentBaseStore());
     }
 
     public ModelService getModelService() {

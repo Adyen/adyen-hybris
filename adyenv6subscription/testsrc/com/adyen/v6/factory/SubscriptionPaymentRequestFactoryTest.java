@@ -1,9 +1,8 @@
 package com.adyen.v6.factory;
 
-import com.adyen.model.checkout.PaymentsRequest;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
-import com.adyen.v6.paymentmethoddetails.executors.AdyenPaymentMethodDetailsBuilderExecutor;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.core.model.user.CustomerModel;
@@ -24,9 +23,6 @@ public class SubscriptionPaymentRequestFactoryTest {
 
     @Mock
     private ConfigurationService configurationService;
-
-    @Mock
-    private AdyenPaymentMethodDetailsBuilderExecutor adyenPaymentMethodDetailsBuilderExecutor;
 
     @Mock
     private CartFacade cartFacade;
@@ -52,11 +48,11 @@ public class SubscriptionPaymentRequestFactoryTest {
         when(cartData.getSubscriptionOrder()).thenReturn(Boolean.FALSE);
 
         // Call the method to be tested
-        PaymentsRequest paymentsRequest = subscriptionPaymentRequestFactory.createPaymentsRequest(merchantAccount,
+        PaymentRequest paymentsRequest = subscriptionPaymentRequestFactory.createPaymentsRequest(merchantAccount,
                 cartData, requestInfo, customerModel, recurringContractMode, guestUserTokenizationEnabled);
 
         // Verifications and assertions
         assertNotNull(paymentsRequest);
-        assertEquals(PaymentsRequest.ShopperInteractionEnum.CONTAUTH, paymentsRequest.getShopperInteraction());
+        assertEquals(PaymentRequest.ShopperInteractionEnum.CONTAUTH, paymentsRequest.getShopperInteraction());
     }
 }

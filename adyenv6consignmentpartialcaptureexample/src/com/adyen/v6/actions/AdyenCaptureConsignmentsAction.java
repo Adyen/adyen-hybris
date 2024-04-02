@@ -2,7 +2,7 @@ package com.adyen.v6.actions;
 
 import com.adyen.v6.constants.Adyenv6consignmentpartialcaptureexampleConstants;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.service.AdyenPaymentService;
+import com.adyen.v6.service.AdyenModificationsApiService;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.orderprocessing.model.OrderProcessModel;
 import de.hybris.platform.ordersplitting.model.ConsignmentEntryModel;
@@ -32,7 +32,7 @@ public class AdyenCaptureConsignmentsAction extends AbstractSimpleDecisionAction
             if (paymentTransactionModelOptional.isPresent()) {
                 for (ConsignmentModel consignment : order.getConsignments()) {
                     BigDecimal consignmentValue = calculateConsignmentValue(consignment);
-                    getAdyenPaymentService(order.getStore()).captures(consignmentValue, currency, paymentTransactionModelOptional.get().getCode(), order.getCode());
+                    getAdyenPaymentService(order.getStore()).capture(consignmentValue, currency, paymentTransactionModelOptional.get().getCode(), order.getCode());
                 }
             } else {
                 return Transition.NOK;
@@ -51,8 +51,8 @@ public class AdyenCaptureConsignmentsAction extends AbstractSimpleDecisionAction
         return sum;
     }
 
-    private AdyenPaymentService getAdyenPaymentService(BaseStoreModel baseStoreModel) {
-        return adyenPaymentServiceFactory.createFromBaseStore(baseStoreModel);
+    private AdyenModificationsApiService getAdyenPaymentService(BaseStoreModel baseStoreModel) {
+        return adyenPaymentServiceFactory.createAdyenModificationsApiService(baseStoreModel);
     }
 
     public void setAdyenPaymentServiceFactory(AdyenPaymentServiceFactory adyenPaymentServiceFactory) {

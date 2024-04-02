@@ -22,7 +22,7 @@ package com.adyen.v6.actions.order;
 
 import com.adyen.v6.actions.AbstractWaitableAction;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.service.AdyenPaymentService;
+import com.adyen.v6.service.AdyenCheckoutApiService;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -124,7 +124,7 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
         return Transition.OK.toString();
     }
 
-    public AdyenPaymentService getAdyenPaymentService(final OrderModel orderModel) {
-        return adyenPaymentServiceFactory.createFromBaseStore(orderModel.getStore());
+    public AdyenCheckoutApiService getAdyenPaymentService(final OrderModel orderModel) {
+        return adyenPaymentServiceFactory.createAdyenCheckoutApiService(orderModel.getStore());
     }
 }

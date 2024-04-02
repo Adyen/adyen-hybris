@@ -1,6 +1,7 @@
 package com.adyen.v6.dto;
 
-import com.adyen.model.Amount;
+
+import com.adyen.model.checkout.Amount;
 import com.adyen.model.checkout.CreateCheckoutSessionResponse;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.StoredPaymentMethod;
