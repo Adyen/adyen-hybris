@@ -38,6 +38,10 @@ interface State {
     errorCode: string
 }
 
+interface ComponentProps {
+    errorCode?: string
+}
+
 interface StoreProps {
     billingAddress: AddressModel,
     shippingAddressFromCart: AddressData,
@@ -57,7 +61,7 @@ interface DispatchProps {
     setSelectedAddress: (address: AddressModel) => void
 }
 
-type Props = StoreProps & DispatchProps
+type Props = StoreProps & DispatchProps & ComponentProps
 
 class Payment extends React.Component<Props, State> {
 
@@ -71,8 +75,8 @@ class Payment extends React.Component<Props, State> {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
             redirectTo3DS: false,
-            errorCode: "",
             saveInAddressBook: false,
+            errorCode: this.props.errorCode ? this.props.errorCode : ""
         }
         this.paymentRef = React.createRef();
         this.threeDSRef = React.createRef();
