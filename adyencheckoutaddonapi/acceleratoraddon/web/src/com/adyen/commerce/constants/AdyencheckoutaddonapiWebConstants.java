@@ -4,7 +4,7 @@
 package com.adyen.commerce.constants;
 
 /**
- * Global class for all Adyenv6b2ccheckoutaddonv2 web constants. You can add global constants for your extension into this class.
+ * Global class for all adyencheckoutaddonapi web constants. You can add global constants for your extension into this class.
  */
 public final class AdyencheckoutaddonapiWebConstants
 {

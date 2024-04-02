@@ -1,10 +1,13 @@
 package com.adyen.commerce.controllers.api;
 
+import com.adyen.v6.response.ErrorResponse;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.DeliveryModeData;
+
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +34,13 @@ public class AdyenDeliveryMethodsController {
 
     @RequireHardLogIn
     @PostMapping(value = "/select-delivery-method")
-    public ResponseEntity<CartData> selectDeliveryMethod(@RequestBody String deliveryMethodCode) {
+    public ResponseEntity selectDeliveryMethod(@RequestBody String deliveryMethodCode) {
         if (StringUtils.isNotEmpty(deliveryMethodCode)) {
             checkoutFacade.setDeliveryMode(deliveryMethodCode);
             return ResponseEntity.ok(checkoutFacade.getCheckoutCart());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("checkout.deliveryMethod.notSelected");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 

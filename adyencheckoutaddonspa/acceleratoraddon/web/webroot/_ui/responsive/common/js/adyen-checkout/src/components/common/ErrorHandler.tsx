@@ -6,10 +6,16 @@ import {createDefaultResponseData, createError} from "../../util/notificationUti
 
 export class ErrorHandler {
 
-    public static handleError(error: AxiosError<ErrorResponse>) {
-        let errorResponseData = error.response.data;
-        if (!errorResponseData && isEmpty(errorResponseData.errorCode)) {
+    public static handleError(error?: AxiosError<ErrorResponse>) {
+        let errorResponseData
+        if (!error) {
             errorResponseData = createDefaultResponseData()
+        } else {
+            errorResponseData = error.response.data;
+
+            if (!errorResponseData || isEmpty(errorResponseData.errorCode)) {
+                errorResponseData = createDefaultResponseData()
+            }
         }
         store.dispatch({type: "notifications/addNotification", payload: createError(errorResponseData)})
     }

@@ -20,12 +20,11 @@ export class AddressService {
                 let addressModels = this.mapResponseDataToModel(response.data);
                 store.dispatch({type: "addressBook/setAddressBook", payload: addressModels})
             })
-            .catch((errorResponse:AxiosError<ErrorResponse>) => {
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
                 console.error("Address book fetch error")
                 return false
             })
-    // catch(() => console.error("Address book fetch error"))
     }
 
     static async selectDeliveryAddress(addressId: string) {
@@ -36,19 +35,15 @@ export class AddressService {
             }
         })
             .then(() => true)
-            .catch((errorResponse:AxiosError<ErrorResponse>) => {
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
             })
-            // catch(() => {
-            //     console.error('Error on address select')
-            //     return false
-            // })
     }
 
     static async addDeliveryAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
-                            editAddress: boolean): Promise<boolean> {
+                                    editAddress: boolean): Promise<boolean> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
         return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
@@ -56,7 +51,7 @@ export class AddressService {
                 'CSRFToken': CSRFToken
             }
         }).then(() => true)
-            .catch((errorResponse:AxiosError<ErrorResponse>) => {   //w serwisach umiescic
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {   //w serwisach umiescic
                 ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
@@ -73,12 +68,11 @@ export class AddressService {
                 let addressConfigModel = this.mapAddressConfigurationResponse(response.data);
                 store.dispatch({type: "addressConfig/setAddressConfig", payload: addressConfigModel})
             })
-            .catch((errorResponse:AxiosError<ErrorResponse>) => {
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
                 console.error("Address config fetch error")
                 return false
             })
-            // catch(() => console.error("Address config fetch error"))
     }
 
     private static mapResponseDataToModel(data: AddressData[]): AddressModel[] {

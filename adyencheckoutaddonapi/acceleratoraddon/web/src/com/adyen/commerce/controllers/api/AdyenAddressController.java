@@ -60,7 +60,7 @@ public class AdyenAddressController {
         final Errors errors = new BeanPropertyBindingResult(addressForm, "address");
         addressValidator.validate(addressForm, errors);
         if (errors.hasErrors()) {
-            ErrorResponse errorResponse = new ErrorResponse("errorcode",List.of("field1","field2"));
+            ErrorResponse errorResponse = new ErrorResponse("checkout.deliveryAddress.notSelected");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
@@ -84,17 +84,19 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
     @RequireHardLogIn
     @PutMapping(value = "/delivery-address")
-    public ResponseEntity<AddressData> updateDeliveryAddress(@RequestBody AddressForm addressForm) {
+    public ResponseEntity<ErrorResponse> updateDeliveryAddress(@RequestBody AddressForm addressForm) {
         final Errors errors = new BeanPropertyBindingResult(addressForm, "address");
         addressValidator.validate(addressForm, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("checkout.deliveryAddress.notSelected");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         AddressData addressData = addressDataUtil.convertToAddressData(addressForm);
@@ -107,16 +109,18 @@ public class AdyenAddressController {
 
                 return ResponseEntity.status(HttpStatus.OK).build();
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                ErrorResponse errorResponse = new ErrorResponse("");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
     @RequireHardLogIn
     @DeleteMapping(value = "/delivery-address/{addressId}")
-    public ResponseEntity<HttpStatus> removeDeliveryAddress(@PathVariable String addressId) {
+    public ResponseEntity<ErrorResponse> removeDeliveryAddress(@PathVariable String addressId) {
         if (userFacade.getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressId))) {
             AddressData addressData = userFacade.getAddressForCode(addressId);
 
@@ -125,7 +129,8 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            ErrorResponse errorResponse = new ErrorResponse("");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 

@@ -18,7 +18,7 @@ export class AdyenConfigService {
             })
             .catch((errorResponse:AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
-                console.error("Payment method config fetch error")
+                console.error("Payment method config fetch error.")
                 return false
             })
     }

@@ -68,8 +68,9 @@ export const translationKeys: string[] = [
     "checkout.error.authorization.payment.timeout",
     "checkout.error.authorization.payment.pending",
 
-    //redirect messages
-    "checkout.deliveryMethod.notSelected", //poszukać w hybrisowych controllerach, albo wywolac na starym checkoutcie
+    //notification messages
+    "checkout.deliveryMethod.notSelected",
     "checkout.deliveryAddress.notSelected",
-    "checkout.error.default"
+    "checkout.error.default",
+    "checkout.paymentMethod.notSelected",
 ]

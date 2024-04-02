@@ -1,5 +1,6 @@
 package com.adyen.commerce.controllers.api;
 
+import com.adyen.v6.response.ErrorResponse;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.user.UserFacade;
@@ -27,29 +28,25 @@ public class AdyenDeliveryAddressContoller {
 
     @PostMapping(value = "/delivery-address")
     @RequireHardLogIn
-    public ResponseEntity<HttpStatus>  doSelectDeliveryAddress(@RequestBody final String selectedAddressCode)
-    {
-        if (StringUtils.isNotBlank(selectedAddressCode))
-        {
+    public ResponseEntity<ErrorResponse> doSelectDeliveryAddress(@RequestBody final String selectedAddressCode) {
+        if (StringUtils.isNotBlank(selectedAddressCode)) {
             final AddressData selectedAddressData = getCheckoutFacade().getDeliveryAddressForCode(selectedAddressCode);
             final boolean hasSelectedAddressData = selectedAddressData != null;
-            if (hasSelectedAddressData)
-            {
+            if (hasSelectedAddressData) {
                 setDeliveryAddress(selectedAddressData);
                 return ResponseEntity.status(HttpStatus.ACCEPTED).build();
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        ErrorResponse errorResponse = new ErrorResponse("checkout.deliveryAddress.notSelected");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @GetMapping(value = "/delivery-address")
     @RequireHardLogIn
-    public ResponseEntity<AddressData> getSelectedDeliveryAddress()
-    {
+    public ResponseEntity<AddressData> getSelectedDeliveryAddress() {
         final AddressData selectedAddressData = getCheckoutFacade().getCheckoutCart().getDeliveryAddress();
-        if (selectedAddressData != null)
-        {
+        if (selectedAddressData != null) {
             return ResponseEntity.status(HttpStatus.OK).body(selectedAddressData);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -65,8 +62,7 @@ public class AdyenDeliveryAddressContoller {
         }
     }
 
-    protected boolean isAddressIdChanged(final AddressData cartCheckoutDeliveryAddress, final AddressData selectedAddressData)
-    {
+    protected boolean isAddressIdChanged(final AddressData cartCheckoutDeliveryAddress, final AddressData selectedAddressData) {
         return cartCheckoutDeliveryAddress == null || !selectedAddressData.getId().equals(cartCheckoutDeliveryAddress.getId());
     }
 

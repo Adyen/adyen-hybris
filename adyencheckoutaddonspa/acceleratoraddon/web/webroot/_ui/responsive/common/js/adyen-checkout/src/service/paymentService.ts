@@ -5,6 +5,8 @@ import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
+import {ErrorResponse} from "../types/errorResponse";
+import {ErrorHandler} from "../components/common/ErrorHandler";
 
 export interface PaymentResponse {
     success: boolean,
@@ -31,11 +33,16 @@ export class PaymentService {
                     paymentsAction: response.data.paymentsAction
                 }
             })
-            .catch((error: AxiosError<any>): PaymentResponse => {
+            .catch((errorResponse: AxiosError<any>): PaymentResponse | void => {
                 console.error('Error on place order')
-                return {
-                    success: false,
-                    error: error.response.data.error
+                console.log(errorResponse)
+                if (errorResponse.response.status === 400) {
+                    return {
+                        success: false,
+                        error: errorResponse.response.data.error
+                    }
+                } else {
+                    ErrorHandler.handleError(errorResponse)
                 }
             })
     }
