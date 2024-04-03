@@ -51,7 +51,7 @@ export class AddressService {
                 'CSRFToken': CSRFToken
             }
         }).then(() => true)
-            .catch((errorResponse: AxiosError<ErrorResponse>) => {   //w serwisach umiescic
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false

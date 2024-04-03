@@ -35,8 +35,6 @@ export class PaymentService {
             })
             .catch((errorResponse: AxiosError<ErrorResponse>): PaymentResponse | void => {
                 console.error('Error on place order')
-                console.log(errorResponse)
-                console.log(errorResponse.response.data.errorCode)
                 if (errorResponse.response.status === 400) {
                     return {
                         success: false,
