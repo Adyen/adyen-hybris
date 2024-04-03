@@ -1,7 +1,9 @@
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {urlContextPath} from "../util/baseUrlUtil";
 import {store} from "../store/store";
 import {AdyenConfigData} from "../types/adyenConfigData";
+import {ErrorResponse} from "../types/errorResponse";
+import {ErrorHandler} from "../components/common/ErrorHandler";
 
 export class AdyenConfigService {
 
@@ -14,6 +16,10 @@ export class AdyenConfigService {
             .then((response: AxiosResponse<AdyenConfigData>) => {
                 store.dispatch({type: "adyenConfig/setAdyenConfig", payload: response.data})
             })
-            .catch(() => console.error("Payment method config fetch error"))
+            .catch((errorResponse:AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error("Payment method config fetch error.")
+                return false
+            })
     }
 }

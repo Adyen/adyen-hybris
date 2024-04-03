@@ -1,5 +1,6 @@
 package com.adyen.commerce.controllers.api;
 
+import com.adyen.commerce.exceptions.AdyenControllerException;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.constants.ApiConstants;
 import com.adyen.model.checkout.PaymentResponse;
@@ -82,17 +83,13 @@ public class AdyenPlaceOrderController {
         final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
 
         if (!selectPaymentMethodSuccess) {
-            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-            placeOrderResponse.setError(CHECKOUT_ERROR_FORM_ENTRY_INVALID);
             LOGGER.warn("Payment form is invalid.");
-            return ResponseEntity.badRequest().body(placeOrderResponse);
+            throw new AdyenControllerException(CHECKOUT_ERROR_FORM_ENTRY_INVALID);
         }
 
         if (!isCartValid()) {
             LOGGER.warn("Cart is invalid.");
-            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-            placeOrderResponse.setError(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
-            return ResponseEntity.badRequest().body(placeOrderResponse);
+            throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
         }
 
         final CartData cartData = cartFacade.getSessionCart();
@@ -140,9 +137,7 @@ public class AdyenPlaceOrderController {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-        placeOrderResponse.setError(errorMessage);
-        return ResponseEntity.badRequest().body(placeOrderResponse);
+        throw new AdyenControllerException(errorMessage);
     }
 
     private ResponseEntity<PlaceOrderResponse> handlePOS(HttpServletRequest request, CartData cartData) {
@@ -190,9 +185,7 @@ public class AdyenPlaceOrderController {
             LOGGER.error("Exception", e);
         }
 
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-        placeOrderResponse.setError(errorMessage);
-        return ResponseEntity.badRequest().body(placeOrderResponse);
+        throw new AdyenControllerException(errorMessage);
     }
 
     private ResponseEntity<PlaceOrderResponse> handleOther(HttpServletRequest request, CartData cartData, String adyenPaymentMethod) {
@@ -236,9 +229,7 @@ public class AdyenPlaceOrderController {
             LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
 
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-        placeOrderResponse.setError(errorMessage);
-        return ResponseEntity.badRequest().body(placeOrderResponse);
+        throw new AdyenControllerException(errorMessage);
     }
 
     private boolean selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {

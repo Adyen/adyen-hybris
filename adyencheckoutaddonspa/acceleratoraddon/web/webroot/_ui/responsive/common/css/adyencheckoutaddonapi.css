@@ -22,3 +22,7 @@
     padding: 15px;
     border-radius: 12px;
 }
+
+.alert {
+    scroll-margin-top: 10px;
+}

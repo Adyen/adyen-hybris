@@ -1,7 +1,9 @@
 import {store} from "../store/store";
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {urlContextPath} from "../util/baseUrlUtil";
 import {CartData} from "../types/cartData";
+import {ErrorResponse} from "../types/errorResponse";
+import {ErrorHandler} from "../components/common/ErrorHandler";
 
 export class CartDataService {
     static fetchCartData() {
@@ -22,9 +24,10 @@ export class CartDataService {
                     store.dispatch({type: "shippingMethod/setShippingMethod", payload: response.data.deliveryMode.code})
                 }
             })
-            .catch(() => {
-                store.dispatch({type: "loading/cartData/end"})
-                console.error("Cart data fetch error")
+            .catch((errorResponse:AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error('Cart data fetch error.')
+                return false
             })
 
     }

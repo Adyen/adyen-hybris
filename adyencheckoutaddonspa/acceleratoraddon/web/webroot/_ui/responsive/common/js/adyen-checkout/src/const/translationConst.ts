@@ -66,5 +66,11 @@ export const translationKeys: string[] = [
     "checkout.error.authorization.payment.failed",
     "checkout.error.authorization.payment.rejected",
     "checkout.error.authorization.payment.timeout",
-    "checkout.error.authorization.payment.pending"
+    "checkout.error.authorization.payment.pending",
+
+    //notification messages
+    "checkout.deliveryMethod.notSelected",
+    "checkout.deliveryAddress.notSelected",
+    "checkout.error.default",
+    "checkout.paymentMethod.notSelected",
 ]

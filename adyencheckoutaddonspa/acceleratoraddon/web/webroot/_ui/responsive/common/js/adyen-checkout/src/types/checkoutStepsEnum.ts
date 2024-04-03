@@ -1,5 +1,6 @@
 export enum CheckoutSteps {
     SHIPPING_ADDRESS,
     SHIPPING_METHOD,
-    PAYMENT_METHOD
+    PAYMENT_METHOD,
+    THANK_YOU_PAGE
 }

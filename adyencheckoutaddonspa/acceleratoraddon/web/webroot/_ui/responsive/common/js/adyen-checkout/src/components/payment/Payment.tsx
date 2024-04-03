@@ -169,17 +169,18 @@ class Payment extends React.Component<Props, State> {
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
         let responseData = await PaymentService.placeOrder(adyenPaymentForm);
-
-        if (responseData.success) {
-            if (responseData.is3DSRedirect) {
-                await this.mount3DSComponent(responseData.paymentsAction)
+        if(!!responseData){
+            if (responseData.success) {
+                if (responseData.is3DSRedirect) {
+                    await this.mount3DSComponent(responseData.paymentsAction)
+                } else {
+                    this.setState({redirectToNextStep: true})
+                }
             } else {
-                this.setState({redirectToNextStep: true})
+                this.resetDropInComponent()
             }
-        } else {
-            this.resetDropInComponent()
+            this.setState({errorCode: responseData.error})
         }
-        this.setState({errorCode: responseData.error})
     }
 
     private resetDropInComponent() {

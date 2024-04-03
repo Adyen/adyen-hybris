@@ -1,10 +1,12 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
 import {isNotEmpty} from "../util/stringUtil";
 import {AddressConfigModel} from "../reducers/addressConfigReducer";
 import {AddressData} from "../types/addressData";
+import {ErrorResponse} from "../types/errorResponse";
+import {ErrorHandler} from "../components/common/ErrorHandler";
 
 export class AddressService {
 
@@ -18,7 +20,11 @@ export class AddressService {
                 let addressModels = this.mapResponseDataToModel(response.data);
                 store.dispatch({type: "addressBook/setAddressBook", payload: addressModels})
             })
-            .catch(() => console.error("Address book fetch error"))
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error("Address book fetch error")
+                return false
+            })
     }
 
     static async selectDeliveryAddress(addressId: string) {
@@ -29,14 +35,15 @@ export class AddressService {
             }
         })
             .then(() => true)
-            .catch(() => {
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
             })
     }
 
     static async addDeliveryAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
-                            editAddress: boolean): Promise<boolean> {
+                                    editAddress: boolean): Promise<boolean> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
         return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
@@ -44,7 +51,8 @@ export class AddressService {
                 'CSRFToken': CSRFToken
             }
         }).then(() => true)
-            .catch(() => {
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
             })
@@ -60,7 +68,11 @@ export class AddressService {
                 let addressConfigModel = this.mapAddressConfigurationResponse(response.data);
                 store.dispatch({type: "addressConfig/setAddressConfig", payload: addressConfigModel})
             })
-            .catch(() => console.error("Address config fetch error"))
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error("Address config fetch error")
+                return false
+            })
     }
 
     private static mapResponseDataToModel(data: AddressData[]): AddressModel[] {

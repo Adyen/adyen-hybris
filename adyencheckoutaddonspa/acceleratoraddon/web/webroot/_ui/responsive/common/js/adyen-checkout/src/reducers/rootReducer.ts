@@ -7,7 +7,7 @@ import {
     AddressConfigModel,
     addressConfigReducer
 } from "./addressConfigReducer";
-import {AddressModel, ShippingMethodState} from "./types";
+import {AddressModel, Notification, ShippingMethodState} from "./types";
 import {AddressBookAction, addressBookInitialState, addressBookReducer} from "./addressBookReducer";
 import {shippingMethodInitialState, shippingMethodReducer, ShippingModeAction} from "./shippingMethodReducer";
 import {CartData} from "../types/cartData";
@@ -19,6 +19,7 @@ import {PlaceOrderData} from "../types/placeOrderData";
 import {PlaceOrderDataAction, placeOrderDataInitialState, placeOrderDataReducer} from "./placeOrderDataReducer";
 import {LoadingAction, loadingReducer, loadingStateInitialState} from "./loadingReducer";
 import {LoadingState} from "../types/loadingState";
+import {NotificationAction, notificationReducer, notificationInitialState} from "./notificationReducer";
 
 export const initialState: AppState = {
     shippingAddress: addressInitialState,
@@ -29,7 +30,8 @@ export const initialState: AppState = {
     billingAddress: addressInitialState,
     adyenConfig: adyenConfigInitialState,
     placeOrderData: placeOrderDataInitialState,
-    loadingState: loadingStateInitialState
+    loadingState: loadingStateInitialState,
+    notifications: notificationInitialState
 }
 
 
@@ -43,7 +45,8 @@ export const rootReducer: Reducer<AppState, RootAction, AppState> = function (ap
         billingAddress: billingAddressReducer(appState.billingAddress, action),
         adyenConfig: adyenConfigReducer(appState.adyenConfig, action),
         placeOrderData: placeOrderDataReducer(appState.placeOrderData, action),
-        loadingState: loadingReducer(appState.loadingState, action)
+        loadingState: loadingReducer(appState.loadingState, action),
+        notifications: notificationReducer(appState.notifications, action)
     }
 }
 
@@ -56,7 +59,8 @@ export interface AppState {
     billingAddress: AddressModel,
     adyenConfig: AdyenConfigData,
     placeOrderData: PlaceOrderData,
-    loadingState: LoadingState
+    loadingState: LoadingState,
+    notifications: Notification[],
 }
 
 export type RootAction =
@@ -69,6 +73,7 @@ export type RootAction =
     | AdyenConfigAction
     | PlaceOrderDataAction
     | LoadingAction
+    | NotificationAction
 
 export interface PayloadAction<T extends string, PT = string> extends Action<T> {
     payload: PT

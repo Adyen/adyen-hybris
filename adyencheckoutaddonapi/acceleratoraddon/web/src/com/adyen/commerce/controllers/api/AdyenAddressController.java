@@ -1,5 +1,8 @@
 package com.adyen.commerce.controllers.api;
 
+import com.adyen.commerce.exceptions.AdyenControllerException;
+
+import com.adyen.commerce.response.ErrorResponse;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.validation.AddressValidator;
@@ -55,11 +58,11 @@ public class AdyenAddressController {
 
     @RequireHardLogIn
     @PostMapping(value = "/delivery-address")
-    public ResponseEntity<AddressData> addDeliveryAddress(@RequestBody AddressForm addressForm) {
+    public ResponseEntity<Void> addDeliveryAddress(@RequestBody AddressForm addressForm) {
         final Errors errors = new BeanPropertyBindingResult(addressForm, "address");
         addressValidator.validate(addressForm, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new AdyenControllerException("checkout.deliveryAddress.notSelected");
         }
 
         AddressData addressData = addressDataUtil.convertToAddressData(addressForm);
@@ -82,17 +85,17 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new AdyenControllerException();
         }
     }
 
     @RequireHardLogIn
     @PutMapping(value = "/delivery-address")
-    public ResponseEntity<AddressData> updateDeliveryAddress(@RequestBody AddressForm addressForm) {
+    public ResponseEntity<Void> updateDeliveryAddress(@RequestBody AddressForm addressForm) {
         final Errors errors = new BeanPropertyBindingResult(addressForm, "address");
         addressValidator.validate(addressForm, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new AdyenControllerException("checkout.deliveryAddress.notSelected");
         }
 
         AddressData addressData = addressDataUtil.convertToAddressData(addressForm);
@@ -105,16 +108,16 @@ public class AdyenAddressController {
 
                 return ResponseEntity.status(HttpStatus.OK).build();
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                throw new AdyenControllerException();
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new AdyenControllerException();
         }
     }
 
     @RequireHardLogIn
     @DeleteMapping(value = "/delivery-address/{addressId}")
-    public ResponseEntity<HttpStatus> removeDeliveryAddress(@PathVariable String addressId) {
+    public ResponseEntity<Void> removeDeliveryAddress(@PathVariable String addressId) {
         if (userFacade.getAddressBook().stream().anyMatch(ad -> Objects.equals(ad.getId(), addressId))) {
             AddressData addressData = userFacade.getAddressForCode(addressId);
 
@@ -123,7 +126,7 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new AdyenControllerException();
         }
     }
 

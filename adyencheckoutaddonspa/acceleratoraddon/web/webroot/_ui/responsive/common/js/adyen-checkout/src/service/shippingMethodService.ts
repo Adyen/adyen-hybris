@@ -1,9 +1,11 @@
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {store} from "../store/store";
 import {ShippingMethodModel} from "../reducers/types";
 import {CartData} from "../types/cartData";
 import {isEmpty} from "../util/stringUtil";
+import {ErrorResponse} from "../types/errorResponse";
+import {ErrorHandler} from "../components/common/ErrorHandler";
 
 export class ShippingMethodService {
     public static fetchShippingMethods() {
@@ -22,7 +24,11 @@ export class ShippingMethodService {
                 }
 
             })
-            .catch(() => console.error("Shipping method fetch error"))
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error('Shipping method fetch error.')
+                return false
+            })
     }
 
 
@@ -42,9 +48,10 @@ export class ShippingMethodService {
                 }
                 return true;
             })
-            .catch(() => {
-                console.error('Error on shipping method select')
-                return false;
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                ErrorHandler.handleError(errorResponse)
+                console.error('Error on shipping method select.')
+                return false
             })
     }
 

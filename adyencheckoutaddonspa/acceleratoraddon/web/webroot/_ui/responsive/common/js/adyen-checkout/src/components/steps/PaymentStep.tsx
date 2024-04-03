@@ -1,11 +1,10 @@
 import React, {useEffect} from "react";
 import {ShippingMethodHeader} from "../headers/ShippingMethodHeader";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
-import {CartDataService} from "../../service/cartDataService";
 import Payment from "../payment/Payment";
 import RedirectOnIncompleteData from "../common/RedirectOnIncompleteData";
 import {CheckoutSteps} from "../../types/checkoutStepsEnum";
-import {useParams} from "react-router-dom";
+import {CartDataService} from "../../service/cartDataService";
 
 export function PaymentStep() {
     const {errorCode} = useParams();
