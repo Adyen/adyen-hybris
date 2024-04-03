@@ -85,10 +85,10 @@ class RedirectOnIncompleteData extends React.Component<Props, State> {
 
     render() {
         if (this.state.redirectToShippingAddress) {
-            return <Navigate to={routes.shippingAddress + "/missingDataRedirect"}/>
+            return <Navigate to={routes.shippingAddressRedirect}/>
         }
         if (this.state.redirectToShippingMethod) {
-            return <Navigate to={routes.shippingMethod + "/missingDataRedirect"}/>
+            return <Navigate to={routes.shippingMethodRedirect}/>
         }
         if (this.state.renderChildren) {
             return <>{this.props.children}</>

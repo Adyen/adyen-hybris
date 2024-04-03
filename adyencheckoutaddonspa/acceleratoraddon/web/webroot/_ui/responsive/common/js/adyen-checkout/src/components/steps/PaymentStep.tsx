@@ -4,9 +4,13 @@ import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import Payment from "../payment/Payment";
 import RedirectOnIncompleteData from "../common/RedirectOnIncompleteData";
 import {CheckoutSteps} from "../../types/checkoutStepsEnum";
-import {StepBase} from "./StepBase";
+import {CartDataService} from "../../service/cartDataService";
 
-export class PaymentStep extends StepBase {
+export class PaymentStep extends React.Component<{}, null> {
+
+    componentDidMount() {
+        CartDataService.fetchCartData();
+    }
 
     render() {
         return (

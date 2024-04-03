@@ -5,9 +5,13 @@ import {ScrollHere} from "../common/ScrollTo";
 import ShippingMethod from "../shipping-method/ShippingMethod";
 import RedirectOnIncompleteData from "../common/RedirectOnIncompleteData";
 import {CheckoutSteps} from "../../types/checkoutStepsEnum";
-import {StepBase} from "./StepBase";
+import {CartDataService} from "../../service/cartDataService";
 
-export class ShippingMethodStep extends StepBase {
+export class ShippingMethodStep extends React.Component<{}, null> {
+
+    componentDidMount() {
+        CartDataService.fetchCartData();
+    }
 
     render() {
 

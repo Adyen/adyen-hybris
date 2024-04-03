@@ -1,6 +1,5 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
 import React from "react";
-import {ShippingAddressStep} from "../components/steps/ShippingAddressStep";
 import {PaymentStep} from "../components/steps/PaymentStep";
 import {routes} from "./routes";
 import CheckoutStepWrapper from "../CheckoutStepWrapper";
@@ -10,6 +9,7 @@ import ThankYouPageStoreWrapper from "../components/thank-you-page/ThankYouPageS
 import {TranslationWrapper} from "../components/common/TranslationWrapper";
 import NotificationWrapper from "../components/common/NotificationWrapper";
 import {CheckoutSteps} from "../types/checkoutStepsEnum";
+import {ShippingAddressStep} from "../components/steps/ShippingAddressStep";
 
 export const router = createBrowserRouter([
     {
@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
         element: <TranslationWrapper><NotificationWrapper
             checkoutStep={CheckoutSteps.SHIPPING_ADDRESS}><CheckoutStepWrapper><ShippingAddressStep/></CheckoutStepWrapper></NotificationWrapper></TranslationWrapper>,
     }, {
-        path: routes.shippingAddress + "/missingDataRedirect",
+        path: routes.shippingAddressRedirect,
         element: <TranslationWrapper><NotificationWrapper redirectOnMissingData={true}
             checkoutStep={CheckoutSteps.SHIPPING_ADDRESS}><CheckoutStepWrapper><ShippingAddressStep/></CheckoutStepWrapper></NotificationWrapper></TranslationWrapper>,
     },
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
             checkoutStep={CheckoutSteps.SHIPPING_METHOD}><CheckoutStepWrapper><ShippingMethodStep/></CheckoutStepWrapper></NotificationWrapper></TranslationWrapper>,
     },
     {
-        path: routes.shippingMethod + "/missingDataRedirect",
+        path: routes.shippingMethodRedirect,
         element: <TranslationWrapper><NotificationWrapper redirectOnMissingData={true}
             checkoutStep={CheckoutSteps.SHIPPING_METHOD}><CheckoutStepWrapper><ShippingMethodStep/></CheckoutStepWrapper></NotificationWrapper></TranslationWrapper>,
     },

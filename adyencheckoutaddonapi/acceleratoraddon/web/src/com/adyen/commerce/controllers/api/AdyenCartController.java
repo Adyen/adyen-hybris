@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(value = "/api/checkout")
-public class TempCartController {
+public class AdyenCartController {
 
     @Autowired
     private CartFacade cartFacade;

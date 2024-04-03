@@ -11,12 +11,6 @@ export function notificationReducer(notifications: Notification[], action: RootA
         }
         case "notifications/removeAllNotifications":
             return []
-        case "notifications/removeNotificationsWithoutRedirect": {
-            return notifications.filter((notification) => notification.isRedirect)
-        }
-        case "notifications/removeNotificationsFromList": {
-            return notifications.filter((notification) => !action.payload.includes(notification))
-        }
         default:
             return notifications
     }
@@ -29,14 +23,6 @@ interface AddNotification extends PayloadAction<"notifications/addNotification",
 interface RemoveAllNotifications extends Action<"notifications/removeAllNotifications"> {
 }
 
-interface RemoveNotificationsWithoutRedirect extends Action<"notifications/removeNotificationsWithoutRedirect"> {
-}
-
-interface RemoveNotificationsFromList extends PayloadAction<"notifications/removeNotificationsFromList", Notification[]> {
-}
-
 export type NotificationAction =
     AddNotification
     | RemoveAllNotifications
-    | RemoveNotificationsWithoutRedirect
-    | RemoveNotificationsFromList

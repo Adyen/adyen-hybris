@@ -1,4 +1,4 @@
-package com.adyen.v6.response;
+package com.adyen.commerce.response;
 
 import java.util.ArrayList;
 import java.util.List;

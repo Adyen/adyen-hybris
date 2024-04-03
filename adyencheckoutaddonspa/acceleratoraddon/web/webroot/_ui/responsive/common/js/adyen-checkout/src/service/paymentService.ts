@@ -33,13 +33,14 @@ export class PaymentService {
                     paymentsAction: response.data.paymentsAction
                 }
             })
-            .catch((errorResponse: AxiosError<any>): PaymentResponse | void => {
+            .catch((errorResponse: AxiosError<ErrorResponse>): PaymentResponse | void => {
                 console.error('Error on place order')
                 console.log(errorResponse)
+                console.log(errorResponse.response.data.errorCode)
                 if (errorResponse.response.status === 400) {
                     return {
                         success: false,
-                        error: errorResponse.response.data.error
+                        error: errorResponse.response.data.errorCode
                     }
                 } else {
                     ErrorHandler.handleError(errorResponse)

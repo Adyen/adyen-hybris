@@ -1,6 +1,8 @@
 package com.adyen.commerce.controllers.api;
 
-import com.adyen.v6.response.ErrorResponse;
+
+import com.adyen.commerce.exceptions.AdyenControllerException;
+import com.adyen.commerce.response.ErrorResponse;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.user.UserFacade;
@@ -28,7 +30,7 @@ public class AdyenDeliveryAddressContoller {
 
     @PostMapping(value = "/delivery-address")
     @RequireHardLogIn
-    public ResponseEntity<ErrorResponse> doSelectDeliveryAddress(@RequestBody final String selectedAddressCode) {
+    public ResponseEntity<Void> doSelectDeliveryAddress(@RequestBody final String selectedAddressCode) {
         if (StringUtils.isNotBlank(selectedAddressCode)) {
             final AddressData selectedAddressData = getCheckoutFacade().getDeliveryAddressForCode(selectedAddressCode);
             final boolean hasSelectedAddressData = selectedAddressData != null;
@@ -38,8 +40,7 @@ public class AdyenDeliveryAddressContoller {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        ErrorResponse errorResponse = new ErrorResponse("checkout.deliveryAddress.notSelected");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        throw new AdyenControllerException("checkout.deliveryAddress.notSelected");
     }
 
     @GetMapping(value = "/delivery-address")
