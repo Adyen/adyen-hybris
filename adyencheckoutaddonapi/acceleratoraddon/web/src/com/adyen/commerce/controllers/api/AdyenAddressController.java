@@ -85,7 +85,7 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            throw new AdyenControllerException("checkout.error.default");
+            throw new AdyenControllerException();
         }
     }
 
@@ -108,10 +108,10 @@ public class AdyenAddressController {
 
                 return ResponseEntity.status(HttpStatus.OK).build();
             } else {
-                throw new AdyenControllerException("checkout.error.default");
+                throw new AdyenControllerException();
             }
         } else {
-            throw new AdyenControllerException("checkout.error.default");
+            throw new AdyenControllerException();
         }
     }
 
@@ -126,7 +126,7 @@ public class AdyenAddressController {
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            throw new AdyenControllerException("checkout.error.default");
+            throw new AdyenControllerException();
         }
     }
 
