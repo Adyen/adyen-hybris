@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {ShippingMethodHeader} from "../headers/ShippingMethodHeader";
 import {ShippingAddressHeader} from "../headers/ShippingAddressHeader";
 import Payment from "../payment/Payment";
@@ -6,22 +6,23 @@ import RedirectOnIncompleteData from "../common/RedirectOnIncompleteData";
 import {CheckoutSteps} from "../../types/checkoutStepsEnum";
 import {CartDataService} from "../../service/cartDataService";
 
-export class PaymentStep extends React.Component<{}, null> {
+export function PaymentStep() {
+    const {errorCode} = useParams();
 
-    componentDidMount() {
+
+    useEffect(() => {
         CartDataService.fetchCartData();
+    })
+
+    function getErrorCode(): string {
+        return errorCode ? atob(errorCode) : undefined;
     }
 
-    render() {
-        return (
-            <>
-                <RedirectOnIncompleteData currentCheckoutStep={CheckoutSteps.PAYMENT_METHOD}>
-                    <ShippingAddressHeader editEnabled={true}/>
-                    <ShippingMethodHeader editEnabled={true}/>
-                    <Payment/>
-                </RedirectOnIncompleteData>
-            </>
-        )
-    }
-
+    return (
+        <RedirectOnIncompleteData currentCheckoutStep={CheckoutSteps.PAYMENT_METHOD}>
+            <ShippingAddressHeader editEnabled={true}/>
+            <ShippingMethodHeader editEnabled={true}/>
+            <Payment errorCode={getErrorCode()}/>
+        </RedirectOnIncompleteData>
+    )
 }

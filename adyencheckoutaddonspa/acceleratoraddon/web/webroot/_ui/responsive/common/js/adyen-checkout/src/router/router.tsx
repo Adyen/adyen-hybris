@@ -47,6 +47,10 @@ export const router = createBrowserRouter([
             checkoutStep={CheckoutSteps.THANK_YOU_PAGE}><ThankYouPageUrlWrapper/></NotificationWrapper></TranslationWrapper>,
     },
     {
+        path: routes.paymentMethod + "/error/:errorCode",
+        element: <TranslationWrapper><CheckoutStepWrapper><PaymentStep/></CheckoutStepWrapper></TranslationWrapper>,
+    },
+    {
         //in case url doesn't match - redirect to shipping address
         path: "*",
         element: <Navigate to={routes.shippingAddress}/>
