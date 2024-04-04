@@ -7,7 +7,7 @@ import {Navigate} from "react-router-dom";
 import {routes} from "../../router/routes";
 import {StoreDispatch} from "../../store/store";
 import {Notification} from "../../reducers/types";
-import {createResponseData, createWarn} from "../../util/notificationUtil";
+import {createWarn} from "../../util/notificationUtil";
 
 interface ComponentProps {
     currentCheckoutStep: CheckoutSteps
