@@ -261,7 +261,7 @@ public class AdyenPlaceOrderController {
     private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentResponse paymentsResponse) {
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
         placeOrderResponse.setRedirectTo3DS(true);
-        //placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
+        placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
 
         return ResponseEntity.ok(placeOrderResponse);
     }
