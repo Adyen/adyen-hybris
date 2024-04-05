@@ -5,6 +5,7 @@ import Payment from "../payment/Payment";
 import RedirectOnIncompleteData from "../common/RedirectOnIncompleteData";
 import {CheckoutSteps} from "../../types/checkoutStepsEnum";
 import {CartDataService} from "../../service/cartDataService";
+import {useParams} from "react-router-dom";
 
 export function PaymentStep() {
     const {errorCode} = useParams();

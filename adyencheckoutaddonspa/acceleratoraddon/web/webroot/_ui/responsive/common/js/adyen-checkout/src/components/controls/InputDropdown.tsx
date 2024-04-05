@@ -1,6 +1,7 @@
 import React from "react";
 import {CodeValueItem} from "../../reducers/types";
 import {isNotEmpty} from "../../util/stringUtil";
+import {FieldGroup} from "./FieldGroup";
 
 interface InputDropdownProps {
     testId?: string
@@ -9,6 +10,9 @@ interface InputDropdownProps {
     selectedValue?: string
     placeholderText?: string
     placeholderDisabled?: boolean
+    fieldErrorId?: string
+    fieldErrorTextCode?: string
+    fieldErrors?: string[]
     onChange?: (value: string) => void
 }
 
@@ -59,15 +63,22 @@ export class InputDropdown extends React.Component<InputDropdownProps, null> {
         } else {
             return <></>
         }
+    }
 
+    private hasError(): boolean {
+        if (!this.props.fieldErrors) {
+            return false;
+        }
+
+        return this.props.fieldErrors.includes(this.props.fieldErrorId);
     }
 
     render() {
         return (
-            <div className={"form-group"}>
+            <FieldGroup errorMessageCode={this.props.fieldErrorTextCode} hasError={this.hasError()}>
                 {this.renderLabel()}
                 {this.renderInput()}
-            </div>
+            </FieldGroup>
         )
     }
 }

@@ -16,7 +16,7 @@ public class AddressForm {
     private String townCity;
     private String regionIso;
     private String postcode;
-    private String countryIsoCode;
+    private String countryIso;
     private String phoneNumber;
     private boolean saveInAddressBook;
 
@@ -99,12 +99,12 @@ public class AddressForm {
 
     @NotNull(message = "{address.country.invalid}")
     @Size(min = 1, max = 255, message = "{address.country.invalid}")
-    public String getCountryIsoCode() {
-        return countryIsoCode;
+    public String getCountryIso() {
+        return countryIso;
     }
 
-    public void setCountryIsoCode(final String countryIsoCode) {
-        this.countryIsoCode = countryIsoCode;
+    public void setCountryIso(final String countryIso) {
+        this.countryIso = countryIso;
     }
 
     public String getPhoneNumber() {
@@ -157,7 +157,7 @@ public class AddressForm {
                 + postcode
                 + '\''
                 + ", countryIso='"
-                + countryIsoCode
+                + countryIso
                 + '\''
                 + ", phoneNumber='"
                 + phoneNumber

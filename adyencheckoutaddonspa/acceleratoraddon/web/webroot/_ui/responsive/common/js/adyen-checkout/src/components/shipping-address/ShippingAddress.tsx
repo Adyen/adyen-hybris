@@ -33,6 +33,7 @@ type ShippingAddressProps = StoreProps & DispatchProps;
 interface ShippingAddressState {
     saveInAddressBook: boolean
     redirectToNextStep: boolean
+    errorFieldCodes: string[]
 }
 
 class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddressState> {
@@ -41,7 +42,8 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
         super(props);
         this.state = {
             saveInAddressBook: false,
-            redirectToNextStep: false
+            redirectToNextStep: false,
+            errorFieldCodes: []
         }
     }
 
@@ -51,10 +53,11 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
     }
 
     private async handleSubmitButton() {
-        let success = await AddressService.addDeliveryAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
-        if (success) {
+        let addAddressResponse = await AddressService.addDeliveryAddress(this.props.shippingAddress, this.state.saveInAddressBook, true, false, false);
+        if (addAddressResponse.success) {
             this.setState({redirectToNextStep: true})
         }
+        this.setState({errorFieldCodes: addAddressResponse.errorFieldCodes})
     }
 
     private async onSelectAddress(address: AddressModel) {
@@ -83,6 +86,8 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                                 className={"shippingAddress_form_header headline"}>{translationsStore.get("checkout.summary.shippingAddress")}</div>
                             <AddressSection address={this.props.shippingAddress}
                                             saveInAddressBook={this.state.saveInAddressBook}
+                                            errorFieldCodes={this.state.errorFieldCodes}
+                                            errorFieldCodePrefix=""
                                             onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
                                             onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                             onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}

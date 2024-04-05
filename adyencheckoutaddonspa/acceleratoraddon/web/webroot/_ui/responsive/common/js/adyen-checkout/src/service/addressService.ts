@@ -8,6 +8,11 @@ import {AddressData} from "../types/addressData";
 import {ErrorResponse} from "../types/errorResponse";
 import {ErrorHandler} from "../components/common/ErrorHandler";
 
+interface AddDeliveryAddressResponse {
+    success: boolean,
+    errorFieldCodes: string[]
+}
+
 export class AddressService {
 
     static fetchAddressBook() {
@@ -43,18 +48,23 @@ export class AddressService {
     }
 
     static async addDeliveryAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
-                                    editAddress: boolean): Promise<boolean> {
+                                    editAddress: boolean): Promise<AddDeliveryAddressResponse> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
         return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'CSRFToken': CSRFToken
             }
-        }).then(() => true)
+        }).then((): AddDeliveryAddressResponse => {
+            return {success: true, errorFieldCodes: []}
+        })
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
                 ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
-                return false
+                return {
+                    success: false,
+                    errorFieldCodes: errorResponse.response.data.invalidFields
+                }
             })
     }
 

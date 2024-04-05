@@ -36,6 +36,7 @@ interface State {
     redirectTo3DS: boolean
     saveInAddressBook: boolean
     errorCode: string
+    errorFieldCodes: string[]
 }
 
 interface ComponentProps {
@@ -76,7 +77,8 @@ class Payment extends React.Component<Props, State> {
             redirectToNextStep: false,
             redirectTo3DS: false,
             saveInAddressBook: false,
-            errorCode: this.props.errorCode ? this.props.errorCode : ""
+            errorCode: this.props.errorCode ? this.props.errorCode : "",
+            errorFieldCodes: []
         }
         this.paymentRef = React.createRef();
         this.threeDSRef = React.createRef();
@@ -168,8 +170,10 @@ class Payment extends React.Component<Props, State> {
     }
 
     private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
+        this.setState({errorFieldCodes: []})
+
         let responseData = await PaymentService.placeOrder(adyenPaymentForm);
-        if(!!responseData){
+        if (!!responseData) {
             if (responseData.success) {
                 if (responseData.is3DSRedirect) {
                     await this.mount3DSComponent(responseData.paymentsAction)
@@ -177,6 +181,7 @@ class Payment extends React.Component<Props, State> {
                     this.setState({redirectToNextStep: true})
                 }
             } else {
+                this.setState({errorFieldCodes: responseData.errorFieldCodes})
                 this.resetDropInComponent()
             }
             this.setState({errorCode: responseData.error})
@@ -193,14 +198,24 @@ class Payment extends React.Component<Props, State> {
         adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
+    private renderScrollOnErrorCodes(): React.JSX.Element {
+        if (this.state.errorFieldCodes && this.state.errorFieldCodes.length > 0) {
+            return <ScrollHere/>
+        }
+        return <></>
+    }
+
     private renderBillingAddressForm(): React.JSX.Element {
         if (this.state.useDifferentBillingAddress) {
             return (
                 <>
                     <hr/>
+                    {this.renderScrollOnErrorCodes()}
                     <div className={"headline"}>Billing Address</div>
                     <AddressSection address={this.props.billingAddress}
                                     saveInAddressBook={this.state.saveInAddressBook}
+                                    errorFieldCodes={this.state.errorFieldCodes}
+                                    errorFieldCodePrefix={"billingAddress."}
                                     onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
                                     onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                     onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
