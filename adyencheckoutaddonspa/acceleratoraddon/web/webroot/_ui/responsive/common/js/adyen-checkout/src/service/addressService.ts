@@ -1,4 +1,4 @@
-import axios, {AxiosError} from "axios";
+import {AxiosError} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AddressModel} from "../reducers/types";
 import {store} from "../store/store";
@@ -6,12 +6,12 @@ import {isNotEmpty} from "../util/stringUtil";
 import {AddressConfigModel} from "../reducers/addressConfigReducer";
 import {AddressData} from "../types/addressData";
 import {ErrorResponse} from "../types/errorResponse";
-import {ErrorHandler} from "../components/common/ErrorHandler";
+import {adyenAxios} from "../axios/AdyenAxios";
 
 export class AddressService {
 
     static fetchAddressBook() {
-        axios.get(urlContextPath + '/api/account/delivery-address', {
+        adyenAxios.get(urlContextPath + '/api/account/delivery-address', {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
@@ -21,14 +21,13 @@ export class AddressService {
                 store.dispatch({type: "addressBook/setAddressBook", payload: addressModels})
             })
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error("Address book fetch error")
                 return false
             })
     }
 
     static async selectDeliveryAddress(addressId: string) {
-        return axios.post(urlContextPath + '/api/checkout/delivery-address', addressId, {
+        return adyenAxios.post(urlContextPath + '/api/checkout/delivery-address', addressId, {
             headers: {
                 'Content-Type': 'text/plain',
                 'CSRFToken': CSRFToken
@@ -36,7 +35,6 @@ export class AddressService {
         })
             .then(() => true)
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
             })
@@ -45,21 +43,20 @@ export class AddressService {
     static async addDeliveryAddress(address: AddressModel, saveInAddressBook: boolean, isShippingAddress: boolean, isBillingAddress: boolean,
                                     editAddress: boolean): Promise<boolean> {
         const payload = this.mapAddressModelToAddressForm(address, saveInAddressBook, isShippingAddress, isBillingAddress, editAddress);
-        return axios.post(urlContextPath + '/api/account/delivery-address', payload, {
+        return adyenAxios.post(urlContextPath + '/api/account/delivery-address', payload, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'CSRFToken': CSRFToken
             }
         }).then(() => true)
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error('Error on address select')
                 return false
             })
     }
 
     static fetchAddressConfig() {
-        axios.get(urlContextPath + '/api/configuration/shipping-address', {
+        adyenAxios.get(urlContextPath + '/api/configuration/shipping-address', {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
@@ -69,7 +66,6 @@ export class AddressService {
                 store.dispatch({type: "addressConfig/setAddressConfig", payload: addressConfigModel})
             })
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error("Address config fetch error")
                 return false
             })
