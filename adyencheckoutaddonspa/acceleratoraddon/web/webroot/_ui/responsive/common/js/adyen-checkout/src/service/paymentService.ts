@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
@@ -6,7 +6,7 @@ import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {ErrorResponse} from "../types/errorResponse";
-import {ErrorHandler} from "../components/common/ErrorHandler";
+import {adyenAxios} from "../axios/AdyenAxios";
 
 export interface PaymentResponse {
     success: boolean,
@@ -18,7 +18,7 @@ export interface PaymentResponse {
 
 export class PaymentService {
     static async placeOrder(paymentForm: AdyenPaymentForm) {
-        return axios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
+        return adyenAxios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
                 'CSRFToken': CSRFToken
@@ -42,8 +42,6 @@ export class PaymentService {
                         error: errorResponse.response.data.errorCode,
                         errorFieldCodes: errorResponse.response.data.invalidFields
                     }
-                } else {
-                    ErrorHandler.handleError(errorResponse)
                 }
             })
     }
