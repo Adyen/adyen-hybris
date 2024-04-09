@@ -1353,7 +1353,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     private AddressData convertToAddressData(AddressForm addressForm) {
         final AddressData addressData = new AddressData();
-        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIsoCode());
+        final CountryData countryData = getI18NFacade().getCountryForIsocode(addressForm.getCountryIso());
         addressData.setTitleCode(addressForm.getTitleCode());
         addressData.setFirstName(addressForm.getFirstName());
         addressData.setLastName(addressForm.getLastName());
@@ -1366,7 +1366,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         addressData.setPhone(addressForm.getPhoneNumber());
 
         if (addressForm.getRegionIso() != null && !org.apache.commons.lang.StringUtils.isEmpty(addressForm.getRegionIso())) {
-            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIsoCode(), addressForm.getRegionIso());
+            final RegionData regionData = getI18NFacade().getRegion(addressForm.getCountryIso(), addressForm.getRegionIso());
             addressData.setRegion(regionData);
         }
         return addressData;

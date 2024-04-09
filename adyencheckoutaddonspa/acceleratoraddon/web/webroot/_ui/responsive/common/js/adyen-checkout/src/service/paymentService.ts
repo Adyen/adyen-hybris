@@ -12,7 +12,8 @@ export interface PaymentResponse {
     success: boolean,
     is3DSRedirect?: boolean,
     paymentsAction?: PaymentAction,
-    error?: string
+    error?: string,
+    errorFieldCodes?: string[]
 }
 
 export class PaymentService {
@@ -38,7 +39,8 @@ export class PaymentService {
                 if (errorResponse.response.status === 400) {
                     return {
                         success: false,
-                        error: errorResponse.response.data.errorCode
+                        error: errorResponse.response.data.errorCode,
+                        errorFieldCodes: errorResponse.response.data.invalidFields
                     }
                 } else {
                     ErrorHandler.handleError(errorResponse)
@@ -49,7 +51,7 @@ export class PaymentService {
     static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AdyenAddressForm {
         return {
             addressId: address.id,
-            countryIsoCode: address.countryCode,
+            countryIso: address.countryCode,
             firstName: address.firstName,
             lastName: address.lastName,
             line1: address.line1,

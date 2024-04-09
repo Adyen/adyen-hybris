@@ -19,6 +19,8 @@ interface ComponentProps {
     addressConfig: AddressConfigModel
     addressBook: AddressModel[]
     saveInAddressBook: boolean
+    errorFieldCodes: string[]
+    errorFieldCodePrefix: string
 
     onSelectAddress: (address: AddressModel) => void
 
@@ -98,6 +100,8 @@ class AddressSection extends React.Component<Props, State> {
                 <AddressForm addressConfig={this.props.addressConfig}
                              onCountryCodeChange={(countryCode) => this.props.onCountryCodeChange(countryCode)}
                              address={this.props.address}
+                             errorFieldCodes={this.props.errorFieldCodes}
+                             errorFieldCodePrefix={this.props.errorFieldCodePrefix}
                              onTitleCodeChange={(titleCode) => this.props.onTitleCodeChange(titleCode)}
                              onFirstNameChange={(firstName) => this.props.onFirstNameChange(firstName)}
                              onLastNameChange={(lastName) => this.props.onLastNameChange(lastName)}

@@ -73,4 +73,14 @@ export const translationKeys: string[] = [
     "checkout.deliveryAddress.notSelected",
     "checkout.error.default",
     "checkout.paymentMethod.notSelected",
+
+    //address form validation
+    "address.country.invalid",
+    "address.title.invalid",
+    "address.firstName.invalid",
+    "address.lastName.invalid",
+    "address.line1.invalid",
+    "address.line2.invalid",
+    "address.townCity.invalid",
+    "address.postcode.invalid"
 ]

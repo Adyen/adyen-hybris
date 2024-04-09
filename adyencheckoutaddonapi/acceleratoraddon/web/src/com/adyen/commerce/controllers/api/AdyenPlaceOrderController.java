@@ -41,6 +41,7 @@ import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.AUT
 import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
 
 
+import static com.adyen.commerce.util.FieldValidationUtil.getFieldCodesFromValidation;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER;
@@ -80,12 +81,7 @@ public class AdyenPlaceOrderController {
     @PostMapping("/place-order")
     public ResponseEntity<PlaceOrderResponse> placeOrder(@RequestBody AdyenPaymentForm adyenPaymentForm, HttpServletRequest request) throws Exception {
 
-        final boolean selectPaymentMethodSuccess = selectPaymentMethod(adyenPaymentForm);
-
-        if (!selectPaymentMethodSuccess) {
-            LOGGER.warn("Payment form is invalid.");
-            throw new AdyenControllerException(CHECKOUT_ERROR_FORM_ENTRY_INVALID);
-        }
+        selectPaymentMethod(adyenPaymentForm);
 
         if (!isCartValid()) {
             LOGGER.warn("Cart is invalid.");
@@ -232,16 +228,16 @@ public class AdyenPlaceOrderController {
         throw new AdyenControllerException(errorMessage);
     }
 
-    private boolean selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {
+    private void selectPaymentMethod(AdyenPaymentForm adyenPaymentForm) {
         final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(adyenPaymentForm, "payment");
         adyenCheckoutFacade.handlePaymentForm(adyenPaymentForm, bindingResult);
 
 
         if (bindingResult.hasErrors()) {
-            LOGGER.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x = x + y)));
-            return false;
+            LOGGER.warn("Payment form is invalid.");
+            LOGGER.warn(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).reduce((x, y) -> (x + " " + y)));
+            throw new AdyenControllerException(CHECKOUT_ERROR_FORM_ENTRY_INVALID, getFieldCodesFromValidation(bindingResult));
         }
-        return true;
     }
 
     private ResponseEntity<PlaceOrderResponse> handleRedirect(String adyenPaymentMethod, PaymentResponse paymentResponse) {
