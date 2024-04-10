@@ -1,22 +1,38 @@
-import React, {RefObject} from "react";
+import React from "react";
 
 
 export class ScrollHere extends React.Component<{}, null> {
-    private readonly ref: RefObject<any> = undefined;
+    private scrollHereClass: string = "adyen-scroll-here";
 
-    constructor(props: {}) {
-        super(props);
-        this.ref = React.createRef();
-
-    }
-
-    componentDidMount() {
-        if (this.ref) {
-            this.ref.current.scrollIntoView({behavior: 'smooth'})
+    private scrollToFirstInstance() {
+        let elementsByClassName = document.getElementsByClassName(this.scrollHereClass);
+        if (elementsByClassName && elementsByClassName.length > 0) {
+            let newTop = this.getNewTopPosition(elementsByClassName);
+            newTop = newTop - 10;
+            window.scrollBy({top: newTop, behavior: 'smooth'});
         }
     }
 
+    private getNewTopPosition(elementsByClassName: HTMLCollectionOf<Element>) {
+        let newTop: number = undefined;
+
+        for (let i = 0; i < elementsByClassName.length; i++) {
+            let elementTop = elementsByClassName.item(i).getBoundingClientRect().top;
+            if (i === 0) {
+                newTop = elementTop;
+            }
+            if (elementTop < newTop) {
+                newTop = elementTop;
+            }
+        }
+        return newTop;
+    }
+
+    componentDidMount() {
+        this.scrollToFirstInstance()
+    }
+
     render() {
-        return <div ref={this.ref}></div>
+        return <div className={this.scrollHereClass}></div>
     }
 }

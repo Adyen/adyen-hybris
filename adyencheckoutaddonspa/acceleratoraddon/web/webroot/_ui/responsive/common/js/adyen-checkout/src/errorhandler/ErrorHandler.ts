@@ -1,8 +1,8 @@
 import {AxiosError} from "axios";
-import {ErrorResponse} from "../../types/errorResponse";
-import {isEmpty} from "../../util/stringUtil";
-import {store} from "../../store/store";
-import {createDefaultResponseData, createError} from "../../util/notificationUtil";
+import {ErrorResponse} from "../types/errorResponse";
+import {isEmpty} from "../util/stringUtil";
+import {store} from "../store/store";
+import {createDefaultResponseData, createError} from "../util/notificationUtil";
 
 export class ErrorHandler {
 
@@ -12,7 +12,6 @@ export class ErrorHandler {
             errorResponseData = createDefaultResponseData()
         } else {
             errorResponseData = error.response.data;
-
             if (!errorResponseData || isEmpty(errorResponseData.errorCode)) {
                 errorResponseData = createDefaultResponseData()
             }

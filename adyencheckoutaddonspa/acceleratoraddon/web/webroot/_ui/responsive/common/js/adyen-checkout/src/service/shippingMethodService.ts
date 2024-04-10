@@ -1,15 +1,15 @@
-import axios, {AxiosError, AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {store} from "../store/store";
 import {ShippingMethodModel} from "../reducers/types";
 import {CartData} from "../types/cartData";
 import {isEmpty} from "../util/stringUtil";
 import {ErrorResponse} from "../types/errorResponse";
-import {ErrorHandler} from "../components/common/ErrorHandler";
+import {adyenAxios} from "../axios/AdyenAxios";
 
 export class ShippingMethodService {
     public static fetchShippingMethods() {
-        axios.get(urlContextPath + '/api/checkout/delivery-methods', {
+        adyenAxios.get(urlContextPath + '/api/checkout/delivery-methods', {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
@@ -25,7 +25,6 @@ export class ShippingMethodService {
 
             })
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error('Shipping method fetch error.')
                 return false
             })
@@ -33,7 +32,7 @@ export class ShippingMethodService {
 
 
     static selectShippingMethod(shippingMethodId: string) {
-        return axios.post(urlContextPath + '/api/checkout/select-delivery-method', shippingMethodId, {
+        return adyenAxios.post(urlContextPath + '/api/checkout/select-delivery-method', shippingMethodId, {
             headers: {
                 'Content-Type': 'text/plain',
                 'CSRFToken': CSRFToken
@@ -49,7 +48,6 @@ export class ShippingMethodService {
                 return true;
             })
             .catch((errorResponse: AxiosError<ErrorResponse>) => {
-                ErrorHandler.handleError(errorResponse)
                 console.error('Error on shipping method select.')
                 return false
             })

@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
@@ -6,19 +6,20 @@ import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {ErrorResponse} from "../types/errorResponse";
-import {ErrorHandler} from "../components/common/ErrorHandler";
+import {adyenAxios} from "../axios/AdyenAxios";
 
 export interface PaymentResponse {
     success: boolean,
     is3DSRedirect?: boolean,
     paymentsAction?: PaymentAction,
     error?: string,
+    errorFieldCodes?: string[]
     orderNumber?: string
 }
 
 export class PaymentService {
     static async placeOrder(paymentForm: AdyenPaymentForm) {
-        return axios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
+        return adyenAxios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
                 'CSRFToken': CSRFToken
@@ -39,10 +40,9 @@ export class PaymentService {
                 if (errorResponse.response.status === 400) {
                     return {
                         success: false,
-                        error: errorResponse.response.data.errorCode
+                        error: errorResponse.response.data.errorCode,
+                        errorFieldCodes: errorResponse.response.data.invalidFields
                     }
-                } else {
-                    ErrorHandler.handleError(errorResponse)
                 }
             })
     }
@@ -50,7 +50,7 @@ export class PaymentService {
     static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AdyenAddressForm {
         return {
             addressId: address.id,
-            countryIsoCode: address.countryCode,
+            countryIso: address.countryCode,
             firstName: address.firstName,
             lastName: address.lastName,
             line1: address.line1,

@@ -66,7 +66,7 @@ export interface AdyenAddressForm {
     townCity: string;
     regionIso?: string;
     postcode: string;
-    countryIsoCode: string;
+    countryIso: string;
     phoneNumber: string;
     saveInAddressBook: boolean;
 }
