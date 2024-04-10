@@ -12,7 +12,8 @@ export interface PaymentResponse {
     success: boolean,
     is3DSRedirect?: boolean,
     paymentsAction?: PaymentAction,
-    error?: string
+    error?: string,
+    orderNumber?: string
 }
 
 export class PaymentService {
@@ -24,13 +25,13 @@ export class PaymentService {
             }
         })
             .then((response: AxiosResponse<any>): PaymentResponse => {
-                let placeOrderData = (response.data);
-                store.dispatch({type: "placeOrderData/setPlaceOrderData", payload: placeOrderData})
+                let placeOrderData = response.data;
 
                 return {
                     success: true,
-                    is3DSRedirect: response.data.redirectTo3DS,
-                    paymentsAction: response.data.paymentsAction
+                    is3DSRedirect: placeOrderData.redirectTo3DS,
+                    paymentsAction: placeOrderData.paymentsAction,
+                    orderNumber: placeOrderData.orderNumber
                 }
             })
             .catch((errorResponse: AxiosError<ErrorResponse>): PaymentResponse | void => {
