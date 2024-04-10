@@ -8,13 +8,10 @@ export class ErrorHandler {
 
     public static handleError(error?: AxiosError<ErrorResponse>) {
         let errorResponseData
-        if (!error) {
+        if (!error || !error.response || !error.response.data || isEmpty(error.response.data.errorCode)) {
             errorResponseData = createDefaultResponseData()
         } else {
             errorResponseData = error.response.data;
-            if (!errorResponseData || isEmpty(errorResponseData.errorCode)) {
-                errorResponseData = createDefaultResponseData()
-            }
         }
         store.dispatch({type: "notifications/addNotification", payload: createError(errorResponseData)})
     }
