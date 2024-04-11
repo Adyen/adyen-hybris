@@ -2,7 +2,6 @@ import {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
 import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
-import {store} from "../store/store";
 import {CardState} from "../types/paymentState";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {ErrorResponse} from "../types/errorResponse";
@@ -14,6 +13,7 @@ export interface PaymentResponse {
     paymentsAction?: PaymentAction,
     error?: string,
     errorFieldCodes?: string[]
+    orderNumber?: string
 }
 
 export class PaymentService {
@@ -25,13 +25,13 @@ export class PaymentService {
             }
         })
             .then((response: AxiosResponse<any>): PaymentResponse => {
-                let placeOrderData = (response.data);
-                store.dispatch({type: "placeOrderData/setPlaceOrderData", payload: placeOrderData})
+                let placeOrderData = response.data;
 
                 return {
                     success: true,
-                    is3DSRedirect: response.data.redirectTo3DS,
-                    paymentsAction: response.data.paymentsAction
+                    is3DSRedirect: placeOrderData.redirectTo3DS,
+                    paymentsAction: placeOrderData.paymentsAction,
+                    orderNumber: placeOrderData.orderNumber
                 }
             })
             .catch((errorResponse: AxiosError<ErrorResponse>): PaymentResponse | void => {

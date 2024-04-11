@@ -37,6 +37,7 @@ interface State {
     saveInAddressBook: boolean
     errorCode: string
     errorFieldCodes: string[]
+    orderNumber: string
 }
 
 interface ComponentProps {
@@ -78,7 +79,8 @@ class Payment extends React.Component<Props, State> {
             redirectTo3DS: false,
             saveInAddressBook: false,
             errorCode: this.props.errorCode ? this.props.errorCode : "",
-            errorFieldCodes: []
+            errorFieldCodes: [],
+            orderNumber: ""
         }
         this.paymentRef = React.createRef();
         this.threeDSRef = React.createRef();
@@ -178,6 +180,7 @@ class Payment extends React.Component<Props, State> {
                 if (responseData.is3DSRedirect) {
                     await this.mount3DSComponent(responseData.paymentsAction)
                 } else {
+                    this.setState({orderNumber: responseData.orderNumber})
                     this.setState({redirectToNextStep: true})
                 }
             } else {
@@ -253,9 +256,13 @@ class Payment extends React.Component<Props, State> {
         return <></>
     }
 
+    private getThankYouPageURL(): string {
+        return routes.thankYouPage + "/" + this.state.orderNumber
+    }
+
     render() {
-        if (this.state.redirectToNextStep) {
-            return <Navigate to={routes.thankYouPage}/>
+        if (this.state.redirectToNextStep && isNotEmpty(this.state.orderNumber)) {
+            return <Navigate to={this.getThankYouPageURL()}/>
         }
 
         return (

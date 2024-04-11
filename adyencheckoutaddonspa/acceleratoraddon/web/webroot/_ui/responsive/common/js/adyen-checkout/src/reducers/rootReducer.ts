@@ -15,11 +15,9 @@ import {CartDataAction, cartDataInitialState, cartDataReducer} from "./cartDataR
 import {BillingAddressAction, billingAddressReducer} from "./billingAddressReducer";
 import {AdyenConfigAction, adyenConfigInitialState, adyenConfigReducer} from "./adyenConfigReducer";
 import {AdyenConfigData} from "../types/adyenConfigData";
-import {PlaceOrderData} from "../types/placeOrderData";
-import {PlaceOrderDataAction, placeOrderDataInitialState, placeOrderDataReducer} from "./placeOrderDataReducer";
 import {LoadingAction, loadingReducer, loadingStateInitialState} from "./loadingReducer";
 import {LoadingState} from "../types/loadingState";
-import {NotificationAction, notificationReducer, notificationInitialState} from "./notificationReducer";
+import {NotificationAction, notificationInitialState, notificationReducer} from "./notificationReducer";
 
 export const initialState: AppState = {
     shippingAddress: addressInitialState,
@@ -29,7 +27,6 @@ export const initialState: AppState = {
     cartData: cartDataInitialState,
     billingAddress: addressInitialState,
     adyenConfig: adyenConfigInitialState,
-    placeOrderData: placeOrderDataInitialState,
     loadingState: loadingStateInitialState,
     notifications: notificationInitialState
 }
@@ -44,7 +41,6 @@ export const rootReducer: Reducer<AppState, RootAction, AppState> = function (ap
         cartData: cartDataReducer(appState.cartData, action),
         billingAddress: billingAddressReducer(appState.billingAddress, action),
         adyenConfig: adyenConfigReducer(appState.adyenConfig, action),
-        placeOrderData: placeOrderDataReducer(appState.placeOrderData, action),
         loadingState: loadingReducer(appState.loadingState, action),
         notifications: notificationReducer(appState.notifications, action)
     }
@@ -58,7 +54,6 @@ export interface AppState {
     cartData: CartData,
     billingAddress: AddressModel,
     adyenConfig: AdyenConfigData,
-    placeOrderData: PlaceOrderData,
     loadingState: LoadingState,
     notifications: Notification[],
 }
@@ -71,7 +66,6 @@ export type RootAction =
     | CartDataAction
     | BillingAddressAction
     | AdyenConfigAction
-    | PlaceOrderDataAction
     | LoadingAction
     | NotificationAction
 
