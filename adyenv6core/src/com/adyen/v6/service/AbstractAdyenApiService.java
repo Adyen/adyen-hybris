@@ -12,6 +12,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 public abstract class AbstractAdyenApiService {
 
     protected BaseStoreModel baseStore;
+    protected String merchantAccount;
     protected AdyenRequestFactory adyenRequestFactory;
     protected Config config;
     protected Client client;
@@ -26,8 +27,9 @@ public abstract class AbstractAdyenApiService {
     }
 
 
-    public AbstractAdyenApiService(final BaseStoreModel baseStore) {
+    public AbstractAdyenApiService(final BaseStoreModel baseStore, final String merchantAccount) {
         this.baseStore = baseStore;
+        this.merchantAccount = merchantAccount;
 
         if (Boolean.TRUE.equals(baseStore.getAdyenPosEnabled())) {
             posConfig = new Config();

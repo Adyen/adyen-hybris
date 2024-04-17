@@ -38,6 +38,7 @@
 		<editorArea:editorArea xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea">
 			<editorArea:tab name="hmc.adyen">
 				<editorArea:section name="hmc.adyen.account">
+					<editorArea:attribute qualifier="adyenMerchantConfig"/>
 					<editorArea:attribute qualifier="adyenMerchantAccount"/>
 					<editorArea:attribute qualifier="adyenImmediateCapture"/>
 					<editorArea:attribute qualifier="adyenRecurringContractMode"/>

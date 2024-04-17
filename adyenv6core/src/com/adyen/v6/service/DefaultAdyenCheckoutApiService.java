@@ -75,8 +75,8 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenCheckoutApiService.class);
 
-    public DefaultAdyenCheckoutApiService(BaseStoreModel baseStore) {
-        super(baseStore);
+    public DefaultAdyenCheckoutApiService(BaseStoreModel baseStore, String merchantAccount) {
+        super(baseStore, merchantAccount);
     }
 
 
@@ -86,7 +86,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         PaymentsApi paymentsApi = new PaymentsApi(client);
 
-        PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(baseStore.getAdyenMerchantAccount(),
+        PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(merchantAccount,
                 cartData,
                 null,
                 requestInfo,
@@ -107,7 +107,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         PosPayment posPayment = new PosPayment(posClient);
         ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
 
-        connectedTerminalsRequest.setMerchantAccount(baseStore.getAdyenMerchantAccount());
+        connectedTerminalsRequest.setMerchantAccount(merchantAccount);
         if (baseStore.getAdyenPosStoreId() != null && StringUtils.isNotEmpty(baseStore.getAdyenPosStoreId())) {
             connectedTerminalsRequest.setStore(baseStore.getAdyenPosStoreId());
         }
@@ -124,7 +124,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         PaymentsApi checkoutApi = new PaymentsApi(client);
 
-        com.adyen.model.checkout.PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(baseStore.getAdyenMerchantAccount(),
+        com.adyen.model.checkout.PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(merchantAccount,
                 cartData,
                 checkoutPaymentMethod,
                 requestInfo,
@@ -182,7 +182,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         PaymentsApi checkout = new PaymentsApi(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
-        request.merchantAccount(baseStore.getAdyenMerchantAccount()).amount(
+        request.merchantAccount(merchantAccount).amount(
                 new Amount().value(amount.longValue()).currency(currency))
                 .countryCode(countryCode);
 
@@ -231,7 +231,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         RecurringApi recurring = new RecurringApi(client);
 
-        RecurringDetailsRequest request = getAdyenRequestFactory().createListRecurringDetailsRequest(baseStore.getAdyenMerchantAccount(), customerId);
+        RecurringDetailsRequest request = getAdyenRequestFactory().createListRecurringDetailsRequest(merchantAccount, customerId);
 
         LOG.debug(request);
         RecurringDetailsResult result = recurring.listRecurringDetails(request);
@@ -251,7 +251,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         RecurringApi recurring = new RecurringApi(client);
 
-        DisableRequest request = getAdyenRequestFactory().createDisableRequest(baseStore.getAdyenMerchantAccount(), customerId, recurringReference);
+        DisableRequest request = getAdyenRequestFactory().createDisableRequest(merchantAccount, customerId, recurringReference);
 
         LOG.debug(request);
         DisableResult result = recurring.disable(request);
@@ -299,7 +299,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         createCheckoutSessionRequest.amount(new Amount()
                 .value(totalPriceWithTax.getValue().longValue())
                 .currency(totalPriceWithTax.getCurrencyIso()));
-        createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
+        createCheckoutSessionRequest.merchantAccount(merchantAccount);
         if (cartData.getDeliveryAddress() != null) {
             createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
         }
@@ -315,7 +315,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
         createCheckoutSessionRequest.amount(amount);
-        createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
+        createCheckoutSessionRequest.merchantAccount(merchantAccount);
         createCheckoutSessionRequest.returnUrl("returnUrl"); //dummy url because it's required by api
         createCheckoutSessionRequest.reference("reference"); //dummy reference because it's required by api
 

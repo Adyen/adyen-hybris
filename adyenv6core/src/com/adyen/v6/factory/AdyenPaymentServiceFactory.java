@@ -24,6 +24,7 @@ import com.adyen.v6.service.AdyenCheckoutApiService;
 import com.adyen.v6.service.AdyenModificationsApiService;
 import com.adyen.v6.service.DefaultAdyenCheckoutApiService;
 import com.adyen.v6.service.DefaultAdyenModificationsApiService;
+import com.adyen.v6.strategy.AdyenMerchantAccountStrategy;
 import de.hybris.platform.store.BaseStoreModel;
 
 /**
@@ -32,20 +33,24 @@ import de.hybris.platform.store.BaseStoreModel;
 public class AdyenPaymentServiceFactory {
 
     private final AdyenRequestFactory adyenRequestFactory;
+    protected final AdyenMerchantAccountStrategy adyenMerchantAccountStrategy;
 
 
-    public AdyenPaymentServiceFactory(final AdyenRequestFactory adyenRequestFactory) {
+    public AdyenPaymentServiceFactory(final AdyenRequestFactory adyenRequestFactory, final AdyenMerchantAccountStrategy adyenMerchantAccountStrategy) {
         this.adyenRequestFactory = adyenRequestFactory;
+        this.adyenMerchantAccountStrategy = adyenMerchantAccountStrategy;
     }
     
     public AdyenCheckoutApiService createAdyenCheckoutApiService(final BaseStoreModel baseStoreModel) {
-        DefaultAdyenCheckoutApiService defaultAdyenCheckoutApiService = new DefaultAdyenCheckoutApiService(baseStoreModel);
+        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount();
+        DefaultAdyenCheckoutApiService defaultAdyenCheckoutApiService = new DefaultAdyenCheckoutApiService(baseStoreModel, webMerchantAccount);
         defaultAdyenCheckoutApiService.setAdyenRequestFactory(adyenRequestFactory);
         return defaultAdyenCheckoutApiService;
     }
 
     public AdyenModificationsApiService createAdyenModificationsApiService(final BaseStoreModel baseStoreModel) {
-        DefaultAdyenModificationsApiService adyenModificationsApiService = new DefaultAdyenModificationsApiService(baseStoreModel);
+        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount();
+        DefaultAdyenModificationsApiService adyenModificationsApiService = new DefaultAdyenModificationsApiService(baseStoreModel, webMerchantAccount);
         adyenModificationsApiService.setAdyenRequestFactory(adyenRequestFactory);
         return adyenModificationsApiService;
     }
