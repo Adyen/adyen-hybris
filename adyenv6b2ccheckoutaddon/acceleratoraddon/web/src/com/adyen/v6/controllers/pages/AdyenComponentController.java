@@ -107,7 +107,7 @@ public class AdyenComponentController extends AbstractCheckoutController {
 
             cartData.setAdyenReturnUrl(getReturnUrl(paymentMethod));
 
-            PaymentResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, body.getPaymentMethod());
+            PaymentResponse paymentsResponse = getAdyenCheckoutFacade().componentPayment(request, cartData, body);
             return ResponseEntity.ok().body(paymentsResponse);
         } catch (InvalidCartException e) {
             LOGGER.error("InvalidCartException: " + e.getMessage());

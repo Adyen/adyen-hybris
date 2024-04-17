@@ -88,6 +88,7 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_FACILPAY_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_KLARNA;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
+import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SCHEME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_NAME;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PLUGIN_VERSION;
 import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
@@ -110,12 +111,12 @@ public class AdyenRequestFactory {
     }
 
     public PaymentRequest createPaymentsRequest(final String merchantAccount,
-                                                 final CartData cartData,
-                                                final CheckoutPaymentMethod checkoutPaymentMethod,
-                                                 final RequestInfo requestInfo,
-                                                 final CustomerModel customerModel,
-                                                 final RecurringContractMode recurringContractMode,
-                                                 final Boolean guestUserTokenizationEnabled) {
+                                                final CartData cartData,
+                                                final PaymentRequest originPaymentsRequest,
+                                                final RequestInfo requestInfo,
+                                                final CustomerModel customerModel,
+                                                final RecurringContractMode recurringContractMode,
+                                                final Boolean guestUserTokenizationEnabled) {
         final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         final Boolean is3DS2allowed = is3DS2Allowed();
         final PaymentRequest paymentsRequest = new PaymentRequest();
@@ -131,7 +132,9 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
         paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
-        paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
+        if (originPaymentsRequest != null) {
+            paymentsRequest.setPaymentMethod(originPaymentsRequest.getPaymentMethod());
+        }
 
         //For credit cards
         if (PAYMENT_METHOD_CC.equals(adyenPaymentMethod) || PAYMENT_METHOD_BCMC.equals(adyenPaymentMethod)) {
@@ -140,6 +143,17 @@ public class AdyenRequestFactory {
             } else {
                 updatePaymentRequestForCC(paymentsRequest, cartData, recurringContractMode);
             }
+            if (is3DS2allowed) {
+                enhanceForThreeDS2(paymentsRequest, cartData);
+            }
+            if (customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
+                paymentsRequest.setEnableOneClick(false);
+            }
+        } else if (PAYMENT_METHOD_SCHEME.equals(adyenPaymentMethod) && originPaymentsRequest != null) {
+            paymentsRequest.setEnableOneClick(originPaymentsRequest.getEnableOneClick());
+            paymentsRequest.setEnableRecurring(originPaymentsRequest.getEnableRecurring());
+            paymentsRequest.setRecurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+            paymentsRequest.setStorePaymentMethod(originPaymentsRequest.getStorePaymentMethod());
             if (is3DS2allowed) {
                 enhanceForThreeDS2(paymentsRequest, cartData);
             }
@@ -232,7 +246,7 @@ public class AdyenRequestFactory {
         final String shopperLocale = requestInfo.getShopperLocale();
 
         paymentsRequest
-                .amount(new Amount().value(cartData.getTotalPriceWithTax().getValue().longValue()*100).currency(currency))
+                .amount(new Amount().value(cartData.getTotalPriceWithTax().getValue().longValue() * 100).currency(currency))
                 .reference(reference)
                 .merchantAccount(merchantAccount)
                 .browserInfo(new BrowserInfo().userAgent(userAgent).acceptHeader(acceptHeader))
@@ -261,10 +275,10 @@ public class AdyenRequestFactory {
         if (Recurring.ContractEnum.RECURRING.equals(contract)) {
             paymentsRequest.setRecurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
             paymentsRequest.setEnableRecurring(true);
-            if(Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
+            if (Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
                 paymentsRequest.setEnableOneClick(true);
             }
-        } else if (Recurring.ContractEnum.ONECLICK.equals(contract) && Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails()) ) {
+        } else if (Recurring.ContractEnum.ONECLICK.equals(contract) && Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
             paymentsRequest.setEnableOneClick(true);
         } else if (Recurring.ContractEnum.RECURRING.equals(contract)) {
             paymentsRequest.setEnableRecurring(true);

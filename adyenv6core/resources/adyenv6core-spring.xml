@@ -227,6 +227,42 @@
         <property name="configurationService" ref="configurationService"/>
     </bean>
 
+    <alias name="defaultAdyenCheckoutApiFacade" alias="adyenCheckoutApiFacade" />
+    <bean id="defaultAdyenCheckoutApiFacade" class="com.adyen.commerce.facades.impl.DefaultAdyenCheckoutApiFacade">
+        <property name="countryConverter" ref="countryConverter"/>
+        <property name="baseStoreService" ref="baseStoreService"/>
+        <property name="sessionService" ref="sessionService"/>
+        <property name="cartService" ref="cartService"/>
+        <property name="orderFacade" ref="orderFacade"/>
+        <property name="checkoutFacade" ref="checkoutFacade"/>
+        <property name="adyenPaymentServiceFactory" ref="adyenPaymentServiceFactory"/>
+        <property name="adyenTransactionService" ref="adyenTransactionService"/>
+        <property name="orderRepository" ref="adyenOrderRepository"/>
+        <property name="adyenOrderService" ref="adyenOrderService"/>
+        <property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
+        <property name="modelService" ref="modelService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="keyGenerator" ref="orderCodeGenerator"/>
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+        <property name="addressReverseConverter" ref="addressReverseConverter"/>
+        <property name="posPaymentResponseConverter" ref="adyenPosPaymentResponseConverter"/>
+        <property name="orderConverter" ref="orderConverter" />
+        <property name="cartFactory" ref="cartFactory" />
+        <property name="calculationService" ref="calculationService" />
+        <property name="addressPopulator" ref="addressPopulator" />
+        <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService" />
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
+        <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
+        <property name="i18NFacade" ref="i18NFacade"/>
+        <property name="userFacade" ref="userFacade"/>
+        <property name="configurationService" ref="configurationService"/>
+    </bean>
+
+
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
         <property name="addressConverter" ref="addressConverter"/>
     </bean>

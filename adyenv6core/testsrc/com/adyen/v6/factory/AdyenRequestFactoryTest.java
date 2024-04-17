@@ -181,7 +181,7 @@ public class AdyenRequestFactoryTest {
 
         PaymentRequest paymentsRequest;
 
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new CheckoutPaymentMethod(), new RequestInfo(requestMock), customerModelMock, RecurringContractMode.RECURRING, false);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new PaymentRequest(), new RequestInfo(requestMock), customerModelMock, RecurringContractMode.RECURRING, false);
 
         //use delivery/billing address from cart
         assertEquals(DELIVERY_TOWN, paymentsRequest.getDeliveryAddress().getCity());
@@ -215,14 +215,14 @@ public class AdyenRequestFactoryTest {
         when(cartDataMock.getAdyenPaymentMethod()).thenReturn(PAYMENT_METHOD_ONECLICK);
         when(cartDataMock.getAdyenSelectedReference()).thenReturn(RECURRING_REFERENCE);
         when(cartDataMock.getAdyenRememberTheseDetails()).thenReturn(false);
-        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new CheckoutPaymentMethod(), new RequestInfo(requestMock), customerModelMock, null, false);
+        paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new PaymentRequest(), new RequestInfo(requestMock), customerModelMock, null, false);
 
         final CardDetails paymentMethodDetails = paymentsRequest.getPaymentMethod().getCardDetails();
         assertEquals(RECURRING_REFERENCE, paymentMethodDetails.getRecurringDetailReference());
     }
 
     private void testRecurringOption(final RecurringContractMode recurringContractModeSetting, final Recurring.ContractEnum expectedRecurringContractMode) {
-        PaymentRequest paymentRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new CheckoutPaymentMethod(),new RequestInfo(requestMock), customerModelMock, recurringContractModeSetting, false);
+        PaymentRequest paymentRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock, new PaymentRequest(),new RequestInfo(requestMock), customerModelMock, recurringContractModeSetting, false);
 
         if (expectedRecurringContractMode == null) {
             assertFalse(paymentRequest.getEnableRecurring());
@@ -242,7 +242,7 @@ public class AdyenRequestFactoryTest {
         final GenericIssuerPaymentMethodDetails type = new GenericIssuerPaymentMethodDetails().type(GenericIssuerPaymentMethodDetails.TypeEnum.EPS).issuer(ISSUER_ID);
         when(cartDataMock.getAdyenIssuerId()).thenReturn(ISSUER_ID);
 
-        final PaymentRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock,  new CheckoutPaymentMethod(),new RequestInfo(requestMock), customerModelMock, null, false);
+        final PaymentRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock,  new PaymentRequest(),new RequestInfo(requestMock), customerModelMock, null, false);
 
         assertNotNull(paymentsRequest);
         assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
@@ -260,7 +260,7 @@ public class AdyenRequestFactoryTest {
         when(deliveryAddressMock.getTitleCode()).thenReturn(TITLE_CODE);
 
 
-        final PaymentRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock,new CheckoutPaymentMethod(), new RequestInfo(requestMock), customerModelMock, null, false);
+        final PaymentRequest paymentsRequest = adyenRequestFactory.createPaymentsRequest(MERCHANT_ACCOUNT, cartDataMock,new PaymentRequest(), new RequestInfo(requestMock), customerModelMock, null, false);
 
         assertNotNull(paymentsRequest);
         assertEquals(RETURN_URL, paymentsRequest.getReturnUrl());
