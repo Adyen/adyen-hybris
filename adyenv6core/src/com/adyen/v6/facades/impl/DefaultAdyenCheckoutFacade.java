@@ -505,7 +505,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return response;
     }
 
-    protected void updateCartWithSessionData(CartData cartData) {
+    private void updateCartWithSessionData(CartData cartData) {
         cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
         cartData.setAdyenEncryptedCardNumber(getSessionService().getAttribute(SESSION_SF_CARD_NUMBER));
         cartData.setAdyenEncryptedExpiryMonth(getSessionService().getAttribute(SESSION_SF_EXPIRY_MONTH));
@@ -1288,7 +1288,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Override
     public void handlePaymentForm(AdyenPaymentForm adyenPaymentForm, Errors errors) {
-        //Validate form
+
         CartModel cartModel = cartService.getSessionCart();
         boolean showRememberDetails = showRememberDetails();
         boolean showSocialSecurityNumber = showSocialSecurityNumber();
@@ -1814,7 +1814,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return transactionTemplate;
     }
 
-    public UserFacade getUserFacade() {
+    protected UserFacade getUserFacade() {
         return userFacade;
     }
 }

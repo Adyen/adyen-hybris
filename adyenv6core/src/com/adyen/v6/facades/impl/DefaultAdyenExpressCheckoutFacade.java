@@ -114,7 +114,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
             ApplePayDetails applePayDetails = new ApplePayDetails();
             applePayDetails.setApplePayToken(applePayToken);
             CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(applePayDetails);
-            PaymentRequest paymentRequest =new PaymentRequest();
+            PaymentRequest paymentRequest = new PaymentRequest();
             paymentRequest.setPaymentMethod(checkoutPaymentMethod);
             PaymentResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, paymentRequest);
 
@@ -132,7 +132,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
     }
 
     public PaymentResponse expressCartCheckout(AddressData addressData, String merchantId, String merchantName,
-                                                String applePayToken, HttpServletRequest request) throws Exception {
+                                               String applePayToken, HttpServletRequest request) throws Exception {
         CustomerModel user = (CustomerModel) userService.getCurrentUser();
         if (userService.isAnonymousUser(user)) {
             user = createGuestCustomer(addressData.getEmail());

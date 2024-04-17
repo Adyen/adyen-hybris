@@ -111,12 +111,12 @@ public class AdyenRequestFactory {
     }
 
     public PaymentRequest createPaymentsRequest(final String merchantAccount,
-                                                 final CartData cartData,
-                                                 final PaymentRequest originPaymentsRequest,
-                                                 final RequestInfo requestInfo,
-                                                 final CustomerModel customerModel,
-                                                 final RecurringContractMode recurringContractMode,
-                                                 final Boolean guestUserTokenizationEnabled) {
+                                                final CartData cartData,
+                                                final PaymentRequest originPaymentsRequest,
+                                                final RequestInfo requestInfo,
+                                                final CustomerModel customerModel,
+                                                final RecurringContractMode recurringContractMode,
+                                                final Boolean guestUserTokenizationEnabled) {
         final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         final Boolean is3DS2allowed = is3DS2Allowed();
         final PaymentRequest paymentsRequest = new PaymentRequest();
@@ -132,7 +132,7 @@ public class AdyenRequestFactory {
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
         paymentsRequest.setRedirectToIssuerMethod(RequestMethod.POST.toString());
-        if(originPaymentsRequest!=null) {
+        if (originPaymentsRequest != null) {
             paymentsRequest.setPaymentMethod(originPaymentsRequest.getPaymentMethod());
         }
 
@@ -149,8 +149,7 @@ public class AdyenRequestFactory {
             if (customerModel.getType() == CustomerType.GUEST && guestUserTokenizationEnabled) {
                 paymentsRequest.setEnableOneClick(false);
             }
-        }
-        else if(PAYMENT_METHOD_SCHEME.equals(adyenPaymentMethod) && originPaymentsRequest!=null){
+        } else if (PAYMENT_METHOD_SCHEME.equals(adyenPaymentMethod) && originPaymentsRequest != null) {
             paymentsRequest.setEnableOneClick(originPaymentsRequest.getEnableOneClick());
             paymentsRequest.setEnableRecurring(originPaymentsRequest.getEnableRecurring());
             paymentsRequest.setRecurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
@@ -247,7 +246,7 @@ public class AdyenRequestFactory {
         final String shopperLocale = requestInfo.getShopperLocale();
 
         paymentsRequest
-                .amount(new Amount().value(cartData.getTotalPriceWithTax().getValue().longValue()*100).currency(currency))
+                .amount(new Amount().value(cartData.getTotalPriceWithTax().getValue().longValue() * 100).currency(currency))
                 .reference(reference)
                 .merchantAccount(merchantAccount)
                 .browserInfo(new BrowserInfo().userAgent(userAgent).acceptHeader(acceptHeader))
@@ -276,10 +275,10 @@ public class AdyenRequestFactory {
         if (Recurring.ContractEnum.RECURRING.equals(contract)) {
             paymentsRequest.setRecurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
             paymentsRequest.setEnableRecurring(true);
-            if(Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
+            if (Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
                 paymentsRequest.setEnableOneClick(true);
             }
-        } else if (Recurring.ContractEnum.ONECLICK.equals(contract) && Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails()) ) {
+        } else if (Recurring.ContractEnum.ONECLICK.equals(contract) && Boolean.TRUE.equals(cartData.getAdyenRememberTheseDetails())) {
             paymentsRequest.setEnableOneClick(true);
         } else if (Recurring.ContractEnum.RECURRING.equals(contract)) {
             paymentsRequest.setEnableRecurring(true);

@@ -19,7 +19,7 @@ import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
-import org.springframework.validation.Errors;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +28,7 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
     public static final String EXCEPTION_DURING_PROCESSING_BROWSER_INFO = "Exception during processing BrowserInfo: ";
 
     public void preHandlePlaceOrder(PaymentRequest paymentRequest, String adyenPaymentMethod,
-                                    AddressForm billingAddress, Boolean useAdyenDeliveryAddress, Errors errors) {
+                                    AddressForm billingAddress, Boolean useAdyenDeliveryAddress) {
         //Validate form
         CartModel cartModel = getCartService().getSessionCart();
 
@@ -41,7 +41,9 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
 
         if (paymentRequest.getPaymentMethod().getActualInstance() instanceof CardDetails cardDetails) {
             paymentInfo.setCardType(cardDetails.getType().getValue());
-            if (CardDetails.TypeEnum.CARD.equals(cardDetails.getType()) || CardDetails.TypeEnum.SCHEME.equals(cardDetails.getType()) || CardDetails.TypeEnum.BCMC.equals(cardDetails.getType())) {
+            if (CardDetails.TypeEnum.CARD.equals(cardDetails.getType()) ||
+                    CardDetails.TypeEnum.SCHEME.equals(cardDetails.getType()) ||
+                    CardDetails.TypeEnum.BCMC.equals(cardDetails.getType())) {
                 paymentInfo.setAdyenCardHolder(cardDetails.getHolderName());
                 paymentInfo.setCardBrand(cardDetails.getBrand());
                 paymentInfo.setAdyenSelectedReference(cardDetails.getStoredPaymentMethodId());
@@ -85,14 +87,13 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
             return browserInfo.toJson();
         } catch (JsonProcessingException e) {
             LOGGER.error(EXCEPTION_DURING_PROCESSING_BROWSER_INFO, e);
-            return EXCEPTION_DURING_PROCESSING_BROWSER_INFO + e.getMessage();
+            return StringUtils.EMPTY;
         }
     }
 
 
     @Override
     public OrderData placeOrderWithPayment(final HttpServletRequest request, final CartData cartData, PaymentRequest paymentRequest) throws Exception {
-        //updateCartWithSessionData(cartData);
 
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setShopperLocale(getShopperLocale());

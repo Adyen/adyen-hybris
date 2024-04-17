@@ -22,7 +22,7 @@ public class AmountUtil {
         Assert.isTrue(StringUtils.isNotBlank(currency), "Currency cannot be null or empty");
         Amount amount = new Amount();
         amount.setCurrency(currency);
-        amount.setValue(value.longValue()*100);
+        amount.setValue(value.longValue() * 100);
         return amount;
     }
 

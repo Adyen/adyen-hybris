@@ -185,7 +185,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         PaymentsApi checkout = new PaymentsApi(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
         request.merchantAccount(baseStore.getAdyenMerchantAccount()).amount(
-                new Amount().value(amount.longValue()).currency(currency))
+                        new Amount().value(amount.longValue()).currency(currency))
                 .countryCode(countryCode);
 
         if (!StringUtils.isEmpty(shopperLocale)) {
@@ -298,7 +298,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         final PriceData totalPriceWithTax = cartData.getTotalPriceWithTax();
 
         final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
-        createCheckoutSessionRequest.amount(AmountUtil.createAmount(totalPriceWithTax.getValue(),totalPriceWithTax.getCurrencyIso()));
+        createCheckoutSessionRequest.amount(AmountUtil.createAmount(totalPriceWithTax.getValue(), totalPriceWithTax.getCurrencyIso()));
         createCheckoutSessionRequest.merchantAccount(getBaseStore().getAdyenMerchantAccount());
         if (cartData.getDeliveryAddress() != null) {
             createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
@@ -306,7 +306,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         createCheckoutSessionRequest.returnUrl(Optional.ofNullable(cartData.getAdyenReturnUrl()).orElse("returnUrl"));
         createCheckoutSessionRequest.reference(cartData.getCode());
 
-        return  checkout.sessions(createCheckoutSessionRequest);
+        return checkout.sessions(createCheckoutSessionRequest);
     }
 
     @Override

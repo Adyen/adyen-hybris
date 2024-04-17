@@ -11,6 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface AdyenCheckoutApiFacade extends AdyenCheckoutFacade {
 
-    void preHandlePlaceOrder(PaymentRequest paymentRequest, String adyenPaymentMethod, AddressForm billingAddress, Boolean useAdyenDeliveryAddress, Errors errors);
+    void preHandlePlaceOrder(PaymentRequest paymentRequest, String adyenPaymentMethod, AddressForm billingAddress, Boolean useAdyenDeliveryAddress);
     OrderData placeOrderWithPayment(final HttpServletRequest request, final CartData cartData, PaymentRequest paymentRequest) throws Exception ;
 }
