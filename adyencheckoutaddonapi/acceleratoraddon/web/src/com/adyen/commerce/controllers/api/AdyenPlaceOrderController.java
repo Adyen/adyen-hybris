@@ -8,7 +8,10 @@ import com.adyen.commerce.validators.PaymentRequestValidator;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.util.AdyenUtil;
+import com.adyen.v6.util.TerminalAPIUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -39,13 +42,13 @@ import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.AUT
 import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
 
 
+import static com.adyen.commerce.util.FieldValidationUtil.getFieldCodesFromValidation;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 
-import static com.adyen.commerce.util.FieldValidationUtil.getFieldCodesFromValidation;
 
 @RequestMapping("/api/checkout")
 @Controller

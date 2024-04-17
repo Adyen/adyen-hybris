@@ -5,7 +5,6 @@ import {routes} from "./routes";
 import CheckoutStepWrapper from "../CheckoutStepWrapper";
 import {ShippingMethodStep} from "../components/steps/ShippingMethodStep";
 import {ThankYouPageUrlWrapper} from "../components/thank-you-page/ThankYouPageUrlWrapper";
-import ThankYouPageStoreWrapper from "../components/thank-you-page/ThankYouPageStoreWrapper";
 import {TranslationWrapper} from "../components/common/TranslationWrapper";
 import NotificationWrapper from "../components/common/NotificationWrapper";
 import {CheckoutSteps} from "../types/checkoutStepsEnum";
@@ -35,11 +34,6 @@ export const router = createBrowserRouter([
         path: routes.paymentMethod,
         element: <TranslationWrapper><NotificationWrapper
             checkoutStep={CheckoutSteps.PAYMENT_METHOD}><CheckoutStepWrapper><PaymentStep/></CheckoutStepWrapper></NotificationWrapper></TranslationWrapper>,
-    },
-    {
-        path: routes.thankYouPage,
-        element: <TranslationWrapper><NotificationWrapper
-            checkoutStep={CheckoutSteps.THANK_YOU_PAGE}><ThankYouPageStoreWrapper/></NotificationWrapper></TranslationWrapper>,
     },
     {
         path: routes.thankYouPage + "/:orderCode",

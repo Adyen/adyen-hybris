@@ -16,7 +16,7 @@ export interface AddressData {
     townCity: string;
     regionIso?: string;
     postcode: string;
-    countryIsoCode: string;
+    countryIso: string;
     phoneNumber: string;
     saveInAddressBook: boolean;
 }

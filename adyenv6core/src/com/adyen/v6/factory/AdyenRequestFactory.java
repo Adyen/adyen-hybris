@@ -169,6 +169,8 @@ public class AdyenRequestFactory {
                     .map(selectedReference -> new CheckoutPaymentMethod(getCardDetails(cartData, selectedReference)))
                     .ifPresent(paymentsRequest::paymentMethod);
 
+            paymentsRequest.setRecurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+
             if (is3DS2allowed) {
                 enhanceForThreeDS2(paymentsRequest, cartData);
             }
