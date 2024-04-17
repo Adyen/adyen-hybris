@@ -24,6 +24,7 @@ import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.PaymentCompletionDetails;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.model.checkout.PaymentDetailsResponse;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
@@ -32,6 +33,7 @@ import com.adyen.v6.forms.AdyenPaymentForm;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.product.data.ProductData;
+import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercewebservicescommons.dto.order.PaymentDetailsWsDTO;
 import de.hybris.platform.core.model.order.CartModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -42,6 +44,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 /**
  * Adyen Checkout Facade for initiating payments using CC or APM
@@ -72,6 +75,10 @@ public interface AdyenCheckoutFacade {
      * @throws InvalidCartException if cart cannot be retrieved
      */
     CartModel restoreSessionCart() throws InvalidCartException;
+
+    Set<String> getStoredCards();
+
+    boolean getHolderNameRequired();
 
     /**
      * Handles Adyen Redirect Response
@@ -104,7 +111,7 @@ public interface AdyenCheckoutFacade {
      * @return PaymentsResponse
      * @throws Exception In case payment failed
      */
-    PaymentResponse componentPayment(HttpServletRequest request, CartData cartData, CheckoutPaymentMethod checkoutPaymentMethod) throws Exception;
+    PaymentResponse componentPayment(HttpServletRequest request, CartData cartData, PaymentRequest paymentRequest) throws Exception;
 
     /**
      * Submit details from a payment made on an Adyen Checkout Component

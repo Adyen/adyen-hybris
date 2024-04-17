@@ -29,6 +29,7 @@ import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.model.checkout.PaymentMethod;
 import com.adyen.model.checkout.PaymentMethodsResponse;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.model.recurring.RecurringDetail;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
@@ -50,7 +51,7 @@ public interface AdyenCheckoutApiService {
 
     PaymentResponse authorisePayment(CartData cartData, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
-    PaymentResponse componentPayment(CartData cartData, CheckoutPaymentMethod checkoutPaymentMethod, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
+    PaymentResponse componentPayment(CartData cartData, PaymentRequest originPaymentsRequest, RequestInfo requestInfo, CustomerModel customerModel) throws Exception;
 
     PaymentDetailsResponse authorise3DSPayment(PaymentDetailsRequest paymentsDetailsRequest) throws Exception;
 

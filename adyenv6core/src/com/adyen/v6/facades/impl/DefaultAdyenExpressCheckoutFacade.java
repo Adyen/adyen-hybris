@@ -2,6 +2,7 @@ package com.adyen.v6.facades.impl;
 
 import com.adyen.model.checkout.ApplePayDetails;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
@@ -113,7 +114,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
             ApplePayDetails applePayDetails = new ApplePayDetails();
             applePayDetails.setApplePayToken(applePayToken);
             CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(applePayDetails);
-            PaymentResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, checkoutPaymentMethod);
+            PaymentRequest paymentRequest =new PaymentRequest();
+            paymentRequest.setPaymentMethod(checkoutPaymentMethod);
+            PaymentResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request, cartData, paymentRequest);
 
             sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
                     org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
@@ -160,8 +163,9 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
 
             sessionService.setAttribute(ANONYMOUS_CHECKOUT_GUID,
                     org.apache.commons.lang.StringUtils.substringBefore(cart.getUser().getUid(), "|"));
-
-            return adyenCheckoutFacade.componentPayment(request, cartData, new CheckoutPaymentMethod(applePayDetails));
+            PaymentRequest paymentRequest = new PaymentRequest();
+            paymentRequest.setPaymentMethod(new CheckoutPaymentMethod(applePayDetails));
+            return adyenCheckoutFacade.componentPayment(request, cartData, paymentRequest);
         } else {
             throw new InvalidCartException("Checkout attempt on empty cart");
         }
