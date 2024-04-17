@@ -113,11 +113,7 @@ class Payment extends React.Component<Props, State> {
                     type: 'card',
                     hasHolderName: true,
                     holderNameRequired: this.props.adyenConfig.cardHolderNameRequired,
-                    enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails,
-                    onSubmit: (state: CardState, element: UIElement) => this.handlePayment(state.data)
-                },
-                storedCard: {
-                    onSubmit: (state: CardState, element: UIElement) => this.handlePayment(state.data)
+                    enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails
                 }
             },
             paymentMethodsResponse: {

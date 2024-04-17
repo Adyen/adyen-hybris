@@ -29,7 +29,7 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
 
     public void preHandlePlaceOrder(PaymentRequest paymentRequest, String adyenPaymentMethod,
                                     AddressForm billingAddress, Boolean useAdyenDeliveryAddress) {
-        //Validate form
+
         CartModel cartModel = getCartService().getSessionCart();
 
         PaymentInfoModel paymentInfo = createPaymentInfo(cartModel, adyenPaymentMethod);
