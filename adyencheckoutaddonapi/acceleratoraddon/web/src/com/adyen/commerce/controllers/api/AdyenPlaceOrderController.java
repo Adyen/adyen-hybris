@@ -95,7 +95,7 @@ public class AdyenPlaceOrderController {
 
     private static String extractPaymentMethodType(PlaceOrderRequest placeOrderRequest) throws AdyenControllerException {
         if (placeOrderRequest == null || placeOrderRequest.getPaymentRequest() == null || placeOrderRequest.getPaymentRequest().getPaymentMethod() == null) {
-            throw new AdyenControllerException("Invalid request");
+            throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
         }
         Object actualInstance = placeOrderRequest.getPaymentRequest().getPaymentMethod().getActualInstance();
         if (actualInstance == null) {
