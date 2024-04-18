@@ -1011,13 +1011,14 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void initializeApplePayExpressCartPageData(Model model) throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
-        final String currencyIso = cartData.getTotalPriceWithTax().getCurrencyIso();
-        BigDecimal amountValue = cartData.getTotalPriceWithTax().getValue();
-        BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
+        if (cartData != null && cartData.getTotalPriceWithTax() != null && cartData.getTotalPriceWithTax().getCurrencyIso() != null) {
+            final String currencyIso = cartData.getTotalPriceWithTax().getCurrencyIso();
+            BigDecimal amountValue = cartData.getTotalPriceWithTax().getValue();
+            BigDecimal expressDeliveryModeValue = getExpressDeliveryModeValue(currencyIso);
+            amountValue = amountValue.add(expressDeliveryModeValue);
 
-        amountValue = amountValue.add(expressDeliveryModeValue);
-
-        initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
+            initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
+        }
     }
 
     public void initializeApplePayExpressPDPData(Model model, ProductData productData) throws ApiException {
