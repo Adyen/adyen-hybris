@@ -1547,6 +1547,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit());
         }
 
+        getModelService().save(cartModel);
+
         if (isAnonymousCheckout) {
             cartModel.setUser(orderModel.getUser());
             cartModel.setDeliveryAddress(orderModel.getDeliveryAddress().getOriginal());
@@ -1554,6 +1556,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             if (orderModel.getPaymentAddress() != null) {
                 cartModel.setPaymentAddress(orderModel.getPaymentAddress().getOriginal());
             }
+            getModelService().save(cartModel);
         } else {
             //Populate delivery address and mode
             AddressData deliveryAddressData = new AddressData();
@@ -1562,7 +1565,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCheckoutFacade().setDeliveryMode(orderModel.getDeliveryMode().getCode());
         }
 
-        getModelService().save(cartModel);
         getCalculationService().calculate(cartModel);
     }
 
@@ -1603,7 +1605,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return holderNameRequired;
     }
 
-    public Set<String> getStoredCards(){
+    public Set<String> getStoredCards() {
         CartModel cartModel = cartService.getSessionCart();
         return cartModel.getAdyenStoredCards();
     }
