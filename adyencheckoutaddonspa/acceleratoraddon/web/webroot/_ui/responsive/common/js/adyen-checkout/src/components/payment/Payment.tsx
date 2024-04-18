@@ -20,7 +20,6 @@ import Core from "@adyen/adyen-web/dist/types/core";
 import {PlaceOrderRequest} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
-import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
 import AddressSection from "../common/AddressSection";
 import {routes} from "../../router/routes";
@@ -136,7 +135,7 @@ class Payment extends React.Component<Props, State> {
             onError(error: AdyenCheckoutError, element?: UIElement) {
                 console.error(error.name, error.message, error.stack, element);
             },
-            onSubmit: (state: CardState, element: UIElement) => this.handlePayment(state.data)
+            onSubmit: (state: any, element: UIElement) => this.handlePayment(state.data)
         }
     }
 
