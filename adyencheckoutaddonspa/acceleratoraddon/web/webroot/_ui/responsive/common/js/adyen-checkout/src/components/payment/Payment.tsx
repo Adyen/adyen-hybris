@@ -17,10 +17,9 @@ import {CoreOptions} from "@adyen/adyen-web/dist/types/core/types";
 import {OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
 import AdyenCheckoutError from "@adyen/adyen-web/dist/types/core/Errors/AdyenCheckoutError";
 import Core from "@adyen/adyen-web/dist/types/core";
-import {AdyenPaymentForm} from "../../types/paymentForm";
+import {PlaceOrderRequest} from "../../types/paymentForm";
 import {PaymentService} from "../../service/paymentService";
 import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
-import {CardState} from "../../types/paymentState";
 import {translationsStore} from "../../store/translationsStore";
 import AddressSection from "../common/AddressSection";
 import {routes} from "../../router/routes";
@@ -113,11 +112,7 @@ class Payment extends React.Component<Props, State> {
                     type: 'card',
                     hasHolderName: true,
                     holderNameRequired: this.props.adyenConfig.cardHolderNameRequired,
-                    enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails,
-                    onSubmit: (state: CardState, element: UIElement) => this.handleBankCardPayment(state)
-                },
-                storedCard: {
-                    onSubmit: (state: CardState, element: UIElement) => this.handleStoredCardPayment(state)
+                    enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails
                 }
             },
             paymentMethodsResponse: {
@@ -140,9 +135,7 @@ class Payment extends React.Component<Props, State> {
             onError(error: AdyenCheckoutError, element?: UIElement) {
                 console.error(error.name, error.message, error.stack, element);
             },
-            onSubmit(state: any, element: UIElement) {
-                console.warn('not implemented payment method')
-            }
+            onSubmit: (state: any, element: UIElement) => this.handlePayment(state.data)
         }
     }
 
@@ -153,15 +146,8 @@ class Payment extends React.Component<Props, State> {
         this.dropIn.mount(this.paymentRef.current)
     }
 
-    private async handleBankCardPayment(cardState: CardState) {
-        let adyenPaymentForm = PaymentService.prepareBankCardAdyenPaymentForm(cardState,
-            this.state.useDifferentBillingAddress, this.isSaveInAddressBook(), this.props.billingAddress);
-
-        await this.executePaymentRequest(adyenPaymentForm)
-    }
-
-    private async handleStoredCardPayment(cardState: CardState) {
-        let adyenPaymentForm = PaymentService.prepareStoredCardAdyenPaymentForm(cardState,
+    private async handlePayment(data: any) {
+        let adyenPaymentForm = PaymentService.preparePlaceOrderRequest(data,
             this.state.useDifferentBillingAddress, this.isSaveInAddressBook(), this.props.billingAddress);
 
         await this.executePaymentRequest(adyenPaymentForm)
@@ -171,7 +157,7 @@ class Payment extends React.Component<Props, State> {
         return this.state.saveInAddressBook && this.state.useDifferentBillingAddress
     }
 
-    private async executePaymentRequest(adyenPaymentForm: AdyenPaymentForm) {
+    private async executePaymentRequest(adyenPaymentForm: PlaceOrderRequest) {
         this.setState({errorFieldCodes: []})
 
         let responseData = await PaymentService.placeOrder(adyenPaymentForm);

@@ -23,6 +23,8 @@ package com.adyen.v6.forms;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.validation.constraints.NotNull;
+
+import com.adyen.model.checkout.PaymentRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import com.adyen.util.Util;
@@ -35,6 +37,8 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PAYPAL;
  */
 public class AdyenPaymentForm {
     private static final Logger LOG = Logger.getLogger(AdyenPaymentForm.class);
+
+    private PaymentRequest paymentRequest;
 
     @NotNull
     private String paymentMethod;
@@ -419,5 +423,13 @@ public class AdyenPaymentForm {
         sb.append("    giftCardBrand: ").append(Util.toIndentedString(giftCardBrand)).append("\n");
         sb.append("}");
         return sb.toString();
+    }
+
+    public PaymentRequest getPaymentRequest() {
+        return paymentRequest;
+    }
+
+    public void setPaymentRequest(PaymentRequest paymentRequest) {
+        this.paymentRequest = paymentRequest;
     }
 }

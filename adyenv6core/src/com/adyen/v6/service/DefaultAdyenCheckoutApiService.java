@@ -50,6 +50,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.terminal.serialization.TerminalAPIGsonBuilder;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
+import com.adyen.v6.util.AmountUtil;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.product.data.PriceData;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
@@ -81,6 +82,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
 
     @Override
+    @Deprecated
     public PaymentResponse authorisePayment(final CartData cartData, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         LOG.debug("Authorize payment");
 
@@ -119,16 +121,16 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
     }
 
     @Override
-    public PaymentResponse componentPayment(final CartData cartData, CheckoutPaymentMethod checkoutPaymentMethod, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
+    public PaymentResponse componentPayment(final CartData cartData, PaymentRequest originPaymentsRequest, final RequestInfo requestInfo, final CustomerModel customerModel) throws Exception {
         LOG.debug("Component payment");
 
         PaymentsApi checkoutApi = new PaymentsApi(client);
 
-        com.adyen.model.checkout.PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(merchantAccount,
+        PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(merchantAccount,
                 cartData,
-                checkoutPaymentMethod,
+                originPaymentsRequest,
                 requestInfo,
-                customerModel, null, false);
+                customerModel, baseStore.getAdyenRecurringContractMode(), baseStore.getAdyenGuestUserTokenization());
 
         LOG.debug(paymentsRequest);
         PaymentResponse paymentsResponse = checkoutApi.payments(paymentsRequest);
@@ -296,9 +298,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         final PriceData totalPriceWithTax = cartData.getTotalPriceWithTax();
 
         final CreateCheckoutSessionRequest createCheckoutSessionRequest = new CreateCheckoutSessionRequest();
-        createCheckoutSessionRequest.amount(new Amount()
-                .value(totalPriceWithTax.getValue().longValue())
-                .currency(totalPriceWithTax.getCurrencyIso()));
+        createCheckoutSessionRequest.amount(AmountUtil.createAmount(totalPriceWithTax.getValue(), totalPriceWithTax.getCurrencyIso()));
         createCheckoutSessionRequest.merchantAccount(merchantAccount);
         if (cartData.getDeliveryAddress() != null) {
             createCheckoutSessionRequest.countryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
@@ -306,7 +306,7 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         createCheckoutSessionRequest.returnUrl(Optional.ofNullable(cartData.getAdyenReturnUrl()).orElse("returnUrl"));
         createCheckoutSessionRequest.reference(cartData.getCode());
 
-        return  checkout.sessions(createCheckoutSessionRequest);
+        return checkout.sessions(createCheckoutSessionRequest);
     }
 
     @Override

@@ -1,62 +1,12 @@
-export interface AdyenPaymentForm {
-    paymentMethod: string;
-
-    //CSE
-    cseToken?: string;
-
-    //Secured Fields
-    encryptedCardNumber?: string;
-    encryptedExpiryMonth?: string;
-    encryptedExpiryYear?: string;
-    encryptedSecurityCode?: string;
-    cardBrand?: string;
-    cardHolder?: string;
-    cardType?: string;
-    selectedReference?: string;
-    installments?: number;
-
-    //Save card
-    rememberTheseDetails?: boolean;
-
-    //HPP
-    issuerId?: string;
-    upiVirtualAddress?: string;
-
-    //SEPA direct debit fields
-    sepaOwnerName?: string;
-    sepaIbanNumber?: string;
-
-    // openinvoice fields
-    dob?: string;
-    dfValue?: string;
-
-    //Boleto
-    firstName?: string;
-    lastName?: string;
-
-    // used in openinvoice and boleto
-    socialSecurityNumber?: string;
-
-    //3DS 2.0
-    browserInfo?: string;
-
-    //POS
-    terminalId?: string;
-
-    // AfterPay fields
-    gender?: string;
-    telephoneNumber?: string;
-    shopperEmail?: string;
-
-    // Gift Card
-    giftCardBrand?: string;
+export interface PlaceOrderRequest {
+    paymentRequest: any;
 
     //Billing address related fields
     useAdyenDeliveryAddress?: boolean;
-    billingAddress?: AdyenAddressForm;
+    billingAddress?: AddressData;
 }
 
-export interface AdyenAddressForm {
+export interface AddressData {
     addressId: string;
     titleCode: string;
     firstName: string;

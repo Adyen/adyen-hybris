@@ -1,8 +1,7 @@
 import {AxiosError, AxiosResponse} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
-import {AdyenAddressForm, AdyenPaymentForm} from "../types/paymentForm";
+import {AddressData, PlaceOrderRequest} from "../types/paymentForm";
 import {AddressModel} from "../reducers/types";
-import {CardState} from "../types/paymentState";
 import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {ErrorResponse} from "../types/errorResponse";
 import {adyenAxios} from "../axios/AdyenAxios";
@@ -17,7 +16,7 @@ export interface PaymentResponse {
 }
 
 export class PaymentService {
-    static async placeOrder(paymentForm: AdyenPaymentForm) {
+    static async placeOrder(paymentForm: PlaceOrderRequest) {
         return adyenAxios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +45,7 @@ export class PaymentService {
             })
     }
 
-    static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AdyenAddressForm {
+    static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AddressData {
         return {
             addressId: address.id,
             countryIso: address.countryCode,
@@ -62,31 +61,12 @@ export class PaymentService {
         }
     }
 
-    static prepareBankCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, saveInAddressBook: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
+    static preparePlaceOrderRequest(data: any, useDifferentBillingAddress: boolean, saveInAddressBook: boolean, billingAddress?: AddressModel): PlaceOrderRequest {
         return {
-            paymentMethod: "adyen_cc",
+            paymentRequest: data,
             useAdyenDeliveryAddress: !useDifferentBillingAddress,
             billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress, saveInAddressBook) : null,
-            encryptedCardNumber: cardState.data.paymentMethod.encryptedCardNumber,
-            encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
-            encryptedExpiryMonth: cardState.data.paymentMethod.encryptedExpiryMonth,
-            encryptedExpiryYear: cardState.data.paymentMethod.encryptedExpiryYear,
-            cardHolder: cardState.data.paymentMethod.holderName,
-            browserInfo: JSON.stringify(cardState.data.browserInfo),
-            rememberTheseDetails: cardState.data.storePaymentMethod,
-            cardBrand: cardState.data.paymentMethod.brand
-        }
-    }
 
-    static prepareStoredCardAdyenPaymentForm(cardState: CardState, useDifferentBillingAddress: boolean, saveInAddressBook: boolean, billingAddress?: AddressModel): AdyenPaymentForm {
-        return {
-            paymentMethod: "adyen_oneclick_" + cardState.data.paymentMethod.storedPaymentMethodId,
-            selectedReference: cardState.data.paymentMethod.storedPaymentMethodId,
-            useAdyenDeliveryAddress: !useDifferentBillingAddress,
-            billingAddress: useDifferentBillingAddress ? this.convertBillingAddress(billingAddress, saveInAddressBook) : null,
-            encryptedSecurityCode: cardState.data.paymentMethod.encryptedSecurityCode,
-            browserInfo: JSON.stringify(cardState.data.browserInfo),
-            cardBrand: cardState.data.paymentMethod.brand
         }
     }
 }

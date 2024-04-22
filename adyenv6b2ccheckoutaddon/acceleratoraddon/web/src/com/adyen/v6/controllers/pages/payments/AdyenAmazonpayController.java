@@ -3,6 +3,7 @@ package com.adyen.v6.controllers.pages.payments;
 import com.adyen.constants.ApiConstants;
 import com.adyen.model.checkout.AmazonPayDetails;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.v6.controllers.pages.AdyenSummaryCheckoutStepController;
 import com.adyen.v6.facades.AdyenAmazonPayFacade;
@@ -63,10 +64,11 @@ public class AdyenAmazonpayController extends AdyenSummaryCheckoutStepController
 
         try {
             cart.setAdyenReturnUrl(adyenAmazonPayFacade.getReturnUrl(SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL));
-
+            PaymentRequest paymentRequest = new PaymentRequest();
+            paymentRequest.setPaymentMethod(new CheckoutPaymentMethod((new AmazonPayDetails().amazonPayToken(adyenAmazonPayFacade.getAmazonPayToken(amazonCheckoutSessionId)))));
             final PaymentResponse paymentsResponse = adyenCheckoutFacade.componentPayment(request,
                     cart,
-                    new CheckoutPaymentMethod((new AmazonPayDetails().amazonPayToken(adyenAmazonPayFacade.getAmazonPayToken(amazonCheckoutSessionId))))
+                    paymentRequest
             );
 
             if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
