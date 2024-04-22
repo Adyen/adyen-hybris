@@ -1,6 +1,5 @@
 import React from "react";
 import {CartData, OrderEntryData} from "../../types/cartData";
-import {ImageData} from "../../types/cartData";
 import {Price} from "../common/Price";
 import {urlContextPath} from "../../util/baseUrlUtil";
 import {PromotionService} from "../../service/promotionService";
