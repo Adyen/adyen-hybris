@@ -6,6 +6,7 @@ import {urlContextPath} from "../../util/baseUrlUtil";
 import {PromotionService} from "../../service/promotionService";
 import HTMLReactParser from "html-react-parser";
 import {translationsStore} from "../../store/translationsStore";
+import {MissingImage} from "../../icon/MissingImage";
 
 interface Props {
     entryData: OrderEntryData
@@ -14,16 +15,14 @@ interface Props {
 
 export class CartDetailsProduct extends React.Component<Props, null> {
 
-    private getPrimaryImage(): ImageData {
-        let filteredImages = this.props.entryData.product.images.filter(img => img.imageType === "PRIMARY");
-        if (filteredImages.length > 0) {
-            return filteredImages[0]
+    private getPrimaryImage(): React.JSX.Element {
+        if(this.props.entryData.product.images!==null){
+            let filteredImages = this.props.entryData.product.images.filter(img => img.imageType === "PRIMARY");
+            if (filteredImages.length > 0) {
+                return <img src={filteredImages[0].url} alt={filteredImages[0].altText}/>
+            }
         }
-        return {
-            url: "",
-            altText: "",
-            imageType: ""
-        }
+        return <MissingImage/>
     }
 
     private getProductUrl(): string {
@@ -55,13 +54,11 @@ export class CartDetailsProduct extends React.Component<Props, null> {
             );
         }
 
-        let primaryImage = this.getPrimaryImage();
-
         return (
             <li className="checkout-order-summary-list-items">
                 <div className="thumb">
                     <a href={this.getProductUrl()}>
-                        <img src={primaryImage.url} alt={primaryImage.altText}/>
+                        {this.getPrimaryImage()}
                     </a>
                 </div>
                 <div className="price"><Price price={this.props.entryData.totalPrice} displayFreeForZero={true}/></div>
