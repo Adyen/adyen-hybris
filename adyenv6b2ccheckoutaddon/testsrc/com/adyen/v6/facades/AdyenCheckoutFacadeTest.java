@@ -33,6 +33,7 @@ import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenTransactionService;
 import com.adyen.v6.service.DefaultAdyenCheckoutApiService;
+import com.adyen.v6.strategy.AdyenMerchantAccountStrategy;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.OrderFacade;
@@ -133,6 +134,9 @@ public class AdyenCheckoutFacadeTest {
     private CalculationService calculationServiceMock;
 
     @Mock
+    private AdyenMerchantAccountStrategy adyenMerchantAccountStrategy;
+
+    @Mock
     private OrderModel orderModelMock;
     private CartModel cartModelMock;
 
@@ -180,7 +184,7 @@ public class AdyenCheckoutFacadeTest {
         doNothing().when(calculationServiceMock).calculate(cartModelMock);
 
         doReturn(orderDataMock).when(orderConverterMock).convert(orderModelMock);
-        when(baseStoreModelMock.getAdyenMerchantAccount()).thenReturn("merchantAccount");
+        when(adyenMerchantAccountStrategy.getWebMerchantAccount()).thenReturn("merchantAccount");
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
 
         when(cartModelMock.getCode()).thenReturn(CODE);
@@ -193,7 +197,7 @@ public class AdyenCheckoutFacadeTest {
         when(cartDataMock.getCode()).thenReturn(CODE);
         when(checkoutFacadeMock.getCheckoutCart()).thenReturn(cartDataMock);
 
-        when(paymentResponseMock.getPspReference()).thenReturn("pspRef");
+//        when(paymentResponseMock.getPspReference()).thenReturn("pspRef");
 
         when(paymentsResponseMock.getPspReference()).thenReturn("pspRef");
         paymentsResponse = new PaymentResponse();

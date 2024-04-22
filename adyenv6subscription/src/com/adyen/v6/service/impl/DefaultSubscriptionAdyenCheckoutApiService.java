@@ -19,8 +19,8 @@ public class DefaultSubscriptionAdyenCheckoutApiService extends DefaultAdyenChec
 
     protected static final Logger LOG = LogManager.getLogger(DefaultSubscriptionAdyenCheckoutApiService.class);
 
-    public DefaultSubscriptionAdyenCheckoutApiService(final BaseStoreModel baseStore) {
-        super(baseStore);
+    public DefaultSubscriptionAdyenCheckoutApiService(final BaseStoreModel baseStore, final String merchantAccount) {
+        super(baseStore, merchantAccount);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class DefaultSubscriptionAdyenCheckoutApiService extends DefaultAdyenChec
 
         PaymentsApi paymentsApi = new PaymentsApi(client);
 
-        PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(baseStore.getAdyenMerchantAccount(),
+        PaymentRequest paymentsRequest = getAdyenRequestFactory().createPaymentsRequest(merchantAccount,
                 cartData,
                 null,
                 requestInfo,

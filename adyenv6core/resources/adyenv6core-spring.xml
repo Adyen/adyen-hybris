@@ -131,6 +131,7 @@
     <alias name="defaultAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
     <bean id="defaultAdyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
+        <constructor-arg name="adyenMerchantAccountStrategy" ref="adyenMerchantStrategy"/>
     </bean>
 
 
@@ -225,6 +226,7 @@
         <property name="i18NFacade" ref="i18NFacade"/>
         <property name="userFacade" ref="userFacade"/>
         <property name="configurationService" ref="configurationService"/>
+        <property name="adyenMerchantAccountStrategy" ref="adyenMerchantStrategy"/>
     </bean>
 
     <alias name="defaultAdyenCheckoutApiFacade" alias="adyenCheckoutApiFacade" />
@@ -424,5 +426,10 @@
         <property name="checkoutCustomerStrategy" ref="checkoutCustomerStrategy"/>
         <property name="customerAccountService" ref="customerAccountService"/>
         <property name="userService" ref="userService"/>
+    </bean>
+
+    <alias name="defaultAdyenMerchantStrategy" alias="adyenMerchantStrategy"/>
+    <bean id="defaultAdyenMerchantStrategy" class="com.adyen.v6.strategy.impl.DefaultAdyenMerchantAccountStrategy">
+        <property name="baseStoreService" ref="baseStoreService"/>
     </bean>
 </beans>

@@ -59,6 +59,7 @@ import com.adyen.v6.service.AdyenBusinessProcessService;
 import com.adyen.v6.service.AdyenCheckoutApiService;
 import com.adyen.v6.service.AdyenOrderService;
 import com.adyen.v6.service.AdyenTransactionService;
+import com.adyen.v6.strategy.AdyenMerchantAccountStrategy;
 import com.adyen.v6.util.AmountUtil;
 import com.adyen.v6.util.TerminalAPIUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -115,15 +116,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -191,6 +184,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private UserFacade userFacade;
     private I18NFacade i18NFacade;
     private ConfigurationService configurationService;
+    private AdyenMerchantAccountStrategy adyenMerchantAccountStrategy;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -705,6 +699,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         paymentMethods = response.getPaymentMethods();
+        if (paymentMethods == null) {
+            paymentMethods = Collections.emptyList();
+        }
 
         //apple pay
         Map<String, String> applePayConfig = getApplePayConfigFromPaymentMethods(paymentMethods);
@@ -796,6 +793,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         alternativePaymentMethods = response.getPaymentMethods();
+        if (alternativePaymentMethods == null) {
+            alternativePaymentMethods = Collections.emptyList();
+        }
 
         final List<PaymentMethod> issuerPaymentMethods = getIssuerPaymentMethods(alternativePaymentMethods);
         updateIssuerList(issuerPaymentMethods, issuerLists);
@@ -914,9 +914,13 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     @Deprecated
     private static List<PaymentMethod> getIssuerPaymentMethods(List<PaymentMethod> alternativePaymentMethods) {
-        return alternativePaymentMethods.stream()
-                .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
-                .toList();
+        if (alternativePaymentMethods != null) {
+            return alternativePaymentMethods.stream()
+                    .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
+                    .toList();
+        }
+
+        return Collections.emptyList();
     }
 
     private PaymentMethodsResponse getPaymentMethods(AdyenCheckoutApiService adyenPaymentService, CartData cartData, CustomerModel customerModel) throws IOException, ApiException {
@@ -937,16 +941,19 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
 
     private Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {
-        Optional<PaymentMethod> applePayMethod = paymentMethods.stream()
-                .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
-                        && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
-                .findFirst();
-        if (applePayMethod.isPresent()) {
-            Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
-            if (!CollectionUtils.isEmpty(applePayConfiguration)) {
-                return applePayConfiguration;
+        if (paymentMethods != null) {
+            Optional<PaymentMethod> applePayMethod = paymentMethods.stream()
+                    .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
+                            && PAYMENT_METHOD_APPLEPAY.contains(paymentMethod.getType()))
+                    .findFirst();
+            if (applePayMethod.isPresent()) {
+                Map<String, String> applePayConfiguration = applePayMethod.get().getConfiguration();
+                if (!CollectionUtils.isEmpty(applePayConfiguration)) {
+                    return applePayConfiguration;
+                }
             }
         }
+
         return new HashMap<>();
     }
 
@@ -996,7 +1003,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         //Include information for components
         model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
-        model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
+        model.addAttribute(MODEL_MERCHANT_ACCOUNT, adyenMerchantAccountStrategy.getWebMerchantAccount());
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_IMMEDIATE_CAPTURE, isImmediateCapture());
         model.addAttribute(MODEL_PAYPAL_MERCHANT_ID, baseStore.getAdyenPaypalMerchantId());
@@ -1058,7 +1065,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
         model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
         model.addAttribute(MODEL_CLIENT_KEY, baseStore.getAdyenClientKey());
-        model.addAttribute(MODEL_MERCHANT_ACCOUNT, baseStore.getAdyenMerchantAccount());
+        model.addAttribute(MODEL_MERCHANT_ACCOUNT, adyenMerchantAccountStrategy.getWebMerchantAccount());
         model.addAttribute(SESSION_DATA, getAdyenSessionData(amount));
         model.addAttribute(MODEL_AMOUNT, amount);
         model.addAttribute(MODEL_DF_URL, getAdyenPaymentService().getDeviceFingerprintUrl());
@@ -1817,5 +1824,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     protected UserFacade getUserFacade() {
         return userFacade;
+    }
+
+    public void setAdyenMerchantAccountStrategy(AdyenMerchantAccountStrategy adyenMerchantAccountStrategy) {
+        this.adyenMerchantAccountStrategy = adyenMerchantAccountStrategy;
     }
 }

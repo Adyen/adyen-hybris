@@ -18,8 +18,8 @@ public class DefaultAdyenModificationsApiService extends AbstractAdyenApiService
 
     private static final Logger LOG = Logger.getLogger(DefaultAdyenModificationsApiService.class);
 
-    public DefaultAdyenModificationsApiService(BaseStoreModel baseStore) {
-        super(baseStore);
+    public DefaultAdyenModificationsApiService(BaseStoreModel baseStore, String merchantAccount) {
+        super(baseStore, merchantAccount);
     }
 
     @Override
@@ -31,10 +31,10 @@ public class DefaultAdyenModificationsApiService extends AbstractAdyenApiService
         final PaymentCaptureRequest captureRequest = new PaymentCaptureRequest();
         captureRequest.setAmount(AmountUtil.createAmount(amount, currency.getCurrencyCode()));
         captureRequest.setReference(merchantReference);
-        captureRequest.setMerchantAccount(getBaseStore().getAdyenMerchantAccount());
+        captureRequest.setMerchantAccount(merchantAccount);
 
         LOG.debug(captureRequest);
-        PaymentCaptureResponse paymentCaptureResponse = modificationsApi.captureAuthorisedPayment(getBaseStore().getAdyenMerchantAccount(), captureRequest);
+        PaymentCaptureResponse paymentCaptureResponse = modificationsApi.captureAuthorisedPayment(merchantAccount, captureRequest);
         LOG.debug(paymentCaptureResponse);
 
         return paymentCaptureResponse;
@@ -49,7 +49,7 @@ public class DefaultAdyenModificationsApiService extends AbstractAdyenApiService
 
         final PaymentReversalRequest reversalRequest = new PaymentReversalRequest();
         reversalRequest.setReference(merchantReference);
-        reversalRequest.setMerchantAccount(getBaseStore().getAdyenMerchantAccount());
+        reversalRequest.setMerchantAccount(merchantAccount);
 
         LOG.debug(reversalRequest);
         PaymentReversalResponse paymentReversalResponse = modificationsApi.refundOrCancelPayment(paymentPspReference, reversalRequest);
@@ -65,7 +65,7 @@ public class DefaultAdyenModificationsApiService extends AbstractAdyenApiService
 
         final PaymentRefundRequest paymentRefundRequest = new PaymentRefundRequest();
         paymentRefundRequest.setAmount(AmountUtil.createAmount(amount, currency.getCurrencyCode()));
-        paymentRefundRequest.setMerchantAccount(getBaseStore().getAdyenMerchantAccount());
+        paymentRefundRequest.setMerchantAccount(merchantAccount);
         paymentRefundRequest.setReference(reference);
 
         LOG.debug(paymentRefundRequest);
