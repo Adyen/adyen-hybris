@@ -184,8 +184,8 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
 
         PaymentsApi checkout = new PaymentsApi(client);
         PaymentMethodsRequest request = new PaymentMethodsRequest();
-        request.merchantAccount(baseStore.getAdyenMerchantAccount()).amount(
-                        new Amount().value(amount.longValue()).currency(currency))
+        request.merchantAccount(baseStore.getAdyenMerchantAccount())
+                .amount(AmountUtil.createAmount(amount, currency))
                 .countryCode(countryCode);
 
         if (!StringUtils.isEmpty(shopperLocale)) {
