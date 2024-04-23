@@ -981,7 +981,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         final AdyenCheckoutApiService adyenCheckoutApiService = getAdyenPaymentService();
         final BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
-        final Amount amount = AmountUtil.createAmount(cartData.getTotalPriceWithTax().getValue().longValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
+        final Amount amount = AmountUtil.createAmount(cartData.getTotalPriceWithTax().getValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
         final Gson gson = new Gson();
         final String shopperLocale = getShopperLocale();
         final String countryCode = Objects.nonNull(cartData.getDeliveryAddress()) &&
@@ -1053,7 +1053,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             LOGGER.error("Payment methods request failed", e);
         }
 
-        final Amount amount = AmountUtil.createAmount(amountValue.longValue(), currency);
+        final Amount amount = AmountUtil.createAmount(amountValue, currency);
 
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
         model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
