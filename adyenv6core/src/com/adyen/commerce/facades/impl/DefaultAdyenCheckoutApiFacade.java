@@ -6,6 +6,8 @@ import com.adyen.model.checkout.ApplePayDetails;
 import com.adyen.model.checkout.BrowserInfo;
 import com.adyen.model.checkout.CardDetails;
 import com.adyen.model.checkout.PaymentDetails;
+import com.adyen.model.checkout.PaymentDetailsRequest;
+import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.model.checkout.PaymentRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
@@ -17,6 +19,7 @@ import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.core.model.order.CartModel;
+import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.AddressModel;
 import org.apache.commons.lang3.StringUtils;
@@ -101,7 +104,7 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
         PaymentResponse paymentResponse = getAdyenPaymentService().componentPayment(cartData, paymentRequest, requestInfo, getCheckoutCustomerStrategy().getCurrentUserForCheckout());
         if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
-            placePendingOrder(paymentResponse.getResultCode());
+            placePendingOrder(paymentResponse.getResultCode().getValue());
             throw new AdyenNonAuthorizedPaymentException(paymentResponse);
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED == paymentResponse.getResultCode()) {
@@ -110,6 +113,26 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
         }
 
         throw new AdyenNonAuthorizedPaymentException(paymentResponse);
+    }
+
+    @Override
+    public OrderData placeOrderWithAdditionalDetails(PaymentDetailsRequest detailsRequest) throws Exception {
+
+        PaymentDetailsResponse paymentsDetailsResponse = this.componentDetails(detailsRequest);
+
+        if (PaymentDetailsResponse.ResultCodeEnum.PENDING == paymentsDetailsResponse.getResultCode() || PaymentDetailsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsDetailsResponse.getResultCode()) {
+            LOGGER.info("Placing pending order");
+            placePendingOrder(paymentsDetailsResponse.getResultCode().getValue());
+            throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
+        }
+        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED == paymentsDetailsResponse.getResultCode()) {
+            LOGGER.info("Creating authorized order");
+            String orderCode = paymentsDetailsResponse.getMerchantReference();
+            OrderModel orderModel = retrievePendingOrder(orderCode);
+            return getOrderConverter().convert(orderModel);
+        }
+
+        throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
     }
 
 
