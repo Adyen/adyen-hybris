@@ -22,7 +22,6 @@ package com.adyen.v6.facades.impl;
 
 
 import com.adyen.model.checkout.Amount;
-import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.CreateCheckoutSessionResponse;
 import com.adyen.model.checkout.PaymentCompletionDetails;
 import com.adyen.model.checkout.PaymentDetailsRequest;
@@ -110,10 +109,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -450,7 +447,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return createOrderFromPaymentResponse(paymentResponse);
         }
         if (PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == resultCode) {
-            placePendingOrder(resultCode);
+            placePendingOrder(resultCode.getValue());
             if (adyenPaymentMethod.startsWith(PAYMENT_METHOD_KLARNA)) {
                 getSessionService().setAttribute(PAYMENT_METHOD, adyenPaymentMethod);
             }
@@ -464,7 +461,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (PaymentResponse.ResultCodeEnum.PENDING.getValue().equals(paymentResultDTO.getResultCode()) ||
                 PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER.getValue().equals(paymentResultDTO.getResultCode())) {
             LOGGER.info("Placing pending order");
-            return placePendingOrder(PaymentResponse.ResultCodeEnum.fromValue(paymentResultDTO.getResultCode()));
+            return placePendingOrder(paymentResultDTO.getResultCode());
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED.getValue().equals(paymentResultDTO.getResultCode())) {
             LOGGER.info("Placing authorized order");
@@ -483,7 +480,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentResponse paymentResponse = getAdyenPaymentService().componentPayment(cartData, paymentRequest, requestInfo, getCheckoutCustomerStrategy().getCurrentUserForCheckout());
         if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
-            placePendingOrder(paymentResponse.getResultCode());
+            placePendingOrder(paymentResponse.getResultCode().getValue());
             return paymentResponse;
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED == paymentResponse.getResultCode()) {
@@ -594,10 +591,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
-    protected OrderData placePendingOrder(PaymentResponse.ResultCodeEnum resultCode) throws InvalidCartException {
+    protected OrderData placePendingOrder(String resultCode) throws InvalidCartException {
         CartModel cartModel = getCartService().getSessionCart();
         cartModel.setStatus(OrderStatus.PAYMENT_PENDING);
-        cartModel.setStatusInfo(resultCode.getValue());
+        cartModel.setStatusInfo(resultCode);
         getModelService().save(cartModel);
 
         OrderData orderData = getCheckoutFacade().placeOrder();
@@ -1499,7 +1496,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(merchantReference);
     }
 
-    private OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
+    protected OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
         if (orderCode == null || orderCode.isEmpty()) {
             throw new InvalidCartException("Could not retrieve pending order: missing orderCode!");
         }

@@ -3,7 +3,6 @@ package com.adyen.commerce.validators;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.model.checkout.CardDetails;
 import com.adyen.model.checkout.PaymentRequest;
-import com.adyen.v6.forms.AdyenPaymentForm;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
@@ -11,8 +10,6 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.util.Set;
-
-import static com.adyen.v6.constants.Adyenv6coreConstants.RATEPAY;
 
 public class PaymentRequestValidator implements Validator {
 
@@ -46,7 +43,11 @@ public class PaymentRequestValidator implements Validator {
 
         if (paymentRequest.getPaymentMethod().getActualInstance() instanceof CardDetails cardDetails) {
             //Check selectedReference in case of oneClick
-            if (StringUtils.isNotBlank(cardDetails.getStoredPaymentMethodId())) {
+            if (CardDetails.TypeEnum.GIFTCARD.equals(cardDetails.getType())) {
+                if (StringUtils.isEmpty(cardDetails.getEncryptedSecurityCode()) || StringUtils.isEmpty(cardDetails.getEncryptedCardNumber())) {
+                    errors.reject("checkout.error.paymentmethod.cse.missing");
+                }
+            } else if (StringUtils.isNotBlank(cardDetails.getStoredPaymentMethodId())) {
                 if (storedCards == null || !storedCards.contains(cardDetails.getStoredPaymentMethodId())) {
                     errors.reject("checkout.error.paymentmethod.recurringDetailReference.invalid");
                 }

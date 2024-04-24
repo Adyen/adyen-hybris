@@ -14,12 +14,12 @@ import '@adyen/adyen-web/dist/adyen.css';
 import {AdyenConfigData} from "../../types/adyenConfigData";
 import {isEmpty, isNotEmpty} from "../../util/stringUtil";
 import {CoreOptions} from "@adyen/adyen-web/dist/types/core/types";
-import {OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
+import {ActionHandledReturnObject, OnPaymentCompletedData} from "@adyen/adyen-web/dist/types/components/types";
 import AdyenCheckoutError from "@adyen/adyen-web/dist/types/core/Errors/AdyenCheckoutError";
 import Core from "@adyen/adyen-web/dist/types/core";
 import {PlaceOrderRequest} from "../../types/paymentForm";
-import {PaymentService} from "../../service/paymentService";
-import UIElement from "@adyen/adyen-web/dist/types/components/UIElement";
+import {PaymentService, PlaceOrderResponse} from "../../service/paymentService";
+import {UIElement} from "@adyen/adyen-web/dist/types/components/UIElement";
 import {translationsStore} from "../../store/translationsStore";
 import AddressSection from "../common/AddressSection";
 import {routes} from "../../router/routes";
@@ -32,7 +32,7 @@ import DropinElement from "@adyen/adyen-web/dist/types/components/Dropin";
 interface State {
     useDifferentBillingAddress: boolean
     redirectToNextStep: boolean
-    redirectTo3DS: boolean
+    executeAction: boolean
     saveInAddressBook: boolean
     errorCode: string
     errorFieldCodes: string[]
@@ -75,7 +75,7 @@ class Payment extends React.Component<Props, State> {
         this.state = {
             useDifferentBillingAddress: false,
             redirectToNextStep: false,
-            redirectTo3DS: false,
+            executeAction: false,
             saveInAddressBook: false,
             errorCode: this.props.errorCode ? this.props.errorCode : "",
             errorFieldCodes: [],
@@ -135,7 +135,11 @@ class Payment extends React.Component<Props, State> {
             onError(error: AdyenCheckoutError, element?: UIElement) {
                 console.error(error.name, error.message, error.stack, element);
             },
-            onSubmit: (state: any, element: UIElement) => this.handlePayment(state.data)
+            onSubmit: (state: any, element: UIElement) => this.handlePayment(state.data),
+            onAdditionalDetails: (state: any, element?: UIElement) => this.handleAdditionalDetails(state.data),
+            onActionHandled(data: ActionHandledReturnObject) {
+                console.log("onActionHandled", data);
+            }
         }
     }
 
@@ -153,17 +157,21 @@ class Payment extends React.Component<Props, State> {
         await this.executePaymentRequest(adyenPaymentForm)
     }
 
+    private async handleAdditionalDetails(data: any) {
+        await this.executeAdditionalDetails(data)
+    }
+
     private isSaveInAddressBook(): boolean {
         return this.state.saveInAddressBook && this.state.useDifferentBillingAddress
     }
 
-    private async executePaymentRequest(adyenPaymentForm: PlaceOrderRequest) {
+    private async handleResponse(response: Promise<void | PlaceOrderResponse>) {
         this.setState({errorFieldCodes: []})
 
-        let responseData = await PaymentService.placeOrder(adyenPaymentForm);
+        let responseData = await response;
         if (!!responseData) {
             if (responseData.success) {
-                if (responseData.is3DSRedirect) {
+                if (responseData.executeAction) {
                     await this.mount3DSComponent(responseData.paymentsAction)
                 } else {
                     this.setState({orderNumber: responseData.orderNumber})
@@ -175,6 +183,14 @@ class Payment extends React.Component<Props, State> {
             }
             this.setState({errorCode: responseData.error})
         }
+    }
+
+    private async executePaymentRequest(adyenPaymentForm: PlaceOrderRequest) {
+        await this.handleResponse(PaymentService.placeOrder(adyenPaymentForm));
+    }
+
+    private async executeAdditionalDetails(details: any) {
+        await this.handleResponse(PaymentService.sendAdditionalDetails(details));
     }
 
     private resetDropInComponent() {
