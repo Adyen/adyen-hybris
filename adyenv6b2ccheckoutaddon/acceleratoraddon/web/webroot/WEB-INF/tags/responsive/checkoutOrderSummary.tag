@@ -10,7 +10,8 @@
 <spring:url value="/checkout/multi/adyen/summary/placeOrder" var="placeOrderUrl"/>
 <spring:url value="/checkout/multi/termsAndConditions" var="getTermsAndConditionsUrl"/>
 
-<c:set var="componentsWithPayButton" value="[amazonpay],[applepay],[paypal],[paywithgoogle],[pix],[bcmc_mobile],[upi]" />
+<c:set var="componentsWithPayButton"
+       value="[amazonpay],[applepay],[paypal],[paywithgoogle],[googlepay],[pix],[bcmc_mobile],[upi]"/>
 <c:set var="componentPaymentMethod" value="[${selectedPaymentMethod}]" />
 
 <%-- Components --%>
@@ -61,6 +62,13 @@
 <c:if test="${componentPaymentMethod eq '[giftcard]'}">
     <div class="chckt-pm__header js-chckt-pm__header">
         <spring:theme code="checkout.summary.component.giftcard.payment"/>
+    </div>
+    <div id="adyen-component-container-${label}"></div>
+</c:if>
+
+<c:if test="${componentPaymentMethod eq '[googlepay]'}">
+    <div class="chckt-pm__header js-chckt-pm__header">
+        <spring:theme code="checkout.summary.component.googlepay.payment"/>
     </div>
     <div id="adyen-component-container-${label}"></div>
 </c:if>

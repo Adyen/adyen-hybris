@@ -6,9 +6,9 @@ import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {ErrorResponse} from "../types/errorResponse";
 import {adyenAxios} from "../axios/AdyenAxios";
 
-export interface PaymentResponse {
+export interface PlaceOrderResponse {
     success: boolean,
-    is3DSRedirect?: boolean,
+    executeAction?: boolean,
     paymentsAction?: PaymentAction,
     error?: string,
     errorFieldCodes?: string[]
@@ -17,23 +17,23 @@ export interface PaymentResponse {
 
 export class PaymentService {
     static async placeOrder(paymentForm: PlaceOrderRequest) {
-        return adyenAxios.post<PaymentResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
+        return adyenAxios.post<PlaceOrderResponse>(urlContextPath + '/api/checkout/place-order', paymentForm, {
             headers: {
                 'Content-Type': 'application/json',
                 'CSRFToken': CSRFToken
             }
         })
-            .then((response: AxiosResponse<any>): PaymentResponse => {
+            .then((response: AxiosResponse<any>): PlaceOrderResponse => {
                 let placeOrderData = response.data;
 
                 return {
                     success: true,
-                    is3DSRedirect: placeOrderData.redirectTo3DS,
+                    executeAction: placeOrderData.executeAction,
                     paymentsAction: placeOrderData.paymentsAction,
                     orderNumber: placeOrderData.orderNumber
                 }
             })
-            .catch((errorResponse: AxiosError<ErrorResponse>): PaymentResponse | void => {
+            .catch((errorResponse: AxiosError<ErrorResponse>): PlaceOrderResponse | void => {
                 console.error('Error on place order')
                 if (errorResponse.response.status === 400) {
                     return {
@@ -44,6 +44,36 @@ export class PaymentService {
                 }
             })
     }
+
+    static async sendAdditionalDetails(details: any) {
+        return adyenAxios.post<PlaceOrderResponse>(urlContextPath + '/api/checkout/additional-details', details, {
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRFToken': CSRFToken
+            }
+        })
+            .then((response: AxiosResponse<any>): PlaceOrderResponse => {
+                let placeOrderData = response.data;
+
+                return {
+                    success: true,
+                    executeAction: placeOrderData.executeAction,
+                    paymentsAction: placeOrderData.paymentsAction,
+                    orderNumber: placeOrderData.orderNumber
+                }
+            })
+            .catch((errorResponse: AxiosError<ErrorResponse>): PlaceOrderResponse | void => {
+                console.error('Error on place order')
+                if (errorResponse.response.status === 400) {
+                    return {
+                        success: false,
+                        error: errorResponse.response.data.errorCode,
+                        errorFieldCodes: errorResponse.response.data.invalidFields
+                    }
+                }
+            })
+    }
+
 
     static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AddressData {
         return {

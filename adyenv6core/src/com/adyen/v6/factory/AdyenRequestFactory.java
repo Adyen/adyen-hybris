@@ -33,7 +33,9 @@ import com.adyen.model.checkout.ExternalPlatform;
 import com.adyen.model.checkout.Installments;
 import com.adyen.model.checkout.LineItem;
 import com.adyen.model.checkout.Name;
+import com.adyen.model.checkout.PaymentDetails;
 import com.adyen.model.checkout.PaymentRequest;
+import com.adyen.model.checkout.StoredPaymentMethodDetails;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.MessageCategoryType;
@@ -51,6 +53,7 @@ import com.adyen.v6.constants.Adyenv6coreConstants;
 import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.model.RequestInfo;
 import com.adyen.v6.util.AdyenUtil;
+import com.adyen.v6.util.AmountUtil;
 import com.google.gson.Gson;
 import de.hybris.platform.commercefacades.order.data.CCPaymentInfoData;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -246,7 +249,7 @@ public class AdyenRequestFactory {
         final String shopperLocale = requestInfo.getShopperLocale();
 
         paymentsRequest
-                .amount(new Amount().value(cartData.getTotalPriceWithTax().getValue().longValue() * 100).currency(currency))
+                .amount(AmountUtil.createAmount(cartData.getTotalPriceWithTax().getValue(), currency))
                 .reference(reference)
                 .merchantAccount(merchantAccount)
                 .browserInfo(new BrowserInfo().userAgent(userAgent).acceptHeader(acceptHeader))
@@ -342,6 +345,25 @@ public class AdyenRequestFactory {
                 || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)
                 || adyenPaymentMethod.contains(RATEPAY)) {
             setOpenInvoiceData(paymentsRequest, cartData);
+        }
+        if (paymentsRequest.getPaymentMethod() == null) {
+            try {
+                PaymentDetails paymentDetails = new PaymentDetails();
+                paymentDetails.setType(PaymentDetails.TypeEnum.fromValue(adyenPaymentMethod));
+                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
+                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
+                return;
+            } catch (IllegalArgumentException e) {
+            }
+            try {
+                StoredPaymentMethodDetails paymentDetails = new StoredPaymentMethodDetails();
+                paymentDetails.setType(StoredPaymentMethodDetails.TypeEnum.fromValue(adyenPaymentMethod));
+                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
+                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
+                return;
+            } catch (IllegalArgumentException e) {
+            }
+            LOG.error("Payment method not recognized: " + adyenPaymentMethod);
         }
     }
 
@@ -664,7 +686,7 @@ public class AdyenRequestFactory {
              * The price for one item in the invoice line, represented in minor units.
              * The due amount for the item, VAT excluded.
              */
-            final Amount itemAmount = new Amount().value(entry.getBasePrice().getValue().longValue()).currency(currency);
+            final Amount itemAmount = AmountUtil.createAmount(entry.getBasePrice().getValue(), currency);
 
             if (cartData.isNet()) {
                 invoiceLine.setAmountExcludingTax(itemAmount.getValue());
@@ -691,7 +713,7 @@ public class AdyenRequestFactory {
             final LineItem invoiceLine = new LineItem();
             invoiceLine.setDescription("Delivery Costs");
 
-            final Amount deliveryAmount = new Amount().value(cartData.getDeliveryCost().getValue().longValue()).currency(currency);
+            final Amount deliveryAmount = AmountUtil.createAmount(cartData.getDeliveryCost().getValue(), currency);
 
             if (cartData.isNet()) {
                 final Double taxAmount = cartData.getEntries().stream()

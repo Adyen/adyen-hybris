@@ -26,3 +26,8 @@
 .alert {
     scroll-margin-top: 10px;
 }
+
+.checkout-order-summary .checkout-order-summary-list .thumb svg {
+    width: 100%;
+    height: auto;
+}
