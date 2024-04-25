@@ -5,6 +5,7 @@ import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.commerce.validators.PaymentRequestValidator;
+import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
@@ -40,6 +41,7 @@ import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalR
 import static com.adyen.commerce.util.FieldValidationUtil.getFieldCodesFromValidation;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER;
+import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.PENDING;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REFUSED;
 import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY_TOUCH;
@@ -93,6 +95,23 @@ public class AdyenPlaceOrderController {
         return handlePayment(request, placeOrderRequest, adyenPaymentMethodType);
     }
 
+    @RequireHardLogIn
+    @PostMapping("/additional-details")
+    public ResponseEntity<PlaceOrderResponse> onAdditionalDetails(@RequestBody PaymentDetailsRequest detailsRequest, HttpServletRequest request) throws Exception {
+        try {
+            OrderData orderData = adyenCheckoutApiFacade.placeOrderWithAdditionalDetails(detailsRequest);
+            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            placeOrderResponse.setOrderNumber(orderData.getCode());
+            return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
+        } catch (ApiException e) {
+            LOGGER.error("ApiException: " + e);
+            throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
+        } catch (Exception e) {
+            LOGGER.error("Exception", e);
+            throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
+        }
+    }
+
     private static String extractPaymentMethodType(PlaceOrderRequest placeOrderRequest) throws AdyenControllerException {
         if (placeOrderRequest == null || placeOrderRequest.getPaymentRequest() == null || placeOrderRequest.getPaymentRequest().getPaymentMethod() == null) {
             throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
@@ -127,6 +146,14 @@ public class AdyenPlaceOrderController {
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.info("Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.");
             PaymentResponse paymentsResponse = e.getPaymentsResponse();
+            if (PENDING == paymentsResponse.getResultCode()) {
+                LOGGER.info("PaymentResponse is PENDING, pspReference: " + paymentsResponse.getPspReference());
+                PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+                placeOrderResponse.setPaymentsResponse(paymentsResponse);
+                placeOrderResponse.setExecuteAction(true);
+                placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
+                return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
+            }
             if (REDIRECTSHOPPER == paymentsResponse.getResultCode()) {
                 return handleRedirect(adyenPaymentMethod, paymentsResponse);
             }
@@ -183,7 +210,7 @@ public class AdyenPlaceOrderController {
 
     private ResponseEntity<PlaceOrderResponse> redirectTo3DSValidation(PaymentResponse paymentsResponse) {
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-        placeOrderResponse.setRedirectTo3DS(true);
+        placeOrderResponse.setExecuteAction(true);
         placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
 
         return ResponseEntity.ok(placeOrderResponse);

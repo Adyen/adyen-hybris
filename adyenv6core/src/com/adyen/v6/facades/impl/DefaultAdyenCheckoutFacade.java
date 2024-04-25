@@ -22,7 +22,6 @@ package com.adyen.v6.facades.impl;
 
 
 import com.adyen.model.checkout.Amount;
-import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.CreateCheckoutSessionResponse;
 import com.adyen.model.checkout.PaymentCompletionDetails;
 import com.adyen.model.checkout.PaymentDetailsRequest;
@@ -111,10 +110,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -444,7 +441,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             return createOrderFromPaymentResponse(paymentResponse);
         }
         if (PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == resultCode) {
-            placePendingOrder(resultCode);
+            placePendingOrder(resultCode.getValue());
             if (adyenPaymentMethod.startsWith(PAYMENT_METHOD_KLARNA)) {
                 getSessionService().setAttribute(PAYMENT_METHOD, adyenPaymentMethod);
             }
@@ -458,7 +455,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         if (PaymentResponse.ResultCodeEnum.PENDING.getValue().equals(paymentResultDTO.getResultCode()) ||
                 PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER.getValue().equals(paymentResultDTO.getResultCode())) {
             LOGGER.info("Placing pending order");
-            return placePendingOrder(PaymentResponse.ResultCodeEnum.fromValue(paymentResultDTO.getResultCode()));
+            return placePendingOrder(paymentResultDTO.getResultCode());
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED.getValue().equals(paymentResultDTO.getResultCode())) {
             LOGGER.info("Placing authorized order");
@@ -477,7 +474,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         PaymentResponse paymentResponse = getAdyenPaymentService().componentPayment(cartData, paymentRequest, requestInfo, getCheckoutCustomerStrategy().getCurrentUserForCheckout());
         if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
-            placePendingOrder(paymentResponse.getResultCode());
+            placePendingOrder(paymentResponse.getResultCode().getValue());
             return paymentResponse;
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED == paymentResponse.getResultCode()) {
@@ -588,10 +585,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
-    protected OrderData placePendingOrder(PaymentResponse.ResultCodeEnum resultCode) throws InvalidCartException {
+    protected OrderData placePendingOrder(String resultCode) throws InvalidCartException {
         CartModel cartModel = getCartService().getSessionCart();
         cartModel.setStatus(OrderStatus.PAYMENT_PENDING);
-        cartModel.setStatusInfo(resultCode.getValue());
+        cartModel.setStatusInfo(resultCode);
         getModelService().save(cartModel);
 
         OrderData orderData = getCheckoutFacade().placeOrder();
@@ -988,7 +985,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         final AdyenCheckoutApiService adyenCheckoutApiService = getAdyenPaymentService();
         final BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
-        final Amount amount = AmountUtil.createAmount(cartData.getTotalPriceWithTax().getValue().longValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
+        final Amount amount = AmountUtil.createAmount(cartData.getTotalPriceWithTax().getValue(), cartData.getTotalPriceWithTax().getCurrencyIso());
         final Gson gson = new Gson();
         final String shopperLocale = getShopperLocale();
         final String countryCode = Objects.nonNull(cartData.getDeliveryAddress()) &&
@@ -1060,7 +1057,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             LOGGER.error("Payment methods request failed", e);
         }
 
-        final Amount amount = AmountUtil.createAmount(amountValue.longValue(), currency);
+        final Amount amount = AmountUtil.createAmount(amountValue, currency);
 
         model.addAttribute(SHOPPER_LOCALE, getShopperLocale());
         model.addAttribute(MODEL_ENVIRONMENT_MODE, getEnvironmentMode());
@@ -1506,7 +1503,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(merchantReference);
     }
 
-    private OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
+    protected OrderModel retrievePendingOrder(String orderCode) throws InvalidCartException {
         if (orderCode == null || orderCode.isEmpty()) {
             throw new InvalidCartException("Could not retrieve pending order: missing orderCode!");
         }
@@ -1555,6 +1552,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit());
         }
 
+        getModelService().save(cartModel);
+
         if (isAnonymousCheckout) {
             cartModel.setUser(orderModel.getUser());
             cartModel.setDeliveryAddress(orderModel.getDeliveryAddress().getOriginal());
@@ -1562,6 +1561,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             if (orderModel.getPaymentAddress() != null) {
                 cartModel.setPaymentAddress(orderModel.getPaymentAddress().getOriginal());
             }
+            getModelService().save(cartModel);
         } else {
             //Populate delivery address and mode
             AddressData deliveryAddressData = new AddressData();
@@ -1570,7 +1570,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCheckoutFacade().setDeliveryMode(orderModel.getDeliveryMode().getCode());
         }
 
-        getModelService().save(cartModel);
         getCalculationService().calculate(cartModel);
     }
 
@@ -1611,7 +1610,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return holderNameRequired;
     }
 
-    public Set<String> getStoredCards(){
+    public Set<String> getStoredCards() {
         CartModel cartModel = cartService.getSessionCart();
         return cartModel.getAdyenStoredCards();
     }
