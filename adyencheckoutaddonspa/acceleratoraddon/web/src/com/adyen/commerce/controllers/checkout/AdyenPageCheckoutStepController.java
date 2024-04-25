@@ -32,7 +32,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
     public static final String SPA_CHECKOUT_PAGE = "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
 
 
-    @GetMapping(value = "/adyen/*")
+    @GetMapping(value = "/adyen/**")
     @RequireHardLogIn
     @PreValidateQuoteCheckoutStep
     @PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS)
