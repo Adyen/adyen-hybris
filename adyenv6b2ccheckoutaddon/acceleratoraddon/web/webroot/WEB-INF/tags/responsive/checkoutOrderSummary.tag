@@ -83,7 +83,7 @@
             </label>
         </div>
     </form:form>
-
+    <div id="adyen-component-container-${label}"></div>
     <button id="placeOrder-${label}" type="submit" class="btn btn-primary btn-place-order btn-block">
         <spring:theme code="checkout.summary.placeOrder" text="Place Order" />
     </button>

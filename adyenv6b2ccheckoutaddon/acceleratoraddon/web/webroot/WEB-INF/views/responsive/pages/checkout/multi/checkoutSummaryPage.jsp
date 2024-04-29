@@ -111,8 +111,10 @@
 
         <%-- API only payments methods --%>
         <c:otherwise>
-        AdyenCheckoutHybris.configureButton($("#placeOrderForm-hidden-xs"), true, "hidden-xs");
-        AdyenCheckoutHybris.configureButton($("#placeOrderForm-visible-xs"), true, "visible-xs");
+        fnCallbackArray['initiatePayment'] = {
+            ...callbackConfig,
+            paymentType: "${selectedPaymentMethod}"
+        }
         </c:otherwise>
         </c:choose>
 
@@ -130,7 +132,6 @@
             </p>
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-6">
             <div class="checkout-headline">

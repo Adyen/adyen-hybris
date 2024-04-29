@@ -1038,6 +1038,42 @@ var AdyenCheckoutHybris = (function () {
             });
         },
 
+        initiatePayment: function (params) {
+            const {label, paymentType} = params;
+            var paymentNode = document.getElementById('adyen-component-container-' + label);
+            var self = this;
+
+            var adyenComponent = this.checkout.create(paymentType, {
+                showPayButton: false,
+                onChange: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                    }
+                },
+                onSubmit: function (state, component) {
+                    if (!state.isValid) {
+                        self.enablePlaceOrder(label);
+                        return;
+                    }
+                    self.makePayment(state.data, component, self.handleResult, label);
+                },
+                onAdditionalDetails: function (state, component) {
+                    self.submitDetails(state.data, self.handleResult);
+                },
+                onError: function (error, component) {
+                    console.log('Something went wrong trying to make the Gift Card payment: ' + error);
+                    self.handleResult(ErrorMessages.PaymentError, true);
+                }
+            });
+
+            try {
+                adyenComponent.mount(paymentNode);
+                self.configureButton(adyenComponent, false, label);
+            } catch (e) {
+                console.log('Something went wrong trying to mount the Gift Card component: ' + e);
+            }
+        },
+
         /**
          * @param form
          * @param useSpinner
@@ -1065,7 +1101,9 @@ var AdyenCheckoutHybris = (function () {
                     try {
                         if (response.resultCode && response.resultCode === 'Pending' && response.action) {
                             component.handleAction(response.action);
-                        } else if (response.resultCode && (response.resultCode === 'Authorised' || response.resultCode === 'RedirectShopper')) {
+                        } else if (response.resultCode && (response.resultCode === 'RedirectShopper')) {
+                            component.handleAction(response.action);
+                        } else if (response.resultCode && (response.resultCode === 'Authorised')) {
                             handleResult(response, false);
                         } else {
                             handleResult(ErrorMessages.PaymentError, true);
@@ -1120,7 +1158,6 @@ var AdyenCheckoutHybris = (function () {
         isTermsAccepted: function (label) {
             return document.getElementById('terms-conditions-check-' + label).checked;
         },
-
 
         handleResult: function (data, error) {
             if (error) {

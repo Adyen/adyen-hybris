@@ -29,8 +29,10 @@ import com.adyen.model.checkout.CardDetails;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.CommonField;
 import com.adyen.model.checkout.DeliveryAddress;
+import com.adyen.model.checkout.DotpayDetails;
 import com.adyen.model.checkout.ExternalPlatform;
 import com.adyen.model.checkout.Installments;
+import com.adyen.model.checkout.KlarnaDetails;
 import com.adyen.model.checkout.LineItem;
 import com.adyen.model.checkout.Name;
 import com.adyen.model.checkout.PaymentDetails;
@@ -358,6 +360,22 @@ public class AdyenRequestFactory {
             try {
                 StoredPaymentMethodDetails paymentDetails = new StoredPaymentMethodDetails();
                 paymentDetails.setType(StoredPaymentMethodDetails.TypeEnum.fromValue(adyenPaymentMethod));
+                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
+                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
+                return;
+            } catch (IllegalArgumentException e) {
+            }
+            try {
+                KlarnaDetails paymentDetails = new KlarnaDetails();
+                paymentDetails.setType(KlarnaDetails.TypeEnum.fromValue(adyenPaymentMethod));
+                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
+                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
+                return;
+            } catch (IllegalArgumentException e) {
+            }
+            try {
+                DotpayDetails paymentDetails = new DotpayDetails();
+                paymentDetails.setType(DotpayDetails.TypeEnum.fromValue(adyenPaymentMethod));
                 CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
                 paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
                 return;
