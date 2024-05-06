@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(value = "/{baseSiteId}/")
+@RequestMapping(value = "/{baseSiteId}")
 public class AdyenoccConfigurationController {
 
     @Autowired
