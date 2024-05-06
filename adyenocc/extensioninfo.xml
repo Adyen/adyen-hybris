@@ -8,16 +8,17 @@
                 		
         
         <!-- you should add all required extensions to this list, except platform extensions which are automatically required -->
-                		
-        
+
+        <requires-extension name="addonsupport"/>
+        <requires-extension name="adyenv6core"/>
         <requires-extension name="commercewebservices"/>
                 		
         
         <coremodule generated="true" manager="com.adyen.commerce.jalo.AdyenoccManager" packageroot="com.adyen.commerce"/>
-                		
-        
-        	
-    
+
+        <webmodule jspcompile="false" webroot="/adyenocc"/>
+
+        <meta key="backoffice-module" value="true"/>
     </extension>
         
 
