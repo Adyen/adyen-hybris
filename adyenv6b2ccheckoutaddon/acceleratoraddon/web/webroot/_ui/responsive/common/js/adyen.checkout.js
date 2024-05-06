@@ -1061,7 +1061,7 @@ var AdyenCheckoutHybris = (function () {
                     self.submitDetails(state.data, self.handleResult);
                 },
                 onError: function (error, component) {
-                    console.log('Something went wrong trying to make the Gift Card payment: ' + error);
+                    console.log('Something went wrong trying to make a payment: ' + error);
                     self.handleResult(ErrorMessages.PaymentError, true);
                 }
             });
@@ -1070,7 +1070,7 @@ var AdyenCheckoutHybris = (function () {
                 adyenComponent.mount(paymentNode);
                 self.configureButton(adyenComponent, false, label);
             } catch (e) {
-                console.log('Something went wrong trying to mount the Gift Card component: ' + e);
+                console.log('Something went wrong trying to mount component: ' + e);
             }
         },
 
@@ -1099,9 +1099,8 @@ var AdyenCheckoutHybris = (function () {
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     try {
-                        if (response.resultCode && response.resultCode === 'Pending' && response.action) {
-                            component.handleAction(response.action);
-                        } else if (response.resultCode && (response.resultCode === 'RedirectShopper')) {
+                        if (response.action && (response.resultCode && response.resultCode === 'Pending' ||
+                            response.resultCode && (response.resultCode === 'RedirectShopper'))) {
                             component.handleAction(response.action);
                         } else if (response.resultCode && (response.resultCode === 'Authorised')) {
                             handleResult(response, false);
