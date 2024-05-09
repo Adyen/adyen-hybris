@@ -123,9 +123,6 @@ public class AdyenRequestFactory {
         final Boolean is3DS2allowed = is3DS2Allowed();
         final PaymentRequest paymentsRequest = new PaymentRequest();
 
-        if (adyenPaymentMethod == null) {
-            throw new IllegalArgumentException("Payment method is null");
-        }
         //Update payment request for generic information for all payment method types
         setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
         paymentsRequest.setApplicationInfo(createApplicationInfo());
