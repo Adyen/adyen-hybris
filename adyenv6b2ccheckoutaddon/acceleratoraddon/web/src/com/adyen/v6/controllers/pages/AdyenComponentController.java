@@ -60,12 +60,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.adyen.v6.constants.AdyenControllerConstants.CHECKOUT_RESULT_URL;
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC_MOBILE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
-import static com.adyen.v6.controllers.pages.AdyenSummaryCheckoutStepController.CHECKOUT_RESULT_URL;
+
 
 @RestController
 @RequestMapping(COMPONENT_PREFIX)
