@@ -1099,8 +1099,10 @@ var AdyenCheckoutHybris = (function () {
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     try {
-                        if (response.action && (response.resultCode && response.resultCode === 'Pending' ||
-                            response.resultCode && (response.resultCode === 'RedirectShopper'))) {
+                        if (response.action && (response.resultCode && (response.resultCode === 'Pending' ||
+                            response.resultCode === 'RedirectShopper' || response.resultCode === 'IdentifyShopper' ||
+                            response.resultCode === 'ChallengeShopper' || response.resultCode === 'PresentToShopper' ||
+                            response.resultCode === 'Await') || (response.action && response.action.type))) {
                             component.handleAction(response.action);
                         } else if (response.resultCode && (response.resultCode === 'Authorised')) {
                             handleResult(response, false);
