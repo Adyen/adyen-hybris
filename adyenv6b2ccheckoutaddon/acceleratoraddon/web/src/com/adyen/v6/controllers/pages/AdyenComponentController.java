@@ -190,7 +190,6 @@ public class AdyenComponentController extends AbstractCheckoutController {
             url = SUMMARY_CHECKOUT_PREFIX + "/authorise-3d-adyen-response";
         } else {
             url = SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL;
-            ;
         }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
