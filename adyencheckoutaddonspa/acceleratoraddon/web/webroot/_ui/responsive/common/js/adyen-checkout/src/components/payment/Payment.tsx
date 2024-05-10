@@ -24,7 +24,6 @@ import {translationsStore} from "../../store/translationsStore";
 import AddressSection from "../common/AddressSection";
 import {routes} from "../../router/routes";
 import {Navigate} from "react-router-dom";
-import {PaymentAction} from "@adyen/adyen-web/dist/types/types";
 import {PaymentError} from "./PaymentError";
 import {ScrollHere} from "../common/ScrollTo";
 import DropinElement from "@adyen/adyen-web/dist/types/components/Dropin";
@@ -172,7 +171,7 @@ class Payment extends React.Component<Props, State> {
         if (!!responseData) {
             if (responseData.success) {
                 if (responseData.executeAction) {
-                    await this.mount3DSComponent(responseData.paymentsAction)
+                    this.dropIn.handleAction(responseData.paymentsAction)
                 } else {
                     this.setState({orderNumber: responseData.orderNumber})
                     this.setState({redirectToNextStep: true})
@@ -196,11 +195,6 @@ class Payment extends React.Component<Props, State> {
     private resetDropInComponent() {
         this.dropIn.unmount();
         this.dropIn.mount(this.paymentRef.current)
-    }
-
-    private async mount3DSComponent(paymentAction: PaymentAction) {
-        let adyenCheckout = await AdyenCheckout(this.getAdyenCheckoutConfig());
-        adyenCheckout.createFromAction(paymentAction).mount(this.threeDSRef.current);
     }
 
     private renderScrollOnErrorCodes(): React.JSX.Element {
