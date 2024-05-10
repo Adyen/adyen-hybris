@@ -6,6 +6,8 @@ package com.adyen.commerce.constants;
 public class AdyenoccConstants extends GeneratedAdyenoccConstants
 {
 	public static final String EXTENSIONNAME = "adyenocc";
+	public static final String ADYEN_USER_CART_PREFIX =  "/{baseSiteId}/users/{userId}/carts/{cartId}/adyen";
+	public static final String ADYEN_USER_PREFIX =  "/{baseSiteId}/users/{userId}/adyen";
 
 	private AdyenoccConstants()
 	{

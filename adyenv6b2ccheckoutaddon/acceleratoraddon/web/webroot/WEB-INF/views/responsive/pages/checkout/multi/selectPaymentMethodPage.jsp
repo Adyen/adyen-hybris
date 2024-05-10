@@ -26,7 +26,7 @@
             //Set the allowed cards
             const allowedCards = [];
             <c:forEach items="${allowedCards}" var="allowedCard">
-            allowedCards.push("${allowedCard.code}");
+            allowedCards.push("${allowedCard}");
             </c:forEach>
 
             const initConfig = {
