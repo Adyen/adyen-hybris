@@ -109,7 +109,8 @@
         fnCallbackArray['initiateBlik'] = callbackConfig
         </c:when>
 
-        <c:when test="${selectedPaymentMethod eq 'adyen_cc'}">
+        <c:when test="${selectedPaymentMethod eq 'adyen_cc' ||
+                    fn:startsWith(selectedPaymentMethod, 'adyen_oneclick_')}">
         AdyenCheckoutHybris.configureButton($("#placeOrderForm-hidden-xs"), true, "hidden-xs");
         AdyenCheckoutHybris.configureButton($("#placeOrderForm-visible-xs"), true, "visible-xs");
         </c:when>
