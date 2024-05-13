@@ -120,12 +120,14 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
 
         PaymentDetailsResponse paymentsDetailsResponse = this.componentDetails(detailsRequest);
 
-        if (PaymentDetailsResponse.ResultCodeEnum.PENDING == paymentsDetailsResponse.getResultCode() || PaymentDetailsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsDetailsResponse.getResultCode()) {
+        if (PaymentDetailsResponse.ResultCodeEnum.PENDING == paymentsDetailsResponse.getResultCode() ||
+                PaymentDetailsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsDetailsResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
             placePendingOrder(paymentsDetailsResponse.getResultCode().getValue());
             throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
         }
-        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED == paymentsDetailsResponse.getResultCode()) {
+        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED == paymentsDetailsResponse.getResultCode() ||
+                PaymentDetailsResponse.ResultCodeEnum.RECEIVED == paymentsDetailsResponse.getResultCode()) {
             LOGGER.info("Creating authorized order");
             String orderCode = paymentsDetailsResponse.getMerchantReference();
             OrderModel orderModel = retrievePendingOrder(orderCode);
