@@ -1,14 +1,14 @@
 # Adyen SAP Commerce (Hybris) v6 plugin
 
 Latest stable version:
-https://github.com/Adyen/adyen-hybris/releases/tag/11.2.0
+https://github.com/Adyen/adyen-hybris/releases/tag/12.0.0
 
 This plugin supports SAP Commerce (Hybris) versions 6.x
 
 The plugin is using following adyen libraries and API.
-- [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v18.1.3)
+- [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v24.0.0)
 - [adyen-web](https://github.com/Adyen/adyen-web) (v5.56.1)
-- [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v69)
+- [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v71)
 
 ## Integration
 
@@ -95,6 +95,11 @@ ant clean all
 For more detailed instructions you can visit the [documentation page](https://github.com/Adyen/adyen-hybris/wiki)
 Please make sure your merchant has Variant true in API and responses section so that you get paymentMethod back in response.
 
+## React fronend build
+1. Go to adyencheckoutaddonspa/acceleratoraddon/web/webroot/_ui/responsive/common/js/adyen-checkout
+2. Open terminal and run `npm run i`
+3. For development build run `npm run build`
+4. For deployment build run `npm run build-prod`
 
 ## Supported payment methods
 A reference of all supported payment methods is [here](https://github.com/Adyen/adyen-hybris/wiki#supported-payment-methods).
@@ -224,6 +229,11 @@ payConfiguration = new PayConfiguration()
                     .setRegion(Region.valueOf(amazonpayRegion.getCode()))
 --->                .setPrivateKey(new String(Files.readAllBytes(ResourceUtils.getFile("classpath:certificates/amazonpay/YourCertificateName.pem").toPath())).toCharArray())
 ```
+
+## Multiple merchant configuration
+Introduces possibility to select merchant for given transaction based on strategy that could be extended. By default merchant account is one in adyenMerchantAccount on BaseStore.
+### Example
+In /examples/adyenmultiplemerchantexample there is extension that introduces necessary changes to achieve selection of merchant account based on shipping address country selected during checkout process.
 
  ## Documentation
  https://github.com/Adyen/adyen-hybris/wiki
