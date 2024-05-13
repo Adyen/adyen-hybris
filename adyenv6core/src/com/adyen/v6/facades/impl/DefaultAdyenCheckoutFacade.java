@@ -540,7 +540,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentDetailsResponse.ResultCodeEnum resultCode = paymentsDetailsResponse.getResultCode();
 
-        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED.equals(resultCode)) {
+        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED.equals(resultCode) || PaymentDetailsResponse.ResultCodeEnum.RECEIVED.equals(resultCode)) {
             return getOrderConverter().convert(orderModel);
         }
 
