@@ -58,12 +58,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+import static com.adyen.v6.constants.AdyenControllerConstants.CHECKOUT_RESULT_URL;
 import static com.adyen.v6.constants.AdyenControllerConstants.COMPONENT_PREFIX;
 import static com.adyen.v6.constants.AdyenControllerConstants.SUMMARY_CHECKOUT_PREFIX;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_AMAZONPAY;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC_MOBILE;
 import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_PIX;
+
 
 @RestController
 @RequestMapping(COMPONENT_PREFIX)
@@ -116,6 +119,9 @@ public class AdyenComponentController extends AbstractCheckoutController {
             LOGGER.error("ApiException: " + e);
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (AdyenNonAuthorizedPaymentException e) {
+            if (Objects.nonNull(e.getPaymentsResponse()) && Objects.nonNull(e.getPaymentsResponse().getAction())) {
+                return ResponseEntity.ok().body(e.getPaymentsResponse());
+            }
             LOGGER.warn("AdyenNonAuthorizedPaymentException occurred. Payment " + e.getPaymentResult().getPspReference() + "is refused.");
             throw new AdyenComponentException("checkout.error.authorization.payment.refused");
         } catch (Exception e) {
@@ -183,7 +189,7 @@ public class AdyenComponentController extends AbstractCheckoutController {
             //Google Pay will only use returnUrl if redirected to 3DS authentication
             url = SUMMARY_CHECKOUT_PREFIX + "/authorise-3d-adyen-response";
         } else {
-            url = COMPONENT_PREFIX + "/submit-details";
+            url = SUMMARY_CHECKOUT_PREFIX + CHECKOUT_RESULT_URL;
         }
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);

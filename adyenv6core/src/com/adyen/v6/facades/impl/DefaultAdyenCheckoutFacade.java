@@ -113,7 +113,16 @@ import org.springframework.validation.Errors;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -472,7 +481,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentResponse paymentResponse = getAdyenPaymentService().componentPayment(cartData, paymentRequest, requestInfo, getCheckoutCustomerStrategy().getCurrentUserForCheckout());
-        if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()) {
+        if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() ||
+                PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode() ||
+                PaymentResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
             placePendingOrder(paymentResponse.getResultCode().getValue());
             return paymentResponse;
@@ -482,7 +493,6 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             createAuthorizedOrder(paymentResponse);
             return paymentResponse;
         }
-
         throw new AdyenNonAuthorizedPaymentException(paymentResponse);
     }
 
@@ -530,7 +540,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         PaymentDetailsResponse.ResultCodeEnum resultCode = paymentsDetailsResponse.getResultCode();
 
-        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED.equals(resultCode)) {
+        if (PaymentDetailsResponse.ResultCodeEnum.AUTHORISED.equals(resultCode) || PaymentDetailsResponse.ResultCodeEnum.RECEIVED.equals(resultCode)) {
             return getOrderConverter().convert(orderModel);
         }
 

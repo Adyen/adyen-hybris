@@ -33,9 +33,7 @@ import com.adyen.model.checkout.ExternalPlatform;
 import com.adyen.model.checkout.Installments;
 import com.adyen.model.checkout.LineItem;
 import com.adyen.model.checkout.Name;
-import com.adyen.model.checkout.PaymentDetails;
 import com.adyen.model.checkout.PaymentRequest;
-import com.adyen.model.checkout.StoredPaymentMethodDetails;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.MessageCategoryType;
@@ -120,13 +118,11 @@ public class AdyenRequestFactory {
                                                 final CustomerModel customerModel,
                                                 final RecurringContractMode recurringContractMode,
                                                 final Boolean guestUserTokenizationEnabled) {
+
         final String adyenPaymentMethod = cartData.getAdyenPaymentMethod();
         final Boolean is3DS2allowed = is3DS2Allowed();
         final PaymentRequest paymentsRequest = new PaymentRequest();
 
-        if (adyenPaymentMethod == null) {
-            throw new IllegalArgumentException("Payment method is null");
-        }
         //Update payment request for generic information for all payment method types
         setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
         paymentsRequest.setApplicationInfo(createApplicationInfo());
@@ -304,7 +300,6 @@ public class AdyenRequestFactory {
     }
 
     protected void updatePaymentRequestForDC(final PaymentRequest paymentsRequest, final CartData cartData, final RecurringContractMode recurringContractMode) {
-
         final Recurring recurringContract = getRecurringContractType(recurringContractMode);
         Recurring.ContractEnum contract = null;
         if (recurringContract != null) {
@@ -345,25 +340,6 @@ public class AdyenRequestFactory {
                 || OPENINVOICE_METHODS_API.contains(adyenPaymentMethod)
                 || adyenPaymentMethod.contains(RATEPAY)) {
             setOpenInvoiceData(paymentsRequest, cartData);
-        }
-        if (paymentsRequest.getPaymentMethod() == null) {
-            try {
-                PaymentDetails paymentDetails = new PaymentDetails();
-                paymentDetails.setType(PaymentDetails.TypeEnum.fromValue(adyenPaymentMethod));
-                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
-                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
-                return;
-            } catch (IllegalArgumentException e) {
-            }
-            try {
-                StoredPaymentMethodDetails paymentDetails = new StoredPaymentMethodDetails();
-                paymentDetails.setType(StoredPaymentMethodDetails.TypeEnum.fromValue(adyenPaymentMethod));
-                CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod(paymentDetails);
-                paymentsRequest.setPaymentMethod(checkoutPaymentMethod);
-                return;
-            } catch (IllegalArgumentException e) {
-            }
-            LOG.error("Payment method not recognized: " + adyenPaymentMethod);
         }
     }
 

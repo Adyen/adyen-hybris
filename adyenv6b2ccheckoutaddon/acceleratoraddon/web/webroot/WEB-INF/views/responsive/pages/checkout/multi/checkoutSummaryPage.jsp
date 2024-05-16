@@ -109,10 +109,18 @@
         fnCallbackArray['initiateBlik'] = callbackConfig
         </c:when>
 
-        <%-- API only payments methods --%>
-        <c:otherwise>
+        <c:when test="${selectedPaymentMethod eq 'adyen_cc' ||
+                    fn:startsWith(selectedPaymentMethod, 'adyen_oneclick_')}">
         AdyenCheckoutHybris.configureButton($("#placeOrderForm-hidden-xs"), true, "hidden-xs");
         AdyenCheckoutHybris.configureButton($("#placeOrderForm-visible-xs"), true, "visible-xs");
+        </c:when>
+
+        <%-- API only payments methods --%>
+        <c:otherwise>
+        fnCallbackArray['initiatePayment'] = {
+            ...callbackConfig,
+            paymentType: "${selectedPaymentMethod}"
+        }
         </c:otherwise>
         </c:choose>
 
@@ -130,7 +138,6 @@
             </p>
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-6">
             <div class="checkout-headline">
