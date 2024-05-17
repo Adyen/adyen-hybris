@@ -20,7 +20,7 @@ public class CheckoutConfigDTO {
     @Deprecated
     private String creditCardLabel;
     @Deprecated
-    private List<AdyenCardTypeEnum> allowedCards;
+    private List<String> allowedCards;
     private Amount amount;
     private String adyenClientKey;
     private String adyenPaypalMerchantId;
@@ -82,11 +82,11 @@ public class CheckoutConfigDTO {
         this.creditCardLabel = creditCardLabel;
     }
 
-    public List<AdyenCardTypeEnum> getAllowedCards() {
+    public List<String> getAllowedCards() {
         return allowedCards;
     }
 
-    public void setAllowedCards(List<AdyenCardTypeEnum> allowedCards) {
+    public void setAllowedCards(List<String> allowedCards) {
         this.allowedCards = allowedCards;
     }
 

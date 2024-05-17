@@ -14,7 +14,7 @@ public class CheckoutConfigDTOBuilder {
 
     private final CheckoutConfigDTO checkoutConfigDTO;
 
-    public CheckoutConfigDTOBuilder(){
+    public CheckoutConfigDTOBuilder() {
         checkoutConfigDTO = new CheckoutConfigDTO();
     }
 
@@ -49,7 +49,8 @@ public class CheckoutConfigDTOBuilder {
     }
 
     public CheckoutConfigDTOBuilder setAllowedCards(List<AdyenCardTypeEnum> allowedCards) {
-        checkoutConfigDTO.setAllowedCards(allowedCards);
+        List<String> mappedAllowedCards = allowedCards.stream().map(AdyenCardTypeEnum::toString).toList();
+        checkoutConfigDTO.setAllowedCards(mappedAllowedCards);
         return this;
     }
 
