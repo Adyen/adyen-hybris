@@ -11,7 +11,7 @@
                 		
         
         <requires-extension name="commercewebservices"/>
-        <requires-extension name="adyenv6core"/>
+        <requires-extension name="adyenwebcommons"/>
 
         
         <coremodule generated="true" manager="com.adyen.commerce.jalo.AdyenoccManager" packageroot="com.adyen.commerce"/>
