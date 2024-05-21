@@ -7,8 +7,10 @@ import com.adyen.commerce.constants.AdyenoccConstants;
 import com.adyen.commerce.controllerbase.RedirectControllerBase;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import de.hybris.platform.commerceservices.i18n.CommerceCommonI18NService;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
+import de.hybris.platform.site.BaseSiteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +27,7 @@ import static com.adyen.commerce.constants.AdyenwebcommonsConstants.REDIRECT_PRE
 @ApiVersion("v2")
 @Tag(name = "Adyen")
 public class RedirectController extends RedirectControllerBase {
-    private static final String REDIRECT_URL = "/redirect/{locale}/{currencyISO}";
+    private static final String REDIRECT_URL = "/redirect";
 
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
@@ -33,42 +35,46 @@ public class RedirectController extends RedirectControllerBase {
     @Resource(name = "configurationService")
     private ConfigurationService configurationService;
 
+    @Resource(name = "commerceCommonI18NService")
+    private CommerceCommonI18NService commerceCommonI18NService;
+
+    @Resource(name = "baseSiteService")
+    private BaseSiteService baseSiteService;
+
     @GetMapping(value = REDIRECT_URL)
     @Operation(operationId = "adyenRedirect", summary = "Handle redirect payment method", description =
             "Handles return after payment method redirect flow returns")
-    public String authorizeRedirectPaymentGet(@Parameter(description = "Base site identifier", required = true) @PathVariable final String baseSiteId,
-                                              @Parameter(description = "Locale", required = true) @PathVariable final String locale,
-                                              @Parameter(description = "Currency isocode", required = true) @PathVariable final String currencyISO,
-                                              final HttpServletRequest request) {
-        return super.authoriseRedirectGetPayment(request, baseSiteId, locale, currencyISO);
+    public String authorizeRedirectPaymentGet(final HttpServletRequest request) {
+        return super.authoriseRedirectGetPayment(request);
     }
 
     @PostMapping(value = REDIRECT_URL)
     @Operation(operationId = "adyenRedirect", summary = "Handle redirect payment method", description =
             "Handles return after payment method redirect flow returns")
-    public String authorizeRedirectPaymentPost(@Parameter(description = "Base site identifier", required = true) @PathVariable final String baseSiteId,
-                                               @Parameter(description = "Locale", required = true) @PathVariable final String locale,
-                                               @Parameter(description = "Currency isocode", required = true) @PathVariable final String currencyISO,
-                                               @Parameter(description = "Payment details data", required = true) @RequestBody PaymentDetailsRequest detailsRequest) {
-        return super.authoriseRedirectPostPayment(detailsRequest, baseSiteId, locale, currencyISO);
+    public String authorizeRedirectPaymentPost(@Parameter(description = "Payment details data", required = true) @RequestBody PaymentDetailsRequest detailsRequest) {
+        return super.authoriseRedirectPostPayment(detailsRequest);
     }
 
     @Override
-    public String getErrorRedirectUrl(String errorMessage, String baseSiteId, String locale, String currencyISO) {
+    public String getErrorRedirectUrl(String errorMessage) {
         //TODO: will be implemented
         return "error url";
     }
 
     @Override
-    public String getOrderConfirmationUrl(String orderCode, String baseSiteId, String locale, String currencyISO) {
+    public String getOrderConfirmationUrl(String orderCode) {
         //TODO: will be implemented
         return "order confirmation";
     }
 
     @Override
-    public String getCartUrl(String baseSiteId, String locale, String currencyISO) {
+    public String getCartUrl() {
+        String currency = commerceCommonI18NService.getCurrentCurrency().getIsocode();
+        String language = commerceCommonI18NService.getCurrentLanguage().getIsocode();
+        String baseSiteUid = baseSiteService.getCurrentBaseSite().getUid();
+
         String baseUrl = configurationService.getConfiguration().getString("adyen.spartacus.baseurl");
-        return REDIRECT_PREFIX + baseUrl + "/" + baseSiteId + "/" + locale + "/" + currencyISO + "/cart";
+        return REDIRECT_PREFIX + baseUrl + "/" + baseSiteUid + "/" + language + "/" + currency + "/cart";
     }
 
     @Override

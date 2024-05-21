@@ -6,6 +6,7 @@ import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commerceservices.i18n.CommerceCommonI18NService;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -29,11 +30,6 @@ public abstract class RedirectControllerBase {
 
 
     public String authoriseRedirectGetPayment(final HttpServletRequest request) {
-        return authoriseRedirectGetPayment(request, null, null, null);
-    }
-
-    public String authoriseRedirectGetPayment(final HttpServletRequest request, final String baseSiteId, final String locale,
-                                              final String currencyISO) {
         String redirectResult = request.getParameter(REDIRECT_RESULT);
         PaymentDetailsRequest paymentDetailsRequest = new PaymentDetailsRequest();
         if (redirectResult != null && !redirectResult.isEmpty()) {
@@ -48,25 +44,23 @@ public abstract class RedirectControllerBase {
                 paymentDetailsRequest.details(details);
             }
         }
-        return authoriseRedirectPayment(paymentDetailsRequest, baseSiteId, locale, currencyISO);
+        return authoriseRedirectPayment(paymentDetailsRequest);
     }
+
 
     public String authoriseRedirectPostPayment(final PaymentDetailsRequest detailsRequest) {
-        return authoriseRedirectPostPayment(detailsRequest, null, null, null);
+        return authoriseRedirectPayment(detailsRequest);
     }
 
-    public String authoriseRedirectPostPayment(final PaymentDetailsRequest detailsRequest, final String baseSiteId, final String locale,
-                                               final String currencyISO) {
-        return authoriseRedirectPayment(detailsRequest, baseSiteId, locale, currencyISO);
-    }
+    private String authoriseRedirectPayment(final PaymentDetailsRequest details) {
+        LOGGER.info("Redirect payment authorization");
 
-    private String authoriseRedirectPayment(final PaymentDetailsRequest details, final String baseSiteId, final String locale, final String currencyISO) {
-        LOGGER.info("3DS authorization");
         try {
             OrderData orderData = getAdyenCheckoutFacade().handle3DSResponse(details);
+
             LOGGER.debug("Redirecting to confirmation");
 
-            return getOrderConfirmationUrl(orderData.getCode(), baseSiteId, locale, currencyISO);
+            return getOrderConfirmationUrl(orderData.getCode());
 
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug(NON_AUTHORIZED_ERROR);
@@ -82,7 +76,7 @@ public abstract class RedirectControllerBase {
                             + response.getRefusalReason());
                 }
             }
-            return getErrorRedirectUrl(errorMessage, baseSiteId, locale, currencyISO);
+            return getErrorRedirectUrl(errorMessage);
         } catch (CalculationException | InvalidCartException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (Exception e) {
@@ -90,14 +84,14 @@ public abstract class RedirectControllerBase {
         }
 
         LOGGER.warn(REDIRECTING_TO_CART_PAGE);
-        return getCartUrl(baseSiteId, locale, currencyISO);
+        return getCartUrl();
     }
 
-    public abstract String getErrorRedirectUrl(String errorMessage, String baseSiteId, String locale, String currencyISO);
+    public abstract String getErrorRedirectUrl(String errorMessage);
 
-    public abstract String getOrderConfirmationUrl(String orderCode, String baseSiteId, String locale, String currencyISO);
+    public abstract String getOrderConfirmationUrl(String orderCode);
 
-    public abstract String getCartUrl(String baseSiteId, String locale, String currencyISO);
+    public abstract String getCartUrl();
 
     public abstract AdyenCheckoutFacade getAdyenCheckoutFacade();
 }

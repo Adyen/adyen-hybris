@@ -238,9 +238,4 @@ public class AdyenPlaceOrderController {
 
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
     }
-
-//    private String get3DSReturnUrl() {
-//
-//        return "https://electronics.local:9002/occ/v2/electronics/adyen/redirect";
-//    }
 }

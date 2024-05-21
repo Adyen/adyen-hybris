@@ -40,17 +40,17 @@ public class Adyen3DSResponseController extends RedirectControllerBase {
     }
 
     @Override
-    public String getErrorRedirectUrl(String errorMessage, String baseSiteId, String locale, String currencyISO) {
+    public String getErrorRedirectUrl(String errorMessage) {
         return REDIRECT_PREFIX + SELECT_PAYMENT_METHOD_URL + "/error/" + Base64.getUrlEncoder().encodeToString(errorMessage.getBytes());
     }
 
     @Override
-    public String getOrderConfirmationUrl(String orderCode, String baseSiteId, String locale, String currencyISO) {
+    public String getOrderConfirmationUrl(String orderCode) {
         return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL + '/' + orderCode;
     }
 
     @Override
-    public String getCartUrl(String baseSiteId, String locale, String currencyISO) {
+    public String getCartUrl() {
         return REDIRECT_PREFIX + CART_PREFIX;
     }
 
