@@ -12,7 +12,7 @@
 		
         
         <requires-extension name="addonsupport"/>
-        <requires-extension name="adyenv6core"/>
+        <requires-extension name="adyenwebcommons"/>
 
 
         <coremodule generated="true" manager="com.adyen.commerce.jalo.AdyencheckoutaddonapiManager" packageroot="com.adyen.commerce"/>
