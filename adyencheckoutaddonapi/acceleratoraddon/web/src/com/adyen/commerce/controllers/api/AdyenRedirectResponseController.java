@@ -19,7 +19,7 @@ import static de.hybris.platform.acceleratorstorefrontcommons.controllers.Abstra
 
 @Controller
 @RequestMapping(value = ADYEN_CHECKOUT_API_PREFIX)
-public class Adyen3DSResponseController extends RedirectControllerBase {
+public class AdyenRedirectResponseController extends RedirectControllerBase {
     private static final String SELECT_PAYMENT_METHOD_URL = ADYEN_CHECKOUT_PAGE_PREFIX + ADYEN_CHECKOUT_SELECT_PAYMENT;
     private static final String ORDER_CONFIRMATION_URL = ADYEN_CHECKOUT_PAGE_PREFIX + ADYEN_CHECKOUT_ORDER_CONFIRMATION;
 
