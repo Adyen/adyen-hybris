@@ -1,4 +1,4 @@
-package com.adyen.commerce.exceptions;
+package com.adyen.commerce.exception;
 
 import com.adyen.commerce.response.ErrorResponse;
 

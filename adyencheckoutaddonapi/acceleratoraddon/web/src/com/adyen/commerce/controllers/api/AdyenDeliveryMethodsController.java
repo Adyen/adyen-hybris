@@ -1,7 +1,6 @@
 package com.adyen.commerce.controllers.api;
 
-import com.adyen.commerce.exceptions.AdyenControllerException;
-import com.adyen.commerce.response.ErrorResponse;
+import com.adyen.commerce.exception.AdyenControllerException;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CheckoutFacade;
 import de.hybris.platform.commercefacades.order.data.DeliveryModeData;

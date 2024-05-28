@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.CHECKOUT_ERROR_AUTHORIZATION_FAILED;
 import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
 import static com.adyen.model.checkout.PaymentDetailsResponse.ResultCodeEnum;
 import static com.adyen.model.checkout.PaymentDetailsResponse.ResultCodeEnum.REFUSED;
@@ -25,7 +26,6 @@ public abstract class RedirectControllerBase {
     private static final String REDIRECT_RESULT = "redirectResult";
     private static final String PAYLOAD = "payload";
     private static final String NON_AUTHORIZED_ERROR = "Handling AdyenNonAuthorizedPaymentException. Checking PaymentResponse.";
-    private static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
     private static final String REDIRECTING_TO_CART_PAGE = "Redirecting to cart page...";
 
 

@@ -1,6 +1,7 @@
 package com.adyen.commerce.controllers.api;
 
-import com.adyen.commerce.exceptions.AdyenControllerException;
+import com.adyen.commerce.controllerbase.PlaceOrderControllerBase;
+import com.adyen.commerce.exception.AdyenControllerException;
 import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
@@ -9,7 +10,6 @@ import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
-import com.adyen.v6.util.AdyenUtil;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -37,6 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.ADYEN_CHECKOUT_API_PREFIX;
 import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.AUTHORISE_3D_SECURE_PAYMENT_URL;
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.CHECKOUT_ERROR_AUTHORIZATION_FAILED;
 import static com.adyen.commerce.util.ErrorMessageUtil.getErrorMessageByRefusalReason;
 import static com.adyen.commerce.util.FieldValidationUtil.getFieldCodesFromValidation;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER;
@@ -45,18 +46,13 @@ import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.PENDING;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.PRESENTTOSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER;
 import static com.adyen.model.checkout.PaymentResponse.ResultCodeEnum.REFUSED;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_BCMC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_CC;
-import static com.adyen.v6.constants.Adyenv6coreConstants.PAYMENT_METHOD_SCHEME;
 
 
 @RequestMapping("/api/checkout")
 @Controller
-public class AdyenPlaceOrderController {
+public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     private static final Logger LOGGER = Logger.getLogger(AdyenPlaceOrderController.class);
 
-    private static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
-    private static final String CHECKOUT_ERROR_POS_CONFIGURATION = "checkout.error.authorization.pos.configuration";
     private static final String CHECKOUT_ERROR_FORM_ENTRY_INVALID = "checkout.error.paymentethod.formentry.invalid";
     public static final String GET_TYPE = "getType";
 
@@ -134,7 +130,7 @@ public class AdyenPlaceOrderController {
         String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
 
         try {
-            cartData.setAdyenReturnUrl(get3DSReturnUrl());
+            cartData.setAdyenReturnUrl(getPaymentRedirectReturnUrl());
             OrderData orderData = adyenCheckoutApiFacade.placeOrderWithPayment(request, cartData, placeOrderRequest.getPaymentRequest());
 
             PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
@@ -191,10 +187,6 @@ public class AdyenPlaceOrderController {
         return ResponseEntity.ok(placeOrderResponse);
     }
 
-    private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
-        return adyenPaymentMethod.equals(PAYMENT_METHOD_SCHEME) || adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || AdyenUtil.isOneClick(adyenPaymentMethod);
-    }
-
     private boolean isCartValid() {
 
         if (checkoutFlowFacade.hasNoDeliveryAddress()) {
@@ -231,11 +223,17 @@ public class AdyenPlaceOrderController {
         return true;
     }
 
-    private String get3DSReturnUrl() {
+    private String getPaymentRedirectReturnUrl() {
         String url = ADYEN_CHECKOUT_API_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
 
         BaseSiteModel currentBaseSite = baseSiteService.getCurrentBaseSite();
 
         return siteBaseUrlResolutionService.getWebsiteUrlForSite(currentBaseSite, true, url);
+    }
+
+
+    @Override
+    public AdyenCheckoutApiFacade getAdyenCheckoutApiFacade() {
+        return adyenCheckoutApiFacade;
     }
 }

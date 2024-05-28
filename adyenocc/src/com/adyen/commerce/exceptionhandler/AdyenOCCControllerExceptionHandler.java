@@ -1,6 +1,6 @@
 package com.adyen.commerce.exceptionhandler;
 
-import com.adyen.commerce.exception.AdyenOCCControllerException;
+import com.adyen.commerce.exception.AdyenControllerException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AdyenOCCControllerExceptionHandler {
 
-    @ExceptionHandler(value = AdyenOCCControllerException.class)
-    public ResponseEntity<Void> handleAdyenControllerException(AdyenOCCControllerException exception) {
+    @ExceptionHandler(value = AdyenControllerException.class)
+    public ResponseEntity<Void> handleAdyenControllerException(AdyenControllerException exception) {
         return ResponseEntity.badRequest().build();
     }
 }
