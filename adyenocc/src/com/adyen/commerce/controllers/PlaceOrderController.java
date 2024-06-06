@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     private AdyenCheckoutApiFacade adyenCheckoutApiFacade;
 
 
+    @Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
     @PostMapping(value = "/additional-details", produces= MediaType.APPLICATION_JSON_VALUE)
     @Operation(operationId = "additionalDetails", summary = "Handle additional details action", description =
             "Places pending order based on additional details request")
