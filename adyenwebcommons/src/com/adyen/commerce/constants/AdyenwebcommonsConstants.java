@@ -11,6 +11,9 @@ public final class AdyenwebcommonsConstants extends GeneratedAdyenwebcommonsCons
 	public static final String EXTENSIONNAME = "adyenwebcommons";
 	public static final String REDIRECT_PREFIX = "redirect:";
 
+	public static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
+
+
 	private AdyenwebcommonsConstants()
 	{
 		//empty to avoid instantiating this constant class

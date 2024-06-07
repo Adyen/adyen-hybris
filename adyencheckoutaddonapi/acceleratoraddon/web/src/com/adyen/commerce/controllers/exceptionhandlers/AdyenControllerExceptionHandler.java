@@ -1,6 +1,6 @@
 package com.adyen.commerce.controllers.exceptionhandlers;
 
-import com.adyen.commerce.exceptions.AdyenControllerException;
+import com.adyen.commerce.exception.AdyenControllerException;
 import com.adyen.commerce.response.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
