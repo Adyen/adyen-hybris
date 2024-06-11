@@ -13,6 +13,10 @@ public final class AdyenwebcommonsConstants extends GeneratedAdyenwebcommonsCons
 
 	public static final String CHECKOUT_ERROR_AUTHORIZATION_FAILED = "checkout.error.authorization.failed";
 
+	public static final String ADYEN_CHECKOUT_API_PREFIX = "/api/checkout";
+	public static final String AUTHORISE_3D_SECURE_PAYMENT_URL = "/authorise-3d-adyen-response";
+
+
 
 	private AdyenwebcommonsConstants()
 	{
