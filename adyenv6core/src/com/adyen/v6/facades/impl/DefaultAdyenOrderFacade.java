@@ -32,7 +32,19 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
 
     @Override
     public String getPaymentStatus(final String orderCode, final String sessionGuid) {
-        OrderModel orderModel = getOrderDetailsForCodeInternal(orderCode, sessionGuid);
+        OrderModel orderModel = getOrderModelForCode(orderCode, sessionGuid);
+
+        return getPaymentStatusForOrder(orderModel);
+    }
+
+    @Override
+    public String getPaymentStatusOCC(final String code) {
+        final OrderModel orderModel = getOrderModelForCodeOCC(code);
+
+        return getPaymentStatusForOrder(orderModel);
+    }
+
+    private String getPaymentStatusForOrder(final OrderModel orderModel) {
         List<PaymentTransactionModel> paymentTransactions = orderModel.getPaymentTransactions();
         if (paymentTransactions.isEmpty()) {
             return getMessageFromStatus(TransactionStatus.REVIEW.name());
@@ -40,7 +52,24 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return getStatus(paymentTransactions);
     }
 
-    private OrderModel getOrderDetailsForCodeInternal(final String code, final String sessionGuid) {
+    private OrderModel getOrderModelForCodeOCC(String code) {
+        BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
+        final OrderModel orderModel;
+
+        if (checkoutCustomerStrategy.isAnonymousCheckout()) {
+            orderModel = customerAccountService.getGuestOrderForGUID(code,
+                    currentBaseStore);
+        } else {
+            orderModel = customerAccountService.getOrderForCode((CustomerModel) userService.getCurrentUser(), code, currentBaseStore);
+        }
+
+        if (orderModel == null) {
+            throw new UnknownIdentifierException(String.format(ORDER_NOT_FOUND_FOR_USER_AND_BASE_STORE, code));
+        }
+        return orderModel;
+    }
+
+    private OrderModel getOrderModelForCode(final String code, final String sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
 
         OrderModel orderModel = null;
