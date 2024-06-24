@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 
 import static com.adyen.commerce.constants.AdyencheckoutaddonapiWebConstants.*;
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.ADYEN_CHECKOUT_API_PREFIX;
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.AUTHORISE_3D_SECURE_PAYMENT_URL;
 import static de.hybris.platform.acceleratorstorefrontcommons.controllers.AbstractController.REDIRECT_PREFIX;
 
 @Controller
