@@ -7,6 +7,7 @@ import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.commercefacades.order.CartFacade;
@@ -53,10 +54,12 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Operation(operationId = "placeOrder", summary = "Handle place order request", description =
             "Places order based on request data")
     @ApiBaseSiteIdUserIdAndCartIdParam
-    public ResponseEntity<PlaceOrderResponse> onPlaceOrder(@RequestBody PlaceOrderRequest placeOrderRequest, HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> onPlaceOrder(@RequestBody String placeOrderStringRequest, HttpServletRequest request) throws Exception {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        PlaceOrderRequest placeOrderRequest = objectMapper.readValue(placeOrderStringRequest, PlaceOrderRequest.class);
         PlaceOrderResponse placeOrderResponse = super.placeOrder(placeOrderRequest, request);
-
-        return ResponseEntity.ok(placeOrderResponse);
+        String response = objectMapper.writeValueAsString(placeOrderResponse);
+        return ResponseEntity.ok(response);
     }
 
     @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
