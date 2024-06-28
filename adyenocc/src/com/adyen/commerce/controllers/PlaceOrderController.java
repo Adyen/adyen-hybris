@@ -55,7 +55,6 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
             "Places order based on request data")
     @ApiBaseSiteIdUserIdAndCartIdParam
     public ResponseEntity<String> onPlaceOrder(@RequestBody String placeOrderStringRequest, HttpServletRequest request) throws Exception {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         PlaceOrderRequest placeOrderRequest = objectMapper.readValue(placeOrderStringRequest, PlaceOrderRequest.class);
         PlaceOrderResponse placeOrderResponse = super.placeOrder(placeOrderRequest, request);
         String response = objectMapper.writeValueAsString(placeOrderResponse);
