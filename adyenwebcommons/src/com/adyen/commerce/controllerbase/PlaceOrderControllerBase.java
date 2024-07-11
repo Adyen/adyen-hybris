@@ -9,6 +9,7 @@ import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
@@ -17,6 +18,8 @@ import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -73,6 +76,9 @@ public abstract class PlaceOrderControllerBase {
         }
     }
 
+    public void handleCancel() throws InvalidCartException, CalculationException{
+        getAdyenCheckoutFacade().restoreCartFromOrderCodeInSession();
+    }
 
     private static String extractPaymentMethodType(PlaceOrderRequest placeOrderRequest) throws AdyenControllerException {
         if (placeOrderRequest == null || placeOrderRequest.getPaymentRequest() == null || placeOrderRequest.getPaymentRequest().getPaymentMethod() == null) {
@@ -206,4 +212,6 @@ public abstract class PlaceOrderControllerBase {
     public abstract BaseSiteService getBaseSiteService();
 
     public abstract SiteBaseUrlResolutionService getSiteBaseUrlResolutionService();
+
+    public abstract AdyenCheckoutFacade getAdyenCheckoutFacade();
 }

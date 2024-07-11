@@ -66,7 +66,7 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     @RequireHardLogIn
     @PostMapping("/payment-canceled")
     public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
-        adyenCheckoutFacade.restoreCartFromOrderCodeInSession();
+        super.handleCancel();
         return ResponseEntity.ok().build();
     }
 
@@ -93,5 +93,10 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     @Override
     public SiteBaseUrlResolutionService getSiteBaseUrlResolutionService() {
         return siteBaseUrlResolutionService;
+    }
+
+    @Override
+    public AdyenCheckoutFacade getAdyenCheckoutFacade() {
+        return adyenCheckoutFacade;
     }
 }

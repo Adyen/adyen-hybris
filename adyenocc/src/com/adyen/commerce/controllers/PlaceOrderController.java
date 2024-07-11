@@ -6,12 +6,14 @@ import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.model.checkout.PaymentDetailsRequest;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartIdParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,6 +51,9 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Resource(name = "baseSiteService")
     private BaseSiteService baseSiteService;
 
+    @Autowired
+    private AdyenCheckoutFacade adyenCheckoutFacade;
+
     @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
     @PostMapping(value = "/place-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(operationId = "placeOrder", summary = "Handle place order request", description =
@@ -71,6 +76,16 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
 
         String response = objectMapper.writeValueAsString(placeOrderResponse);
         return ResponseEntity.ok(response);
+    }
+
+    @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
+    @PostMapping(value = "/payment-canceled")
+    @Operation(operationId = "paymentCanceled", summary = "Handle payment canceled request", description =
+            "Restores cart from order code and data in session")
+    @ApiBaseSiteIdUserIdAndCartIdParam
+    public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
+        super.handleCancel();
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -96,5 +111,10 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Override
     public SiteBaseUrlResolutionService getSiteBaseUrlResolutionService() {
         return siteBaseUrlResolutionService;
+    }
+
+    @Override
+    public AdyenCheckoutFacade getAdyenCheckoutFacade() {
+        return adyenCheckoutFacade;
     }
 }
