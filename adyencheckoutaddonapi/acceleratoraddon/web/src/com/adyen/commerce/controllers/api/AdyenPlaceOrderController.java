@@ -5,10 +5,13 @@ import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.model.checkout.PaymentDetailsRequest;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,9 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     @Resource(name = "baseSiteService")
     private BaseSiteService baseSiteService;
 
+    @Autowired
+    private AdyenCheckoutFacade adyenCheckoutFacade;
+
     @RequireHardLogIn
     @PostMapping("/place-order")
     public ResponseEntity<PlaceOrderResponse> onPlaceOrder(@RequestBody PlaceOrderRequest placeOrderRequest, HttpServletRequest request) throws Exception {
@@ -57,6 +63,12 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
         return ResponseEntity.ok(placeOrderResponse);
     }
 
+    @RequireHardLogIn
+    @PostMapping("/payment-canceled")
+    public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
+        adyenCheckoutFacade.restoreCartFromOrderCodeInSession();
+        return ResponseEntity.ok().build();
+    }
 
     @Override
     public AdyenCheckoutApiFacade getAdyenCheckoutApiFacade() {

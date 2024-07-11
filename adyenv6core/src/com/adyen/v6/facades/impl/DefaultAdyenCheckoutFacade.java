@@ -21,6 +21,7 @@
 package com.adyen.v6.facades.impl;
 
 
+import com.adyen.commerce.data.PaymentMethodsCartData;
 import com.adyen.model.checkout.Amount;
 import com.adyen.model.checkout.CreateCheckoutSessionResponse;
 import com.adyen.model.checkout.PaymentCompletionDetails;
@@ -196,6 +197,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public static final String SESSION_LOCKED_CART = "adyen_cart";
     public static final String SESSION_PENDING_ORDER_CODE = "adyen_pending_order_code";
+    public static final String SESSION_PAYMENT_METHODS_CART_DATA = "adyen_payment_methods_cart_data";
     public static final String SESSION_CSE_TOKEN = "adyen_cse_token";
     public static final String SESSION_SF_CARD_NUMBER = "encryptedCardNumber";
     public static final String SESSION_SF_EXPIRY_MONTH = "encryptedExpiryMonth";
@@ -599,11 +601,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartModel cartModel = getCartService().getSessionCart();
         cartModel.setStatus(OrderStatus.PAYMENT_PENDING);
         cartModel.setStatusInfo(resultCode);
+
+        PaymentMethodsCartData paymentMethodsCartData = getPaymentMethodsCartData(cartModel);
+
         getModelService().save(cartModel);
 
         OrderData orderData = getCheckoutFacade().placeOrder();
 
         getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
+        getSessionService().setAttribute(SESSION_PAYMENT_METHODS_CART_DATA, paymentMethodsCartData);
 
         //Set new cart in session to avoid bugs (like going "back" on browser)
         CartModel newCartModel = getCartFactory().createCart();
@@ -616,11 +622,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartModel cartModel = getCartService().getSessionCart();
         cartModel.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
         cartModel.setStatusInfo(resultCode.getValue());
+
+        PaymentMethodsCartData paymentMethodsCartData = getPaymentMethodsCartData(cartModel);
+
         getModelService().save(cartModel);
 
         OrderData orderData = getCheckoutFacade().placeOrder();
 
         getSessionService().setAttribute(SESSION_PENDING_ORDER_CODE, orderData.getCode());
+        getSessionService().setAttribute(SESSION_PAYMENT_METHODS_CART_DATA, paymentMethodsCartData);
 
         //Set new cart in session to avoid bugs (like going "back" on browser)
         CartModel newCartModel = getCartFactory().createCart();
@@ -1562,6 +1572,10 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             getCartService().addNewEntry(cartModel, entryModel.getProduct(), entryModel.getQuantity(), entryModel.getUnit());
         }
 
+        PaymentMethodsCartData paymentMethodsCartData = getSessionService().getAttribute(SESSION_PAYMENT_METHODS_CART_DATA);
+        restorePaymentMethodsDataOnCart(paymentMethodsCartData, cartModel);
+        getSessionService().removeAttribute(SESSION_PAYMENT_METHODS_CART_DATA);
+
         getModelService().save(cartModel);
 
         if (isAnonymousCheckout) {
@@ -1623,6 +1637,27 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public Set<String> getStoredCards() {
         CartModel cartModel = cartService.getSessionCart();
         return cartModel.getAdyenStoredCards();
+    }
+
+    protected PaymentMethodsCartData getPaymentMethodsCartData(final CartModel cartModel) {
+        PaymentMethodsCartData paymentMethodsCartData = new PaymentMethodsCartData();
+        paymentMethodsCartData.setAdyenDfValue(cartModel.getAdyenDfValue());
+        paymentMethodsCartData.setAdyenStoredCards(cartModel.getAdyenStoredCards());
+        paymentMethodsCartData.setAdyenApplePayMerchantName(cartModel.getAdyenApplePayMerchantName());
+        paymentMethodsCartData.setAdyenAmazonPayConfiguration(cartModel.getAdyenAmazonPayConfiguration());
+
+        return paymentMethodsCartData;
+    }
+
+    protected void restorePaymentMethodsDataOnCart(final PaymentMethodsCartData paymentMethodsCartData, final CartModel cartModel) {
+        if (paymentMethodsCartData != null) {
+            cartModel.setAdyenDfValue(paymentMethodsCartData.getAdyenDfValue());
+            cartModel.setAdyenStoredCards(paymentMethodsCartData.getAdyenStoredCards());
+            cartModel.setAdyenApplePayMerchantName(paymentMethodsCartData.getAdyenApplePayMerchantName());
+            cartModel.setAdyenAmazonPayConfiguration(paymentMethodsCartData.getAdyenAmazonPayConfiguration());
+        } else {
+            LOGGER.warn("Empty payment methods cart data in session");
+        }
     }
 
     public BaseStoreService getBaseStoreService() {

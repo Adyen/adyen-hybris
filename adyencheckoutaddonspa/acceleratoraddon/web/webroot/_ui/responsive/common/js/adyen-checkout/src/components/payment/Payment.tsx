@@ -131,8 +131,8 @@ class Payment extends React.Component<Props, State> {
             onPaymentCompleted(data: OnPaymentCompletedData, element?: UIElement) {
                 console.info(data, element);
             },
-            onError(error: AdyenCheckoutError, element?: UIElement) {
-                console.error(error.name, error.message, error.stack, element);
+            onError: (error: AdyenCheckoutError, element?: UIElement) => {
+                this.handleError()
             },
             onSubmit: (state: any, element: UIElement) => this.handlePayment(state.data),
             onAdditionalDetails: (state: any, element?: UIElement) => this.handleAdditionalDetails(state.data),
@@ -147,6 +147,11 @@ class Payment extends React.Component<Props, State> {
         this.dropIn = adyenCheckout.create("dropin");
 
         this.dropIn.mount(this.paymentRef.current)
+    }
+
+    private async handleError(){
+        await PaymentService.sendPaymentCancel();
+        this.resetDropInComponent();
     }
 
     private async handlePayment(data: any) {
