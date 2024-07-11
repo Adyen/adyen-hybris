@@ -6,6 +6,7 @@ import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.commerce.validators.PaymentRequestValidator;
 import com.adyen.model.checkout.PaymentDetailsRequest;
+import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.model.checkout.PaymentResponse;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
@@ -15,6 +16,8 @@ import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionS
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
@@ -78,6 +81,9 @@ public class AdyenPlaceOrderController {
 
     @Resource(name = "baseSiteService")
     private BaseSiteService baseSiteService;
+
+    @Autowired
+    private AdyenCheckoutFacade adyenCheckoutFacade;
 
     @RequireHardLogIn
     @PostMapping("/place-order")
@@ -193,6 +199,13 @@ public class AdyenPlaceOrderController {
 
     private boolean is3DSPaymentMethod(String adyenPaymentMethod) {
         return adyenPaymentMethod.equals(PAYMENT_METHOD_SCHEME) || adyenPaymentMethod.equals(PAYMENT_METHOD_CC) || adyenPaymentMethod.equals(PAYMENT_METHOD_BCMC) || AdyenUtil.isOneClick(adyenPaymentMethod);
+    }
+
+    @RequireHardLogIn
+    @PostMapping("/payment-canceled")
+    public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
+        adyenCheckoutFacade.restoreCartFromOrderCodeInSession();
+        return ResponseEntity.ok().build();
     }
 
     private boolean isCartValid() {
