@@ -74,6 +74,14 @@ export class PaymentService {
             })
     }
 
+    static async sendPaymentCancel() {
+        return adyenAxios.post<void>(urlContextPath + '/api/checkout/payment-canceled', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRFToken': CSRFToken
+            }
+        })
+    }
 
     static convertBillingAddress(address: AddressModel, saveInAddressBook: boolean): AddressData {
         return {
