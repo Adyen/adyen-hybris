@@ -4,6 +4,7 @@ import com.adyen.commerce.constants.AdyenoccConstants;
 import com.adyen.commerce.controllerbase.PlaceOrderControllerBase;
 import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
+import com.adyen.commerce.response.OCCPlaceOrderResponse;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
@@ -22,15 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 @RequestMapping(value = AdyenoccConstants.ADYEN_USER_CART_PREFIX)
 @ApiVersion("v2")
 @Tag(name = "Adyen")
@@ -61,7 +62,7 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @ApiBaseSiteIdUserIdAndCartIdParam
     public ResponseEntity<String> onPlaceOrder(@RequestBody String placeOrderStringRequest, HttpServletRequest request) throws Exception {
         PlaceOrderRequest placeOrderRequest = objectMapper.readValue(placeOrderStringRequest, PlaceOrderRequest.class);
-        PlaceOrderResponse placeOrderResponse = super.placeOrder(placeOrderRequest, request);
+        OCCPlaceOrderResponse placeOrderResponse = super.placeOrderOCC(placeOrderRequest, request);
         String response = objectMapper.writeValueAsString(placeOrderResponse);
         return ResponseEntity.ok(response);
     }

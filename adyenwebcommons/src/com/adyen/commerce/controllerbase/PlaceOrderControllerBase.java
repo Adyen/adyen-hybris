@@ -3,6 +3,7 @@ package com.adyen.commerce.controllerbase;
 import com.adyen.commerce.exception.AdyenControllerException;
 import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
+import com.adyen.commerce.response.OCCPlaceOrderResponse;
 import com.adyen.commerce.response.PlaceOrderResponse;
 import com.adyen.commerce.validators.PaymentRequestValidator;
 import com.adyen.model.checkout.PaymentDetailsRequest;
@@ -47,6 +48,13 @@ public abstract class PlaceOrderControllerBase {
     }
 
     public PlaceOrderResponse placeOrder(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
+
+        OCCPlaceOrderResponse occPlaceOrderResponse = placeOrderOCC(placeOrderRequest, request);
+        occPlaceOrderResponse.setOrderData(null);
+        return occPlaceOrderResponse;
+    }
+
+    public OCCPlaceOrderResponse placeOrderOCC(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
 
         String adyenPaymentMethodType = extractPaymentMethodType(placeOrderRequest);
 
@@ -151,7 +159,7 @@ public abstract class PlaceOrderControllerBase {
         return true;
     }
 
-    private PlaceOrderResponse handlePayment(HttpServletRequest request,  PlaceOrderRequest placeOrderRequest) {
+    private OCCPlaceOrderResponse handlePayment(HttpServletRequest request,  PlaceOrderRequest placeOrderRequest) {
         final CartData cartData = getCartFacade().getSessionCart();
 
         String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
@@ -160,8 +168,9 @@ public abstract class PlaceOrderControllerBase {
             cartData.setAdyenReturnUrl(getPaymentRedirectReturnUrl());
             OrderData orderData = getAdyenCheckoutApiFacade().placeOrderWithPayment(request, cartData, placeOrderRequest.getPaymentRequest());
 
-            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            OCCPlaceOrderResponse placeOrderResponse = new OCCPlaceOrderResponse();
             placeOrderResponse.setOrderNumber(orderData.getCode());
+            placeOrderResponse.setOrderData(orderData);
             return placeOrderResponse;
 
         } catch (ApiException e) {
@@ -187,8 +196,8 @@ public abstract class PlaceOrderControllerBase {
         throw new AdyenControllerException(errorMessage);
     }
 
-    private PlaceOrderResponse executeAction(PaymentResponse paymentsResponse) {
-        PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+    private OCCPlaceOrderResponse executeAction(PaymentResponse paymentsResponse) {
+        OCCPlaceOrderResponse placeOrderResponse = new OCCPlaceOrderResponse();
         placeOrderResponse.setPaymentsResponse(paymentsResponse);
         placeOrderResponse.setExecuteAction(true);
         placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
