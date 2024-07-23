@@ -73,7 +73,7 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
             "Places pending order based on additional details request")
     @ApiBaseSiteIdUserIdAndCartIdParam
     public ResponseEntity<String> onAdditionalDetails(@RequestBody PaymentDetailsRequest detailsRequest) throws JsonProcessingException {
-        PlaceOrderResponse placeOrderResponse = handleAdditionalDetails(detailsRequest);
+        OCCPlaceOrderResponse placeOrderResponse = handleAdditionalDetailsOCC(detailsRequest);
 
         String response = objectMapper.writeValueAsString(placeOrderResponse);
         return ResponseEntity.ok(response);

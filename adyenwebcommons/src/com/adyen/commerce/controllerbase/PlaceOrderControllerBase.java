@@ -48,10 +48,7 @@ public abstract class PlaceOrderControllerBase {
     }
 
     public PlaceOrderResponse placeOrder(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
-
-        OCCPlaceOrderResponse occPlaceOrderResponse = placeOrderOCC(placeOrderRequest, request);
-        occPlaceOrderResponse.setOrderData(null);
-        return occPlaceOrderResponse;
+        return placeOrderOCC(placeOrderRequest, request);
     }
 
     public OCCPlaceOrderResponse placeOrderOCC(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
@@ -68,16 +65,17 @@ public abstract class PlaceOrderControllerBase {
         return handlePayment(request, placeOrderRequest);
     }
 
-
     public PlaceOrderResponse handleAdditionalDetails(final PaymentDetailsRequest paymentDetailsRequest) {
+        return handleAdditionalDetailsOCC(paymentDetailsRequest);
+    }
+
+    public OCCPlaceOrderResponse handleAdditionalDetailsOCC(final PaymentDetailsRequest paymentDetailsRequest) {
         try {
             OrderData orderData = getAdyenCheckoutApiFacade().placeOrderWithAdditionalDetails(paymentDetailsRequest);
-            PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
+            OCCPlaceOrderResponse placeOrderResponse = new OCCPlaceOrderResponse();
             placeOrderResponse.setOrderNumber(orderData.getCode());
+            placeOrderResponse.setOrderData(orderData);
             return placeOrderResponse;
-        } catch (ApiException e) {
-            LOGGER.error("ApiException: " + e);
-            throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
         } catch (Exception e) {
             LOGGER.error("Exception", e);
             throw new AdyenControllerException(CHECKOUT_ERROR_AUTHORIZATION_FAILED);
