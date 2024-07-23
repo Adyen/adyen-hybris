@@ -71,7 +71,6 @@ public class PaymentRequestValidator implements Validator {
         }
 
         if (!placeOrderRequest.isUseAdyenDeliveryAddress() && placeOrderRequest.getBillingAddress() != null) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.titleCode", "address.title.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.firstName", "address.firstName.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.lastName", "address.lastName.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.line1", "address.line1.invalid");
