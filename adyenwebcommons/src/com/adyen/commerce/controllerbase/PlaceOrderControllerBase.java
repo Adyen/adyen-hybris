@@ -48,7 +48,9 @@ public abstract class PlaceOrderControllerBase {
     }
 
     public PlaceOrderResponse placeOrder(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
-        return placeOrderOCC(placeOrderRequest, request);
+        OCCPlaceOrderResponse occPlaceOrderResponse = placeOrderOCC(placeOrderRequest, request);
+        occPlaceOrderResponse.setOrderData(null);
+        return occPlaceOrderResponse;
     }
 
     public OCCPlaceOrderResponse placeOrderOCC(PlaceOrderRequest placeOrderRequest, HttpServletRequest request) {
@@ -66,7 +68,9 @@ public abstract class PlaceOrderControllerBase {
     }
 
     public PlaceOrderResponse handleAdditionalDetails(final PaymentDetailsRequest paymentDetailsRequest) {
-        return handleAdditionalDetailsOCC(paymentDetailsRequest);
+        OCCPlaceOrderResponse occPlaceOrderResponse = handleAdditionalDetailsOCC(paymentDetailsRequest);
+        occPlaceOrderResponse.setOrderData(null);
+        return occPlaceOrderResponse;
     }
 
     public OCCPlaceOrderResponse handleAdditionalDetailsOCC(final PaymentDetailsRequest paymentDetailsRequest) {
