@@ -206,13 +206,7 @@ public abstract class PlaceOrderControllerBase {
         return placeOrderResponse;
     }
 
-    private String getPaymentRedirectReturnUrl() {
-        String url = ADYEN_CHECKOUT_API_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
-
-        BaseSiteModel currentBaseSite = getBaseSiteService().getCurrentBaseSite();
-
-        return getSiteBaseUrlResolutionService().getWebsiteUrlForSite(currentBaseSite, true, url);
-    }
+    public abstract String getPaymentRedirectReturnUrl();
 
     public abstract AdyenCheckoutApiFacade getAdyenCheckoutApiFacade();
 

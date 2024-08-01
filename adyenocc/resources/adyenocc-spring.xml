@@ -15,4 +15,8 @@
 
     <context:annotation-config/>
 
+	<bean id="webServicesBaseUrlResolver" class="com.adyen.commerce.utils.WebServicesBaseUrlResolver">
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
 </beans>

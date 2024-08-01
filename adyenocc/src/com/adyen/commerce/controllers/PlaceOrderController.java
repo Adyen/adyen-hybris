@@ -6,6 +6,7 @@ import com.adyen.commerce.facades.AdyenCheckoutApiFacade;
 import com.adyen.commerce.request.PlaceOrderRequest;
 import com.adyen.commerce.response.OCCPlaceOrderResponse;
 import com.adyen.commerce.response.PlaceOrderResponse;
+import com.adyen.commerce.utils.WebServicesBaseUrlResolver;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,6 +56,9 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Autowired
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
+    @Autowired
+    private WebServicesBaseUrlResolver webServicesBaseUrlResolver;
+
     @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
     @PostMapping(value = "/place-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(operationId = "placeOrder", summary = "Handle place order request", description =
@@ -87,6 +91,14 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
         super.handleCancel();
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public String getPaymentRedirectReturnUrl() {
+        String occBaseUrl = webServicesBaseUrlResolver.getOCCBaseUrl(true);
+        String baseSiteUid = baseSiteService.getCurrentBaseSite().getUid();
+
+        return occBaseUrl + "/v2/" + baseSiteUid + "/adyen/redirect";
     }
 
     @Override
