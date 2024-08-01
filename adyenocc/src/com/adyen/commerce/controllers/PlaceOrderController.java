@@ -98,7 +98,7 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
         String occBaseUrl = webServicesBaseUrlResolver.getOCCBaseUrl(true);
         String baseSiteUid = baseSiteService.getCurrentBaseSite().getUid();
 
-        return occBaseUrl + baseSiteUid + "/adyen/redirect";
+        return occBaseUrl + "/v2/" + baseSiteUid + "/adyen/redirect";
     }
 
     @Override
