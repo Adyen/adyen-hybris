@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Base64;
+
 import static com.adyen.commerce.constants.AdyenwebcommonsConstants.REDIRECT_PREFIX;
 
 @Controller
@@ -28,6 +30,7 @@ import static com.adyen.commerce.constants.AdyenwebcommonsConstants.REDIRECT_PRE
 @Tag(name = "Adyen")
 public class RedirectController extends RedirectControllerBase {
     private static final String REDIRECT_URL = "/redirect";
+    private static final String ADYEN_REDIRECT_URL = "/adyen/redirect/";
 
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
@@ -57,24 +60,29 @@ public class RedirectController extends RedirectControllerBase {
 
     @Override
     public String getErrorRedirectUrl(String errorMessage) {
-        //TODO: will be implemented
-        return "error url";
+        String encodedMessage = Base64.getUrlEncoder().encodeToString(errorMessage.getBytes());
+        return getSpartacusUrlPrefix() + ADYEN_REDIRECT_URL + "error/" + encodedMessage;
     }
 
     @Override
     public String getOrderConfirmationUrl(String orderCode) {
-        //TODO: will be implemented
-        return "order confirmation";
+        return getSpartacusUrlPrefix() + ADYEN_REDIRECT_URL + orderCode;
+
     }
 
     @Override
     public String getCartUrl() {
+        return getSpartacusUrlPrefix() + "/cart";
+    }
+
+    private String getSpartacusUrlPrefix() {
         String currency = commerceCommonI18NService.getCurrentCurrency().getIsocode();
         String language = commerceCommonI18NService.getCurrentLanguage().getIsocode();
         String baseSiteUid = baseSiteService.getCurrentBaseSite().getUid();
 
         String baseUrl = configurationService.getConfiguration().getString("adyen.spartacus.baseurl");
-        return REDIRECT_PREFIX + baseUrl + "/" + baseSiteUid + "/" + language + "/" + currency + "/cart";
+
+        return REDIRECT_PREFIX + baseUrl + baseSiteUid + "/" + language + "/" + currency;
     }
 
     @Override

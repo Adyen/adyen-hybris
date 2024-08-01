@@ -9,6 +9,7 @@ import com.adyen.v6.facades.AdyenCheckoutFacade;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.ADYEN_CHECKOUT_API_PREFIX;
+import static com.adyen.commerce.constants.AdyenwebcommonsConstants.AUTHORISE_3D_SECURE_PAYMENT_URL;
 
 
 @RequestMapping("/api/checkout")
@@ -68,6 +72,16 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
         super.handleCancel();
         return ResponseEntity.ok().build();
+    }
+
+
+    @Override
+    public String getPaymentRedirectReturnUrl() {
+        String url = ADYEN_CHECKOUT_API_PREFIX + AUTHORISE_3D_SECURE_PAYMENT_URL;
+
+        BaseSiteModel currentBaseSite = getBaseSiteService().getCurrentBaseSite();
+
+        return getSiteBaseUrlResolutionService().getWebsiteUrlForSite(currentBaseSite, true, url);
     }
 
     @Override
