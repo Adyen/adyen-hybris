@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
-import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
@@ -76,8 +76,11 @@ public abstract class PlaceOrderControllerBase {
     public OCCPlaceOrderResponse handleAdditionalDetailsOCC(final PaymentDetailsRequest paymentDetailsRequest) {
         try {
             OrderData orderData = getAdyenCheckoutApiFacade().placeOrderWithAdditionalDetails(paymentDetailsRequest);
+
+            String orderCode = getCheckoutCustomerStrategy().isAnonymousCheckout() ? orderData.getGuid() : orderData.getCode();
+
             OCCPlaceOrderResponse placeOrderResponse = new OCCPlaceOrderResponse();
-            placeOrderResponse.setOrderNumber(orderData.getCode());
+            placeOrderResponse.setOrderNumber(orderCode);
             placeOrderResponse.setOrderData(orderData);
             return placeOrderResponse;
         } catch (Exception e) {
@@ -86,7 +89,7 @@ public abstract class PlaceOrderControllerBase {
         }
     }
 
-    public void handleCancel() throws InvalidCartException, CalculationException{
+    public void handleCancel() throws InvalidCartException, CalculationException {
         getAdyenCheckoutFacade().restoreCartFromOrderCodeInSession();
     }
 
@@ -121,7 +124,7 @@ public abstract class PlaceOrderControllerBase {
             throw new AdyenControllerException(CHECKOUT_ERROR_FORM_ENTRY_INVALID, getFieldCodesFromValidation(bindingResult));
         }
 
-        getAdyenCheckoutApiFacade().preHandlePlaceOrder(placeOrderRequest.getPaymentRequest(),adyenPaymentMethod,
+        getAdyenCheckoutApiFacade().preHandlePlaceOrder(placeOrderRequest.getPaymentRequest(), adyenPaymentMethod,
                 placeOrderRequest.getBillingAddress(), placeOrderRequest.isUseAdyenDeliveryAddress());
     }
 
@@ -161,7 +164,7 @@ public abstract class PlaceOrderControllerBase {
         return true;
     }
 
-    private OCCPlaceOrderResponse handlePayment(HttpServletRequest request,  PlaceOrderRequest placeOrderRequest) {
+    private OCCPlaceOrderResponse handlePayment(HttpServletRequest request, PlaceOrderRequest placeOrderRequest) {
         final CartData cartData = getCartFacade().getSessionCart();
 
         String errorMessage = CHECKOUT_ERROR_AUTHORIZATION_FAILED;
@@ -170,8 +173,10 @@ public abstract class PlaceOrderControllerBase {
             cartData.setAdyenReturnUrl(getPaymentRedirectReturnUrl());
             OrderData orderData = getAdyenCheckoutApiFacade().placeOrderWithPayment(request, cartData, placeOrderRequest.getPaymentRequest());
 
+            String orderCode = getCheckoutCustomerStrategy().isAnonymousCheckout() ? orderData.getGuid() : orderData.getCode();
+
             OCCPlaceOrderResponse placeOrderResponse = new OCCPlaceOrderResponse();
-            placeOrderResponse.setOrderNumber(orderData.getCode());
+            placeOrderResponse.setOrderNumber(orderCode);
             placeOrderResponse.setOrderData(orderData);
             return placeOrderResponse;
 
@@ -219,4 +224,7 @@ public abstract class PlaceOrderControllerBase {
     public abstract SiteBaseUrlResolutionService getSiteBaseUrlResolutionService();
 
     public abstract AdyenCheckoutFacade getAdyenCheckoutFacade();
+
+    public abstract CheckoutCustomerStrategy getCheckoutCustomerStrategy();
+
 }

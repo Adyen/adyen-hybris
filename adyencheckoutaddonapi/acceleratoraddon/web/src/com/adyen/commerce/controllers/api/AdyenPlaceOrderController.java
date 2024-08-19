@@ -11,6 +11,7 @@ import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionS
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
@@ -50,6 +51,9 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
 
     @Autowired
     private AdyenCheckoutFacade adyenCheckoutFacade;
+
+    @Resource(name = "checkoutCustomerStrategy")
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
 
     @RequireHardLogIn
     @PostMapping("/place-order")
@@ -112,5 +116,10 @@ public class AdyenPlaceOrderController extends PlaceOrderControllerBase {
     @Override
     public AdyenCheckoutFacade getAdyenCheckoutFacade() {
         return adyenCheckoutFacade;
+    }
+
+    @Override
+    public CheckoutCustomerStrategy getCheckoutCustomerStrategy() {
+        return checkoutCustomerStrategy;
     }
 }

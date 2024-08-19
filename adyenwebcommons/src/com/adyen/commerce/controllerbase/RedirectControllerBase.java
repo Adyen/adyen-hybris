@@ -60,7 +60,7 @@ public abstract class RedirectControllerBase {
 
             LOGGER.debug("Redirecting to confirmation");
 
-            return getOrderConfirmationUrl(orderData.getCode());
+            return getOrderConfirmationUrl(orderData);
 
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug(NON_AUTHORIZED_ERROR);
@@ -89,7 +89,7 @@ public abstract class RedirectControllerBase {
 
     public abstract String getErrorRedirectUrl(String errorMessage);
 
-    public abstract String getOrderConfirmationUrl(String orderCode);
+    public abstract String getOrderConfirmationUrl(OrderData orderData);
 
     public abstract String getCartUrl();
 

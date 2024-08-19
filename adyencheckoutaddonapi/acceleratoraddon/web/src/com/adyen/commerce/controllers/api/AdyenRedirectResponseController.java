@@ -4,6 +4,8 @@ import com.adyen.commerce.controllerbase.RedirectControllerBase;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
+import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,9 @@ public class AdyenRedirectResponseController extends RedirectControllerBase {
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
+    @Resource(name = "checkoutCustomerStrategy")
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
+
     @GetMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL)
     @RequireHardLogIn
     public String authoriseRedirectGetPayment(final HttpServletRequest request) {
@@ -47,7 +52,10 @@ public class AdyenRedirectResponseController extends RedirectControllerBase {
     }
 
     @Override
-    public String getOrderConfirmationUrl(String orderCode) {
+    public String getOrderConfirmationUrl(OrderData orderData) {
+
+        String orderCode = checkoutCustomerStrategy.isAnonymousCheckout() ? orderData.getGuid() : orderData.getCode();
+
         return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL + '/' + orderCode;
     }
 

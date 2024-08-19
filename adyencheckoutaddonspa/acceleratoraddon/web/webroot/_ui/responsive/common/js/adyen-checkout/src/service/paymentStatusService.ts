@@ -19,4 +19,20 @@ export class PaymentStatusService {
                 return false
             })
     }
+
+    static fetchOrderCodeForGUID(orderGUID: string) {
+        return adyenAxios.post(urlContextPath + '/api/checkout/get-order-code', orderGUID, {
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRFToken': CSRFToken
+            }
+        })
+            .then(response => {
+                return response.data
+            })
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                console.error("Payment status fetch error.")
+                return false
+            })
+    }
 }
