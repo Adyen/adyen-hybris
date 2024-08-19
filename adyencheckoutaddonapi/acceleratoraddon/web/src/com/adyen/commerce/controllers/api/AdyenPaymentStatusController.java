@@ -37,4 +37,18 @@ public class AdyenPaymentStatusController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @RequireHardLogIn
+    @PostMapping("/get-order-code")
+    public ResponseEntity<String> postGUIDForOrderCode(@RequestBody String orderGUID) {
+        String checkoutGuid = sessionService.getAttribute(WebConstants.ANONYMOUS_CHECKOUT_GUID);
+
+        try {
+            String paymentStatus = adyenOrderFacade.getOrderCodeForGUID(orderGUID, checkoutGuid);
+            return ResponseEntity.ok().body(paymentStatus);
+        } catch (Exception exception) {
+            LOG.error(exception);
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

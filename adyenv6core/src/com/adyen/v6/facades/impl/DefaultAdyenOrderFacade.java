@@ -40,12 +40,27 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return getStatus(paymentTransactions);
     }
 
+    @Override
+    public String getOrderCodeForGUID(final String orderGUID, final String sessionGuid) {
+        final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
+
+        if (checkoutCustomerStrategy.isAnonymousCheckout()) {
+            OrderModel orderModel = customerAccountService.getGuestOrderForGUID(orderGUID, baseStoreModel);
+            if (StringUtils.substringBefore(orderModel.getUser().getUid(), "|")
+                    .equals(sessionGuid)) {
+                return orderModel.getCode();
+            }
+        }
+        LOG.error("Get order for guid on not anonymous checkout");
+        return "";
+    }
+
     private OrderModel getOrderDetailsForCodeInternal(final String code, final String sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
 
         OrderModel orderModel = null;
         if (checkoutCustomerStrategy.isAnonymousCheckout()) {
-            orderModel = customerAccountService.getOrderForCode(code, baseStoreModel);
+            orderModel = customerAccountService.getGuestOrderForGUID(code, baseStoreModel);
             if (!StringUtils.substringBefore(orderModel.getUser().getUid(), "|")
                     .equals(sessionGuid)) {
                 orderModel = null;

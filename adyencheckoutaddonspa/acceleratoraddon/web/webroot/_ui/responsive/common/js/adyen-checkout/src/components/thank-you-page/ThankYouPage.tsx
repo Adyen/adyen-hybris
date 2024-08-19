@@ -7,7 +7,8 @@ import {PaymentFailed} from "./PaymentFailed";
 import {PaymentRejected} from "./PaymentRejected";
 import {PaymentTimeout} from "./PaymentTimeout";
 import {PaymentStatusService} from "../../service/paymentStatusService";
-import {isNotEmpty} from "../../util/stringUtil";
+import {isEmpty, isNotEmpty} from "../../util/stringUtil";
+import {isGuid} from "../../util/guidUtil";
 
 interface Props {
     orderCode: string
@@ -15,7 +16,8 @@ interface Props {
 
 interface State {
     numberOfStatusChecks: number,
-    paymentStatus: PaymentStatus
+    paymentStatus: PaymentStatus,
+    displayedOrderCode: string
 }
 
 export class ThankYouPage extends React.Component<Props, State> {
@@ -27,12 +29,29 @@ export class ThankYouPage extends React.Component<Props, State> {
         super(props);
         this.state = {
             numberOfStatusChecks: 0,
-            paymentStatus: "waiting"
+            paymentStatus: "waiting",
+            displayedOrderCode: ""
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.timer = setInterval(() => this.checkStatus(), this.statusRequestInterval);
+        if (isGuid(this.props.orderCode)) {
+            let orderCode = await PaymentStatusService.fetchOrderCodeForGUID(this.props.orderCode);
+            this.setState((state): State => {
+                return {
+                    ...state,
+                    displayedOrderCode: orderCode
+                }
+            })
+        } else {
+            this.setState((state): State => {
+                return {
+                    ...state,
+                    displayedOrderCode: this.props.orderCode
+                }
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -85,6 +104,14 @@ export class ThankYouPage extends React.Component<Props, State> {
         }
     }
 
+    private renderOrderNumberSection(): React.JSX.Element {
+        if (isEmpty(this.state.displayedOrderCode)) {
+            return <></>
+        }
+        return <p>{translationsStore.get("text.account.order.orderNumberLabel")}<strong> {this.state.displayedOrderCode}</strong>
+        </p>
+    }
+
     render() {
         return (
             <div className="checkout-success">
@@ -92,8 +119,7 @@ export class ThankYouPage extends React.Component<Props, State> {
                     <div className="checkout-success__body__headline">
                         {translationsStore.get("checkout.orderConfirmation.thankYouForOrder")}
                     </div>
-                    <p>{translationsStore.get("text.account.order.orderNumberLabel")}<strong> {this.props.orderCode}</strong>
-                    </p>
+                    {this.renderOrderNumberSection()}
                     {this.renderPaymentStatus()}
                 </div>
             </div>)

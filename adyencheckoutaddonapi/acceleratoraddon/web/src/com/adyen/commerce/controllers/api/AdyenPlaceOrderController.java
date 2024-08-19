@@ -16,6 +16,7 @@ import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionS
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.commercefacades.order.data.CartData;
@@ -85,6 +86,9 @@ public class AdyenPlaceOrderController {
     @Autowired
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
+    @Autowired
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
+
     @RequireHardLogIn
     @PostMapping("/place-order")
     public ResponseEntity<PlaceOrderResponse> placeOrder(@RequestBody PlaceOrderRequest placeOrderRequest, HttpServletRequest request) throws Exception {
@@ -143,8 +147,10 @@ public class AdyenPlaceOrderController {
             cartData.setAdyenReturnUrl(get3DSReturnUrl());
             OrderData orderData = adyenCheckoutApiFacade.placeOrderWithPayment(request, cartData, placeOrderRequest.getPaymentRequest());
 
+            String orderCode = checkoutCustomerStrategy.isAnonymousCheckout() ? orderData.getGuid() : orderData.getCode();
+
             PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-            placeOrderResponse.setOrderNumber(orderData.getCode());
+            placeOrderResponse.setOrderNumber(orderCode);
             return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponse);
 
         } catch (ApiException e) {

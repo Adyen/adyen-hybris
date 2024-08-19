@@ -7,10 +7,12 @@ import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +44,9 @@ public class Adyen3DSResponseController {
 
     @Resource(name = "adyenCheckoutFacade")
     private AdyenCheckoutFacade adyenCheckoutFacade;
+
+    @Autowired
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
 
     @GetMapping(value = AUTHORISE_3D_SECURE_PAYMENT_URL)
     @RequireHardLogIn
@@ -76,7 +81,9 @@ public class Adyen3DSResponseController {
             OrderData orderData = adyenCheckoutFacade.handle3DSResponse(details);
             LOGGER.debug("Redirecting to confirmation");
 
-            return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL + '/' + orderData.getCode();
+            String orderCode = checkoutCustomerStrategy.isAnonymousCheckout() ? orderData.getGuid() : orderData.getCode();
+
+            return REDIRECT_PREFIX + ORDER_CONFIRMATION_URL + '/' + orderCode;
 
         } catch (AdyenNonAuthorizedPaymentException e) {
             LOGGER.debug(NON_AUTHORIZED_ERROR);
