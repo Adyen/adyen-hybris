@@ -7,6 +7,7 @@ import com.adyen.commerce.constants.AdyenoccConstants;
 import com.adyen.commerce.controllerbase.RedirectControllerBase;
 import com.adyen.model.checkout.PaymentDetailsRequest;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import de.hybris.platform.commercefacades.order.data.OrderData;
 import de.hybris.platform.commerceservices.i18n.CommerceCommonI18NService;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
@@ -65,8 +66,8 @@ public class RedirectController extends RedirectControllerBase {
     }
 
     @Override
-    public String getOrderConfirmationUrl(String orderCode) {
-        return getSpartacusUrlPrefix() + ADYEN_REDIRECT_URL + orderCode;
+    public String getOrderConfirmationUrl(OrderData orderData) {
+        return getSpartacusUrlPrefix() + ADYEN_REDIRECT_URL + orderData.getCode();
 
     }
 

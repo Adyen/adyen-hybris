@@ -3,4 +3,5 @@ package com.adyen.v6.facades;
 public interface AdyenOrderFacade {
     String getPaymentStatus(final String orderCode, final String sessionGuid);
     String getPaymentStatusOCC(final String code);
+    String getOrderCodeForGUID(final String orderGUID, final String sessionGuid);
 }

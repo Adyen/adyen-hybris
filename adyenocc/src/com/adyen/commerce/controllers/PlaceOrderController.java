@@ -14,6 +14,7 @@ import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
+import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
 import de.hybris.platform.order.exceptions.CalculationException;
 import de.hybris.platform.site.BaseSiteService;
@@ -58,6 +59,9 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
 
     @Autowired
     private WebServicesBaseUrlResolver webServicesBaseUrlResolver;
+
+    @Resource(name = "checkoutCustomerStrategy")
+    private CheckoutCustomerStrategy checkoutCustomerStrategy;
 
     @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
     @PostMapping(value = "/place-order", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -129,5 +133,10 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Override
     public AdyenCheckoutFacade getAdyenCheckoutFacade() {
         return adyenCheckoutFacade;
+    }
+
+    @Override
+    public CheckoutCustomerStrategy getCheckoutCustomerStrategy() {
+        return checkoutCustomerStrategy;
     }
 }
