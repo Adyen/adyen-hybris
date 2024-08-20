@@ -102,7 +102,11 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
         requestInfo.setShopperLocale(getShopperLocale());
 
         PaymentResponse paymentResponse = getAdyenPaymentService().componentPayment(cartData, paymentRequest, requestInfo, getCheckoutCustomerStrategy().getCurrentUserForCheckout());
-        if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode() || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()) {
+        if (PaymentResponse.ResultCodeEnum.PENDING == paymentResponse.getResultCode()
+                || PaymentResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentResponse.getResultCode()
+                || PaymentResponse.ResultCodeEnum.CHALLENGESHOPPER == paymentResponse.getResultCode()
+                || PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER == paymentResponse.getResultCode()
+                || PaymentResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
             placePendingOrder(paymentResponse.getResultCode().getValue());
             throw new AdyenNonAuthorizedPaymentException(paymentResponse);
@@ -120,8 +124,11 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
 
         PaymentDetailsResponse paymentsDetailsResponse = this.componentDetails(detailsRequest);
 
-        if (PaymentDetailsResponse.ResultCodeEnum.PENDING == paymentsDetailsResponse.getResultCode() ||
-                PaymentDetailsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsDetailsResponse.getResultCode()) {
+        if (PaymentDetailsResponse.ResultCodeEnum.PENDING == paymentsDetailsResponse.getResultCode()
+                || PaymentDetailsResponse.ResultCodeEnum.REDIRECTSHOPPER == paymentsDetailsResponse.getResultCode()
+                || PaymentDetailsResponse.ResultCodeEnum.CHALLENGESHOPPER == paymentsDetailsResponse.getResultCode()
+                || PaymentDetailsResponse.ResultCodeEnum.IDENTIFYSHOPPER == paymentsDetailsResponse.getResultCode()
+                || PaymentDetailsResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentsDetailsResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
             placePendingOrder(paymentsDetailsResponse.getResultCode().getValue());
             throw new AdyenNonAuthorizedPaymentException(paymentsDetailsResponse);
