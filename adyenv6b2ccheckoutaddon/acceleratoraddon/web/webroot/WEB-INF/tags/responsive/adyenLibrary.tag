@@ -35,6 +35,10 @@
         crossorigin="anonymous">
 </script>
 
+<script type="text/javascript"
+        src="https://${checkoutShopperHost}/checkoutshopper/assets/js/datacollection/datacollection.js">
+</script>
+
 <c:if test="${showDefaultCss eq true}">
     <link rel="stylesheet" href="https://${checkoutShopperHost}/checkoutshopper/css/chckt-default-v1.css"/>
 </c:if>

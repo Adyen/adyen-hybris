@@ -57,6 +57,8 @@ public class AdyenPaymentForm {
     private String selectedReference;
     private int installments;
 
+    private String riskData;
+
     //Save card
     private boolean rememberTheseDetails;
 
@@ -358,6 +360,14 @@ public class AdyenPaymentForm {
         this.giftCardBrand = giftCardBrand;
     }
 
+    public String getRiskData() {
+        return riskData;
+    }
+
+    public void setRiskData(String riskData) {
+        this.riskData = riskData;
+    }
+
     public void resetFormExceptBillingAddress() {
         this.paymentMethod = null;
         this.cseToken = null;
@@ -387,6 +397,7 @@ public class AdyenPaymentForm {
         this.telephoneNumber = null;
         this.gender = null;
         this.giftCardBrand = null;
+        this.riskData = null;
     }
 
     @Override

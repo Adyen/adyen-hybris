@@ -21,19 +21,7 @@
 package com.adyen.v6.factory;
 
 import com.adyen.builders.terminal.TerminalAPIRequestBuilder;
-import com.adyen.model.checkout.Amount;
-import com.adyen.model.checkout.ApplicationInfo;
-import com.adyen.model.checkout.BillingAddress;
-import com.adyen.model.checkout.BrowserInfo;
-import com.adyen.model.checkout.CardDetails;
-import com.adyen.model.checkout.CheckoutPaymentMethod;
-import com.adyen.model.checkout.CommonField;
-import com.adyen.model.checkout.DeliveryAddress;
-import com.adyen.model.checkout.ExternalPlatform;
-import com.adyen.model.checkout.Installments;
-import com.adyen.model.checkout.LineItem;
-import com.adyen.model.checkout.Name;
-import com.adyen.model.checkout.PaymentRequest;
+import com.adyen.model.checkout.*;
 import com.adyen.model.nexo.AmountsReq;
 import com.adyen.model.nexo.DocumentQualifierType;
 import com.adyen.model.nexo.MessageCategoryType;
@@ -62,6 +50,7 @@ import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
 import de.hybris.platform.util.TaxValue;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -71,12 +60,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.adyen.v6.constants.Adyenv6coreConstants.AFTERPAY;
@@ -127,6 +111,7 @@ public class AdyenRequestFactory {
         setCommonInfoOnPaymentRequest(merchantAccount, cartData, requestInfo, customerModel, paymentsRequest);
         paymentsRequest.setApplicationInfo(createApplicationInfo());
 
+        setRiskData(paymentsRequest, cartData, originPaymentsRequest);
 
         paymentsRequest.setReturnUrl(cartData.getAdyenReturnUrl());
         paymentsRequest.setRedirectFromIssuerMethod(RequestMethod.POST.toString());
@@ -187,6 +172,21 @@ public class AdyenRequestFactory {
         }
 
         return paymentsRequest;
+    }
+
+    private void setRiskData(PaymentRequest paymentsRequest, CartData cartData, PaymentRequest originPaymentsRequest) {
+        // drop-in
+        if (originPaymentsRequest != null && originPaymentsRequest.getRiskData() != null) {
+            paymentsRequest.setRiskData(originPaymentsRequest.getRiskData());
+            return;
+        }
+
+        // components
+        if (StringUtils.isNotEmpty(cartData.getRiskData())) {
+            RiskData riskData = new RiskData();
+            riskData.setClientData(cartData.getRiskData());
+            paymentsRequest.setRiskData(riskData);
+        }
     }
 
     protected CardDetails getCardDetails(CartData cartData, String selectedReference) {

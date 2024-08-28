@@ -126,6 +126,7 @@
                     return false;
                 }
                 AdyenCheckoutHybris.setCustomPaymentMethodValues();
+                AdyenCheckoutHybris.addRiskData();
 
                 $("#adyen-encrypted-form").submit();
             });
@@ -183,6 +184,8 @@
                             <form:hidden path="sepaOwnerName"/>
                             <form:hidden path="sepaIbanNumber"/>
                             <form:hidden path="giftCardBrand"/>
+                            <form:hidden path="riskData"/>
+
 
                             <%-- Billing Information --%>
                             <div class="headline">

@@ -204,6 +204,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     public static final String SESSION_SF_EXPIRY_YEAR = "encryptedExpiryYear";
     public static final String SESSION_SF_SECURITY_CODE = "encryptedSecurityCode";
     public static final String SESSION_CARD_BRAND = "cardBrand";
+    public static final String SESSION_ADYEN_RISK_DATA = "adyenRiskData";
     public static final String MODEL_SELECTED_PAYMENT_METHOD = "selectedPaymentMethod";
     public static final String MODEL_PAYMENT_METHODS = "paymentMethods";
     public static final String MODEL_CREDIT_CARD_LABEL = "creditCardLabel";
@@ -515,6 +516,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         cartData.setAdyenEncryptedExpiryYear(getSessionService().getAttribute(SESSION_SF_EXPIRY_YEAR));
         cartData.setAdyenEncryptedSecurityCode(getSessionService().getAttribute(SESSION_SF_SECURITY_CODE));
         cartData.setAdyenCardBrand(getSessionService().getAttribute(SESSION_CARD_BRAND));
+        cartData.setRiskData(getSessionService().getAttribute(SESSION_ADYEN_RISK_DATA));
 
         getSessionService().removeAttribute(SESSION_CSE_TOKEN);
         getSessionService().removeAttribute(SESSION_SF_CARD_NUMBER);
@@ -523,6 +525,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getSessionService().removeAttribute(SESSION_SF_SECURITY_CODE);
         getSessionService().removeAttribute(SESSION_CARD_BRAND);
         getSessionService().removeAttribute(PAYMENT_METHOD);
+        getSessionService().removeAttribute(SESSION_ADYEN_RISK_DATA);
     }
 
     @Override
@@ -1357,6 +1360,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
         if (!StringUtils.isEmpty(adyenPaymentForm.getCardBrand())) {
             getSessionService().setAttribute(SESSION_CARD_BRAND, adyenPaymentForm.getCardBrand());
+        }
+        if (!StringUtils.isEmpty(adyenPaymentForm.getRiskData())) {
+            getSessionService().setAttribute(SESSION_ADYEN_RISK_DATA, adyenPaymentForm.getRiskData());
         }
 
         //Update CartModel

@@ -13,6 +13,10 @@
 
 <spring:htmlEscape defaultHtmlEscape="true" />
 
+<script type="text/javascript"
+        src="https://${checkoutShopperHost}/checkoutshopper/assets/js/datacollection/datacollection.js">
+</script>
+
 <template:page pageTitle="${pageTitle}" hideHeaderLinks="true">
 
     <div class="row">

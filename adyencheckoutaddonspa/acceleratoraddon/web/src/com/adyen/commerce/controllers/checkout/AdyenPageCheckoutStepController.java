@@ -1,5 +1,7 @@
 package com.adyen.commerce.controllers.checkout;
 
+import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.adyen.v6.facades.impl.DefaultAdyenCheckoutFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateCheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.PreValidateQuoteCheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -7,18 +9,16 @@ import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutSt
 import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.AddressForm;
-import de.hybris.platform.acceleratorstorefrontcommons.util.AddressDataUtil;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.order.data.CartData;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
 
 import static com.adyen.commerce.constants.AdyencheckoutaddonspaWebConstants.ADYEN_CHECKOUT_ORDER_CONFIRMATION;
 import static com.adyen.commerce.constants.AdyencheckoutaddonspaWebConstants.ADYEN_CHECKOUT_PAGE_PREFIX;
@@ -31,6 +31,9 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
     private static final String SHOW_SAVE_TO_ADDRESS_BOOK_ATTR = "showSaveToAddressBook";
     public static final String SPA_CHECKOUT_PAGE = "addon:/adyencheckoutaddonspa/pages/adyenSPACheckout";
 
+
+    @Autowired
+    private AdyenCheckoutFacade adyenCheckoutFacade;
 
     @GetMapping(value = "/adyen/**")
     @RequireHardLogIn
@@ -78,6 +81,7 @@ public class AdyenPageCheckoutStepController extends AbstractCheckoutStepControl
         model.addAttribute(SHOW_SAVE_TO_ADDRESS_BOOK_ATTR, Boolean.TRUE);
         model.addAttribute(WebConstants.BREADCRUMBS_KEY, getResourceBreadcrumbBuilder().getBreadcrumbs(getBreadcrumbKey()));
         model.addAttribute("metaRobots", "noindex,nofollow");
+        model.addAttribute(DefaultAdyenCheckoutFacade.MODEL_CHECKOUT_SHOPPER_HOST, adyenCheckoutFacade.getCheckoutShopperHost());
         if (StringUtils.isNotBlank(addressForm.getCountryIso())) {
             model.addAttribute("regions", getI18NFacade().getRegionsForCountryIso(addressForm.getCountryIso()));
             model.addAttribute("country", addressForm.getCountryIso());
