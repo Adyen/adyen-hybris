@@ -159,6 +159,8 @@ public class AdyenCaptureCommand implements CaptureCommand {
             case "paywithgoogle":
             case "amazonpay":
             case "twint":
+            case "klarna_account":
+            case "klarna_paynow":
                 return true;
         }
 

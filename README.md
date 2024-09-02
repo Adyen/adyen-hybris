@@ -1,10 +1,13 @@
 # Adyen SAP Commerce (Hybris) v6 plugin
 
+Latest stable version:
+https://github.com/Adyen/adyen-hybris/releases/tag/11.2.0
+
 This plugin supports SAP Commerce (Hybris) versions 6.x
 
 The plugin is using following adyen libraries and API.
 - [adyen-java-api-library](https://github.com/Adyen/adyen-java-api-library) (v18.1.3)
-- [adyen-web](https://github.com/Adyen/adyen-web) (v5.25.0)
+- [adyen-web](https://github.com/Adyen/adyen-web) (v5.56.1)
 - [Adyen Checkout API](https://docs.adyen.com/api-explorer/) (v69)
 
 ## Integration
@@ -13,7 +16,7 @@ The SAP Commerce integrates Adyen Checkout for all card payments and local/redir
 Boleto, PayPal ECS and RatePay are routed over the old integration. When available in the new Checkout they will be migrated to the new flow.
 
 ## Requirements
-SAP Commerce (Hybris) version 6.x or 1905
+SAP Commerce (Hybris) version 2105 or later
 
 ## Installation
 

@@ -132,7 +132,8 @@
         <constructor-arg name="adyenPaymentMethodDetailsBuilderExecutor" ref="adyenPaymentMethodDetailsStrategyExecutorImpl" />
     </bean>
 
-    <bean id="adyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
+    <alias name="defaultAdyenPaymentServiceFactory" alias="adyenPaymentServiceFactory" />
+    <bean id="defaultAdyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
     </bean>
 
@@ -152,6 +153,11 @@
         <property name="cartRepository" ref="adyenCartRepository" />
         <property name="commercePlaceOrderStrategy" ref="commercePlaceOrderStrategy" />
         <property name="sessionService" ref="sessionService" />
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="adyenOrderCancelPaymentServiceAdapter" class="com.adyen.v6.service.AdyenOrderCancelPaymentServiceAdapter">
@@ -164,6 +170,11 @@
     <bean id="defaultAdyenOrderService" class="com.adyen.v6.service.DefaultAdyenOrderService">
         <property name="modelService" ref="modelService" />
         <property name="paymentsResponseConverter" ref="adyenPaymentsResponseConverter"/>
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
     </bean>
 
     <alias name="defaultAdyenBusinessProcessService" alias="adyenBusinessProcessService"/>
@@ -215,6 +226,12 @@
         <property name="calculationService" ref="calculationService" />
         <property name="addressPopulator" ref="addressPopulator" />
         <property name="adyenBusinessProcessService" ref="adyenBusinessProcessService" />
+        <property name="transactionTemplate">
+            <bean class="org.springframework.transaction.support.TransactionTemplate">
+                <property name="transactionManager" ref="txManager"/>
+            </bean>
+        </property>
+        <property name="adyenExpressCheckoutFacade" ref="adyenExpressCheckoutFacade"/>
     </bean>
 
     <bean name="adyenAbstractOrderPopulator" class="com.adyen.v6.populator.AbstractOrderPopulator">
@@ -443,4 +460,57 @@
         <constructor-arg name="genericStrategy" ref="genericAdyenPaymentMethodDetailsBuilderStrategy"/>
     </bean>
 
+    <bean id="adyenNotificationAuthenticationProvider" class="com.adyen.v6.security.AdyenNotificationAuthenticationProvider">
+        <property name="baseStoreService" ref="baseStoreService" />
+    </bean>
+
+    <bean id="captureNotificationEventListener" class="com.adyen.v6.listeners.CaptureNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="authorisationNotificationEventListener" class="com.adyen.v6.listeners.AuthorisationNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="cancelOrRefundNotificationEventListener" class="com.adyen.v6.listeners.CancelOrRefundNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+
+    <bean id="refundNotificationEventListener" class="com.adyen.v6.listeners.RefundNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="offerClosedNotificationEventListener" class="com.adyen.v6.listeners.OfferClosedNotificationEventListener" parent="abstractEventListener">
+        <property name="modelService" ref="modelService"/>
+        <property name="paymentTransactionRepository" ref="adyenPaymentTransactionRepository"/>
+        <property name="adyenNotificationService" ref="adyenNotificationService"/>
+    </bean>
+
+    <bean id="adyenExpressCheckoutFacade" class="com.adyen.v6.facades.impl.DefaultAdyenExpressCheckoutFacade">
+        <property name="cartFactory" ref="cartFactory"/>
+        <property name="cartService" ref="cartService"/>
+        <property name="productService" ref="productService"/>
+        <property name="addressReverseConverter" ref="addressReverseConverter"/>
+        <property name="modelService" ref="modelService"/>
+        <property name="customerFacade" ref="customerFacade"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="customerAccountService" ref="customerAccountService"/>
+        <property name="checkoutFacade" ref="checkoutFacade"/>
+        <property name="commerceCartService" ref="commerceCartService"/>
+        <property name="deliveryModeService" ref="deliveryModeService"/>
+        <property name="zoneDeliveryModeService" ref="zoneDeliveryModeService"/>
+        <property name="adyenCheckoutFacade" ref="adyenCheckoutFacade"/>
+        <property name="cartConverter" ref="cartConverter"/>
+        <property name="sessionService" ref="sessionService"/>
+        <property name="userService" ref="userService"/>
+    </bean>
 </beans>

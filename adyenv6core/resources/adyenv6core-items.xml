@@ -220,6 +220,10 @@
                     <persistence type="property"/>
                     <modifiers encrypted="true"/>
                 </attribute>
+                <attribute qualifier="adyenNotificationHMACKey" type="java.lang.String">
+                    <description>Server Communication HMAC Key</description>
+                    <persistence type="property"/>
+                </attribute>
                 <attribute qualifier="adyenMerchantAccount" type="java.lang.String">
                     <description>Merchant account name</description>
                     <persistence type="property"/>
@@ -535,6 +539,92 @@
                     <persistence type="property"/>
                 </attribute>
             </attributes>
+        </itemtype>
+
+        <itemtype code="AdyenNotification" generate="true" autocreate="true">
+            <deployment table="adyenNotification" typecode="22937"/>
+                <attributes>
+                    <attribute qualifier="uuid" type="java.lang.String">
+                        <persistence type="property"/>
+                        <modifiers optional="false" initial="true" unique="true"/>
+                    </attribute>
+                    <attribute qualifier="amountValue" type="java.math.BigDecimal">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="amountCurrency" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="eventCode" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="eventDate" type="java.util.Date">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="merchantAccountCode" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="merchantReference" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="originalReference" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="pspReference" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="reason" type="java.lang.String">
+                        <persistence type="property">
+                            <columntype database="oracle">
+                                <value>CLOB</value>
+                            </columntype>
+                            <columntype database="sap">
+                                <value>NCLOB</value>
+                            </columntype>
+                            <columntype database="mysql">
+                                <value>TEXT</value>
+                            </columntype>
+                            <columntype database="sqlserver">
+                                <value>TEXT</value>
+                            </columntype>
+                            <columntype>
+                                <value>HYBRIS.LONG_STRING</value>
+                            </columntype>
+                        </persistence>
+                    </attribute>
+                    <attribute qualifier="success" type="java.lang.Boolean">
+                        <persistence type="property"/>
+                        <defaultvalue>java.lang.Boolean.FALSE</defaultvalue>
+                        <modifiers optional="false"/>
+                    </attribute>
+                    <attribute qualifier="paymentMethod" type="java.lang.String">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="additionalData" type="java.lang.String">
+                        <persistence type="property">
+                            <columntype database="oracle">
+                                <value>CLOB</value>
+                            </columntype>
+                            <columntype database="sap">
+                                <value>NCLOB</value>
+                            </columntype>
+                            <columntype database="mysql">
+                                <value>TEXT</value>
+                            </columntype>
+                            <columntype database="sqlserver">
+                                <value>TEXT</value>
+                            </columntype>
+                            <columntype>
+                                <value>HYBRIS.LONG_STRING</value>
+                            </columntype>
+                        </persistence>
+                    </attribute>
+                    <attribute qualifier="createdAt" type="java.util.Date">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="processedAt" type="java.util.Date">
+                        <persistence type="property"/>
+                    </attribute>
+                </attributes>
         </itemtype>
     </itemtypes>
 </items>

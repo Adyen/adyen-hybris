@@ -36,7 +36,6 @@ import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commercefacades.user.data.AddressData;
 import de.hybris.platform.commercefacades.user.data.CountryData;
 import de.hybris.platform.commercefacades.user.data.TitleData;
-import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +125,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
         if(isSessionCartInvalid())
         {
-            LOGGER.debug("Invalid cart found in session");
+            LOGGER.warn("Invalid cart found in session, cart code: " + cartData.getCode());
             GlobalMessages.addErrorMessage(model, "checkout.deliveryAddress.notSelected");
         }
         else {
@@ -134,7 +133,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
                 adyenCheckoutFacade.initializeCheckoutData(model);
             }
             catch(ApiException e){
-                LOGGER.debug("Invalid session Data");
+                LOGGER.warn("Invalid session Data");
                 GlobalMessages.addErrorMessage(model, "basket.error.occurred");
             }
 

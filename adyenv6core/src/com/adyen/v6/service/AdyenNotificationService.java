@@ -20,7 +20,9 @@
  */
 package com.adyen.v6.service;
 
+import com.adyen.model.notification.NotificationRequest;
 import com.adyen.model.notification.NotificationRequestItem;
+import com.adyen.v6.model.AdyenNotificationModel;
 import com.adyen.v6.model.NotificationItemModel;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
@@ -37,15 +39,21 @@ public interface AdyenNotificationService {
     void processNotification(NotificationItemModel notificationItemModel);
 
     /**
-     * Parse HTTP request body and save NotificationItemModels
+     * Save NotificationItemModels
      */
-    void saveNotifications(String requestString);
+    void saveNotifications(NotificationRequest notificationRequest);
+
+    /**
+     * Parse HTTP request body and return NotificationRequest
+     */
+    NotificationRequest getNotificationRequestFromString(String requestString);
 
     /**
      * Create NotificationItemModel from NotificationRequestItem
      */
     NotificationItemModel createFromNotificationRequest(NotificationRequestItem notificationRequestItem);
 
+    AdyenNotificationModel createNotificationInfoModel(NotificationRequestItem notificationRequestItem);
     /**
      * Save NotificationItemModel from NotificationRequestItem
      */
@@ -54,27 +62,27 @@ public interface AdyenNotificationService {
     /**
      * Process notification with eventCode=CAPTURED
      */
-    PaymentTransactionEntryModel processCapturedEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
+    PaymentTransactionEntryModel processCapturedEvent(AdyenNotificationModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
 
     /**
      * Process notification with eventCode=AUTHORISED
      */
-    PaymentTransactionModel processAuthorisationEvent(NotificationItemModel notificationItemModel);
+    PaymentTransactionModel processAuthorisationEvent(AdyenNotificationModel notificationItemModel);
 
     /**
      * Process notification with eventCode=CANCEL_OR_REFUND
      */
-    PaymentTransactionEntryModel processCancelEvent(NotificationItemModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
+    PaymentTransactionEntryModel processCancelEvent(AdyenNotificationModel notificationItemModel, PaymentTransactionModel paymentTransactionModel);
 
     /**
      * Process notification with eventCode=REFUND
      */
-    PaymentTransactionEntryModel processRefundEvent(NotificationItemModel notificationItem);
+    PaymentTransactionEntryModel processRefundEvent(AdyenNotificationModel notificationItem);
 
     /**
      * Process notification with eventCode=OFFER_CLOSED
      * @return
      */
-    PaymentTransactionModel processOfferClosedEvent(NotificationItemModel notificationItem);
+    PaymentTransactionModel processOfferClosedEvent(AdyenNotificationModel notificationItem);
 
 }

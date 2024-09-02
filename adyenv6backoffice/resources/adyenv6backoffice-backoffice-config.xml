@@ -11,7 +11,10 @@
   ~ license agreement you entered into with hybris.
   -->
 
-<config xmlns="http://www.hybris.com/cockpit/config">
+<config xmlns="http://www.hybris.com/cockpit/config"
+		xmlns:et="http://www.hybris.com/cockpitng/config/explorertree"
+		xmlns:as="http://www.hybris.com/cockpitng/config/advancedsearch"
+		xmlns:lv="http://www.hybris.com/cockpitng/component/listView">
 
 	<!-- adyenv6backoffice UI configuration should be provided here -->
 
@@ -51,6 +54,17 @@
 				<editorArea:section name="hmc.adyen.notifications">
 					<editorArea:attribute qualifier="adyenNotificationUsername"/>
 					<editorArea:attribute qualifier="adyenNotificationPassword" editor="com.hybris.cockpitng.editor.defaultpassword"/>
+					<editorArea:attribute qualifier="adyenNotificationHMACKey"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.amazonpay">
+					<editorArea:attribute qualifier="amazonpayPublicKey"/>
+					<editorArea:attribute qualifier="amazonpayEnvironment"/>
+					<editorArea:attribute qualifier="amazonpayRegion"/>
+				</editorArea:section>
+				<editorArea:section name="hmc.adyen.amazonpay">
+					<editorArea:attribute qualifier="amazonpayPublicKey"/>
+					<editorArea:attribute qualifier="amazonpayEnvironment"/>
+					<editorArea:attribute qualifier="amazonpayRegion"/>
 				</editorArea:section>
 				<editorArea:section name="hmc.adyen.amazonpay">
 					<editorArea:attribute qualifier="amazonpayPublicKey"/>
@@ -71,4 +85,7 @@
 			</editorArea:tab>
 		</editorArea:editorArea>
 	</context>
+
+
+
 </config>

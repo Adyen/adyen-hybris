@@ -5,3 +5,14 @@
 */.pmd
 **.iml
 **.DS_Store
+**/lib/
+**/resources/beans.xsd
+**/resources/items.xsd
+**/*testclasses.xml
+**/*webtestclasses.xml
+*/extensioninfo.xsd
+**/gensrc/
+**/*.class
+**/.classpath
+**/.settings/
+**/.externalToolBuilders/
