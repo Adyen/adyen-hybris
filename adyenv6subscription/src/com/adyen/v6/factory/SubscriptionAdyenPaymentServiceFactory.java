@@ -13,7 +13,7 @@ public class SubscriptionAdyenPaymentServiceFactory extends AdyenPaymentServiceF
 
     @Override
     public AdyenCheckoutApiService createAdyenCheckoutApiService(final BaseStoreModel baseStoreModel) {
-        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount();
+        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount(baseStoreModel);
 
         final DefaultSubscriptionAdyenCheckoutApiService adyenPaymentService = new DefaultSubscriptionAdyenCheckoutApiService(
                 baseStoreModel, webMerchantAccount);
