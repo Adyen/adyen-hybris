@@ -1196,6 +1196,15 @@ var AdyenCheckoutHybris = (function () {
             }
             console.log('Something went wrong while trying to compute current visible label');
             return '';
+        },
+
+        addRiskData: function () {
+            try {
+                $('input[name="riskData"]').val(getData());
+            } catch (e) {
+                //in case of risk data collection script not enabled
+            }
+
         }
     };
 })();

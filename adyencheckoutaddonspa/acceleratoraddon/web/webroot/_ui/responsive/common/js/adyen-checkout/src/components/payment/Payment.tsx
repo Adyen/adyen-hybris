@@ -128,6 +128,10 @@ class Payment extends React.Component<Props, State> {
             analytics: {
                 enabled: false
             },
+            // @ts-ignore
+            risk: {
+                enabled: true
+            },
             onPaymentCompleted(data: OnPaymentCompletedData, element?: UIElement) {
                 console.info(data, element);
             },
