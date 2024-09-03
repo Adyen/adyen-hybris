@@ -114,16 +114,7 @@ import org.springframework.validation.Errors;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -163,6 +154,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private static final String ES_LOCALE = "es_ES";
     private static final String US = "US";
     private static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
+    private static final String EXCLUDED_PAYMENT_METHODS_CONFIG = "adyen.payment-methods.excluded";
 
     private BaseStoreService baseStoreService;
     private SessionService sessionService;
@@ -703,7 +695,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         CartModel cartModel = cartService.getSessionCart();
 
         //to remove unwanted payment methods insert them here
-        List<String> excludedPaymentMethods = new ArrayList<>();
+        List<String> excludedPaymentMethods = getExcludedPaymentMethodsFromConfiguration();
+        LOGGER.info(excludedPaymentMethods.toString());
 
         try {
             if (showPos()) {
@@ -784,6 +777,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode())
                 .setCardHolderNameRequired(getHolderNameRequired())
                 .build();
+    }
+
+    protected List<String> getExcludedPaymentMethodsFromConfiguration() {
+        String excludedPaymentMethodsConfig = configurationService.getConfiguration().getString(EXCLUDED_PAYMENT_METHODS_CONFIG);
+        if (StringUtils.isEmpty(excludedPaymentMethodsConfig)) {
+            return new ArrayList<>();
+        }
+
+        String[] excludedPaymentMethods = StringUtils.split(excludedPaymentMethodsConfig, ',');
+        return Arrays.stream(excludedPaymentMethods).map(String::trim).toList();
     }
 
     @Deprecated
