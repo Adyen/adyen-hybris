@@ -432,4 +432,8 @@
     <bean id="defaultAdyenMerchantStrategy" class="com.adyen.v6.strategy.impl.DefaultAdyenMerchantAccountStrategy">
         <property name="baseStoreService" ref="baseStoreService"/>
     </bean>
+
+    <!-- To support getCheckoutCart for non credit cards (CreditCardPaymentInfoModel) -->
+    <alias name="adyenCheckoutFlowFacade" alias="checkoutFlowFacade"/>
+    <bean id="adyenCheckoutFlowFacade" class="com.adyen.v6.acceleratorfacades.flow.impl.AdyenCheckoutFlowFacade" parent="defaultCheckoutFlowFacade" />
 </beans>

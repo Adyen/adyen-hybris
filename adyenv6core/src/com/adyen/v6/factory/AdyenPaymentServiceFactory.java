@@ -42,14 +42,14 @@ public class AdyenPaymentServiceFactory {
     }
     
     public AdyenCheckoutApiService createAdyenCheckoutApiService(final BaseStoreModel baseStoreModel) {
-        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount();
+        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount(baseStoreModel);
         DefaultAdyenCheckoutApiService defaultAdyenCheckoutApiService = new DefaultAdyenCheckoutApiService(baseStoreModel, webMerchantAccount);
         defaultAdyenCheckoutApiService.setAdyenRequestFactory(adyenRequestFactory);
         return defaultAdyenCheckoutApiService;
     }
 
     public AdyenModificationsApiService createAdyenModificationsApiService(final BaseStoreModel baseStoreModel) {
-        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount();
+        String webMerchantAccount = adyenMerchantAccountStrategy.getWebMerchantAccount(baseStoreModel);
         DefaultAdyenModificationsApiService adyenModificationsApiService = new DefaultAdyenModificationsApiService(baseStoreModel, webMerchantAccount);
         adyenModificationsApiService.setAdyenRequestFactory(adyenRequestFactory);
         return adyenModificationsApiService;

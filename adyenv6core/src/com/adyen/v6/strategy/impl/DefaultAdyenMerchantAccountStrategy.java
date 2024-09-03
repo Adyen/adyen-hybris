@@ -6,16 +6,28 @@ import de.hybris.platform.store.services.BaseStoreService;
 
 public class DefaultAdyenMerchantAccountStrategy implements AdyenMerchantAccountStrategy {
     private BaseStoreService baseStoreService;
+
     @Override
     public String getWebMerchantAccount() {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
-        return currentBaseStore.getAdyenMerchantAccount();
+        return getWebMerchantAccount(currentBaseStore);
+    }
+
+    @Override
+    public String getWebMerchantAccount(BaseStoreModel baseStore) {
+        return baseStore.getAdyenMerchantAccount();
     }
 
     @Override
     public String getPosMerchantAccount() {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
-        return currentBaseStore.getAdyenPosMerchantAccount();
+        return getPosMerchantAccount(currentBaseStore);
+    }
+
+    @Override
+    public String getPosMerchantAccount(BaseStoreModel baseStore) {
+        return baseStore.getAdyenPosMerchantAccount();
+
     }
 
     public void setBaseStoreService(BaseStoreService baseStoreService) {
