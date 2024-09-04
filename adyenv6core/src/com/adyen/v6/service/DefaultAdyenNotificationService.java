@@ -289,7 +289,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         }
     }
 
-    private boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
+    protected boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
         for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
             if (entry.getType().equals(PaymentTransactionType.AUTHORIZATION)
                     && TransactionStatus.ACCEPTED.name().equals(entry.getTransactionStatus())) {
@@ -300,7 +300,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         return false;
     }
 
-    private boolean isOrderAuthorized(final OrderModel order) {
+    protected boolean isOrderAuthorized(final OrderModel order) {
         if(order.getPaymentTransactions() == null || order.getPaymentTransactions().isEmpty()) {
             return false;
         }
@@ -350,7 +350,7 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
         }
     }
 
-    private AdyenNotificationModel convertFromNotificationItem(NotificationItemModel notificationItemModel){
+    protected AdyenNotificationModel convertFromNotificationItem(NotificationItemModel notificationItemModel){
         AdyenNotificationModel adyenNotificationInfo = new AdyenNotificationModel();
         adyenNotificationInfo.setAdditionalData(notificationItemModel.getAdditionalData());
         adyenNotificationInfo.setAmountCurrency(notificationItemModel.getAmountCurrency());

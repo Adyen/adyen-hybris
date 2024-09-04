@@ -109,7 +109,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
         return result;
     }
 
-    private CaptureResult createCaptureResultFromRequest(CaptureRequest request) {
+    protected CaptureResult createCaptureResultFromRequest(CaptureRequest request) {
         CaptureResult result = new CaptureResult();
 
         result.setCurrency(request.getCurrency());
@@ -126,7 +126,7 @@ public class AdyenCaptureCommand implements CaptureCommand {
         return result;
     }
 
-    private boolean supportsManualCapture(String paymentMethod) {
+    protected boolean supportsManualCapture(String paymentMethod) {
         switch (paymentMethod) {
             case "cup":
             case "cartebancaire":
