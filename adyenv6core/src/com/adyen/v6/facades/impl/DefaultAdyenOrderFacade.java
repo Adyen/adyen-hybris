@@ -55,7 +55,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return "";
     }
 
-    private OrderModel getOrderDetailsForCodeInternal(final String code, final String sessionGuid) {
+    protected OrderModel getOrderDetailsForCodeInternal(final String code, final String sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
 
         OrderModel orderModel = null;
@@ -80,7 +80,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return orderModel;
     }
 
-    private String getStatus(List<PaymentTransactionModel> paymentTransactions) {
+    protected String getStatus(List<PaymentTransactionModel> paymentTransactions) {
         Optional<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
                 .max(Comparator.comparing(ItemModel::getCreationtime));
 
@@ -96,7 +96,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         throw new ModelNotFoundException("No entries in payment transaction model.");
     }
 
-    private String getMessageFromStatus(String transactionStatus) {
+    protected String getMessageFromStatus(String transactionStatus) {
         if (transactionStatus.equals(TransactionStatus.ACCEPTED.name())) {
             return "completed";
         }
