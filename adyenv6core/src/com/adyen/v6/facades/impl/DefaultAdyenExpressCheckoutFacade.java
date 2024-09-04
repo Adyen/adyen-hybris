@@ -183,7 +183,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         }
     }
 
-    private void prepareCart(CartModel cart, DeliveryModeModel deliveryMode, AddressModel addressModel, PaymentInfoModel paymentInfo) {
+    protected void prepareCart(CartModel cart, DeliveryModeModel deliveryMode, AddressModel addressModel, PaymentInfoModel paymentInfo) {
         cart.setDeliveryMode(deliveryMode);
         cart.setDeliveryAddress(addressModel);
         cart.setPaymentAddress(addressModel);
@@ -191,7 +191,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         modelService.save(cart);
     }
 
-    private AddressModel prepareAddressModel(AddressData addressData, CustomerModel user) {
+    protected AddressModel prepareAddressModel(AddressData addressData, CustomerModel user) {
         AddressModel addressModel = modelService.create(AddressModel.class);
         addressReverseConverter.convert(addressData, addressModel);
         validateParameterNotNull(addressModel, "Empty address");
@@ -203,7 +203,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         return addressModel;
     }
 
-    private void addProductToCart(String productCode, CartModel cart) {
+    protected void addProductToCart(String productCode, CartModel cart) {
         ProductModel product = productService.getProductForCode(productCode);
 
         if (product != null) {
@@ -219,13 +219,13 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         return deliveryMode.getValues().stream().filter(valueModel -> valueModel.getCurrency().equals(currentCurrency)).findFirst();
     }
 
-    private CustomerModel createGuestCustomer(String emailAddress) throws DuplicateUidException {
+    protected CustomerModel createGuestCustomer(String emailAddress) throws DuplicateUidException {
         Assert.isTrue(EmailValidator.getInstance().isValid(emailAddress), "Invalid email address");
 
         return createGuestUserForAnonymousCheckout(emailAddress, USER_NAME);
     }
 
-    private CustomerModel createGuestUserForAnonymousCheckout(final String email, final String name) throws DuplicateUidException {
+    protected CustomerModel createGuestUserForAnonymousCheckout(final String email, final String name) throws DuplicateUidException {
         validateParameterNotNullStandardMessage("email", email);
         final CustomerModel guestCustomer = modelService.create(CustomerModel.class);
         final String guid = customerFacade.generateGUID();
@@ -242,14 +242,14 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         return guestCustomer;
     }
 
-    private CartModel createCartForExpressCheckout(CustomerModel guestUser) {
+    protected CartModel createCartForExpressCheckout(CustomerModel guestUser) {
         CartModel cart = cartFactory.createCart();
         cart.setUser(guestUser);
         modelService.save(cart);
         return cart;
     }
 
-    private PaymentInfoModel createPaymentInfoForCart(CustomerModel customerModel, AddressModel addressModel, CartModel cartModel, String paymentMethod, String merchantId, String merchantName) {
+    protected PaymentInfoModel createPaymentInfoForCart(CustomerModel customerModel, AddressModel addressModel, CartModel cartModel, String paymentMethod, String merchantId, String merchantName) {
         final PaymentInfoModel paymentInfo = modelService.create(PaymentInfoModel.class);
         paymentInfo.setUser(customerModel);
         paymentInfo.setCode(generateCcPaymentInfoCode(cartModel));
@@ -268,7 +268,7 @@ public class DefaultAdyenExpressCheckoutFacade implements AdyenExpressCheckoutFa
         return cartModel.getCode() + "_" + UUID.randomUUID();
     }
 
-    private boolean cartHasEntries(CartModel cartModel) {
+    protected boolean cartHasEntries(CartModel cartModel) {
         return cartModel != null && !CollectionUtils.isEmpty(cartModel.getEntries());
     }
 

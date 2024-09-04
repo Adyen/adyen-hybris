@@ -59,7 +59,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return "";
     }
 
-    private String getPaymentStatusForOrder(final OrderModel orderModel) {
+    protected String getPaymentStatusForOrder(final OrderModel orderModel) {
         List<PaymentTransactionModel> paymentTransactions = orderModel.getPaymentTransactions();
         if (paymentTransactions.isEmpty()) {
             return getMessageFromStatus(TransactionStatus.REVIEW.name());
@@ -67,7 +67,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return getStatus(paymentTransactions);
     }
 
-    private OrderModel getOrderModelForCodeOCC(String code) {
+    protected OrderModel getOrderModelForCodeOCC(String code) {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
         final OrderModel orderModel;
 
@@ -84,7 +84,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return orderModel;
     }
 
-    private OrderModel getOrderModelForCode(final String code, final String sessionGuid) {
+    protected OrderModel getOrderModelForCode(final String code, final String sessionGuid) {
         final BaseStoreModel baseStoreModel = baseStoreService.getCurrentBaseStore();
 
         OrderModel orderModel = null;
@@ -109,7 +109,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return orderModel;
     }
 
-    private String getStatus(List<PaymentTransactionModel> paymentTransactions) {
+    protected String getStatus(List<PaymentTransactionModel> paymentTransactions) {
         Optional<PaymentTransactionModel> paymentTransactionModelList = paymentTransactions.stream()
                 .max(Comparator.comparing(ItemModel::getCreationtime));
 
@@ -125,7 +125,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         throw new ModelNotFoundException("No entries in payment transaction model.");
     }
 
-    private String getMessageFromStatus(String transactionStatus) {
+    protected String getMessageFromStatus(String transactionStatus) {
         if (transactionStatus.equals(TransactionStatus.ACCEPTED.name())) {
             return "completed";
         }
