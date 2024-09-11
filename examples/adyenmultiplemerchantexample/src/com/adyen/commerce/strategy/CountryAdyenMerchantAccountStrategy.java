@@ -22,11 +22,17 @@ public class CountryAdyenMerchantAccountStrategy implements AdyenMerchantAccount
     @Override
     public String getWebMerchantAccount() {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
+
+        return getWebMerchantAccount(currentBaseStore);
+    }
+
+    @Override
+    public String getWebMerchantAccount(BaseStoreModel baseStore) {
         CartModel sessionCart = cartService.getSessionCart();
         AddressModel deliveryAddress = sessionCart.getDeliveryAddress();
 
         if (deliveryAddress != null) {
-            Optional<AdyenMerchantConfigModel> merchantConfigModel = currentBaseStore.getAdyenMerchantConfig().stream().filter(amc ->
+            Optional<AdyenMerchantConfigModel> merchantConfigModel = baseStore.getAdyenMerchantConfig().stream().filter(amc ->
                             AdyenMerchantAccountType.WEB.equals(amc.getAdyenMerchantType()))
                     .filter(amc -> StringUtils.equalsIgnoreCase(amc.getCountry().getIsocode(), deliveryAddress.getCountry().getIsocode()))
                     .findFirst();
@@ -38,17 +44,23 @@ public class CountryAdyenMerchantAccountStrategy implements AdyenMerchantAccount
 
 
         LOG.warn("No WEB merchant config, returning one from adyenMerchantAccount");
-        return currentBaseStore.getAdyenMerchantAccount();
+        return baseStore.getAdyenMerchantAccount();
     }
 
     @Override
     public String getPosMerchantAccount() {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
+
+        return getPosMerchantAccount(currentBaseStore);
+    }
+
+    @Override
+    public String getPosMerchantAccount(BaseStoreModel baseStore) {
         CartModel sessionCart = cartService.getSessionCart();
         AddressModel deliveryAddress = sessionCart.getDeliveryAddress();
 
         if (deliveryAddress != null) {
-            Optional<AdyenMerchantConfigModel> merchantConfigModel = currentBaseStore.getAdyenMerchantConfig().stream().filter(amc ->
+            Optional<AdyenMerchantConfigModel> merchantConfigModel = baseStore.getAdyenMerchantConfig().stream().filter(amc ->
                             AdyenMerchantAccountType.POS.equals(amc.getAdyenMerchantType()))
                     .filter(amc -> StringUtils.equalsIgnoreCase(amc.getCountry().getIsocode(), deliveryAddress.getCountry().getIsocode()))
                     .findFirst();
@@ -59,7 +71,7 @@ public class CountryAdyenMerchantAccountStrategy implements AdyenMerchantAccount
         }
 
         LOG.warn("No POS merchant config, returning one from adyenMerchantAccount");
-        return currentBaseStore.getAdyenPosMerchantAccount();
+        return baseStore.getAdyenPosMerchantAccount();
     }
 
     public void setBaseStoreService(BaseStoreService baseStoreService) {
