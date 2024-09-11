@@ -79,13 +79,13 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
         });
     }
 
-    private static void saveBrowserInfoOnPaymentInfo(BrowserInfo browserInfo, PaymentInfoModel paymentInfo) {
+    protected static void saveBrowserInfoOnPaymentInfo(BrowserInfo browserInfo, PaymentInfoModel paymentInfo) {
         if (browserInfo != null) {
             paymentInfo.setAdyenBrowserInfo(getBrowserInfoJson(browserInfo));
         }
     }
 
-    private static String getBrowserInfoJson(BrowserInfo browserInfo) {
+    protected static String getBrowserInfoJson(BrowserInfo browserInfo) {
         try {
             return browserInfo.toJson();
         } catch (JsonProcessingException e) {

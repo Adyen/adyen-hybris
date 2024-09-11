@@ -145,7 +145,7 @@ public class DefaultAdyenOrderService implements AdyenOrderService {
         modelService.save(paymentInfo);
     }
 
-    private void updatePaymentInfo(PaymentInfoModel paymentInfo, Map<String, String> additionalData, String key, BiConsumer<PaymentInfoModel, String> setter) {
+    protected void updatePaymentInfo(PaymentInfoModel paymentInfo, Map<String, String> additionalData, String key, BiConsumer<PaymentInfoModel, String> setter) {
         if (additionalData != null && additionalData.containsKey(key)) {
             setter.accept(paymentInfo, additionalData.get(key));
         }
