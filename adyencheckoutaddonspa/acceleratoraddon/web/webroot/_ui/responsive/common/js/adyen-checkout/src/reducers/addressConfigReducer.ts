@@ -1,9 +1,10 @@
 import {PayloadAction, RootAction} from "./rootReducer";
-import {CodeValueItem} from "./types";
+import {CodeValueItem, RegionModel} from "./types";
 
 export const addressConfigInitialState: AddressConfigModel = {
     titles: [],
     countries: [],
+    regions: [],
     anonymousUser: false
 }
 
@@ -28,6 +29,7 @@ export function addressConfigReducer(addressConfigState: AddressConfigModel, act
 export interface AddressConfigModel {
     titles: CodeValueItem[]
     countries: CodeValueItem[]
+    regions: RegionModel[]
     anonymousUser: boolean
 }
 

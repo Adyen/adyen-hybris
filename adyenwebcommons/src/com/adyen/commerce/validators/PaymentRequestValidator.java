@@ -77,7 +77,22 @@ public class PaymentRequestValidator implements Validator {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.townCity", "address.townCity.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.postcode", "address.postcode.invalid");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.countryIso", "address.country.invalid");
+
+            validateCountrySpecificFields(errors);
         }
 
+    }
+
+    protected void validateCountrySpecificFields(Errors errors) {
+        String countryIso = (String) errors.getFieldValue("billingAddress.countryIso");
+        if (countryIso != null) {
+            switch (countryIso){
+                case "US", "CA", "JP", "CN":
+                    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "billingAddress.regionIso","address.regionIso.invalid");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

@@ -5,6 +5,8 @@ export interface AddressModel {
     id: string
     country: string
     countryCode: string
+    region: string
+    regionCode: string
     title: string
     titleCode: string
     firstName: string
@@ -14,6 +16,11 @@ export interface AddressModel {
     city: string
     postalCode: string
     phoneNumber: string
+}
+
+export interface RegionModel {
+    countryCode: string
+    regions: CodeValueItem[]
 }
 
 export interface ShippingMethodState {

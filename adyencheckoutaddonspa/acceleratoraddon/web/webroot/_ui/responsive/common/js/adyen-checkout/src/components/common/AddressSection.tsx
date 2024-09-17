@@ -25,6 +25,7 @@ interface ComponentProps {
     onSelectAddress: (address: AddressModel) => void
 
     onCountryCodeChange: (countryCode: string) => void,
+    onRegionCodeChange: (regionCode: string) => void,
     onTitleCodeChange: (titleCode: string) => void,
     onFirstNameChange: (firstName: string) => void,
     onLastNameChange: (lastName: string) => void,
@@ -99,6 +100,7 @@ class AddressSection extends React.Component<Props, State> {
                 <br/>
                 <AddressForm addressConfig={this.props.addressConfig}
                              onCountryCodeChange={(countryCode) => this.props.onCountryCodeChange(countryCode)}
+                             onRegionCodeChange={(regionCode) => this.props.onRegionCodeChange(regionCode)}
                              address={this.props.address}
                              errorFieldCodes={this.props.errorFieldCodes}
                              errorFieldCodePrefix={this.props.errorFieldCodePrefix}

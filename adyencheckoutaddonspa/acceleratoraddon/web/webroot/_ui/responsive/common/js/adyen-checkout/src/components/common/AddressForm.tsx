@@ -2,7 +2,7 @@ import {InputDropdown} from "../controls/InputDropdown";
 import {InputText} from "../controls/InputText";
 import React from "react";
 import {AddressConfigModel} from "../../reducers/addressConfigReducer";
-import {AddressModel} from "../../reducers/types";
+import {AddressModel, CodeValueItem} from "../../reducers/types";
 import {translationsStore} from "../../store/translationsStore";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
     errorFieldCodes: string[]
     errorFieldCodePrefix: string
     onCountryCodeChange: (countryCode: string) => void,
+    onRegionCodeChange: (regionCode: string) => void,
     onTitleCodeChange: (titleCode: string) => void,
     onFirstNameChange: (firstName: string) => void,
     onLastNameChange: (lastName: string) => void,
@@ -22,6 +23,33 @@ interface Props {
 }
 
 export class AddressForm extends React.Component<Props, any> {
+
+    private renderRegions() {
+        let regions = this.getRegionsByCountryCode(this.props.address.countryCode)
+
+        if (regions.length > 0) {
+            return <InputDropdown testId={"address.region"}
+                                  values={regions}
+                                  fieldName={translationsStore.get("address.state")}
+                                  onChange={(regionCode) => this.props.onRegionCodeChange(regionCode)}
+                                  selectedValue={this.props.address.regionCode}
+                                  placeholderText={translationsStore.get("address.selectState")}
+                                  placeholderDisabled={true}
+                                  fieldErrorId={this.props.errorFieldCodePrefix + "regionIso"}
+                                  fieldErrorTextCode="address.regionIso.invalid"
+                                  fieldErrors={this.props.errorFieldCodes}/>
+        }
+
+        return <></>
+    }
+
+    private getRegionsByCountryCode(countryCode: string): CodeValueItem[] {
+        let region = this.props.addressConfig.regions.find((region) => region.countryCode === countryCode);
+        if (region) {
+            return region.regions
+        }
+        return []
+    }
 
     render() {
         return <>
@@ -77,6 +105,7 @@ export class AddressForm extends React.Component<Props, any> {
                        fieldErrorId={this.props.errorFieldCodePrefix + "townCity"}
                        fieldErrorTextCode="address.townCity.invalid"
                        fieldErrors={this.props.errorFieldCodes}/>
+            {this.renderRegions()}
             <InputText testId={"address.postcode"}
                        fieldName={translationsStore.get("address.postcode")}
                        onChange={(postCode) => this.props.onPostCodeChange(postCode)}

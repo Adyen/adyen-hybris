@@ -24,6 +24,8 @@ export const translationKeys: string[] = [
     "address.selectCountry",
     "address.title.none",
     "address.country",
+    "address.state",
+    "address.selectState",
     "address.title",
     "address.firstName",
     "address.surname",
@@ -82,5 +84,6 @@ export const translationKeys: string[] = [
     "address.line1.invalid",
     "address.line2.invalid",
     "address.townCity.invalid",
-    "address.postcode.invalid"
+    "address.postcode.invalid",
+    "address.regionIso.invalid"
 ]

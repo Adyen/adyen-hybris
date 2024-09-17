@@ -1,12 +1,13 @@
 import {AxiosError} from "axios";
 import {CSRFToken, urlContextPath} from "../util/baseUrlUtil";
-import {AddressModel} from "../reducers/types";
+import {AddressModel, RegionModel} from "../reducers/types";
 import {store} from "../store/store";
 import {isNotEmpty} from "../util/stringUtil";
 import {AddressConfigModel} from "../reducers/addressConfigReducer";
-import {AddressData} from "../types/addressData";
+import {AddressData, RegionData} from "../types/addressData";
 import {ErrorResponse} from "../types/errorResponse";
 import {adyenAxios} from "../axios/AdyenAxios";
+import {companyDetailsValidationRules} from "@adyen/adyen-web/dist/types/components/internal/CompanyDetails/validate";
 
 interface AddDeliveryAddressResponse {
     success: boolean,
@@ -94,6 +95,8 @@ export class AddressService {
             title: responseData.title,
             countryCode: responseData.country.isocode,
             country: responseData.country.name,
+            regionCode: responseData.region ? responseData.region.isocode : null,
+            region: responseData.region ? responseData.region.name : null,
             line1: responseData.line1,
             line2: responseData.line2,
             city: responseData.town,
@@ -112,7 +115,7 @@ export class AddressService {
             line1: addressModel.line1,
             line2: addressModel.line2,
             townCity: addressModel.city,
-            regionIso: null,
+            regionIso: addressModel.regionCode,
             postcode: addressModel.postalCode,
             countryIso: addressModel.countryCode,
             saveInAddressBook: saveInAddressBook,
@@ -133,9 +136,19 @@ export class AddressService {
             return {code: country.isocode, value: country.name}
         });
 
+        let regions: RegionModel[] = response.regions.map(region => {
+            return {
+                countryCode: region.countryCode,
+                regions: region.regionData.map(r => {
+                    return {code: r.isocode, value: r.name}
+                })
+            }
+        })
+
         return {
             anonymousUser: response.anonymous,
             titles: titles,
+            regions: regions,
             countries: countries,
         }
     }
@@ -170,8 +183,14 @@ interface TitleData {
     name: string
 }
 
+export interface Region {
+    countryCode: string,
+    regionData: RegionData[]
+}
+
 interface AddressConfigResponse {
     anonymous: boolean,
     countries: CountryData[],
-    titles: TitleData[]
+    titles: TitleData[],
+    regions: Region[]
 }
