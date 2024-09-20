@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.hybris.platform.acceleratorfacades.flow.CheckoutFlowFacade;
 import de.hybris.platform.acceleratorservices.urlresolver.SiteBaseUrlResolutionService;
 import de.hybris.platform.commercefacades.order.CartFacade;
+import de.hybris.platform.commerceservices.i18n.CommerceCommonI18NService;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
 import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
 import de.hybris.platform.order.InvalidCartException;
@@ -63,6 +64,9 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Resource(name = "checkoutCustomerStrategy")
     private CheckoutCustomerStrategy checkoutCustomerStrategy;
 
+    @Resource(name = "commerceCommonI18NService")
+    private CommerceCommonI18NService commerceCommonI18NService;
+
     @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
     @PostMapping(value = "/place-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(operationId = "placeOrder", summary = "Handle place order request", description =
@@ -100,9 +104,11 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
     @Override
     public String getPaymentRedirectReturnUrl() {
         String occBaseUrl = webServicesBaseUrlResolver.getOCCBaseUrl(true);
+        String currency = commerceCommonI18NService.getCurrentCurrency().getIsocode();
+        String language = commerceCommonI18NService.getCurrentLanguage().getIsocode();
         String baseSiteUid = baseSiteService.getCurrentBaseSite().getUid();
 
-        return occBaseUrl + "/v2/" + baseSiteUid + "/adyen/redirect";
+        return occBaseUrl + "/v2/" + baseSiteUid + "/adyen/redirect?lang=" + language + "&curr=" + currency;
     }
 
     @Override
