@@ -39,7 +39,7 @@ class AddressBookSelector extends React.Component<AddressBookSelectorProps, null
                     <br/>
                     {address.line1}&nbsp;{address.line2}
                     <br/>
-                    {address.city}
+                    {address.city}{isNotEmpty(address.region)? '\xa0' + address.region : ''}
                     <br/>
                     {address.country}&nbsp;{address.postalCode}
                     <br/>

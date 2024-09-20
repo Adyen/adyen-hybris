@@ -52,6 +52,7 @@ interface DispatchProps {
     setFirstName: (firstName: string) => void
     setLastName: (lastName: string) => void
     setCountryCode: (countryCode: string) => void
+    setRegionCode: (countryCode: string) => void
     setTitleCode: (titleCode: string) => void
     setLine1: (line1: string) => void
     setLine2: (line2: string) => void
@@ -225,6 +226,7 @@ class Payment extends React.Component<Props, State> {
                                     errorFieldCodes={this.state.errorFieldCodes}
                                     errorFieldCodePrefix={"billingAddress."}
                                     onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
+                                    onRegionCodeChange={(regionCode) => this.props.setRegionCode(regionCode)}
                                     onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                     onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
                                     onLastNameChange={(lastName) => this.props.setLastName(lastName)}
@@ -302,6 +304,10 @@ function mapDispatchToProps(dispatch: StoreDispatch): DispatchProps {
         setLastName: (lastName: string) => dispatch({type: "billingAddress/setLastName", payload: lastName}),
         setCountryCode: (country: string) => dispatch({
             type: "billingAddress/setCountryCode",
+            payload: country
+        }),
+        setRegionCode: (country: string) => dispatch({
+            type: "billingAddress/setRegionCode",
             payload: country
         }),
         setTitleCode: (title: string) => dispatch({type: "billingAddress/setTitleCode", payload: title}),

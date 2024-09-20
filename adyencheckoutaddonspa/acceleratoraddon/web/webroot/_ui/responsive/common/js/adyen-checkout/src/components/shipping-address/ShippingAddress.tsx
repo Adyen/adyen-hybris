@@ -19,6 +19,7 @@ interface DispatchProps {
     setFirstName: (firstName: string) => void
     setLastName: (lastName: string) => void
     setCountryCode: (countryCode: string) => void
+    setRegionCode: (regionCode: string) => void
     setTitleCode: (titleCode: string) => void
     setLine1: (line1: string) => void
     setLine2: (line2: string) => void
@@ -89,6 +90,7 @@ class ShippingAddress extends React.Component<ShippingAddressProps, ShippingAddr
                                             errorFieldCodes={this.state.errorFieldCodes}
                                             errorFieldCodePrefix=""
                                             onCountryCodeChange={(countryCode) => this.props.setCountryCode(countryCode)}
+                                            onRegionCodeChange={(regionCode) => this.props.setRegionCode(regionCode)}
                                             onTitleCodeChange={(titleCode) => this.props.setTitleCode(titleCode)}
                                             onFirstNameChange={(firstName) => this.props.setFirstName(firstName)}
                                             onLastNameChange={(lastName) => this.props.setLastName(lastName)}
@@ -118,6 +120,7 @@ const mapDispatchToProps = (dispatch: StoreDispatch): DispatchProps => ({
     setFirstName: (firstName: string) => dispatch({type: "shippingAddress/setFirstName", payload: firstName}),
     setLastName: (lastName: string) => dispatch({type: "shippingAddress/setLastName", payload: lastName}),
     setCountryCode: (country: string) => dispatch({type: "shippingAddress/setCountryCode", payload: country}),
+    setRegionCode: (regionCode: string) => dispatch({type: "shippingAddress/setRegionCode", payload: regionCode}),
     setTitleCode: (title: string) => dispatch({type: "shippingAddress/setTitleCode", payload: title}),
     setLine1: (line1: string) => dispatch({type: "shippingAddress/setLine1", payload: line1}),
     setLine2: (line2: string) => dispatch({type: "shippingAddress/setLine2", payload: line2}),

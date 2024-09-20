@@ -19,7 +19,14 @@ export function billingAddressReducer(addressState: AddressModel, action: RootAc
         case "billingAddress/setCountryCode":
             return {
                 ...addressState,
-                countryCode: action.payload
+                countryCode: action.payload,
+                regionCode: null
+            }
+
+        case "billingAddress/setRegionCode":
+            return {
+                ...addressState,
+                regionCode: action.payload
             }
 
         case "billingAddress/setTitleCode":
@@ -76,6 +83,9 @@ interface SetBALastNameAction extends PayloadAction<"billingAddress/setLastName"
 interface SetBACountryCodeAction extends PayloadAction<"billingAddress/setCountryCode"> {
 }
 
+interface SetBARegionCodeAction extends PayloadAction<"billingAddress/setRegionCode"> {
+}
+
 interface SetBATitleCodeAction extends PayloadAction<"billingAddress/setTitleCode"> {
 }
 
@@ -102,6 +112,7 @@ export type BillingAddressAction =
     SetBAFirstNameAction
     | SetBALastNameAction
     | SetBACountryCodeAction
+    | SetBARegionCodeAction
     | SetBATitleCodeAction
     | SetBALine1Action
     | SetBALine2Action

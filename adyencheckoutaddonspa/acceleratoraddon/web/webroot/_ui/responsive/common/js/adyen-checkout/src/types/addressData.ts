@@ -28,7 +28,7 @@ export interface AddressData {
     fullnameWithTitle: string
 }
 
-interface RegionData {
+export interface RegionData {
     isocode: string;
     isocodeShort: string;
     countryIso: string;

@@ -10,6 +10,8 @@ export const addressInitialState: AddressModel = {
     city: "",
     country: "",
     countryCode: "",
+    regionCode: null,
+    region: "",
     lastName: "",
     phoneNumber: "",
     postalCode: "",
@@ -34,7 +36,14 @@ export function shippingAddressReducer(addressState: AddressModel, action: RootA
         case "shippingAddress/setCountryCode":
             return {
                 ...addressState,
-                countryCode: action.payload
+                countryCode: action.payload,
+                regionCode: null
+            }
+
+        case "shippingAddress/setRegionCode":
+            return {
+                ...addressState,
+                regionCode: action.payload
             }
 
         case "shippingAddress/setTitleCode":
@@ -91,6 +100,9 @@ interface SetSALastNameAction extends PayloadAction<"shippingAddress/setLastName
 interface SetSACountryCodeAction extends PayloadAction<"shippingAddress/setCountryCode"> {
 }
 
+interface SetSARegionCodeAction extends PayloadAction<"shippingAddress/setRegionCode"> {
+}
+
 interface SetSATitleCodeAction extends PayloadAction<"shippingAddress/setTitleCode"> {
 }
 
@@ -117,6 +129,7 @@ export type ShippingAddressAction =
     SetSAFirstNameAction
     | SetSALastNameAction
     | SetSACountryCodeAction
+    | SetSARegionCodeAction
     | SetSATitleCodeAction
     | SetSALine1Action
     | SetSALine2Action

@@ -87,6 +87,7 @@ export class PaymentService {
         return {
             addressId: address.id,
             countryIso: address.countryCode,
+            regionIso: address.regionCode,
             firstName: address.firstName,
             lastName: address.lastName,
             line1: address.line1,
