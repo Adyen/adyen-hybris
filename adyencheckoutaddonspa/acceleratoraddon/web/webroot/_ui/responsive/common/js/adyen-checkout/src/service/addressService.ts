@@ -7,7 +7,6 @@ import {AddressConfigModel} from "../reducers/addressConfigReducer";
 import {AddressData, RegionData} from "../types/addressData";
 import {ErrorResponse} from "../types/errorResponse";
 import {adyenAxios} from "../axios/AdyenAxios";
-import {companyDetailsValidationRules} from "@adyen/adyen-web/dist/types/components/internal/CompanyDetails/validate";
 
 interface AddDeliveryAddressResponse {
     success: boolean,
