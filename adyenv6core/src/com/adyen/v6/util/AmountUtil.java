@@ -15,8 +15,40 @@ public class AmountUtil {
         Assert.isTrue(StringUtils.isNotBlank(currency), "Currency cannot be null or empty");
         Amount amount = new Amount();
         amount.setCurrency(currency);
-        amount.setValue(value.movePointRight(2).longValue());
+        int scale = getDecimalPlaces(currency);
+        amount.setValue(BigDecimal.TEN.pow(scale).multiply(value.setScale(scale, RoundingMode.HALF_UP)).longValue());
         return amount;
+    }
+
+    public static int getDecimalPlaces(String currency) {
+        switch (currency) {
+            case "CVE":
+            case "DJF":
+            case "GNF":
+            case "IDR":
+            case "JPY":
+            case "KMF":
+            case "KRW":
+            case "PYG":
+            case "RWF":
+            case "UGX":
+            case "VND":
+            case "VUV":
+            case "XAF":
+            case "XOF":
+            case "XPF":
+                return 0;
+            case "BHD":
+            case "IQD":
+            case "JOD":
+            case "KWD":
+            case "LYD":
+            case "OMR":
+            case "TND":
+                return 3;
+            default:
+                return 2;
+        }
     }
 
     public static BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel) {
