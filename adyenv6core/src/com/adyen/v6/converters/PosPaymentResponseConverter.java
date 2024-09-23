@@ -79,7 +79,7 @@ public class PosPaymentResponseConverter implements Converter<SaleToPOIResponse,
     /*
      * Parse base64 encoded additionalResponse and return as a name/value map
      */
-    private Map<String, String> parseAdditionalResponse(String additionalResponse) {
+    protected Map<String, String> parseAdditionalResponse(String additionalResponse) {
         Map<String, String> additionalData = new HashMap<>();
         if (StringUtils.isNotEmpty(additionalResponse)) {
             String decodedAdditionalResponse = new String(Base64.getDecoder().decode(additionalResponse), StandardCharsets.UTF_8);

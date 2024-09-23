@@ -75,7 +75,7 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
         return processOrderAuthorization(process, order);
     }
 
-    private boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
+    protected boolean isTransactionAuthorized(final PaymentTransactionModel paymentTransactionModel) {
         for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries()) {
             if (entry.getType().equals(PaymentTransactionType.AUTHORIZATION)
                     && TransactionStatus.ACCEPTED.name().equals(entry.getTransactionStatus())) {
@@ -86,7 +86,7 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
         return false;
     }
 
-    private String processOrderAuthorization(final OrderProcessModel process, final OrderModel order) {
+    protected String processOrderAuthorization(final OrderProcessModel process, final OrderModel order) {
         //No transactions means that is not authorized yet
         if (order.getPaymentTransactions() == null || order.getPaymentTransactions().isEmpty()) {
             LOG.debug("Process: " + process.getCode() + " Order Waiting");

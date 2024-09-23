@@ -313,7 +313,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
 
-    private AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
+    protected AddressModel createBillingAddress(PaymentDetailsWsDTO paymentDetails) {
         String titleCode = paymentDetails.getBillingAddress().getTitleCode();
         final AddressModel billingAddress = getModelService().create(AddressModel.class);
         if (StringUtils.isNotBlank(titleCode)) {
@@ -376,7 +376,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return response;
     }
 
-    private void updateOrderPaymentStatusAndInfo(OrderModel orderModel, PaymentDetailsResponse paymentDetailsResponse) {
+    protected void updateOrderPaymentStatusAndInfo(OrderModel orderModel, PaymentDetailsResponse paymentDetailsResponse) {
 
         if (PaymentDetailsResponse.ResultCodeEnum.RECEIVED != paymentDetailsResponse.getResultCode()) {
             //payment authorisation is finished, update payment info
@@ -500,7 +500,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return response;
     }
 
-    private void updateCartWithSessionData(CartData cartData) {
+    protected void updateCartWithSessionData(CartData cartData) {
         cartData.setAdyenCseToken(getSessionService().getAttribute(SESSION_CSE_TOKEN));
         cartData.setAdyenEncryptedCardNumber(getSessionService().getAttribute(SESSION_SF_CARD_NUMBER));
         cartData.setAdyenEncryptedExpiryMonth(getSessionService().getAttribute(SESSION_SF_EXPIRY_MONTH));
@@ -557,7 +557,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return createOrderFromPaymentResponse(paymentsResponse);
     }
 
-    private void updateAdyenSelectedReferenceIfPresent(final CartModel cartModel, final PaymentResponse paymentsResponse) {
+    protected void updateAdyenSelectedReferenceIfPresent(final CartModel cartModel, final PaymentResponse paymentsResponse) {
         Map<String, String> additionalData = paymentsResponse.getAdditionalData();
         if (additionalData != null) {
             String recurringDetailReference = additionalData.get(RECURRING_RECURRING_DETAIL_REFERENCE);
@@ -570,7 +570,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     /**
      * Create order
      */
-    private OrderData createOrderFromPaymentResponse(final PaymentResponse paymentsResponse) throws InvalidCartException {
+    protected OrderData createOrderFromPaymentResponse(final PaymentResponse paymentsResponse) throws InvalidCartException {
         LOGGER.debug("Create order from paymentsResponse: " + paymentsResponse.getPspReference());
 
         OrderData orderData = getCheckoutFacade().placeOrder();
@@ -610,7 +610,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderData;
     }
 
-    private OrderData placeAuthorisedOrder(PaymentResponse.ResultCodeEnum resultCode) throws InvalidCartException {
+    protected OrderData placeAuthorisedOrder(PaymentResponse.ResultCodeEnum resultCode) throws InvalidCartException {
         CartModel cartModel = getCartService().getSessionCart();
         cartModel.setStatus(OrderStatus.PAYMENT_AUTHORIZED);
         cartModel.setStatusInfo(resultCode.getValue());
@@ -902,20 +902,20 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Deprecated
-    private static boolean isSepaDirectDebit(List<PaymentMethod> alternativePaymentMethods) {
+    protected static boolean isSepaDirectDebit(List<PaymentMethod> alternativePaymentMethods) {
         return alternativePaymentMethods.stream().
                 anyMatch(paymentMethod -> !paymentMethod.getType().isEmpty() &&
                         PAYMENT_METHOD_SEPA_DIRECTDEBIT.contains(paymentMethod.getType()));
     }
 
-    private static void updateCartWithAmazonPay(PaymentMethod amazonPayMethod, CartModel cartModel) {
+    protected static void updateCartWithAmazonPay(PaymentMethod amazonPayMethod, CartModel cartModel) {
         Map<String, String> amazonPayConfiguration = amazonPayMethod.getConfiguration();
         if (!CollectionUtils.isEmpty(amazonPayConfiguration)) {
             cartModel.setAdyenAmazonPayConfiguration(amazonPayConfiguration);
         }
     }
 
-    private static Optional<PaymentMethod> getAmazonPayMethod(List<PaymentMethod> alternativePaymentMethods) {
+    protected static Optional<PaymentMethod> getAmazonPayMethod(List<PaymentMethod> alternativePaymentMethods) {
         return alternativePaymentMethods.stream()
                 .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
                         && PAYMENT_METHOD_AMAZONPAY.contains(paymentMethod.getType()))
@@ -923,7 +923,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Deprecated
-    private static void updateIssuerList(List<PaymentMethod> issuerPaymentMethods, Map<String, String> issuerLists) {
+    protected static void updateIssuerList(List<PaymentMethod> issuerPaymentMethods, Map<String, String> issuerLists) {
         if (!CollectionUtils.isEmpty(issuerPaymentMethods)) {
             Gson gson = new Gson();
             for (PaymentMethod paymentMethod : issuerPaymentMethods) {
@@ -933,7 +933,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Deprecated
-    private static List<PaymentMethod> getIssuerPaymentMethods(List<PaymentMethod> alternativePaymentMethods) {
+    protected static List<PaymentMethod> getIssuerPaymentMethods(List<PaymentMethod> alternativePaymentMethods) {
         if (alternativePaymentMethods != null) {
             return alternativePaymentMethods.stream()
                     .filter(paymentMethod -> !paymentMethod.getType().isEmpty() && ISSUER_PAYMENT_METHODS.contains(paymentMethod.getType()))
@@ -943,7 +943,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return Collections.emptyList();
     }
 
-    private PaymentMethodsResponse getPaymentMethods(AdyenCheckoutApiService adyenPaymentService, CartData cartData, CustomerModel customerModel) throws IOException, ApiException {
+    protected PaymentMethodsResponse getPaymentMethods(AdyenCheckoutApiService adyenPaymentService, CartData cartData, CustomerModel customerModel) throws IOException, ApiException {
         return adyenPaymentService.getPaymentMethodsResponse(cartData.getTotalPriceWithTax().getValue(),
                 cartData.getTotalPriceWithTax().getCurrencyIso(),
                 cartData.getDeliveryAddress().getCountry().getIsocode(),
@@ -951,7 +951,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 customerModel.getCustomerID());
     }
 
-    private PaymentMethodsResponse getPaymentMethods(AdyenCheckoutApiService adyenPaymentService, CartData cartData, CustomerModel customerModel, List<String> excludedPaymentMethods) throws IOException, ApiException {
+    protected PaymentMethodsResponse getPaymentMethods(AdyenCheckoutApiService adyenPaymentService, CartData cartData, CustomerModel customerModel, List<String> excludedPaymentMethods) throws IOException, ApiException {
         return adyenPaymentService.getPaymentMethodsResponse(cartData.getTotalPriceWithTax().getValue(),
                 cartData.getTotalPriceWithTax().getCurrencyIso(),
                 cartData.getDeliveryAddress().getCountry().getIsocode(),
@@ -960,7 +960,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
 
-    private Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {
+    protected Map<String, String> getApplePayConfigFromPaymentMethods(List<PaymentMethod> paymentMethods) {
         if (paymentMethods != null) {
             Optional<PaymentMethod> applePayMethod = paymentMethods.stream()
                     .filter(paymentMethod -> !paymentMethod.getType().isEmpty()
@@ -977,7 +977,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return new HashMap<>();
     }
 
-    private CreateCheckoutSessionResponse getAdyenSessionData() throws ApiException {
+    protected CreateCheckoutSessionResponse getAdyenSessionData() throws ApiException {
         try {
             final CartData cartData = getCheckoutFacade().getCheckoutCart();
             return getAdyenPaymentService().getPaymentSessionData(cartData);
@@ -990,7 +990,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
     }
 
-    private CreateCheckoutSessionResponse getAdyenSessionData(Amount amount) throws ApiException {
+    protected CreateCheckoutSessionResponse getAdyenSessionData(Amount amount) throws ApiException {
         try {
             return getAdyenPaymentService().getPaymentSessionData(amount);
         } catch (JsonProcessingException e) {
@@ -1058,7 +1058,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         initializeApplePayExpressDataInternal(amountValue, currencyIso, model);
     }
 
-    private void initializeApplePayExpressDataInternal(BigDecimal amountValue, String currency, Model model) throws ApiException {
+    protected void initializeApplePayExpressDataInternal(BigDecimal amountValue, String currency, Model model) throws ApiException {
         final BaseStoreModel baseStore = baseStoreService.getCurrentBaseStore();
 
         try {
@@ -1092,7 +1092,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         model.addAttribute(MODEL_CHECKOUT_SHOPPER_HOST, getCheckoutShopperHost());
     }
 
-    private BigDecimal getExpressDeliveryModeValue(final String currencyIso) {
+    protected BigDecimal getExpressDeliveryModeValue(final String currencyIso) {
         Optional<ZoneDeliveryModeValueModel> expressDeliveryModePrice = adyenExpressCheckoutFacade.getExpressDeliveryModePrice();
 
         BigDecimal deliveryValue = BigDecimal.ZERO;
@@ -1109,7 +1109,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return deliveryValue;
     }
 
-    private String setLocale(final Map<String, String> map, final String shopperLocale) {
+    protected String setLocale(final Map<String, String> map, final String shopperLocale) {
         if (Objects.nonNull(map) && !map.get(REGION).isBlank() && map.get(REGION).equals(US)) {
             return US_LOCALE;
         } else {
@@ -1128,7 +1128,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
     }
 
-    private boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
+    protected boolean isHiddenPaymentMethod(PaymentMethod paymentMethod) {
         String paymentMethodType = paymentMethod.getType();
 
         if (paymentMethodType == null || paymentMethodType.isEmpty() ||
@@ -1145,7 +1145,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return false;
     }
 
-    private List<StoredPaymentMethod> getStoredOneClickPaymentMethods(PaymentMethodsResponse response) {
+    protected List<StoredPaymentMethod> getStoredOneClickPaymentMethods(PaymentMethodsResponse response) {
         List<StoredPaymentMethod> storedPaymentMethodList = null;
         if (response.getStoredPaymentMethods() != null) {
             storedPaymentMethodList = response.getStoredPaymentMethods().stream()
@@ -1490,7 +1490,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         throw new AdyenNonAuthorizedPaymentException(terminalApiResponse);
     }
 
-    private boolean isPosTimedOut(HttpServletRequest request) {
+    protected boolean isPosTimedOut(HttpServletRequest request) {
         long currentTime = System.currentTimeMillis();
         long processStartTime = (long) request.getAttribute("paymentStartTime");
         int totalTimeout = ((int) request.getAttribute("totalTimeout")) * 1000;
@@ -1544,7 +1544,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         return orderModel;
     }
 
-    private void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException {
+    protected void restoreCartFromOrder(String orderCode) throws CalculationException, InvalidCartException {
         LOGGER.info("Restoring cart from order");
 
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
@@ -1600,7 +1600,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         getCalculationService().calculate(cartModel);
     }
 
-    private boolean hasUserContextChanged(OrderModel orderModel, CartModel cartModel) {
+    protected boolean hasUserContextChanged(OrderModel orderModel, CartModel cartModel) {
         return !orderModel.getUser().equals(cartModel.getUser())
                 || !orderModel.getStore().equals(cartModel.getStore());
     }

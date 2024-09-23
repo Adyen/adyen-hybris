@@ -540,7 +540,7 @@ public class AdyenRequestFactory {
     /**
      * Return Recurring object from RecurringContractMode
      */
-    private Recurring getRecurringContractType(RecurringContractMode recurringContractMode) {
+    protected Recurring getRecurringContractType(RecurringContractMode recurringContractMode) {
         Recurring recurringContract = new Recurring();
 
         //If recurring contract is disabled, return null
@@ -559,7 +559,7 @@ public class AdyenRequestFactory {
     /**
      * Return the recurringContract. If the user did not want to save the card don't send it as ONECLICK
      */
-    private Recurring getRecurringContractType(RecurringContractMode recurringContractMode, final Boolean enableOneClick) {
+    protected Recurring getRecurringContractType(RecurringContractMode recurringContractMode, final Boolean enableOneClick) {
         Recurring recurringContract = getRecurringContractType(recurringContractMode);
 
         //If recurring contract is disabled, return null
@@ -590,7 +590,7 @@ public class AdyenRequestFactory {
     /**
      * Get shopper name and gender
      */
-    private Name getShopperNameFromAddress(AddressData addressData) {
+    protected Name getShopperNameFromAddress(AddressData addressData) {
         Name shopperName = new Name();
 
         shopperName.setFirstName(addressData.getFirstName());
@@ -722,7 +722,7 @@ public class AdyenRequestFactory {
         paymentsRequest.setLineItems(invoiceLines);
     }
 
-    private Name getAfterPayShopperName(final CartData cartData) {
+    protected Name getAfterPayShopperName(final CartData cartData) {
         return new Name()
                 .firstName(cartData.getAdyenFirstName())
                 .lastName(cartData.getAdyenLastName());
@@ -731,7 +731,7 @@ public class AdyenRequestFactory {
     /**
      * Set Boleto payment request data
      */
-    private void setBoletoData(final PaymentRequest paymentsRequest, final CartData cartData) {
+    protected void setBoletoData(final PaymentRequest paymentsRequest, final CartData cartData) {
         paymentsRequest.setSocialSecurityNumber(cartData.getAdyenSocialSecurityNumber());
 
         final Name shopperName = new Name()
@@ -757,7 +757,7 @@ public class AdyenRequestFactory {
     }
 
 
-    private void setPixData(final PaymentRequest paymentsRequest, final CartData cartData) {
+    protected void setPixData(final PaymentRequest paymentsRequest, final CartData cartData) {
         final List<LineItem> invoiceLines = cartData.getEntries().stream()
                 .filter(cartEntry -> cartEntry.getQuantity() > 0)
                 .map(cartEntry ->
@@ -778,11 +778,11 @@ public class AdyenRequestFactory {
         paymentsRequest.setLineItems(invoiceLines);
     }
 
-    private String getPlatformVersion() {
+    protected String getPlatformVersion() {
         return getConfigurationService().getConfiguration().getString(PLATFORM_VERSION_PROPERTY);
     }
 
-    private Boolean is3DS2Allowed() {
+    protected Boolean is3DS2Allowed() {
         final Configuration configuration = getConfigurationService().getConfiguration();
         if (configuration.containsKey(IS_3DS2_ALLOWED_PROPERTY)) {
             return configuration.getBoolean(IS_3DS2_ALLOWED_PROPERTY);
