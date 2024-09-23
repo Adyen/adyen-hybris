@@ -83,11 +83,9 @@ public class AdyenCheckAuthorizationActionTest extends AbstractActionTest {
 
         adyenCheckAuthorizationAction = new AdyenCheckAuthorizationAction(adyenPaymentServiceFactoryMock, baseStoreServiceMock);
         adyenCheckAuthorizationAction.setModelService(modelServiceMock);
-        when(adyenCheckAuthorizationAction.getAdyenPaymentService(orderModelMock)).thenReturn(adyenCheckoutApiServiceMock);
 
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
         when(adyenPaymentServiceFactoryMock.createAdyenCheckoutApiService(baseStoreModelMock)).thenReturn(adyenCheckoutApiServiceMock);
-        when(adyenCheckoutApiServiceMock.calculateAmountWithTaxes(orderModelMock)).thenReturn(new BigDecimal(10));
     }
 
     @After
