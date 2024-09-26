@@ -39,7 +39,7 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
 
     @Override
     public String getPaymentStatusOCC(final String code) {
-        final OrderModel orderModel = getOrderModelForCodeOCC(code);
+        final OrderModel orderModel = getOrderModelForCodeOrGuidOCC(code);
 
         return getPaymentStatusForOrder(orderModel);
     }
@@ -67,7 +67,19 @@ public class DefaultAdyenOrderFacade implements AdyenOrderFacade {
         return getStatus(paymentTransactions);
     }
 
-    protected OrderModel getOrderModelForCodeOCC(String code) {
+    public OrderModel getOrderModelForCodeOCC(String code) {
+        BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
+        final OrderModel orderModel;
+
+        orderModel = customerAccountService.getOrderForCode((CustomerModel) userService.getCurrentUser(), code, currentBaseStore);
+
+        if (orderModel == null) {
+            throw new UnknownIdentifierException(String.format(ORDER_NOT_FOUND_FOR_USER_AND_BASE_STORE, code));
+        }
+        return orderModel;
+    }
+
+    protected OrderModel getOrderModelForCodeOrGuidOCC(String code) {
         BaseStoreModel currentBaseStore = baseStoreService.getCurrentBaseStore();
         final OrderModel orderModel;
 

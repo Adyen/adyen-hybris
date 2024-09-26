@@ -208,6 +208,7 @@ public abstract class PlaceOrderControllerBase {
         placeOrderResponse.setPaymentsResponse(paymentsResponse);
         placeOrderResponse.setExecuteAction(true);
         placeOrderResponse.setPaymentsAction(paymentsResponse.getAction());
+        placeOrderResponse.setOrderNumber(paymentsResponse.getMerchantReference());
         return placeOrderResponse;
     }
 
