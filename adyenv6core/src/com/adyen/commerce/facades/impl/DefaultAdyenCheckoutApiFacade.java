@@ -108,7 +108,8 @@ public class DefaultAdyenCheckoutApiFacade extends DefaultAdyenCheckoutFacade im
                 || PaymentResponse.ResultCodeEnum.IDENTIFYSHOPPER == paymentResponse.getResultCode()
                 || PaymentResponse.ResultCodeEnum.PRESENTTOSHOPPER == paymentResponse.getResultCode()) {
             LOGGER.info("Placing pending order");
-            placePendingOrder(paymentResponse.getResultCode().getValue());
+            OrderData orderData = placePendingOrder(paymentResponse.getResultCode().getValue());
+            paymentResponse.setMerchantReference(orderData.getCode());
             throw new AdyenNonAuthorizedPaymentException(paymentResponse);
         }
         if (PaymentResponse.ResultCodeEnum.AUTHORISED == paymentResponse.getResultCode()) {

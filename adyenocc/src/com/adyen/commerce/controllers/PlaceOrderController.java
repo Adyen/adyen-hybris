@@ -26,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -91,15 +88,6 @@ public class PlaceOrderController extends PlaceOrderControllerBase {
         return ResponseEntity.ok(response);
     }
 
-    @Secured({"ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT"})
-    @PostMapping(value = "/payment-canceled")
-    @Operation(operationId = "paymentCanceled", summary = "Handle payment canceled request", description =
-            "Restores cart from order code and data in session")
-    @ApiBaseSiteIdUserIdAndCartIdParam
-    public ResponseEntity<Void> onCancel() throws InvalidCartException, CalculationException {
-        super.handleCancel();
-        return ResponseEntity.ok().build();
-    }
 
     @Override
     public String getPaymentRedirectReturnUrl() {

@@ -49,6 +49,7 @@ import com.adyen.v6.enums.RecurringContractMode;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
 import com.adyen.v6.facades.AdyenExpressCheckoutFacade;
+import com.adyen.v6.facades.AdyenOrderFacade;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
@@ -184,6 +185,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     private I18NFacade i18NFacade;
     private ConfigurationService configurationService;
     private AdyenMerchantAccountStrategy adyenMerchantAccountStrategy;
+    private AdyenOrderFacade adyenOrderFacade;
 
     public static final Logger LOGGER = Logger.getLogger(DefaultAdyenCheckoutFacade.class);
 
@@ -1554,10 +1556,29 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         LOGGER.info("Restoring cart from order");
 
         OrderModel orderModel = getOrderRepository().getOrderModel(orderCode);
+
         if (orderModel == null) {
             LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
             return;
         }
+
+        restoreCartFromOrderInternal(orderModel);
+    }
+
+    public void restoreCartFromOrderOCC(String orderCode) throws CalculationException, InvalidCartException {
+        LOGGER.info("Restoring cart from order");
+
+        OrderModel orderModel = adyenOrderFacade.getOrderModelForCodeOCC(orderCode);
+
+        if (orderModel == null) {
+            LOGGER.error("Could not restore cart to session, order with code '" + orderCode + "' not found!");
+            return;
+        }
+
+        restoreCartFromOrderInternal(orderModel);
+    }
+
+    protected void restoreCartFromOrderInternal(final OrderModel orderModel) throws CalculationException, InvalidCartException{
 
         // Get cart from session
         CartModel cartModel;
@@ -1573,7 +1594,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         Boolean isAnonymousCheckout = getCheckoutCustomerStrategy().isAnonymousCheckout();
 
         if (!isAnonymousCheckout && hasUserContextChanged(orderModel, cartModel)) {
-            throw new InvalidCartException("Cart from order '" + orderCode + "' not restored to session, since user or store in session changed.");
+            throw new InvalidCartException("Cart from order '" + orderModel.getCode() + "' not restored to session, since user or store in session changed.");
         }
 
         //Populate cart entries
@@ -1881,5 +1902,9 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public void setAdyenMerchantAccountStrategy(AdyenMerchantAccountStrategy adyenMerchantAccountStrategy) {
         this.adyenMerchantAccountStrategy = adyenMerchantAccountStrategy;
+    }
+
+    public void setAdyenOrderFacade(AdyenOrderFacade adyenOrderFacade) {
+        this.adyenOrderFacade = adyenOrderFacade;
     }
 }
