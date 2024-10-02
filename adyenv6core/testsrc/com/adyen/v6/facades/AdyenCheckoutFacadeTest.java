@@ -261,7 +261,6 @@ public class AdyenCheckoutFacadeTest {
         when(configurationServiceMock.getConfiguration()).thenReturn(configurationMock);
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
         when(adyenPaymentServiceFactoryMock.createAdyenCheckoutApiService(baseStoreModelMock)).thenReturn(adyenCheckoutApiServiceMock);
-        when(adyenCheckoutApiServiceMock.calculateAmountWithTaxes(orderModel)).thenReturn(new BigDecimal(10));
     }
 
     @Test

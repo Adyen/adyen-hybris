@@ -23,6 +23,7 @@ package com.adyen.v6.service;
 import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.model.AdyenNotificationModel;
+import com.adyen.v6.util.AmountUtil;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.payment.dto.TransactionStatus;
@@ -204,7 +205,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(TransactionStatus.ACCEPTED.name());
         transactionEntryModel.setTransactionStatusDetails(TransactionStatusDetails.SUCCESFULL.name());
-        transactionEntryModel.setAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
+        transactionEntryModel.setAmount(AmountUtil.calculateAmountWithTaxes(abstractOrderModel));
         transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
 
         return transactionEntryModel;
@@ -225,7 +226,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         paymentTransactionModel.setOrder(abstractOrderModel);
         paymentTransactionModel.setCurrency(abstractOrderModel.getCurrency());
         paymentTransactionModel.setInfo(abstractOrderModel.getPaymentInfo());
-        paymentTransactionModel.setPlannedAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
+        paymentTransactionModel.setPlannedAmount(AmountUtil.calculateAmountWithTaxes(abstractOrderModel));
 
         return paymentTransactionModel;
     }
@@ -291,7 +292,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
         transactionEntryModel.setTime(DateTime.now().toDate());
         transactionEntryModel.setTransactionStatus(getTransactionStatusForResultCode(resultCode));
         transactionEntryModel.setTransactionStatusDetails("ResultCode: " + resultCode.getValue());
-        transactionEntryModel.setAmount(getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel));
+        transactionEntryModel.setAmount(AmountUtil.calculateAmountWithTaxes(abstractOrderModel));
         transactionEntryModel.setCurrency(abstractOrderModel.getCurrency());
 
         return transactionEntryModel;
@@ -320,10 +321,6 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
             return false;
         }
         return totalOrderAmount.compareTo(notificationAmount) > 0;
-    }
-
-    public AdyenCheckoutApiService getAdyenPaymentService() {
-        return adyenPaymentServiceFactory.createAdyenCheckoutApiService(baseStoreService.getCurrentBaseStore());
     }
 
     public ModelService getModelService() {
