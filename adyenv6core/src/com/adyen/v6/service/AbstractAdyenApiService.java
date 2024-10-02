@@ -55,6 +55,7 @@ public abstract class AbstractAdyenApiService {
         } else {
             this.config.setEnvironment(Environment.LIVE);
             this.config.setTerminalApiCloudEndpoint(Client.TERMINAL_API_ENDPOINT_LIVE);
+            this.config.setLiveEndpointUrlPrefix(baseStore.getAdyenAPIEndpointPrefix());
         }
 
     }
