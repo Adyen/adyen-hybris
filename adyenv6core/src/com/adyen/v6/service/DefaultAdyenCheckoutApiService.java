@@ -365,15 +365,4 @@ public class DefaultAdyenCheckoutApiService extends AbstractAdyenApiService impl
         LOG.debug(TerminalAPIGsonBuilder.create().toJson(terminalApiResponse));
         return terminalApiResponse;
     }
-
-    @Override
-    public BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel) {
-        final Double totalPrice = abstractOrderModel.getTotalPrice();
-        final Double totalTax = Boolean.TRUE.equals(abstractOrderModel.getNet()) ? abstractOrderModel.getTotalTax() : Double.valueOf(0d);
-        final BigDecimal totalPriceWithoutTaxBD = BigDecimal.valueOf(totalPrice == null ? 0d : totalPrice).setScale(2,
-                RoundingMode.HALF_EVEN);
-        return BigDecimal.valueOf(totalTax == null ? 0d : totalTax)
-                .setScale(2, RoundingMode.HALF_EVEN).add(totalPriceWithoutTaxBD);
-    }
-
 }

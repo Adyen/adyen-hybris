@@ -23,6 +23,7 @@ package com.adyen.v6.actions.order;
 import com.adyen.v6.actions.AbstractWaitableAction;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.service.AdyenCheckoutApiService;
+import com.adyen.v6.util.AmountUtil;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
@@ -92,7 +93,7 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
             return Transition.WAIT.toString();
         }
         
-        BigDecimal remainingAmount = getAdyenPaymentService(order).calculateAmountWithTaxes(order);
+        BigDecimal remainingAmount = AmountUtil.calculateAmountWithTaxes(order);
         for (final PaymentTransactionModel paymentTransactionModel : order.getPaymentTransactions()) {
             if (!isTransactionAuthorized(paymentTransactionModel)) {
                 //A single not authorized transaction means not authorized
@@ -122,9 +123,5 @@ public class AdyenCheckAuthorizationAction extends AbstractWaitableAction<OrderP
         modelService.save(order);
 
         return Transition.OK.toString();
-    }
-
-    public AdyenCheckoutApiService getAdyenPaymentService(final OrderModel orderModel) {
-        return adyenPaymentServiceFactory.createAdyenCheckoutApiService(orderModel.getStore());
     }
 }
