@@ -91,7 +91,7 @@ public class AdyenCheckCaptureActionTest extends AbstractActionTest {
 
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
         when(adyenPaymentServiceFactoryMock.createAdyenCheckoutApiService(baseStoreModelMock)).thenReturn(adyenCheckoutApiServiceMock);
-        when(adyenCheckoutApiServiceMock.calculateAmountWithTaxes(orderModelMock)).thenReturn(new BigDecimal(10));
+
     }
 
     @After
