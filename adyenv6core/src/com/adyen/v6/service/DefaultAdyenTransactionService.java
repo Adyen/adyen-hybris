@@ -23,6 +23,7 @@ package com.adyen.v6.service;
 import com.adyen.model.checkout.PaymentDetailsResponse;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
 import com.adyen.v6.model.AdyenNotificationModel;
+import com.adyen.v6.util.AdyenUtil;
 import com.adyen.v6.util.AmountUtil;
 import de.hybris.platform.core.model.c2l.CurrencyModel;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
@@ -315,7 +316,7 @@ public class DefaultAdyenTransactionService implements AdyenTransactionService {
     }
 
     protected boolean isPartialPayment(AdyenNotificationModel notificationItemModel, AbstractOrderModel abstractOrderModel) {
-        BigDecimal totalOrderAmount = getAdyenPaymentService().calculateAmountWithTaxes(abstractOrderModel);
+        BigDecimal totalOrderAmount = AmountUtil.calculateAmountWithTaxes(abstractOrderModel);
         BigDecimal notificationAmount = notificationItemModel.getAmountValue();
         if (notificationAmount == null) {
             return false;
