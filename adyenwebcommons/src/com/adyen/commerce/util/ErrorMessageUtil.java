@@ -26,6 +26,6 @@ public class ErrorMessageUtil {
                     return CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED;
             }
         }
-        return "";
+        return CHECKOUT_ERROR_AUTHORIZATION_PAYMENT_REFUSED;
     }
 }
