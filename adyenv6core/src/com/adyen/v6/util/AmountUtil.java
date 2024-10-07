@@ -8,6 +8,8 @@ import org.springframework.util.Assert;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static com.adyen.util.Util.getDecimalPlaces;
+
 public class AmountUtil {
 
     public static Amount createAmount(BigDecimal value, String currency) {
@@ -18,37 +20,6 @@ public class AmountUtil {
         int scale = getDecimalPlaces(currency);
         amount.setValue(BigDecimal.TEN.pow(scale).multiply(value.setScale(scale, RoundingMode.HALF_UP)).longValue());
         return amount;
-    }
-
-    public static int getDecimalPlaces(String currency) {
-        switch (currency) {
-            case "CVE":
-            case "DJF":
-            case "GNF":
-            case "IDR":
-            case "JPY":
-            case "KMF":
-            case "KRW":
-            case "PYG":
-            case "RWF":
-            case "UGX":
-            case "VND":
-            case "VUV":
-            case "XAF":
-            case "XOF":
-            case "XPF":
-                return 0;
-            case "BHD":
-            case "IQD":
-            case "JOD":
-            case "KWD":
-            case "LYD":
-            case "OMR":
-            case "TND":
-                return 3;
-            default:
-                return 2;
-        }
     }
 
     public static BigDecimal calculateAmountWithTaxes(final AbstractOrderModel abstractOrderModel) {
