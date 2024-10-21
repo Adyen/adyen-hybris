@@ -7,6 +7,9 @@ import com.adyen.commerce.constants.AdyenoccConstants;
 import com.adyen.service.exception.ApiException;
 import com.adyen.v6.dto.CheckoutConfigDTO;
 import com.adyen.v6.facades.AdyenCheckoutFacade;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartIdParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Adyen")
 public class PaymentMethodsController
 {
+    protected static ObjectMapper objectMapper;
+
+    static {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     @Autowired
     private AdyenCheckoutFacade adyenCheckoutFacade;
 
@@ -32,7 +42,8 @@ public class PaymentMethodsController
     @Operation(operationId = "getCheckoutConfiguration", summary = "Get checkout configuration", description =
             "Returns configuration for Adyen dropin component")
     @ApiBaseSiteIdUserIdAndCartIdParam
-    public ResponseEntity<CheckoutConfigDTO> getCheckoutConfiguration() throws ApiException {
-        return ResponseEntity.ok().body(adyenCheckoutFacade.getReactCheckoutConfig());
+    public ResponseEntity<String> getCheckoutConfiguration() throws ApiException, JsonProcessingException {
+        String response = objectMapper.writeValueAsString(adyenCheckoutFacade.getReactCheckoutConfig());
+        return ResponseEntity.ok().body(response);
     }
 }
