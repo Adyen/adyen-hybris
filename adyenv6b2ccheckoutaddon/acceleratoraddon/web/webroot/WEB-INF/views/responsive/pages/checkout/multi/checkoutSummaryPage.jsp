@@ -132,7 +132,6 @@
         }
         </c:otherwise>
         </c:choose>
-        console.log(paymentMethodConfigs);
         adyenCheckout.initiateCheckout(initConfig, paymentMethodConfigs);
 
     </script>
