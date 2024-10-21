@@ -90,7 +90,6 @@ public class AdyenTransactionServiceTest {
         when(modelServiceMock.create(PaymentTransactionEntryModel.class)).thenReturn(new PaymentTransactionEntryModel());
         when(baseStoreServiceMock.getCurrentBaseStore()).thenReturn(baseStoreModelMock);
         when(adyenPaymentServiceFactoryMock.createAdyenCheckoutApiService(baseStoreModelMock)).thenReturn(adyenCheckoutApiServiceMock);
-        when(adyenTransactionService.getAdyenPaymentService()).thenReturn(adyenCheckoutApiServiceMock);
         when(paymentTransactionModel.getEntries()).thenReturn(new ArrayList<>());
         when(modelServiceMock.create(PaymentTransactionModel.class)).thenReturn(paymentTransactionModel);
 
@@ -135,7 +134,6 @@ public class AdyenTransactionServiceTest {
     @Test
     public void testAuthorizeOrderModel() {
         OrderModel orderModel = createDummyOrderModel();
-        when(adyenCheckoutApiServiceMock.calculateAmountWithTaxes(orderModel)).thenReturn(new BigDecimal(10));
 
         PaymentTransactionModel paymentTransactionModel = adyenTransactionService.authorizeOrderModel(orderModel, MERCHANT_REFERENCE, PSP_REFERENCE);
 
