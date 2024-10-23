@@ -113,6 +113,15 @@ class Payment extends React.Component<Props, State> {
                     hasHolderName: true,
                     holderNameRequired: this.props.adyenConfig.cardHolderNameRequired,
                     enableStoreDetails: this.props.adyenConfig.showRememberTheseDetails
+                },
+                boletobancario: {
+                    personalDetailsRequired: true,
+                    billingAddressRequired: false,
+                    showEmailAddress: false,
+                    data:{
+                        firstName: this.props.shippingAddressFromCart.firstName,
+                        lastName: this.props.shippingAddressFromCart.lastName,
+                    }
                 }
             },
             paymentMethodsResponse: {
@@ -149,7 +158,28 @@ class Payment extends React.Component<Props, State> {
 
     private initiateDropIn(adyenCheckout: Core) {
 
-        this.dropIn = adyenCheckout.create("dropin");
+        this.dropIn = adyenCheckout.create("dropin", {
+            onSelect: (activeComponent) => {
+
+                const observer = new MutationObserver(() => {
+                    const firstNameField = document.querySelector(".adyen-checkout__field--firstName");
+                    const lastNameField = document.querySelector(".adyen-checkout__field--lastName");
+
+                    if (firstNameField && firstNameField instanceof HTMLElement) {
+                        firstNameField.style.display = "none";
+                    }
+
+                    if (lastNameField && lastNameField instanceof HTMLElement) {
+                        lastNameField.style.display = "none";
+                    }
+                });
+
+                const form = document.querySelector(".adyen-checkout__form");
+                if (this.paymentRef.current) {
+                    observer.observe(this.paymentRef.current, {childList: true, subtree: true});
+                }
+            }
+        });
 
         this.dropIn.mount(this.paymentRef.current)
     }
