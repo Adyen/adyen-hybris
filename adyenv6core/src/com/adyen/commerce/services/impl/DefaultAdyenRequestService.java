@@ -43,7 +43,7 @@ public class DefaultAdyenRequestService implements AdyenRequestService {
         if (cartData.getTotalTax() != null) {
             additionalData.put(TOTAL_TAX_AMOUNT, String.valueOf(cartData.getTotalTax().getValue()));
         }
-        if (cartData.getMerchantCustomerId() != null) {
+        if (StringUtils.isNotEmpty(cartData.getMerchantCustomerId())) {
             additionalData.put(CUSTOMER_REFERENCE, cartData.getMerchantCustomerId());
         }
         // not required but available
@@ -61,34 +61,34 @@ public class DefaultAdyenRequestService implements AdyenRequestService {
 
         // Extract item details from cartData and populate additionalData using a stream
         if (cartData.getEntries() != null) {
-            IntStream.range(0, cartData.getEntries().size()).forEach(i -> {
-                OrderEntryData entry = cartData.getEntries().get(i);
-                if (entry != null && entry.getProduct() != null) {
-                    additionalData.put(String.format(ITEM_DETAIL_PRODUCT_CODE, i + 1),
-                            Optional.ofNullable(entry.getProduct().getCode()).orElse(StringUtils.EMPTY));
-                    additionalData.put(String.format(ITEM_DETAIL_DESCRIPTION, i + 1),
-                            Optional.ofNullable(entry.getProduct().getName()).orElse(StringUtils.EMPTY));
+            cartData.getEntries().forEach(
+                    entry -> {
+                        if (entry != null && entry.getProduct() != null) {
+                            additionalData.put(String.format(ITEM_DETAIL_PRODUCT_CODE, entry.getEntryNumber()),
+                                    Optional.ofNullable(entry.getProduct().getCode()).orElse(StringUtils.EMPTY));
+                            additionalData.put(String.format(ITEM_DETAIL_DESCRIPTION, entry.getEntryNumber()),
+                                    Optional.ofNullable(entry.getProduct().getName()).orElse(StringUtils.EMPTY));
 
-                    additionalData.put(String.format(ITEM_DETAIL_QUANTITY, i + 1), String.valueOf(entry.getQuantity()));
+                            additionalData.put(String.format(ITEM_DETAIL_QUANTITY, entry.getEntryNumber()), String.valueOf(entry.getQuantity()));
 
-                    additionalData.put(String.format(ITEM_DETAIL_UNIT_OF_MEASURE, i + 1),
-                            Optional.ofNullable(entry.getUnitOfMeasure()).orElse(StringUtils.EMPTY));
+                            additionalData.put(String.format(ITEM_DETAIL_UNIT_OF_MEASURE, entry.getEntryNumber()),
+                                    Optional.ofNullable(entry.getUnitOfMeasure()).orElse(StringUtils.EMPTY));
 
-                    additionalData.put(String.format(ITEM_DETAIL_COMMODITY_CODE, i + 1),
-                            Optional.ofNullable(entry.getProduct().getCommodityCode()).orElse(StringUtils.EMPTY));
+                            additionalData.put(String.format(ITEM_DETAIL_COMMODITY_CODE, entry.getEntryNumber()),
+                                    Optional.ofNullable(entry.getProduct().getCommodityCode()).orElse(StringUtils.EMPTY));
 
-                    if (entry.getTotalPrice() != null) {
-                        additionalData.put(String.format(ITEM_DETAIL_TOTAL_AMOUNT, i + 1),
-                                String.valueOf(Optional.ofNullable(entry.getTotalPrice().getValue()).orElse(BigDecimal.ZERO)));
+                            if (entry.getTotalPrice() != null) {
+                                additionalData.put(String.format(ITEM_DETAIL_TOTAL_AMOUNT, entry.getEntryNumber()),
+                                        String.valueOf(Optional.ofNullable(entry.getTotalPrice().getValue()).orElse(BigDecimal.ZERO)));
+                            }
+
+                            if (entry.getBasePrice() != null) {
+                                additionalData.put(String.format(ITEM_DETAIL_UNIT_PRICE, entry.getEntryNumber()),
+                                        String.valueOf(Optional.ofNullable(entry.getBasePrice().getValue()).orElse(BigDecimal.ZERO)));
+                            }
+                        }
                     }
-
-                    if (entry.getBasePrice() != null) {
-                        additionalData.put(String.format(ITEM_DETAIL_UNIT_PRICE, i + 1),
-                                String.valueOf(Optional.ofNullable(entry.getBasePrice().getValue()).orElse(BigDecimal.ZERO)));
-                    }
-                }
-
-            });
+            );
         }
     }
 
