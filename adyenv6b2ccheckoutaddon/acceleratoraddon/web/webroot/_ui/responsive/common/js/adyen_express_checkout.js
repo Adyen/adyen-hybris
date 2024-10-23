@@ -192,15 +192,6 @@ var AdyenExpressCheckoutHybris = (function() {
                                 } = intermediatePaymentData;
                                 const paymentDataRequestUpdate = {};
 
-                                // Validate the country/region and address selection.
-                                if (shippingAddress.countryCode !== 'US' && shippingAddress.countryCode !== 'BR') {
-                                    paymentDataRequestUpdate.error = {
-                                        reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
-                                        message: 'Cannot ship to the selected address',
-                                        intent: 'SHIPPING_ADDRESS'
-                                    };
-                                }
-
                                 // If it initializes or changes the shipping address, calculate the shipping options and transaction info.
                                 if (callbackTrigger === 'INITIALIZE' || callbackTrigger === 'SHIPPING_ADDRESS') {
                                     // paymentDataRequestUpdate.newShippingOptionParameters = await fetchNewShippingOptions(shippingAddress.countryCode);
@@ -220,8 +211,6 @@ var AdyenExpressCheckoutHybris = (function() {
                     // Step 7: Configure the callback to get the shopper's information.
 
                     onAuthorized: (paymentData) => {
-                        console.log('Shopper details');
-                        console.log(paymentData)
                         this.makePayment(this.prepareDataGoogle(paymentData), this.getGoogleUrl())
                     },
                     onError: function (error) {
@@ -230,7 +219,7 @@ var AdyenExpressCheckoutHybris = (function() {
                 });
                 googlePayComponent.isAvailable()
                     .then(function () {
-                            googlePayComponent.mount(googlePayNode);
+                        googlePayComponent.mount(googlePayNode);
                     })
                     .catch(function (e) {
                         // Google Pay is not available
@@ -272,10 +261,14 @@ var AdyenExpressCheckoutHybris = (function() {
         },
         handleResult: function(data, error) {
             if (error) {
-                document.querySelector("#resultData").value = data;
+                if (data) {
+                    document.querySelector("#resultCode").value = data.resultCode;
+                    document.querySelector("#merchantReference").value = data.merchantReference;
+                }
                 document.querySelector("#isResultError").value = error;
             } else {
-                document.querySelector("#resultData").value = JSON.stringify(data);
+                document.querySelector("#resultCode").value = data.resultCode;
+                document.querySelector("#merchantReference").value = data.merchantReference;
             }
             document.querySelector("#handleComponentResultForm").submit();
         },
@@ -326,9 +319,11 @@ var AdyenExpressCheckoutHybris = (function() {
             return {};
         },
         prepareDataGoogle: function(paymentData) {
-            const baseData = {
-                googlePayToken: paymentData.paymentMethodData.tokenizationData.token,
-                googlePayCardNetwork: paymentData.paymentMethodData.info.cardNetwork,
+            let baseData = {
+                googlePayDetails: {
+                    googlePayToken: paymentData.paymentMethodData.tokenizationData.token,
+                    googlePayCardNetwork: paymentData.paymentMethodData.info.cardNetwork
+                },
                 addressData: {
                     email: paymentData.email,
                     firstName: paymentData.shippingAddress.name,
@@ -341,10 +336,11 @@ var AdyenExpressCheckoutHybris = (function() {
                         isocode: paymentData.shippingAddress.countryCode,
                     },
                     region: {
-                        isocode: paymentData.shippingAddress.administrativeArea
+                        isocodeShort: paymentData.shippingAddress.administrativeArea
                     }
                 }
             }
+
             if (this.adyenConfig.pageType === 'PDP') {
                 return {
                     productCode: this.adyenConfig.productCode,
@@ -369,10 +365,10 @@ var AdyenExpressCheckoutHybris = (function() {
         },
         getGoogleUrl: function() {
             if (this.adyenConfig.pageType === 'PDP') {
-                return ACC.config.encodedContextPath + '/expressCheckout/googlePayPDP'
+                return ACC.config.encodedContextPath + '/express-checkout/google/PDP'
             }
             if (this.adyenConfig.pageType === 'cart') {
-                return ACC.config.encodedContextPath + '/expressCheckout/googlePayCart'
+                return ACC.config.encodedContextPath + '/express-checkout/google/cart'
             }
             console.error('unknown page type')
             return null;
