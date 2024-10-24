@@ -139,6 +139,7 @@
     <bean id="defaultAdyenPaymentServiceFactory" class="com.adyen.v6.factory.AdyenPaymentServiceFactory">
         <constructor-arg name="adyenRequestFactory" ref="adyenRequestFactory"/>
         <constructor-arg name="adyenMerchantAccountStrategy" ref="adyenMerchantStrategy"/>
+        <constructor-arg name="defaultAdyenRequestService" ref="adyenRequestService"/>
     </bean>
 
 

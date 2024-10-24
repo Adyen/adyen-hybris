@@ -31,6 +31,7 @@ public abstract class AbstractAdyenApiService {
     public AbstractAdyenApiService(final BaseStoreModel baseStore, final String merchantAccount, final AdyenRequestService adyenRequestService) {
         this.baseStore = baseStore;
         this.merchantAccount = merchantAccount;
+        this.adyenRequestService = adyenRequestService;
 
         if (Boolean.TRUE.equals(baseStore.getAdyenPosEnabled())) {
             posConfig = new Config();
