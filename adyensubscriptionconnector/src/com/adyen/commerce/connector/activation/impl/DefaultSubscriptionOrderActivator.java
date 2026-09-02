@@ -47,9 +47,11 @@ import com.adyen.commerce.connector.service.SubscriptionBillingService;
 import com.adyen.commerce.connector.spi.SubscriptionBillingConnector;
 
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.order.OrderModel;
 import de.hybris.platform.core.model.product.ProductModel;
+import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.servicelayer.session.SessionExecutionBody;
 import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.site.BaseSiteService;
@@ -207,6 +209,10 @@ public class DefaultSubscriptionOrderActivator implements SubscriptionOrderActiv
 				attempt = attemptService.begin(order, platform, product.getCode(),
 						subscriptionBillingService.idempotencyKeyFor(order));
 
+				// After the journal is open, so the refusal is recorded against the product it concerns rather
+				// than arriving in the dead letter with nothing to say about what was sold.
+				requireShopperWhoCanManageIt(order);
+
 				final BillingSubscriptionRefModel ref = subscriptionBillingService.activateSubscription(order, product);
 				attemptService.succeeded(attempt, ref);
 
@@ -274,26 +280,65 @@ public class DefaultSubscriptionOrderActivator implements SubscriptionOrderActiv
 	/**
 	 * The one subscription product to activate, or {@code null} if the order carries none.
 	 *
+	 * <p>An order carrying more than one is refused rather than served in part. Serving it in part is what
+	 * this used to do — activate the first, log a warning, walk away — and the shopper had then paid for two
+	 * subscriptions and received one, with nothing anywhere to say so: the reference type holds one row per
+	 * order and platform, and so does the journal, so the second product left no trace an operator could
+	 * find. That is worse than refusing, because refusing is visible. It is a real cost to the shopper, who
+	 * now receives nothing until somebody acts, and it is accepted deliberately: a dead letter naming both
+	 * products can be put right by hand, and silent partial fulfilment cannot be put right by anyone who
+	 * does not already know it happened.</p>
+	 *
+	 * <p>The proper fix is upstream — a cart carrying two subscription products should not reach checkout —
+	 * and this guard is what makes the absence of that rule visible instead of expensive.</p>
+	 *
 	 * @throws SubscriptionProductUndecidableException if any entry could not be classified, which is not the
 	 *         same as {@code null} and must not become it — see the class javadoc
+	 * @throws PreconditionFailedException if the order carries more than one subscription product; terminal,
+	 *         because no amount of retrying will make the order carry fewer
 	 */
 	protected ProductModel chooseSubscriptionProduct(final OrderModel order, final SubscriptionBillingConnector connector)
-			throws SubscriptionProductUndecidableException
+			throws BillingException
 	{
 		final Map<String, ProductModel> products = subscriptionProducts(order, connector);
 		if (products.isEmpty())
 		{
 			return null;
 		}
-
-		final ProductModel product = products.values().iterator().next();
 		if (products.size() > 1)
 		{
-			LOG.warn("Order '{}' carries {} subscription products {} but one order can hold one subscription; "
-					+ "activating '{}' and leaving the rest inactive.", order.getCode(), products.size(),
-					products.keySet(), product.getCode());
+			throw new PreconditionFailedException("Order '" + order.getCode() + "' carries " + products.size()
+					+ " subscription products " + products.keySet() + " but one order can hold one subscription; "
+					+ "refusing to activate any of them rather than silently delivering one of the two the shopper "
+					+ "paid for. This order needs to be set up by hand, and the cart rule that let it through needs "
+					+ "fixing");
 		}
-		return product;
+		return products.values().iterator().next();
+	}
+
+	/**
+	 * Refuses to activate a subscription for a shopper who would never be able to reach it.
+	 *
+	 * <p>A guest has no account, so the My Account panel — the only place a subscription can be seen or
+	 * cancelled — is closed to them behind {@code ROLE_CUSTOMERGROUP}, while the subscription itself renews
+	 * every period. Worse, a guest who later registers is given a <em>new</em> {@code Customer}, and the
+	 * reference stays attached to the old one, so the subscription is unreachable permanently rather than
+	 * merely until they sign up.</p>
+	 *
+	 * <p>Selling one anyway is the kind of thing that is discovered by a chargeback. Refusing puts it in the
+	 * dead letter on the day it happens, where it names the order and can be dealt with while the shopper
+	 * still remembers buying it.</p>
+	 *
+	 * @throws PreconditionFailedException for a guest; terminal, because retrying will not register them
+	 */
+	protected void requireShopperWhoCanManageIt(final OrderModel order) throws PreconditionFailedException
+	{
+		if (order.getUser() instanceof CustomerModel customer && CustomerType.GUEST.equals(customer.getType()))
+		{
+			throw new PreconditionFailedException("Order '" + order.getCode() + "' was placed by a guest, who has no "
+					+ "account through which a subscription could ever be seen or cancelled, and who would be given a "
+					+ "different customer record on registering; refusing to start a recurring charge nobody can stop");
+		}
 	}
 
 	/**

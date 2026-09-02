@@ -22,6 +22,7 @@ package com.adyen.commerce.connector.activation.impl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -57,8 +58,10 @@ import com.adyen.commerce.connector.spi.SubscriptionBillingConnector;
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
 import de.hybris.platform.core.PK;
+import de.hybris.platform.commerceservices.enums.CustomerType;
 import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.CustomerModel;
 import de.hybris.platform.core.model.product.ProductModel;
 import de.hybris.platform.servicelayer.exceptions.ModelSavingException;
 import de.hybris.platform.servicelayer.session.SessionExecutionBody;
@@ -75,6 +78,7 @@ import de.hybris.platform.store.services.BaseStoreService;
 public class DefaultSubscriptionOrderActivatorTest
 {
 	private static final String SUB_PRODUCT = "sub-product";
+	private static final String SECOND_SUB_PRODUCT = "second-sub-product";
 	private static final String PLAIN_PRODUCT = "plain-product";
 
 	private static final PK STORE_PK = PK.fromLong(1001L);
@@ -136,10 +140,10 @@ public class DefaultSubscriptionOrderActivatorTest
 		when(connectorRegistry.getActiveConnector(store)).thenReturn(connector);
 		when(connector.platform()).thenReturn(BillingPlatform.CHARGEBEE);
 
-		// Only SUB_PRODUCT is mapped to a plan; anything else is an ordinary product.
+		// Only the two subscription codes are mapped to a plan; anything else is an ordinary product.
 		when(connector.resolvePlan(any(PlanResolutionRequest.class))).thenAnswer(invocation -> {
 			final PlanResolutionRequest request = invocation.getArgument(0);
-			if (SUB_PRODUCT.equals(request.productCode()))
+			if (SUB_PRODUCT.equals(request.productCode()) || SECOND_SUB_PRODUCT.equals(request.productCode()))
 			{
 				return new PlanRef("plan-1", null);
 			}
@@ -275,18 +279,20 @@ public class DefaultSubscriptionOrderActivatorTest
 	}
 
 	/**
-	 * Activation is idempotent on (order, platform), so a loop would silently discard everything after the
-	 * first entry. The hook activates one and says so rather than pretending it handled them all.
+	 * Activation is idempotent on (order, platform), so only one subscription can exist per order and a loop
+	 * would silently discard everything after the first entry. This used to activate the first and log a
+	 * warning; it now activates none, because a shopper who paid for two and received one had no record of
+	 * the second anywhere — neither the reference nor the journal has room for it.
 	 */
 	@Test
-	public void activatesOnlyOnceWhenAnOrderCarriesSeveralSubscriptionProducts() throws Exception
+	public void activatesNothingWhenAnOrderCarriesSeveralSubscriptionProducts() throws Exception
 	{
 		when(connector.resolvePlan(any(PlanResolutionRequest.class))).thenReturn(new PlanRef("plan-1", null));
 		givenEntries(product("sub-a"), product("sub-b"));
 
 		activator.activateFor(order);
 
-		verify(subscriptionBillingService, times(1)).activateSubscription(any(), any());
+		verify(subscriptionBillingService, never()).activateSubscription(any(), any());
 	}
 
 	@Test
@@ -297,6 +303,76 @@ public class DefaultSubscriptionOrderActivatorTest
 		activator.activateFor(order);
 
 		verify(subscriptionBillingService, times(1)).activateSubscription(order, entryProduct(SUB_PRODUCT));
+	}
+
+	/**
+	 * Two different subscription products on one order used to activate the first and log a warning, which
+	 * left the shopper paying for two and holding one, with nothing on the reference or in the journal to say
+	 * so — both are keyed one row per order and platform. Refusing costs the shopper the one they would
+	 * otherwise have got; it buys a record naming both, which is the only version anybody can put right.
+	 */
+	@Test
+	public void refusesAnOrderCarryingTwoDifferentSubscriptionProducts() throws Exception
+	{
+		givenEntries(product(SUB_PRODUCT), product(SECOND_SUB_PRODUCT));
+
+		activator.activateFor(order);
+
+		verify(subscriptionBillingService, never()).activateSubscription(any(), any());
+		verify(attemptService).failed(any(), isA(PreconditionFailedException.class));
+	}
+
+	/**
+	 * A guest has no account, so the only place a subscription can be seen or stopped is closed to them while
+	 * it goes on renewing — and registering later mints a different customer, so it never opens.
+	 */
+	@Test
+	public void refusesToStartASubscriptionAGuestCouldNeverStop() throws Exception
+	{
+		givenEntries(product(SUB_PRODUCT));
+		final CustomerModel guest = mock(CustomerModel.class);
+		when(guest.getType()).thenReturn(CustomerType.GUEST);
+		when(order.getUser()).thenReturn(guest);
+
+		activator.activateFor(order);
+
+		verify(subscriptionBillingService, never()).activateSubscription(any(), any());
+		verify(attemptService).failed(any(), isA(PreconditionFailedException.class));
+	}
+
+	/**
+	 * The guard reads the customer's type, not merely whether one is present: every activation has a
+	 * customer, and refusing them all would stop the feature rather than the unmanageable case.
+	 */
+	@Test
+	public void activatesNormallyForARegisteredShopper() throws Exception
+	{
+		givenEntries(product(SUB_PRODUCT));
+		final CustomerModel registered = mock(CustomerModel.class);
+		when(registered.getType()).thenReturn(CustomerType.REGISTERED);
+		when(order.getUser()).thenReturn(registered);
+
+		activator.activateFor(order);
+
+		verify(subscriptionBillingService).activateSubscription(order, entryProduct(SUB_PRODUCT));
+	}
+
+	/**
+	 * The refusal is journalled against the product it concerns, which is why the guard runs after the
+	 * attempt is opened rather than before it.
+	 */
+	@Test
+	public void journalsTheGuestRefusalAgainstTheProductThatWasSold() throws Exception
+	{
+		when(subscriptionBillingService.idempotencyKeyFor(order)).thenReturn("order-1");
+		givenEntries(product(SUB_PRODUCT));
+		final CustomerModel guest = mock(CustomerModel.class);
+		when(guest.getType()).thenReturn(CustomerType.GUEST);
+		when(order.getUser()).thenReturn(guest);
+
+		activator.activateFor(order);
+
+		verify(attemptService).begin(order, BillingPlatform.CHARGEBEE, SUB_PRODUCT, "order-1");
 	}
 
 	@Test

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.hybris.platform</groupId>
 	<artifactId>adyenrecurlyconnector</artifactId>
-	<version>2211-jdk21.6</version>
+	<version>2211.3</version>
 
 	<packaging>jar</packaging>
 	<properties>

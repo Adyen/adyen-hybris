@@ -83,7 +83,9 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 	private static final String EVENT_RECONCILIATION_GAP = "reconciliation_gap";
 
 	private static final ConnectorCapabilities CAPABILITIES = new ConnectorCapabilities(
-			false, // requiresNetworkTransactionId — the Adyen plugin never captures an NTID, and Chargebee import does not need one
+			false, // requiresNetworkTransactionId — Chargebee's token import does not need one. The plugin does
+			       // capture an NTID (DefaultAdyenOrderService.updatePaymentInfo -> PaymentInfo.adyenNetworkTxReference);
+			       // Recurly requires it, Chargebee does not, which is exactly what this flag is for.
 			true,  // supportsImmediateStart — subscription_for_items can start immediately
 			false, // supportsPause — deferred to a later increment (SPI default rejects pause)
 			true,  // requiresPreConfiguredPlan — the item price must already exist in the Chargebee catalog
