@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.adyen.commerce.connector.reconciliation.SubscriptionReconciliationService;
 import org.apache.commons.lang3.StringUtils;
@@ -149,7 +150,7 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 		try
 		{
 			model = persistSubscriptionRef(order, customer, subscriptionRef, customerRef, paymentMethodRef, plan,
-					idempotencyKey);
+					idempotencyKey, subProduct);
 		}
 		catch (final ModelSavingException e)
 		{
@@ -416,7 +417,8 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 
 	protected BillingSubscriptionRefModel persistSubscriptionRef(final AbstractOrderModel order,
 			final CustomerModel customer, final BillingSubscriptionRef subscriptionRef, final BillingCustomerRef customerRef,
-			final BillingPaymentMethodRef paymentMethodRef, final PlanRef plan, final String idempotencyKey)
+			final BillingPaymentMethodRef paymentMethodRef, final PlanRef plan, final String idempotencyKey,
+			final ProductModel subProduct)
 	{
 		final BillingSubscriptionRefModel model = modelService.create(BillingSubscriptionRefModel.class);
 		model.setPlatform(subscriptionRef.platform());
@@ -427,6 +429,11 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 		model.setQuantity(Integer.valueOf(1));
 		model.setCurrencyIsoCode(order.getCurrency() == null ? null : order.getCurrency().getIsocode());
 		model.setIdempotencyKey(idempotencyKey);
+		// Minted here, on the one path that creates the row, rather than lazily on first read. Minting on a
+		// read races itself: two tabs open on the shopper's own list would mint two values, the later write
+		// would win, and the link the first tab is showing would stop resolving.
+		model.setCode(UUID.randomUUID().toString());
+		model.setProductCode(subProduct == null ? null : subProduct.getCode());
 		model.setOrder(order);
 		model.setCustomer(customer);
 		// The status column holds the normalized vocabulary, so it is written from the enum here exactly

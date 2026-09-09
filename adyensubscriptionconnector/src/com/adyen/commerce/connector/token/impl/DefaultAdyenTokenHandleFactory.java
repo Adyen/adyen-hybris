@@ -35,6 +35,7 @@ import com.adyen.v6.strategy.AdyenMerchantAccountStrategy;
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.core.model.order.payment.PaymentInfoModel;
 import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.store.BaseStoreModel;
 import de.hybris.platform.core.model.user.UserModel;
 
 /**
@@ -103,6 +104,33 @@ public class DefaultAdyenTokenHandleFactory implements AdyenTokenHandleFactory
 
 		return new AdyenTokenHandle(merchantAccount, shopperReference, storedPaymentMethodId,
 				StringUtils.trimToNull(paymentInfo.getAdyenNetworkTxReference()), buildCardMetadata(paymentInfo));
+	}
+
+	@Override
+	public AdyenTokenHandle createForStoredToken(final CustomerModel customer, final BaseStoreModel store,
+			final String storedPaymentMethodId, final CardMetadata cardMetadata) throws TokenContractException
+	{
+		if (customer == null || StringUtils.isBlank(customer.getCustomerID()))
+		{
+			throw new TokenContractException("Cannot build a token handle without a customer carrying a "
+					+ "customerID/shopperReference");
+		}
+		if (StringUtils.isBlank(storedPaymentMethodId))
+		{
+			throw new TokenContractException("Cannot build a token handle without a stored payment method id");
+		}
+
+		final String merchantAccount = store == null ? null : adyenMerchantAccountStrategy.getWebMerchantAccount(store);
+		if (StringUtils.isBlank(merchantAccount))
+		{
+			throw new TokenContractException("Base store has no Adyen merchant account configured; refusing to "
+					+ "build a token handle that could not be charged");
+		}
+
+		// No networkTransactionId: nothing was authorised here, the token was vaulted earlier. A connector
+		// that needs one rejects this handle in its own validation rather than being handed a fabricated value.
+		return new AdyenTokenHandle(merchantAccount, customer.getCustomerID(), storedPaymentMethodId, null,
+				cardMetadata);
 	}
 
 	protected CardMetadata buildCardMetadata(final PaymentInfoModel paymentInfo)

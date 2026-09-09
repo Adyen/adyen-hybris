@@ -170,6 +170,27 @@
                     <persistence type="property"/>
                     <modifiers initial="true"/>
                 </attribute>
+                <attribute qualifier="code" type="java.lang.String">
+                    <description>Opaque, platform-independent public identifier, minted when the reference is
+                        created. This is what appears in shopper-facing URLs and in support conversations.
+
+                        Deliberately not the external subscription id: on one of the shipped platforms that id
+                        is the SAP order code, and order codes are sequential, so putting it in a URL would
+                        turn a weak ownership check into an enumerable one. Deliberately not the PK either,
+                        which is an implementation detail that changes when data moves between environments.</description>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="productCode" type="java.lang.String">
+                    <description>Code of the subscription product this reference was activated from. A plain
+                        string rather than a Product reference, for the same reason as on
+                        BillingActivationAttempt: the record has to outlive the product. The displayable name
+                        is resolved from it at read time, and the code itself is what a shopper-facing list
+                        falls back to when the product is no longer in the catalogue being served.
+
+                        Held here as well as on BillingActivationAttempt because that journal is swept: a
+                        successful attempt is removed once it has settled, and the name would go with it.</description>
+                    <persistence type="property"/>
+                </attribute>
                 <attribute qualifier="order" type="AbstractOrder">
                     <description>The SAP order this subscription was activated from.</description>
                     <persistence type="property"/>
@@ -230,6 +251,20 @@
                 <index name="idx_billingSubRef_sync">
                     <key attribute="status"/>
                     <key attribute="lastSyncedAt"/>
+                </index>
+                <!-- The My Account panel's primary query is "every subscription of this shopper". Without
+                     this it is a full scan of a table that grows with every subscription ever sold, run on
+                     every page view. -->
+                <index name="idx_billingSubRef_customer">
+                    <key attribute="customer"/>
+                </index>
+                <!-- Lookup by the public identifier, which is how a shopper-facing request names a row.
+
+                     Deliberately NOT unique: rows written before this column existed carry a null code, and
+                     SQL Server treats nulls in a unique index as equal — the same trap already documented on
+                     idx_billingSubRef_order. Uniqueness comes from the value being a UUID. -->
+                <index name="idx_billingSubRef_code">
+                    <key attribute="code"/>
                 </index>
             </indexes>
         </itemtype>
