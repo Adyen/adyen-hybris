@@ -112,6 +112,7 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 		}
 		overview.setSubscriptions(entries);
 		overview.setOrdersAwaitingSetup(findOrdersAwaitingSetup(customer));
+		overview.setPaymentMethodSubscriptionCode(subscriptionCodeForPaymentMethodChange(customer));
 		return overview;
 	}
 
@@ -160,8 +161,19 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 			final String storedPaymentMethodId)
 	{
 		final CustomerModel customer = currentCustomer();
-		if (customer == null || StringUtils.isBlank(subscriptionCode) || StringUtils.isBlank(storedPaymentMethodId))
+		if (customer == null)
 		{
+			return false;
+		}
+		// Said out loud, with which half was missing. This used to return in silence, and the result was a
+		// change that failed with an error message on screen and not one line anywhere explaining it - the
+		// blank code being exactly what a reference predating the public identifier produces.
+		if (StringUtils.isBlank(subscriptionCode) || StringUtils.isBlank(storedPaymentMethodId))
+		{
+			LOG.warn("Refusing a payment-method change with an incomplete request: subscription code {}, "
+					+ "stored payment method {}.",
+					StringUtils.isBlank(subscriptionCode) ? "MISSING" : "present",
+					StringUtils.isBlank(storedPaymentMethodId) ? "MISSING" : "present");
 			return false;
 		}
 
@@ -272,6 +284,23 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 	{
 		return StringUtils.isAnyBlank(month, year) ? null
 				: StringUtils.leftPad(month, 2, '0') + "/" + (year.length() == 2 ? "20" + year : year);
+	}
+
+	/**
+	 * A subscription of this shopper's whose code the payment-method form can carry, or {@code null}.
+	 *
+	 * <p>Chargebee only, because that is the only platform the change works on, and only a row that has a
+	 * public identifier — one created before that column existed has none, and offering the form on it
+	 * would produce a request the facade can only refuse.</p>
+	 */
+	protected String subscriptionCodeForPaymentMethodChange(final CustomerModel customer)
+	{
+		return findSubscriptions(customer).stream()
+				.filter(ref -> ref.getPlatform() == BillingPlatform.CHARGEBEE)
+				.map(BillingSubscriptionRefModel::getCode)
+				.filter(StringUtils::isNotBlank)
+				.findFirst()
+				.orElse(null);
 	}
 
 	// --- reading ---

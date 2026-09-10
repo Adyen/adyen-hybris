@@ -86,6 +86,9 @@ public class MySubscriptionsPageController extends AbstractSearchPageController
 		// what makes the feature possible at all without 3DS — see the facade.
 		model.addAttribute("storedCards", adyenStoredCardsFacade.getStoredCardsPageDataForCurrentCustomer()
 				.getStoredCards());
+		// Chosen by the facade, not by the view: it has to be a Chargebee row that actually carries a public
+		// identifier, and "the first one on screen" is not the same thing.
+		model.addAttribute("paymentMethodSubscriptionCode", overview.getPaymentMethodSubscriptionCode());
 		model.addAttribute("breadcrumbs", accountBreadcrumbBuilder.getBreadcrumbs("text.account.subscriptions"));
 		// A page listing what somebody is paying for every month has no business in a search index.
 		model.addAttribute("metaRobots", "no-index,no-follow");

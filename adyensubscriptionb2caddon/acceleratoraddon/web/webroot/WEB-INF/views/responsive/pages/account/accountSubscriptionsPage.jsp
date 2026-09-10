@@ -41,16 +41,17 @@
 
      Only cards already in the Adyen vault are offered. Adding a new one here would need zero-auth, which
      in this integration carries no 3DS, so a card requiring authentication could not be stored at all. --%>
-<c:if test="${not empty subscriptions and not empty storedCards}">
+<c:if test="${not empty paymentMethodSubscriptionCode and not empty storedCards}">
     <div class="account-section-content subscription-payment-method">
         <div class="subscription-payment-method-title">
             <spring:theme code="text.account.subscriptions.paymentMethod"/>
         </div>
         <form:form action="${request.contextPath}/my-account/subscriptions/payment-method" method="post">
             <input type="hidden" name="${CSRFToken.parameterName}" value="${CSRFToken.token}"/>
-            <%-- Any of the shopper's own subscriptions identifies the customer and the store; the facade
-                 re-checks that it is theirs. --%>
-            <input type="hidden" name="code" value="${fn:escapeXml(subscriptions[0].code)}"/>
+            <%-- Any of the shopper's own subscriptions identifies the customer and the store, but it must
+                 be one that has a public identifier - the facade picks it, because "first on screen" can be
+                 a row created before that column existed, whose empty code can only be refused. --%>
+            <input type="hidden" name="code" value="${fn:escapeXml(paymentMethodSubscriptionCode)}"/>
             <select name="storedPaymentMethodId" class="form-control">
                 <c:forEach items="${storedCards}" var="storedCard">
                     <option value="${fn:escapeXml(storedCard.id)}">

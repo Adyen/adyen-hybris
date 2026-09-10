@@ -56,6 +56,27 @@ public class SubscriptionOverviewData implements Serializable
 		this.subscriptions = subscriptions;
 	}
 
+	/**
+	 * The subscription whose code the payment-method form should carry, or {@code null} when there is none
+	 * it can use.
+	 *
+	 * <p>The change is per customer on Chargebee, so any one of their subscriptions identifies the customer
+	 * and the store. It still cannot be "whichever is first": a reference created before the public
+	 * identifier existed has none, and a form built on it posts an empty code that the facade can only
+	 * refuse. Choosing here, where the rows are known, is what keeps that out of the view.</p>
+	 */
+	private String paymentMethodSubscriptionCode;
+
+	public String getPaymentMethodSubscriptionCode()
+	{
+		return paymentMethodSubscriptionCode;
+	}
+
+	public void setPaymentMethodSubscriptionCode(final String paymentMethodSubscriptionCode)
+	{
+		this.paymentMethodSubscriptionCode = paymentMethodSubscriptionCode;
+	}
+
 	public List<String> getOrdersAwaitingSetup()
 	{
 		return ordersAwaitingSetup;
