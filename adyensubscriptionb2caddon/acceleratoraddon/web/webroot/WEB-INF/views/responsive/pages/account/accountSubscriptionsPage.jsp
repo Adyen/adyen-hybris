@@ -34,13 +34,14 @@
     </div>
 </c:if>
 
-<%-- Proof of concept: point billing at another card the shopper has already saved.
+<%-- Point billing at another card the shopper has already saved.
 
-     Placed once, above the list, and not on each row - on Chargebee a payment source belongs to the
-     customer, so this moves every subscription they have. Rendering it per row would say otherwise.
+     Rendered on the SCOPE the connector declared, never on which billing platform this is. The note under
+     the control is keyed by that scope, because "all your subscriptions" and "this subscription only" are
+     different promises and only one of them is true on any given platform.
 
      Only cards already in the Adyen vault are offered. Adding a new one here would need zero-auth, which
-     in this integration carries no 3DS, so a card requiring authentication could not be stored at all. --%>
+     this integration cannot carry through 3DS, so a card requiring authentication could not be stored. --%>
 <c:if test="${not empty paymentMethodSubscriptionCode and not empty storedCards}">
     <div class="account-section-content subscription-payment-method">
         <div class="subscription-payment-method-title">
@@ -48,9 +49,9 @@
         </div>
         <form:form action="${request.contextPath}/my-account/subscriptions/payment-method" method="post">
             <input type="hidden" name="${CSRFToken.parameterName}" value="${CSRFToken.token}"/>
-            <%-- Any of the shopper's own subscriptions identifies the customer and the store, but it must
-                 be one that has a public identifier - the facade picks it, because "first on screen" can be
-                 a row created before that column existed, whose empty code can only be refused. --%>
+            <%-- Chosen by the facade: it has to be a row whose connector offers the change, which is in a
+                 state where the change means something, and which carries a public identifier. "First on
+                 screen" satisfies none of those reliably. --%>
             <input type="hidden" name="code" value="${fn:escapeXml(paymentMethodSubscriptionCode)}"/>
             <select name="storedPaymentMethodId" class="form-control">
                 <c:forEach items="${storedCards}" var="storedCard">
@@ -63,9 +64,18 @@
                 <spring:theme code="text.account.subscriptions.paymentMethod.submit"/>
             </button>
             <div class="subscription-payment-method-note">
-                <spring:theme code="text.account.subscriptions.paymentMethod.note"/>
+                <spring:theme code="text.account.subscriptions.paymentMethod.note.${paymentMethodChangeScope}"/>
             </div>
         </form:form>
+    </div>
+</c:if>
+
+<%-- The honest third state. A shopper with subscriptions on a platform that cannot do this reads one
+     sentence instead of looking at a blank space and wondering, and is never shown a control that would
+     fail. Not rendered when there is nothing on the page to change. --%>
+<c:if test="${paymentMethodChangeScope eq 'NOT_SUPPORTED' and not empty subscriptions}">
+    <div class="account-section-content subscription-payment-method-unavailable">
+        <spring:theme code="text.account.subscriptions.paymentMethod.unsupported"/>
     </div>
 </c:if>
 
@@ -110,15 +120,29 @@
                                     </c:choose>
                                 </div>
 
-                                <c:if test="${not empty subscription.orderCode}">
+                                <%-- Two facts, two sentences. They used to be one: the order CODE was fed
+                                     into "Ordered on {0}", which rendered "Ordered on 00012345" while the
+                                     date the sentence wanted sat unused on the DTO. The date is what the
+                                     shopper reads; the number is what they quote to support, and it is
+                                     shown even when the date is missing. --%>
+                                <c:if test="${not empty subscription.orderDate}">
                                     <div class="subscription-order">
+                                        <fmt:formatDate value="${subscription.orderDate}" dateStyle="long"
+                                                        var="orderedOn"/>
                                         <spring:theme code="text.account.subscriptions.order"
+                                                      arguments="${orderedOn}"/>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty subscription.orderCode}">
+                                    <div class="subscription-order-number">
+                                        <spring:theme code="text.account.subscriptions.orderNumber"
                                                       arguments="${fn:escapeXml(subscription.orderCode)}"/>
                                     </div>
                                 </c:if>
 
-                                <%-- Recognition only. Changing the card is not offered on either platform,
-                                     so nothing here invites the shopper to try. --%>
+                                <%-- Recognition only, and it names the card the order was paid with rather
+                                     than the one billing uses now: the change is offered once above the
+                                     list, not per row, so nothing here invites the shopper to act on it. --%>
                                 <c:if test="${not empty subscription.paymentMethodSummary}">
                                     <div class="subscription-payment">
                                         <spring:theme code="text.account.subscriptions.paidWith"

@@ -41,28 +41,28 @@ public enum SubscriptionDisplayState
 	 * No platform has confirmed this subscription yet. Never carries a date and never offers a button:
 	 * there is nothing to tell the shopper and nothing dependable to cancel.
 	 */
-	SETTING_UP(false),
+	SETTING_UP(false, false),
 
 	/** Running and will renew. */
-	ACTIVE(true),
+	ACTIVE(true, true),
 
 	/** Will start on a future date and has not begun billing. Cancellable, and cheaply so. */
-	STARTING_SOON(true),
+	STARTING_SOON(true, true),
 
 	/** Still serving, but the platform has been told not to renew it. */
-	ENDING(false),
+	ENDING(false, true),
 
 	/** Not being served and not being billed; only an operator can resume it on either platform. */
-	PAUSED(false),
+	PAUSED(false, true),
 
 	/** A payment did not go through and the platform is retrying. Still stoppable — and this is the state shoppers most often want to stop from. */
-	PAST_DUE(true),
+	PAST_DUE(true, true),
 
 	/** Already set to end, and carrying an unpaid invoice as well. */
-	PAST_DUE_ENDING(false),
+	PAST_DUE_ENDING(false, true),
 
 	/** Over. */
-	ENDED(false),
+	ENDED(false, false),
 
 	/**
 	 * The status could not be interpreted, the platform's adapter is not installed or configured, or the
@@ -70,13 +70,15 @@ public enum SubscriptionDisplayState
 	 * that is billing somebody must appear on their page even when we cannot describe it — but never with a
 	 * button, because acting on it would be acting on a guess.
 	 */
-	UNAVAILABLE(false);
+	UNAVAILABLE(false, false);
 
 	private final boolean cancellable;
+	private final boolean paymentMethodChangeable;
 
-	SubscriptionDisplayState(final boolean cancellable)
+	SubscriptionDisplayState(final boolean cancellable, final boolean paymentMethodChangeable)
 	{
 		this.cancellable = cancellable;
+		this.paymentMethodChangeable = paymentMethodChangeable;
 	}
 
 	/**
@@ -88,5 +90,29 @@ public enum SubscriptionDisplayState
 	public boolean isCancellable()
 	{
 		return cancellable;
+	}
+
+	/**
+	 * Whether pointing this subscription's billing at a different payment method could still achieve
+	 * anything.
+	 *
+	 * <p>Deliberately wider than {@link #isCancellable()}, and the two disagree in both directions.
+	 * {@code ENDING} and {@code PAST_DUE_ENDING} can no longer be cancelled — they already are — yet the
+	 * period the shopper has paid for is still being collected, so a working card still matters.
+	 * {@code PAUSED} likewise: an operator can resume it, and a card fixed beforehand is the difference
+	 * between resuming and dunning. {@code PAST_DUE} is the case this exists for.</p>
+	 *
+	 * <p>False where the answer would be a guess rather than a refusal: {@code SETTING_UP} has no confirmed
+	 * subscription to move, {@code ENDED} has nothing left to bill, and {@code UNAVAILABLE} means we could
+	 * not read the thing at all.</p>
+	 *
+	 * <p>Read by the page to decide whether to offer the control and by the facade to decide whether to
+	 * honour a request that arrives anyway. The cancellation path already works this way; the payment-method
+	 * path did not check at all, so a row that had ended accepted the request and sent a call that could not
+	 * mean anything.</p>
+	 */
+	public boolean isPaymentMethodChangeable()
+	{
+		return paymentMethodChangeable;
 	}
 }

@@ -20,6 +20,8 @@
  */
 package com.adyen.commerce.connector.service;
 
+import com.adyen.commerce.connector.dto.AdyenTokenHandle;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeOutcome;
 import com.adyen.commerce.connector.dto.SubscriptionCancellation;
 import com.adyen.commerce.connector.exception.BillingException;
 import com.adyen.commerce.connector.model.BillingSubscriptionRefModel;
@@ -69,6 +71,25 @@ public interface SubscriptionBillingService
 	 * which ends service at once and leaves the shopper's remaining paid period unaccounted for. See
 	 * {@link com.adyen.commerce.connector.dto.CancellationTiming}.</p>
 	 */
+	/**
+	 * Points this subscription's future billing at a card the shopper already has vaulted with Adyen, and
+	 * records locally what moved.
+	 *
+	 * <p>Capability-gated here rather than at the caller: the connector declares whether it can do this at
+	 * all and whose billing it moves, and this is where that declaration is enforced. A connector that
+	 * advertises {@code NOT_SUPPORTED} is refused before any platform call is made.</p>
+	 *
+	 * <p>The caller is responsible for having established that the token belongs to this shopper. Nothing
+	 * below this line can tell.</p>
+	 *
+	 * @return what the platform actually did, including the scope it applied — which the caller needs in
+	 *         order to say something true to the shopper
+	 * @throws com.adyen.commerce.connector.exception.CapabilityUnsupportedException if the platform cannot
+	 *         change the payment method of an existing subscription
+	 */
+	PaymentMethodChangeOutcome changePaymentMethod(BillingSubscriptionRefModel subscription, AdyenTokenHandle token)
+			throws BillingException;
+
 	void cancel(BillingSubscriptionRefModel subscription, SubscriptionCancellation cancellation)
 			throws BillingException;
 }

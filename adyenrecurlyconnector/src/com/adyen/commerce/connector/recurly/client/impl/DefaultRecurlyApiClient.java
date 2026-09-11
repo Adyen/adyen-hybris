@@ -657,10 +657,27 @@ public class DefaultRecurlyApiClient implements RecurlyApiClient {
         return billingInfoMatches(billingInfo, shopperReference, storedPaymentMethodId);
     }
 
+    /**
+     * Whether this billing info is the one already representing that Adyen token.
+     *
+     * <p>Deduplication, never authorisation. It answers "have we imported this card here before", which is
+     * what stops a repeat order creating a second billing info. It must not be reused to decide whether a
+     * billing info belongs to a shopper: the account is already the shopper's, and filtering on the
+     * Adyen account reference would exclude exactly the billing infos Recurly supports best - the ones
+     * collected by its own hosted pages, by support, or by the Account Updater.</p>
+     *
+     * <p>The nesting differs between the shape Recurly accepts and the shape it returns.
+     * {@code BillingInfoCreate} takes {@code gateway_attributes} at the top level - which is what
+     * {@link #buildAdyenBillingInfo} sends - while the {@code BillingInfo} it reads back carries it under
+     * {@code payment_method}, and only {@code payment_gateway_references} stays at the top in both. Reading
+     * the top level alone therefore never matched a real response: without Wallet a repeat order with the
+     * <em>same</em> card was refused as "already has a different primary billing info", and with Wallet the
+     * duplicates were held off only by the idempotency key. Both shapes are accepted here because the unit
+     * tests are the one caller that legitimately sees the write shape.</p>
+     */
     protected boolean billingInfoMatches(final JsonNode billingInfo, final String shopperReference,
                                          final String storedPaymentMethodId) {
-        if (!StringUtils.equals(shopperReference,
-                billingInfo.path("gateway_attributes").path("account_reference").asText(null))) {
+        if (!StringUtils.equals(shopperReference, accountReferenceOf(billingInfo))) {
             return false;
         }
         for (final JsonNode reference : billingInfo.path("payment_gateway_references")) {
@@ -669,6 +686,14 @@ public class DefaultRecurlyApiClient implements RecurlyApiClient {
             }
         }
         return false;
+    }
+
+    /** The Adyen shopper reference Recurly holds for this billing info, from whichever shape it arrived in. */
+    protected String accountReferenceOf(final JsonNode billingInfo) {
+        final String nested = billingInfo.path("payment_method").path("gateway_attributes")
+                .path("account_reference").asText(null);
+        return nested != null ? nested
+                : billingInfo.path("gateway_attributes").path("account_reference").asText(null);
     }
 
     protected List<JsonNode> readBillingInfos(final String body) throws BillingException {

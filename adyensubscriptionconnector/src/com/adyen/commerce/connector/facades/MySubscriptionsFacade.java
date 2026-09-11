@@ -20,6 +20,7 @@
  */
 package com.adyen.commerce.connector.facades;
 
+import com.adyen.commerce.connector.facades.data.PaymentMethodChangeResult;
 import com.adyen.commerce.connector.facades.data.SubscriptionOverviewData;
 
 /**
@@ -63,15 +64,18 @@ public interface MySubscriptionsFacade
 	 * and which store are meant, and to refuse the request when the row is not theirs.</p>
 	 *
 	 * <h3>What it deliberately does not do</h3>
-	 * <p>It adds no new card. The shopper picks one Adyen has already vaulted for them, which is what makes
-	 * a proof of concept possible at all: minting a new token would need zero-auth, and zero-auth here
-	 * carries no 3DS, so a card requiring authentication could not be stored. Chargebee is also the only
-	 * platform it works on — Recurly requires a network transaction id, and a token vaulted earlier has
-	 * none to give.</p>
+	 * <p>It adds no new card. The shopper picks one Adyen has already vaulted for them: minting a new token
+	 * would need zero-auth, and this integration's zero-auth carries no 3DS plumbing, so a card requiring
+	 * authentication could not be stored at all.</p>
+	 *
+	 * <p>Whether it is offered, and whose billing it moves, is the connector's declaration and not this
+	 * facade's business — a platform that cannot do it answers {@code NOT_SUPPORTED_HERE} rather than a
+	 * failure the shopper is invited to retry.</p>
 	 *
 	 * @param subscriptionCode      the public identifier, used to establish ownership and the store
 	 * @param storedPaymentMethodId the Adyen {@code recurringDetailReference} the shopper chose
-	 * @return whether the billing platform accepted it
+	 * @return what happened, in the terms the page has to describe it
 	 */
-	boolean changePaymentMethodForCurrentCustomer(String subscriptionCode, String storedPaymentMethodId);
+	PaymentMethodChangeResult changePaymentMethodForCurrentCustomer(String subscriptionCode,
+			String storedPaymentMethodId);
 }

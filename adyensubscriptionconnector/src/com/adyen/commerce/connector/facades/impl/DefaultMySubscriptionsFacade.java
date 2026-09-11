@@ -32,23 +32,23 @@ import org.slf4j.LoggerFactory;
 import com.adyen.commerce.connector.activation.BillingActivationAttemptService;
 import com.adyen.commerce.connector.context.SubscriptionBaseStoreSelectorStrategy;
 import com.adyen.commerce.connector.dto.CancelReason;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
 import com.adyen.commerce.connector.dto.NormalizedSubscriptionStatus;
 import com.adyen.commerce.connector.dto.SubscriptionCancellation;
+import com.adyen.commerce.connector.exception.ConnectorNotConfiguredException;
 import com.adyen.commerce.connector.facades.MySubscriptionsFacade;
+import com.adyen.commerce.connector.facades.data.PaymentMethodChangeResult;
 import com.adyen.commerce.connector.facades.data.SubscriptionDisplayState;
 import com.adyen.commerce.connector.facades.data.SubscriptionEntryData;
 import com.adyen.commerce.connector.facades.data.SubscriptionOverviewData;
 import com.adyen.commerce.connector.model.BillingActivationAttemptModel;
 import com.adyen.commerce.connector.model.BillingSubscriptionRefModel;
 import com.adyen.commerce.connector.dto.AdyenTokenHandle;
-import com.adyen.commerce.connector.dto.BillingCustomerRef;
 import com.adyen.commerce.connector.dto.CardMetadata;
-import com.adyen.commerce.connector.dto.RecurringProcessingModel;
-import com.adyen.commerce.connector.dto.TokenImportRequest;
-import com.adyen.commerce.connector.enums.BillingPlatform;
 import com.adyen.commerce.connector.registry.SubscriptionBillingConnectorRegistry;
 import com.adyen.commerce.connector.token.AdyenTokenHandleFactory;
 import com.adyen.commerce.facades.AdyenStoredCardsFacade;
+import com.adyen.model.checkout.StoredPaymentMethodResource;
 import com.adyen.commerce.connector.service.SubscriptionBillingService;
 
 import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
@@ -112,7 +112,7 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 		}
 		overview.setSubscriptions(entries);
 		overview.setOrdersAwaitingSetup(findOrdersAwaitingSetup(customer));
-		overview.setPaymentMethodSubscriptionCode(subscriptionCodeForPaymentMethodChange(customer));
+		applyPaymentMethodChangeOffer(overview, customer);
 		return overview;
 	}
 
@@ -157,13 +157,13 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 	}
 
 	@Override
-	public boolean changePaymentMethodForCurrentCustomer(final String subscriptionCode,
+	public PaymentMethodChangeResult changePaymentMethodForCurrentCustomer(final String subscriptionCode,
 			final String storedPaymentMethodId)
 	{
 		final CustomerModel customer = currentCustomer();
 		if (customer == null)
 		{
-			return false;
+			return PaymentMethodChangeResult.FAILED;
 		}
 		// Said out loud, with which half was missing. This used to return in silence, and the result was a
 		// change that failed with an error message on screen and not one line anywhere explaining it - the
@@ -174,54 +174,107 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 					+ "stored payment method {}.",
 					StringUtils.isBlank(subscriptionCode) ? "MISSING" : "present",
 					StringUtils.isBlank(storedPaymentMethodId) ? "MISSING" : "present");
-			return false;
+			return PaymentMethodChangeResult.FAILED;
 		}
 
 		final BillingSubscriptionRefModel ref = findOwnSubscription(customer, subscriptionCode);
 		if (ref == null)
 		{
 			LOG.info("No subscription matching the requested code belongs to the current customer; refusing.");
-			return false;
+			return PaymentMethodChangeResult.FAILED;
 		}
-		// Proof of concept, and the restriction is real rather than a placeholder: the import needs no
-		// network transaction id, which a token vaulted earlier cannot supply, and Recurly's adapter refuses
-		// exactly that. Widening this means answering how Recurly gets one, not deleting this check.
-		if (ref.getPlatform() != BillingPlatform.CHARGEBEE)
+		// Re-derived rather than trusted from the form, exactly as the cancellation does. The page that
+		// offered the control may be minutes old, and a row that has ended accepts nothing.
+		if (!displayState(ref).isPaymentMethodChangeable())
 		{
-			LOG.info("Changing the payment method is only supported on Chargebee; subscription '{}' is on {}.",
-					subscriptionCode, ref.getPlatform());
-			return false;
+			LOG.info("Subscription '{}' is not in a state where changing the payment method could achieve "
+					+ "anything; refusing.", subscriptionCode);
+			return PaymentMethodChangeResult.FAILED;
 		}
-		if (StringUtils.isBlank(ref.getExternalCustomerId()))
+		// No platform name here any more. Whether this can be done at all, and whose billing it moves, is
+		// the connector's declaration; the service enforces it and this facade only reports what came back.
+		if (!declaredScopeFor(ref).isSupported())
 		{
-			LOG.warn("Subscription '{}' has no external customer id; the payment source has nothing to attach to.",
+			LOG.info("The billing platform behind subscription '{}' does not offer a payment-method change.",
 					subscriptionCode);
-			return false;
+			return PaymentMethodChangeResult.NOT_SUPPORTED_HERE;
 		}
 
 		try
 		{
-			importInStoreContext(customer, ref, storedPaymentMethodId);
-			return true;
+			final PaymentMethodChangeScope applied = changeInStoreContext(customer, ref, storedPaymentMethodId);
+			return applied == PaymentMethodChangeScope.CUSTOMER
+					? PaymentMethodChangeResult.CHANGED_ALL_SUBSCRIPTIONS
+					: PaymentMethodChangeResult.CHANGED_THIS_SUBSCRIPTION;
+		}
+		catch (final TokenNotOwnedException e)
+		{
+			// Not an error: a request naming a token this shopper does not have is refused, and refused the
+			// same way as a subscription that is not theirs. The vault listing is the authority here.
+			LOG.info("The requested stored payment method is not on the current shopper's vault listing; "
+					+ "refusing to change the payment method for subscription '{}'.", subscriptionCode);
+			return PaymentMethodChangeResult.FAILED;
 		}
 		catch (final RuntimeException e)
 		{
 			LOG.error("Could not change the payment method for subscription '{}'.", subscriptionCode, e);
-			return false;
+			return PaymentMethodChangeResult.FAILED;
 		}
 	}
 
 	/**
-	 * Imports the chosen token as the customer's payment source, with the subscription's own store in
-	 * context so the connector reads the right credentials.
+	 * What the connector behind this row says a payment-method change would move.
 	 *
-	 * <p>The card metadata is whatever the vault listing gave us, and may be absent — the import sends
-	 * {@code last4} and expiry only for display on the platform, so a null simply means Chargebee shows
-	 * less. The reference id it derives is deterministic, so repeating this with the same card is a no-op
-	 * there rather than a second payment source.</p>
+	 * <p>Resolved from the row's own platform, never from the store's active one: after a store migrates
+	 * from one platform to another its old subscriptions still live on the old one, and asking the new
+	 * connector about them would describe an operation on the wrong system. A row whose adapter is not
+	 * deployed answers {@code NOT_SUPPORTED} rather than taking the page down with it.</p>
 	 */
-	protected void importInStoreContext(final CustomerModel customer, final BillingSubscriptionRefModel ref,
-			final String storedPaymentMethodId)
+	protected PaymentMethodChangeScope declaredScopeFor(final BillingSubscriptionRefModel ref)
+	{
+		try
+		{
+			return connectorRegistry.getConnector(ref.getPlatform()).capabilities().paymentMethodChange();
+		}
+		catch (final ConnectorNotConfiguredException | RuntimeException e)
+		{
+			LOG.info("No connector is deployed for platform {}; treating its subscriptions as unchangeable.",
+					ref.getPlatform());
+			return PaymentMethodChangeScope.NOT_SUPPORTED;
+		}
+	}
+
+	/**
+	 * Raised when the chosen token is not among the cards Adyen holds for this shopper.
+	 *
+	 * <p>Its own type because the caller has to tell it apart from a failure: "this is not your card" is a
+	 * decision and must never be retried, whereas a vault listing that could not be read is transient and
+	 * says nothing about ownership. Both used to end here as {@code null} card metadata and a request that
+	 * carried on regardless.</p>
+	 */
+	protected static class TokenNotOwnedException extends RuntimeException
+	{
+		private static final long serialVersionUID = 1L;
+
+		public TokenNotOwnedException(final String message)
+		{
+			super(message);
+		}
+	}
+
+	/**
+	 * Performs the change with the subscription's own store in context, and answers what it moved.
+	 *
+	 * <p>Through {@code SubscriptionBillingService} rather than the connector registry directly. The
+	 * shortcut cost three things every time it was taken: no idempotency key, so a replayed request was a
+	 * second real call; no merchant-account validation, so a mismatched gateway was found by the platform
+	 * rather than by us; and no local record of the instrument that is now billing.</p>
+	 *
+	 * <p>The card metadata is whatever the vault listing gave us and may be incomplete - the platform shows
+	 * it, nothing depends on it.</p>
+	 */
+	protected PaymentMethodChangeScope changeInStoreContext(final CustomerModel customer,
+			final BillingSubscriptionRefModel ref, final String storedPaymentMethodId)
 	{
 		final BaseStoreModel store = storeOf(ref);
 		if (store == null)
@@ -232,51 +285,87 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 
 		final Map<String, Object> sessionParameters = Collections.singletonMap(
 				SubscriptionBaseStoreSelectorStrategy.CURRENT_SUBSCRIPTION_BASE_STORE, store);
-		sessionService.executeInLocalViewWithParams(sessionParameters, new SessionExecutionBody()
+		final Object applied = sessionService.executeInLocalViewWithParams(sessionParameters,
+				new SessionExecutionBody()
+				{
+					@Override
+					public Object execute()
+					{
+						// Inside the local view on purpose. The vault is read against the store in context,
+						// and the store that matters is the subscription's, not the session's: a shopper
+						// with subscriptions bought in two storefronts would otherwise be checked against
+						// the wrong merchant account.
+						final StoredPaymentMethodResource card = ownedCard(customer, storedPaymentMethodId);
+						try
+						{
+							final AdyenTokenHandle token = tokenHandleFactory.createForStoredToken(customer,
+									store, storedPaymentMethodId, cardMetadataOf(card));
+							return subscriptionBillingService.changePaymentMethod(ref, token).appliedScope();
+						}
+						catch (final Exception e)
+						{
+							throw new IllegalStateException(e);
+						}
+					}
+				});
+
+		if (!(applied instanceof PaymentMethodChangeScope))
 		{
-			@Override
-			public void executeWithoutResult()
-			{
-				try
-				{
-					final AdyenTokenHandle token = tokenHandleFactory.createForStoredToken(customer, store,
-							storedPaymentMethodId, cardMetadataOf(customer, storedPaymentMethodId));
-					final BillingCustomerRef customerRef = new BillingCustomerRef(ref.getPlatform(),
-							ref.getExternalCustomerId());
-					connectorRegistry.getConnector(ref.getPlatform())
-							.importAdyenToken(new TokenImportRequest(customerRef, token,
-									RecurringProcessingModel.SUBSCRIPTION, null));
-				}
-				catch (final Exception e)
-				{
-					throw new IllegalStateException(e);
-				}
-			}
-		});
+			// Unreachable unless the local-view contract changes under us, and deliberately not defaulted:
+			// the scope decides which sentence the shopper reads, and inventing one would be the single
+			// place in this design where a wiring fault turns into a false statement to a person.
+			throw new IllegalStateException("The payment-method change did not report the scope it applied; "
+					+ "refusing to describe it rather than guess");
+		}
+		return (PaymentMethodChangeScope) applied;
 	}
 
 	/**
-	 * Display metadata for the chosen card, read back from the Adyen vault.
+	 * The shopper's own card with this id, or a refusal.
 	 *
-	 * <p>Best effort on purpose: it is only shown on the billing platform, and failing the whole change
-	 * because a cosmetic lookup failed would be the wrong trade.</p>
+	 * <p>This is the access check, and until it existed there was none: the token id arrives as a request
+	 * parameter and nothing on the way to the platform compared it against the cards this shopper actually
+	 * has. The listing rendered into the page is not a control — a request does not have to come from that
+	 * page. What stood in for a check was Adyen refusing to retrieve a token that does not belong to the
+	 * shopper reference taken from the session, which is a property of one platform's import call
+	 * ({@code liveTokenValidationOnImport}) and not something every connector promises.</p>
+	 *
+	 * <p>A listing that could not be read is <em>not</em> an answer about ownership, so it is raised as a
+	 * failure rather than a refusal. Conflating the two is what let the previous version continue: it caught
+	 * everything, returned no metadata, and carried on to the platform.</p>
 	 */
-	protected CardMetadata cardMetadataOf(final CustomerModel customer, final String storedPaymentMethodId)
+	protected StoredPaymentMethodResource ownedCard(final CustomerModel customer, final String storedPaymentMethodId)
 	{
+		final List<StoredPaymentMethodResource> vault;
 		try
 		{
-			return storedCardsFacade.getStoredCardsPageDataForCurrentCustomer().getStoredCards().stream()
-					.filter(card -> storedPaymentMethodId.equals(card.getId()))
-					.findFirst()
-					.map(card -> new CardMetadata(null, card.getLastFour(), card.getHolderName(),
-							expiry(card.getExpiryMonth(), card.getExpiryYear()), null))
-					.orElse(null);
+			vault = storedCardsFacade.getStoredCardsPageDataForCurrentCustomer().getStoredCards();
 		}
 		catch (final RuntimeException e)
 		{
-			LOG.debug("Could not read card metadata for the chosen stored token; importing without it.", e);
-			return null;
+			throw new IllegalStateException("Could not read the shopper's stored cards; refusing to change a "
+					+ "payment method without establishing that the chosen one is theirs", e);
 		}
+
+		return (vault == null ? Collections.<StoredPaymentMethodResource> emptyList() : vault).stream()
+				.filter(stored -> storedPaymentMethodId.equals(stored.getId()))
+				.findFirst()
+				.orElseThrow(() -> new TokenNotOwnedException(
+						"The chosen stored payment method is not among this shopper's vaulted cards"));
+	}
+
+	/**
+	 * Display metadata for the card the shopper chose.
+	 *
+	 * <p>Built from the object {@link #ownedCard} already returned rather than looked up again: the lookup
+	 * is the access check, and doing it twice invites the two answers to differ. Only the platform's own
+	 * screens show this, so an absent field costs nothing there.</p>
+	 */
+	protected CardMetadata cardMetadataOf(final StoredPaymentMethodResource card)
+	{
+		return card == null ? null
+				: new CardMetadata(null, card.getLastFour(), card.getHolderName(),
+						expiry(card.getExpiryMonth(), card.getExpiryYear()), null);
 	}
 
 	/** Chargebee wants the month and year separately; the handle carries them joined as MM/YYYY. */
@@ -287,20 +376,70 @@ public class DefaultMySubscriptionsFacade implements MySubscriptionsFacade
 	}
 
 	/**
-	 * A subscription of this shopper's whose code the payment-method form can carry, or {@code null}.
+	 * Decides whether the page offers a payment-method change at all, and on what terms.
 	 *
-	 * <p>Chargebee only, because that is the only platform the change works on, and only a row that has a
-	 * public identifier — one created before that column existed has none, and offering the form on it
-	 * would produce a request the facade can only refuse.</p>
+	 * <p>Capability-driven, and the platform's name never appears. A row qualifies when three things hold:
+	 * its connector declares a scope other than {@code NOT_SUPPORTED}, the row is in a state where the
+	 * change could achieve something, and it carries a public identifier — a reference created before that
+	 * column existed has none, and a form built on it posts an empty code the facade can only refuse.</p>
+	 *
+	 * <p>Where a shopper has rows on more than one platform the first qualifying one wins, which is exactly
+	 * as far as a single control above the list can go. A per-row control belongs with the first connector
+	 * that declares {@code SUBSCRIPTION} scope, because until then it would be a form nothing can produce.</p>
+	 *
+	 * <p><b>Every way of not offering it is written down.</b> The first version of this guard turned a form
+	 * that failed on submission into a form that was simply absent, and absent for a reason nothing in the
+	 * log explained — which is the same defect in a quieter costume. The missing-identifier case in
+	 * particular is a data gap with a known remedy, so it says so rather than leaving somebody to diff a
+	 * JSP against a database.</p>
 	 */
-	protected String subscriptionCodeForPaymentMethodChange(final CustomerModel customer)
+	protected void applyPaymentMethodChangeOffer(final SubscriptionOverviewData overview,
+			final CustomerModel customer)
 	{
-		return findSubscriptions(customer).stream()
-				.filter(ref -> ref.getPlatform() == BillingPlatform.CHARGEBEE)
-				.map(BillingSubscriptionRefModel::getCode)
-				.filter(StringUtils::isNotBlank)
-				.findFirst()
-				.orElse(null);
+		int unsupportedPlatform = 0;
+		int wrongState = 0;
+		int missingCode = 0;
+
+		for (final BillingSubscriptionRefModel ref : findSubscriptions(customer))
+		{
+			if (!declaredScopeFor(ref).isSupported())
+			{
+				unsupportedPlatform++;
+				continue;
+			}
+			if (!displayState(ref).isPaymentMethodChangeable())
+			{
+				wrongState++;
+				continue;
+			}
+			if (StringUtils.isBlank(ref.getCode()))
+			{
+				missingCode++;
+				continue;
+			}
+			overview.setPaymentMethodChangeScope(declaredScopeFor(ref));
+			overview.setPaymentMethodSubscriptionCode(ref.getCode());
+			return;
+		}
+
+		if (missingCode > 0)
+		{
+			// The one cause that is fixable by an operator and invisible from the outside, so it names the
+			// remedy. These rows bill perfectly well; they just predate the public identifier, and the
+			// connector's essential data mints one for each of them on the next system update.
+			LOG.warn("Not offering a payment-method change: {} of this shopper's subscription(s) are on a "
+					+ "platform that supports it and in a state that allows it, but carry no public code. "
+					+ "Run a system update with essential data for the subscription connector, which assigns "
+					+ "one to every reference predating the column.", Integer.valueOf(missingCode));
+		}
+		else if (unsupportedPlatform > 0 || wrongState > 0)
+		{
+			// Not a problem, and said at INFO for that reason: this is the feature working. The counts are
+			// there so "why is there no control" has an answer without a debugger.
+			LOG.info("Not offering a payment-method change: {} subscription(s) are on a platform that does "
+					+ "not support it, {} are in a state where it would achieve nothing.",
+					Integer.valueOf(unsupportedPlatform), Integer.valueOf(wrongState));
+		}
 	}
 
 	// --- reading ---

@@ -46,6 +46,9 @@ import com.adyen.commerce.connector.dto.ConnectorCapabilities;
 import com.adyen.commerce.connector.dto.CustomerSyncRequest;
 import com.adyen.commerce.connector.dto.NormalizedBillingEvent;
 import com.adyen.commerce.connector.dto.NormalizedSubscription;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeOutcome;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeRequest;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
 import com.adyen.commerce.connector.dto.PlanRef;
 import com.adyen.commerce.connector.dto.PlanResolutionRequest;
 import com.adyen.commerce.connector.dto.RawWebhook;
@@ -90,7 +93,13 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 			false, // supportsPause — deferred to a later increment (SPI default rejects pause)
 			true,  // requiresPreConfiguredPlan — the item price must already exist in the Chargebee catalog
 			true,  // liveTokenValidationOnImport — create_using_permanent_token makes a live retrieval call to Adyen
-			TokenImportStyle.SLASH_JOINED); // reference_id = shopperReference/recurringDetailReference
+			TokenImportStyle.SLASH_JOINED, // reference_id = shopperReference/recurringDetailReference
+			// CUSTOMER, and it is a statement about this adapter rather than about Chargebee. Chargebee can
+			// pin a payment source to one subscription (override_billing_profile takes a payment_source_id),
+			// but the client here sends replace_primary_payment_source, which moves the customer's default
+			// and with it every subscription of theirs that has not been pinned. Declaring SUBSCRIPTION
+			// would put "only this subscription" on the page above a change that does not behave that way.
+			PaymentMethodChangeScope.CUSTOMER);
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String BASIC_PREFIX = "Basic ";
@@ -185,6 +194,47 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 					.field("merchant_account", token.merchantAccount())
 					.info(LOG);
 			return new BillingPaymentMethodRef(BillingPlatform.CHARGEBEE, paymentSourceId);
+		}
+	}
+
+	@Override
+	public PaymentMethodChangeOutcome changePaymentMethod(final PaymentMethodChangeRequest request)
+			throws BillingException
+	{
+		final long startedAt = System.nanoTime();
+		try (ConnectorLogContext scope = ConnectorLogContext.open(platform(), "change_payment_method"))
+		{
+			final AdyenTokenHandle token = request.token();
+			verifyMerchantAccount(token);
+			final String paymentSourceId;
+			try
+			{
+				// The same call as the import, and on Chargebee that is not a shortcut: the client sends
+				// replace_primary_payment_source, so creating the source and making it the one billing uses
+				// are one round trip. The reference id it derives is deterministic, so choosing a card that
+				// is already the customer's source is a no-op there rather than a duplicate.
+				paymentSourceId = apiClient.importPermanentToken(request.customer().externalId(),
+						buildReferenceId(token), token.cardMetadata());
+			}
+			catch (final BillingException e)
+			{
+				ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
+						.failure(startedAt, e)
+						.field("subscription_id", externalIdOrNull(request.subscription()))
+						.field("token_reference", token.storedPaymentMethodId())
+						.warn(LOG);
+				throw e;
+			}
+			ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
+					.success(startedAt)
+					.field("subscription_id", externalIdOrNull(request.subscription()))
+					.field("token_reference", token.storedPaymentMethodId())
+					.field("payment_source_id", paymentSourceId)
+					.field("applied_scope", PaymentMethodChangeScope.CUSTOMER.name())
+					.info(LOG);
+			return new PaymentMethodChangeOutcome(
+					new BillingPaymentMethodRef(BillingPlatform.CHARGEBEE, paymentSourceId),
+					PaymentMethodChangeScope.CUSTOMER);
 		}
 	}
 

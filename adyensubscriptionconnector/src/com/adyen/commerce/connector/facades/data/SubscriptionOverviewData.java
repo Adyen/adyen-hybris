@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
+
 /**
  * Everything the subscriptions page shows.
  *
@@ -66,6 +68,29 @@ public class SubscriptionOverviewData implements Serializable
 	 * refuse. Choosing here, where the rows are known, is what keeps that out of the view.</p>
 	 */
 	private String paymentMethodSubscriptionCode;
+
+	/**
+	 * What a change would move, as the connector behind {@link #paymentMethodSubscriptionCode} declares it,
+	 * or {@code NOT_SUPPORTED} when no subscription on this page can be changed here.
+	 *
+	 * <p>The page needs this and not the platform's name. "This card will be used for all your
+	 * subscriptions" is true of a customer-scoped change and false of a subscription-scoped one, and the
+	 * only thing that decides which sentence is honest is the scope - so the scope is what travels, and the
+	 * view never learns which billing platform it is looking at.</p>
+	 */
+	private PaymentMethodChangeScope paymentMethodChangeScope = PaymentMethodChangeScope.NOT_SUPPORTED;
+
+	public PaymentMethodChangeScope getPaymentMethodChangeScope()
+	{
+		return paymentMethodChangeScope;
+	}
+
+	public void setPaymentMethodChangeScope(final PaymentMethodChangeScope paymentMethodChangeScope)
+	{
+		this.paymentMethodChangeScope = paymentMethodChangeScope == null
+				? PaymentMethodChangeScope.NOT_SUPPORTED
+				: paymentMethodChangeScope;
+	}
 
 	public String getPaymentMethodSubscriptionCode()
 	{

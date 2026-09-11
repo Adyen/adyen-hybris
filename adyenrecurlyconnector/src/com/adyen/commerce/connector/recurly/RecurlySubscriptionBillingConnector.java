@@ -17,6 +17,7 @@ import com.adyen.commerce.connector.dto.ConnectorCapabilities;
 import com.adyen.commerce.connector.dto.CustomerSyncRequest;
 import com.adyen.commerce.connector.dto.NormalizedBillingEvent;
 import com.adyen.commerce.connector.dto.NormalizedSubscription;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
 import com.adyen.commerce.connector.dto.PlanRef;
 import com.adyen.commerce.connector.dto.PlanResolutionRequest;
 import com.adyen.commerce.connector.dto.RawWebhook;
@@ -63,7 +64,16 @@ public class RecurlySubscriptionBillingConnector implements SubscriptionBillingC
             false,
             true,
             false,
-            TokenImportStyle.SEPARATE_FIELDS);
+            TokenImportStyle.SEPARATE_FIELDS,
+            // NOT_SUPPORTED, and this is the honest answer rather than a placeholder. Two things would have
+            // to be true first, and neither is in this adapter's gift. Recurly only lets a subscription be
+            // pinned to a billing info on sites carrying the paid Subscriber Wallet feature, so without it
+            // the account has one primary billing info and moving it would move every subscription - and the
+            // client already refuses that implicitly. And importing the card the shopper picks from the Adyen
+            // vault needs a network transaction id, which a token vaulted earlier cannot supply; the guard in
+            // importAdyenToken refuses exactly that handle. Turning this on means answering both, in that
+            // order, not deleting this line.
+            PaymentMethodChangeScope.NOT_SUPPORTED);
 
     private final RecurlyApiClient apiClient;
     private final RecurlyConfigService configService;

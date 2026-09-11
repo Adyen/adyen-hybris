@@ -1,10 +1,22 @@
+######
+## PARAMETERS REQUIRED FOR THIS SCRIPT
+##
+##   * contentCatalog     - content catalog id
+##   * addonExtensionName - extension name of the ui addon
+#######
 # -----------------------------------------------------------------------
-# The "My subscriptions" page in My Account - sample-data variant.
+# The "My subscriptions" page in My Account - core-data variant.
 #
-# The twin of ../template/cms-content.impex. This one is read by the sample-data listener and names its
-# catalogue; that one is read by the core-data listener and takes the catalogue as a parameter. Both are
-# needed: an environment initialised without sample data gets the page only from the template half, and an
-# environment that imports sample data for this catalogue gets it from here. Change one, change the other.
+# Two files, on purpose, and they are read by two different listeners:
+#   template/cms-content.impex         <- abstractCoreDataImportedEventListener  (any B2C catalogue)
+#   <catalog>ContentCatalog/...impex   <- abstractGenericAddOnSampleDataEventListener (that catalogue only)
+# Shipping only the second one is why an environment initialised without sample data ends up with the
+# controller, the JSP and the addon all present and no ContentPage behind them - which surfaces as
+# CMSItemNotFoundException, not as a missing import.
+#
+# $contentCatalog comes from the importer here rather than being written down, which is the whole point:
+# this half has to work for whichever B2C catalogue the site uses. The listener is restricted to the B2C
+# channel, so AccountPageTemplate and MyAccountNavNode - both from the B2C accelerator - can be relied on.
 #
 # Seven blocks, all of them required. Leave one out and the result is not an error message but a symptom:
 # no ContentPage gives CMSItemNotFoundException, no ContentSlot or component gives a blank page under the
@@ -18,11 +30,13 @@
 # to a block, so the Staged and Online halves must not share one: reusing it fails the second half with
 # "id ... already used for item with pk=...", which leaves Staged populated, Online empty, and the
 # storefront - which serves Online - showing nothing.
+#
+# Running both halves on one environment is harmless: every block is INSERT_UPDATE keyed on uid plus
+# catalogue version, so the second run updates what the first one created.
 # -----------------------------------------------------------------------
-$contentCatalog=electronicsContentCatalog
 $contentCVS=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
 $contentCVO=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
-$addonExtensionName=adyensubscriptionb2caddon
+# $addonExtensionName is supplied by the importer.
 
 # 1. The page itself. The label is the URL the controller is mapped to; the two must agree or the
 #    controller renders a page the CMS cannot resolve.

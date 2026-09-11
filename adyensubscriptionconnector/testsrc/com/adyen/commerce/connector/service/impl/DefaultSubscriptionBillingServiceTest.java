@@ -62,6 +62,7 @@ import com.adyen.commerce.connector.dto.ConnectorCapabilities;
 import com.adyen.commerce.connector.dto.NormalizedSubscriptionStatus;
 import com.adyen.commerce.connector.dto.PlanRef;
 import com.adyen.commerce.connector.dto.SubscriptionCancelRequest;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
 import com.adyen.commerce.connector.dto.SubscriptionCancellation;
 import com.adyen.commerce.connector.dto.TokenImportStyle;
 import com.adyen.commerce.connector.dto.TokenImportRequest;
@@ -430,7 +431,27 @@ public class DefaultSubscriptionBillingServiceTest
 		service.cancel(subscription, SubscriptionCancellation.endOfPeriod(CancelReason.OTHER));
 
 		verify(reconciliationService).reconcile(subscription);
+		// Written down before the read-back, so the row never says "renews on" while the shopper is being
+		// told the cancellation worked. Reconciliation overwrites it with the platform's own answer.
+		verify(subscription).setCancelAtPeriodEnd(Boolean.TRUE);
+		verify(modelService).save(subscription);
 		verify(subscription, never()).setLastSyncedAt(null);
+	}
+
+	/**
+	 * An immediate cancellation leaves a status behind, not a scheduled non-renewal, and which status a
+	 * platform reports for a terminated subscription is the platform's to say. Projecting one here would put
+	 * a value in the column that no connector agreed to, so nothing is projected and reconciliation decides.
+	 */
+	@Test
+	public void shouldNotProjectAScheduledNonRenewalForAnImmediateCancel() throws Exception
+	{
+		final BillingSubscriptionRefModel subscription = cancellableSubscription();
+
+		service.cancel(subscription, SubscriptionCancellation.immediately(CancelReason.OTHER));
+
+		verify(reconciliationService).reconcile(subscription);
+		verify(subscription, never()).setCancelAtPeriodEnd(any());
 		verify(modelService, never()).save(subscription);
 	}
 
@@ -444,7 +465,8 @@ public class DefaultSubscriptionBillingServiceTest
 
 		verify(connector).cancelSubscription(any());
 		verify(subscription).setLastSyncedAt(null);
-		verify(modelService).save(subscription);
+		// Twice: the scheduled non-renewal written before the read-back, then the sweep flag after it failed.
+		verify(modelService, times(2)).save(subscription);
 	}
 
 	/**
@@ -463,7 +485,8 @@ public class DefaultSubscriptionBillingServiceTest
 
 		verify(connector).cancelSubscription(any());
 		verify(subscription).setLastSyncedAt(null);
-		verify(modelService).save(subscription);
+		// Twice: the scheduled non-renewal written before the read-back, then the sweep flag after it failed.
+		verify(modelService, times(2)).save(subscription);
 	}
 
 	/**
@@ -480,7 +503,9 @@ public class DefaultSubscriptionBillingServiceTest
 
 		service.cancel(subscription, SubscriptionCancellation.endOfPeriod(CancelReason.OTHER));
 
-		verify(modelService).save(subscription);
+		// Both writes are attempted and both blow up; neither is allowed to turn a completed cancellation
+		// into a reported failure.
+		verify(modelService, times(2)).save(subscription);
 	}
 
 	@Test
@@ -555,11 +580,13 @@ public class DefaultSubscriptionBillingServiceTest
 
 	private static ConnectorCapabilities noNtidCaps()
 	{
-		return new ConnectorCapabilities(false, true, false, true, true, TokenImportStyle.SLASH_JOINED);
+		return new ConnectorCapabilities(false, true, false, true, true, TokenImportStyle.SLASH_JOINED,
+				PaymentMethodChangeScope.CUSTOMER);
 	}
 
 	private static ConnectorCapabilities requiresNtidCaps()
 	{
-		return new ConnectorCapabilities(true, false, false, true, false, TokenImportStyle.SEPARATE_FIELDS);
+		return new ConnectorCapabilities(true, false, false, true, false, TokenImportStyle.SEPARATE_FIELDS,
+				PaymentMethodChangeScope.NOT_SUPPORTED);
 	}
 }

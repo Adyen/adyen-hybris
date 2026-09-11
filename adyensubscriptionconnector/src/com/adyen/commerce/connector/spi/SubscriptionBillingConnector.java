@@ -29,6 +29,8 @@ import com.adyen.commerce.connector.dto.ConnectorCapabilities;
 import com.adyen.commerce.connector.dto.CustomerSyncRequest;
 import com.adyen.commerce.connector.dto.NormalizedBillingEvent;
 import com.adyen.commerce.connector.dto.NormalizedSubscription;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeOutcome;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeRequest;
 import com.adyen.commerce.connector.dto.PlanRef;
 import com.adyen.commerce.connector.dto.PlanResolutionRequest;
 import com.adyen.commerce.connector.dto.RawWebhook;
@@ -150,6 +152,36 @@ public interface SubscriptionBillingConnector
 	 * @throws BillingException if cancellation fails
 	 */
 	void cancelSubscription(SubscriptionCancelRequest request) throws BillingException;
+
+	/**
+	 * Point this subscription's future billing at a payment method the shopper already has vaulted with
+	 * Adyen. Capability-gated: meaningful only when
+	 * {@code capabilities().paymentMethodChange().isSupported()}.
+	 *
+	 * <p>Never charges, never refunds, never prorates and never retries an outstanding invoice. What it
+	 * changes is which instrument the next billing event uses.</p>
+	 *
+	 * <p>Deliberately <em>not</em> expressed as {@link #importAdyenToken}. On Chargebee an import happens to
+	 * be a replacement, because the adapter's client adds {@code replace_primary_payment_source}; on Recurly
+	 * an import provably is not one — its wallet branch adds a non-primary billing info and its no-wallet
+	 * branch refuses to replace an existing one outright. One method name covering both effects would be a
+	 * lie in the contract, and the caller cannot tell from the signature which it got.</p>
+	 *
+	 * <p>The default refuses, as {@link #pauseSubscription} does. A connector that overrides this
+	 * <em>must</em> advertise a scope other than {@code NOT_SUPPORTED}, and the scope it returns in the
+	 * outcome must be the scope it declared.</p>
+	 *
+	 * @return the payment-method reference now in force, and the scope the change actually had — which the
+	 *         caller uses to decide what the shopper is told
+	 * @throws CapabilityUnsupportedException if this platform cannot do it (the default behaviour)
+	 * @throws BillingException               if the platform call fails
+	 */
+	default PaymentMethodChangeOutcome changePaymentMethod(final PaymentMethodChangeRequest request)
+			throws BillingException
+	{
+		throw new CapabilityUnsupportedException("Connector " + platform()
+				+ " does not support changing the payment method of an existing subscription");
+	}
 
 	/**
 	 * Pause a subscription. Capability-gated: only meaningful when {@code capabilities().supportsPause()}.

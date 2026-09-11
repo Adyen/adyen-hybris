@@ -30,6 +30,7 @@ import com.adyen.commerce.connector.dto.CardMetadata;
 import com.adyen.commerce.connector.dto.NormalizedSubscription;
 import com.adyen.commerce.connector.dto.NormalizedSubscriptionStatus;
 import com.adyen.commerce.connector.exception.BillingException;
+import com.adyen.commerce.connector.exception.PreconditionFailedException;
 import com.adyen.commerce.connector.exception.RetryableBillingException;
 import com.adyen.commerce.connector.exception.TerminalBillingException;
 import com.adyen.commerce.connector.recurly.client.RecurlySubscriptionParams;
@@ -248,6 +249,31 @@ public class DefaultRecurlyApiClientTest
         when(configService.isWalletEnabled()).thenReturn(false);
         when(httpClient.get(BASE + "/accounts/code-customer", auth, ACCEPT))
                 .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"account-1\"}"));
+        // Recurly's READ shape, not the shape we POST: on the way back gateway_attributes sits under
+        // payment_method, and only payment_gateway_references stays at the top level. Built the other way
+        // round, this test passed against a predicate that never matched a real response.
+        when(httpClient.get(BASE + "/accounts/code-customer/billing_info", auth, ACCEPT))
+                .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"billing-1\","
+                        + "\"payment_method\":{\"card_type\":\"Visa\",\"last_four\":\"1881\","
+                        + "\"gateway_attributes\":{\"account_reference\":\"shopper-1\"}},"
+                        + "\"payment_gateway_references\":[{\"token\":\"token-1\"}]}"));
+
+        assertEquals("billing-1",
+                client.importAdyenToken("code-customer", "shopper-1", "token-1", null, null));
+
+        verify(httpClient, never()).put(any(), any(), any(), any(), any());
+        verify(httpClient, never()).post(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void importAdyenTokenToleratesTheWriteShapeOfGatewayAttributes() throws Exception
+    {
+        // The shape BillingInfoCreate accepts, echoed back. Recurly is not documented to answer this way,
+        // but the predicate accepts it deliberately and that tolerance is pinned here rather than left to
+        // be discovered - and removed - by the next reader.
+        when(configService.isWalletEnabled()).thenReturn(false);
+        when(httpClient.get(BASE + "/accounts/code-customer", auth, ACCEPT))
+                .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"account-1\"}"));
         when(httpClient.get(BASE + "/accounts/code-customer/billing_info", auth, ACCEPT))
                 .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"billing-1\","
                         + "\"gateway_attributes\":{\"account_reference\":\"shopper-1\"},"
@@ -255,6 +281,25 @@ public class DefaultRecurlyApiClientTest
 
         assertEquals("billing-1",
                 client.importAdyenToken("code-customer", "shopper-1", "token-1", null, null));
+
+        verify(httpClient, never()).put(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void importAdyenTokenRefusesToReplaceSomebodyElsesPrimaryBillingInfo() throws Exception
+    {
+        // The refusal at the heart of the no-wallet path, and it had no test at all. It must fire for a
+        // DIFFERENT card and stay silent for the same one - the previous test is the other half of the pair.
+        when(configService.isWalletEnabled()).thenReturn(false);
+        when(httpClient.get(BASE + "/accounts/code-customer", auth, ACCEPT))
+                .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"account-1\"}"));
+        when(httpClient.get(BASE + "/accounts/code-customer/billing_info", auth, ACCEPT))
+                .thenReturn(new RecurlyHttpResponse(HTTP_OK, "{\"id\":\"billing-1\","
+                        + "\"payment_method\":{\"gateway_attributes\":{\"account_reference\":\"shopper-1\"}},"
+                        + "\"payment_gateway_references\":[{\"token\":\"somebody-elses-token\"}]}"));
+
+        assertThrows(PreconditionFailedException.class,
+                () -> client.importAdyenToken("code-customer", "shopper-1", "token-1", null, null));
 
         verify(httpClient, never()).put(any(), any(), any(), any(), any());
         verify(httpClient, never()).post(any(), any(), any(), any(), any());
@@ -266,7 +311,7 @@ public class DefaultRecurlyApiClientTest
         when(configService.getGatewayCode()).thenReturn("adyen-gateway");
         when(httpClient.get(BASE + "/accounts/code-customer/billing_infos", auth, ACCEPT))
                 .thenReturn(new RecurlyHttpResponse(HTTP_OK, "[{\"id\":\"billing-old\","
-                        + "\"gateway_attributes\":{\"account_reference\":\"shopper-1\"},"
+                        + "\"payment_method\":{\"gateway_attributes\":{\"account_reference\":\"shopper-1\"}},"
                         + "\"payment_gateway_references\":[{\"token\":\"token-old\"}]}]"));
         when(httpClient.post(eq(BASE + "/accounts/code-customer/billing_infos"), eq(auth), eq(ACCEPT), any(),
                 any()))

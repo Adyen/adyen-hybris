@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.adyen.commerce.connector.facades.MySubscriptionsFacade;
 import com.adyen.commerce.facades.AdyenStoredCardsFacade;
+import com.adyen.commerce.connector.facades.data.PaymentMethodChangeResult;
 import com.adyen.commerce.connector.facades.data.SubscriptionOverviewData;
 
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
@@ -89,6 +90,9 @@ public class MySubscriptionsPageController extends AbstractSearchPageController
 		// Chosen by the facade, not by the view: it has to be a Chargebee row that actually carries a public
 		// identifier, and "the first one on screen" is not the same thing.
 		model.addAttribute("paymentMethodSubscriptionCode", overview.getPaymentMethodSubscriptionCode());
+		// The scope, not the platform's name. It decides which sentence under the control is true; the view
+		// never learns which billing platform is behind the page.
+		model.addAttribute("paymentMethodChangeScope", overview.getPaymentMethodChangeScope().name());
 		model.addAttribute("breadcrumbs", accountBreadcrumbBuilder.getBreadcrumbs("text.account.subscriptions"));
 		// A page listing what somebody is paying for every month has no business in a search index.
 		model.addAttribute("metaRobots", "no-index,no-follow");
@@ -140,16 +144,24 @@ public class MySubscriptionsPageController extends AbstractSearchPageController
 			@RequestParam("storedPaymentMethodId") final String storedPaymentMethodId,
 			final RedirectAttributes redirectAttributes)
 	{
-		if (mySubscriptionsFacade.changePaymentMethodForCurrentCustomer(code, storedPaymentMethodId))
+		final PaymentMethodChangeResult result =
+				mySubscriptionsFacade.changePaymentMethodForCurrentCustomer(code, storedPaymentMethodId);
+
+		// A switch expression, not a statement: only the expression form is checked for exhaustiveness, so
+		// a fifth result becomes a build failure here instead of a shopper reading nothing at all.
+		final String messageKey = switch (result)
 		{
-			GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.CONF_MESSAGES_HOLDER,
-					"text.account.subscriptions.paymentMethod.success");
-		}
-		else
-		{
-			GlobalMessages.addFlashMessage(redirectAttributes, GlobalMessages.ERROR_MESSAGES_HOLDER,
-					"text.account.subscriptions.paymentMethod.error");
-		}
+			case CHANGED_THIS_SUBSCRIPTION -> "text.account.subscriptions.paymentMethod.success.subscription";
+			case CHANGED_ALL_SUBSCRIPTIONS -> "text.account.subscriptions.paymentMethod.success.customer";
+			case NOT_SUPPORTED_HERE -> "text.account.subscriptions.paymentMethod.unsupported";
+			case FAILED -> "text.account.subscriptions.paymentMethod.error";
+		};
+		// "We cannot do this here" is not something to invite a retry on, so it is a plain message rather
+		// than a red one; a genuine failure stays red.
+		final String holder = result == PaymentMethodChangeResult.FAILED
+				? GlobalMessages.ERROR_MESSAGES_HOLDER
+				: GlobalMessages.CONF_MESSAGES_HOLDER;
+		GlobalMessages.addFlashMessage(redirectAttributes, holder, messageKey);
 
 		return REDIRECT_TO_SUBSCRIPTIONS;
 	}

@@ -60,11 +60,18 @@ public class SubscriptionEntryData implements Serializable
 
 	/** The order this was bought on, so the shopper can find what they paid and when. May be absent. */
 	private String orderCode;
+
+	/** The date of that order. Rendered as the date; the code is a separate sentence beside it. */
 	private Date orderDate;
 
 	/**
-	 * The card as it was at purchase, for recognition only — "the one ending 1881" — never as something the
-	 * shopper is invited to change here. Changing it is not offered on any platform yet.
+	 * The card <em>as it was at purchase</em>, for recognition only — "the one ending 1881" — and never as
+	 * something the shopper is invited to change on this row.
+	 *
+	 * <p>It is read from the originating order's payment info, so it does not follow a payment-method
+	 * change: after the shopper moves their billing to another card this still names the old one. Where the
+	 * change is offered it is offered once, above the list, because on the platform that supports it today
+	 * the payment source belongs to the customer rather than to one subscription.</p>
 	 */
 	private String paymentMethodSummary;
 

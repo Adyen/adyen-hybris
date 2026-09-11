@@ -48,6 +48,10 @@ import com.adyen.commerce.connector.dto.PlanRef;
 import com.adyen.commerce.connector.dto.PlanResolutionRequest;
 import com.adyen.commerce.connector.dto.RecurringProcessingModel;
 import com.adyen.commerce.connector.dto.SubscriptionCancelRequest;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeOutcome;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeRequest;
+import com.adyen.commerce.connector.dto.PaymentMethodChangeScope;
+import com.adyen.commerce.connector.exception.CapabilityUnsupportedException;
 import com.adyen.commerce.connector.dto.SubscriptionCancellation;
 import com.adyen.commerce.connector.dto.SubscriptionCreateRequest;
 import com.adyen.commerce.connector.dto.TokenImportRequest;
@@ -194,6 +198,108 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 	}
 
 	@Override
+	public PaymentMethodChangeOutcome changePaymentMethod(final BillingSubscriptionRefModel subscription,
+			final AdyenTokenHandle token) throws BillingException
+	{
+		if (subscription == null || token == null)
+		{
+			throw new PreconditionFailedException(
+					"Cannot change a payment method without both a subscription reference and a token");
+		}
+		if (StringUtils.isBlank(subscription.getExternalCustomerId()))
+		{
+			throw new PreconditionFailedException("Subscription " + subscription.getExternalSubscriptionId()
+					+ " has no external customer id; there is nothing on the platform to attach a payment "
+					+ "method to");
+		}
+
+		final SubscriptionBillingConnector connector = connectorRegistry.getConnector(subscription.getPlatform());
+		// Branch on capabilities, not platform identity - and refuse here rather than let the connector's
+		// default throw, so a platform that cannot do this costs no round trip and the refusal reads the
+		// same whether the adapter bothered to override the method or not.
+		final PaymentMethodChangeScope declared = connector.capabilities().paymentMethodChange();
+		if (!declared.isSupported())
+		{
+			throw new CapabilityUnsupportedException("Connector " + connector.platform()
+					+ " does not support changing the payment method of an existing subscription");
+		}
+		merchantAccountValidator.validate(connector, storeOf(subscription));
+
+		final PaymentMethodChangeOutcome outcome = connector.changePaymentMethod(new PaymentMethodChangeRequest(
+				new BillingCustomerRef(subscription.getPlatform(), subscription.getExternalCustomerId()),
+				new BillingSubscriptionRef(subscription.getPlatform(), subscription.getExternalSubscriptionId()),
+				token,
+				paymentMethodKey(subscription, token)));
+
+		if (outcome.appliedScope() != declared)
+		{
+			// Not fatal - the change happened - but it means the sentence the shopper is about to read was
+			// chosen from a declaration the adapter did not honour, and that is worth finding in a log.
+			LOG.warn("Connector {} declares payment-method changes as {} but reported {} for subscription {}; "
+					+ "the shopper is being told what actually happened, not what was advertised",
+					connector.platform(), declared, outcome.appliedScope(),
+					subscription.getExternalSubscriptionId());
+		}
+		recordPaymentMethod(subscription, outcome);
+		return outcome;
+	}
+
+	/**
+	 * The base store whose credentials this subscription's connector must be validated against.
+	 *
+	 * <p>Taken from the originating order rather than the session: {@code Customer} is global across stores,
+	 * so a shopper signed in to one storefront can be acting on a subscription bought in another.</p>
+	 */
+	protected BaseStoreModel storeOf(final BillingSubscriptionRefModel subscription)
+	{
+		return subscription.getOrder() == null ? null : subscription.getOrder().getStore();
+	}
+
+	/**
+	 * The idempotency key for a shopper-initiated payment-method change.
+	 *
+	 * <p>Derived rather than stored: the subscription's own key belongs to its creation, and reusing it
+	 * would make a card change look to the platform like a replay of the order that started the
+	 * subscription. Naming the chosen token as well is what lets a shopper who changes their mind twice
+	 * have the second change reach the platform — a key that named only the subscription would replay the
+	 * first answer.</p>
+	 */
+	protected String paymentMethodKey(final BillingSubscriptionRefModel subscription, final AdyenTokenHandle token)
+	{
+		return StringUtils.isBlank(subscription.getIdempotencyKey())
+				? null
+				: subscription.getIdempotencyKey() + "/payment-method/" + token.storedPaymentMethodId();
+	}
+
+	/**
+	 * Writes down which payment method the platform now bills.
+	 *
+	 * <p>Until this existed {@code externalPaymentMethodId} was written once, at creation, and never again -
+	 * so after any change the row named an instrument the platform had stopped using, and nothing detected
+	 * it because a normalized subscription carries no payment-method field for reconciliation to compare.</p>
+	 *
+	 * <p>Only the row that was asked about is updated, even when the applied scope was {@code CUSTOMER} and
+	 * the platform moved others too. Updating the shopper's other rows from here would mean writing what we
+	 * believe rather than what we were told; the reconciliation sweep reaches them with the platform's own
+	 * answer.</p>
+	 */
+	protected void recordPaymentMethod(final BillingSubscriptionRefModel subscription,
+			final PaymentMethodChangeOutcome outcome)
+	{
+		try
+		{
+			subscription.setExternalPaymentMethodId(outcome.paymentMethod().externalId());
+			modelService.save(subscription);
+		}
+		catch (final RuntimeException e)
+		{
+			LOG.warn("Payment method for subscription {} was changed on platform {}, but the local reference "
+					+ "could not be updated", subscription.getExternalSubscriptionId(),
+					subscription.getPlatform(), e);
+		}
+	}
+
+	@Override
 	public void cancel(final BillingSubscriptionRefModel subscription, final SubscriptionCancellation cancellation)
 			throws BillingException
 	{
@@ -217,6 +323,8 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 						cancellation.reason(),
 						cancellation.timing(),
 						cancellationKey(subscription.getIdempotencyKey(), cancellation.timing())));
+
+		recordScheduledCancellation(subscription, cancellation.timing());
 
 		try
 		{
@@ -258,6 +366,43 @@ public class DefaultSubscriptionBillingService implements SubscriptionBillingSer
 		return StringUtils.isBlank(idempotencyKey)
 				? idempotencyKey
 				: idempotencyKey + "/" + timing.name().toLowerCase(Locale.ROOT);
+	}
+
+	/**
+	 * Writes down, before the platform is re-read, that this subscription will not renew.
+	 *
+	 * <p>The reconciliation on the next line normally overwrites this with the platform's own answer, which
+	 * is why this is not a substitute for it. It exists for the case the line below already anticipates: the
+	 * cancellation succeeded and the read-back did not. Without this the caller is told yes, the row still
+	 * says the subscription renews, and the shopper reads a contradiction until a sweep hours later resolves
+	 * it. A projection that is directionally right and superseded within milliseconds beats a stale one.</p>
+	 *
+	 * <p>Only {@code AT_PERIOD_END} is projected. What {@code IMMEDIATELY} leaves behind is a status, and
+	 * which status a platform reports for a terminated subscription is the platform's to say — guessing it
+	 * here would put a value in the column that no connector ever agreed to.</p>
+	 *
+	 * <p>Failing to write it is worth a warning and nothing more, for the same reason as the sweep flag
+	 * below: the cancellation already happened, and reporting it as failed would have the caller retry
+	 * something that is done.</p>
+	 */
+	protected void recordScheduledCancellation(final BillingSubscriptionRefModel subscription,
+			final CancellationTiming timing)
+	{
+		if (timing != CancellationTiming.AT_PERIOD_END)
+		{
+			return;
+		}
+		try
+		{
+			subscription.setCancelAtPeriodEnd(Boolean.TRUE);
+			modelService.save(subscription);
+		}
+		catch (final RuntimeException e)
+		{
+			LOG.warn("Could not record the scheduled cancellation of subscription {} on platform {} locally; "
+					+ "reconciliation is what puts it right", subscription.getExternalSubscriptionId(),
+					subscription.getPlatform(), e);
+		}
 	}
 
 	/**

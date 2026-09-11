@@ -47,12 +47,19 @@ $goneProduct=SUB-GONE-999
 $platform=CHARGEBEE
 $dateFormat=yyyy-MM-dd HH:mm:ss
 
-# Dates are literal rather than relative because impex has no clock. Adjust if you are reading this long
-# after it was written: "future" has to still be in the future for the renewal wording to make sense.
+# Dates are literal rather than relative because impex has no clock, so this fixture has an expiry date and
+# it fails SILENTLY - no import error, just rows that stop demonstrating the state they were written for.
+# The invariant is  $past < $recently < TODAY < $soon < $future.
+#
+#   REVIEW BEFORE 2027-03-20. On that date $soon stops being in the future and row 04 stops being
+#   "starting soon"; on 2027-06-15 $future goes the same way and rows 01, 02, 05, 06, 07 and 09 follow it.
+#
+# $soon and $future are deliberately far out; $past and $recently must stay behind today and so are left
+# where they are. Moving the pair forward is the whole maintenance job.
 $past=2026-07-15 10:00:00
 $recently=2026-08-15 10:00:00
-$soon=2026-09-20 10:00:00
-$future=2026-10-15 10:00:00
+$soon=2027-03-20 10:00:00
+$future=2027-06-15 10:00:00
 
 # --- The orders the references hang off ---------------------------------------------------------------
 INSERT_UPDATE Order;code[unique=true];user(uid);currency(isocode);date[dateformat=$dateFormat];net;store(uid);site(uid)
@@ -74,10 +81,10 @@ INSERT_UPDATE Order;code[unique=true];user(uid);currency(isocode);date[dateforma
 # other row sets it, or it would land there too whatever its status says.
 #
 # Expected on screen, in order:
-#   01  Active. Renews on 15 October 2026.                          [Cancel renewal]
-#   02  Won't renew. You have access until 15 October 2026.         -
+#   01  Active. Renews on 15 June 2027.                             [Cancel renewal]
+#   02  Won't renew. You have access until 15 June 2027.            -
 #   03  We're still setting this up with our billing provider.      -
-#   04  Starts on 20 September 2026.                                [Cancel renewal]
+#   04  Starts on 20 March 2027.                                    [Cancel renewal]
 #   05  We couldn't take the last payment...                        [Cancel renewal]
 #   06  Won't renew, and there's an unpaid invoice...               -
 #   07  Paused. Please contact us to resume it.                     -
