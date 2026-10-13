@@ -1166,6 +1166,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
         }
 
         adyenPaymentFormValidator.validate(adyenPaymentForm, errors);
+        validateKonbiniTelephone(adyenPaymentForm, cartModel, errors);
 
         if (errors.hasErrors()) {
             return;
@@ -1209,6 +1210,29 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             modelService.save(cartModel);
             return null;
         });
+    }
+
+    protected void validateKonbiniTelephone(
+            AdyenPaymentForm adyenPaymentForm,
+            CartModel cartModel,
+            Errors errors) {
+
+        if (adyenPaymentForm.getPaymentMethod() == null
+                || !adyenPaymentForm.getPaymentMethod().startsWith(PAYMENT_METHOD_ECONTEXT_PREFIX)) {
+            return;
+        }
+
+        String billingPhone = adyenPaymentForm.getBillingAddress() != null
+                ? adyenPaymentForm.getBillingAddress().getPhoneNumber()
+                : null;
+        String shippingPhone = cartModel.getDeliveryAddress() != null
+                ? cartModel.getDeliveryAddress().getPhone1()
+                : null;
+
+        if (StringUtils.isBlank(billingPhone)
+                && StringUtils.isBlank(shippingPhone)) {
+            errors.reject(CHECKOUT_ERROR_KONBINI_TELEPHONE_MISSING);
+        }
     }
 
     public AddressModel convertToAddressModel(final AddressForm addressForm) {
