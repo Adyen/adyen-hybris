@@ -33,7 +33,9 @@ import com.google.gson.Gson;
 import de.hybris.platform.commerceservices.order.CommercePlaceOrderStrategy;
 import de.hybris.platform.core.enums.OrderStatus;
 import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.payment.dto.TransactionStatus;
 import de.hybris.platform.payment.dto.TransactionStatusDetails;
+import de.hybris.platform.payment.enums.PaymentTransactionType;
 import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
 import de.hybris.platform.payment.model.PaymentTransactionModel;
 import de.hybris.platform.servicelayer.config.ConfigurationService;
@@ -349,14 +351,120 @@ public class DefaultAdyenNotificationService implements AdyenNotificationService
                     LOG.warn("Authorisation already processed " + paymentTransaction.getRequestId());
                 }
                 break;
-            case NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND, NotificationRequestItem.EVENT_CODE_OFFER_CLOSED:
-                paymentTransaction = paymentTransactionRepository.getTransactionModel(notificationItemModel.getOriginalReference());
-                processCancelEvent(convertFromNotificationItem(notificationItemModel), paymentTransaction);
+            case NotificationRequestItem.EVENT_CODE_CANCEL_OR_REFUND:
+                paymentTransaction =
+                        paymentTransactionRepository.getTransactionModel(
+                                notificationItemModel.getOriginalReference()
+                        );
+
+                processCancelEvent(
+                        convertFromNotificationItem(notificationItemModel),
+                        paymentTransaction
+                );
+                break;
+
+            case NotificationRequestItem.EVENT_CODE_OFFER_CLOSED:
+                processOfferClosedEvent(
+                        convertFromNotificationItem(notificationItemModel)
+                );
                 break;
             case NotificationRequestItem.EVENT_CODE_REFUND:
                 processRefundEvent(convertFromNotificationItem(notificationItemModel));
                 break;
         }
+    }
+
+    @Override
+    public void processOfferClosedEvent(
+            final AdyenNotificationModel notificationItemModel) {
+
+        final String orderCode =
+                notificationItemModel.getMerchantReference();
+
+        if (!BooleanUtils.isTrue(notificationItemModel.getSuccess())) {
+            LOG.warn(
+                    "OFFER_CLOSED with success=false for order: "
+                            + orderCode
+            );
+            return;
+        }
+
+        final OrderModel orderModel =
+                orderRepository.getOrderModel(orderCode);
+
+        if (orderModel == null) {
+            throw new IllegalStateException(
+                    "Order " + orderCode
+                            + " not found for OFFER_CLOSED"
+            );
+        }
+
+        if (hasAcceptedAuthorization(orderModel)) {
+            LOG.warn(
+                    "Ignoring OFFER_CLOSED because order "
+                            + orderCode
+                            + " is already authorised"
+            );
+            return;
+        }
+
+        if (OrderStatus.CANCELLED.equals(orderModel.getStatus())) {
+            LOG.info(
+                    "Order " + orderCode
+                            + " is already cancelled"
+            );
+            return;
+        }
+
+        orderModel.setStatus(OrderStatus.CANCELLED);
+        orderModel.setStatusInfo(
+                "Adyen OFFER_CLOSED: "
+                        + notificationItemModel.getPspReference()
+        );
+
+        modelService.save(orderModel);
+
+        adyenBusinessProcessService.triggerOrderProcessEvent(
+                orderModel,
+                Adyenv6coreConstants.PROCESS_EVENT_ADYEN_PAYMENT_RESULT
+        );
+
+        LOG.info(
+                "Order " + orderCode
+                        + " cancelled after OFFER_CLOSED"
+        );
+    }
+
+    protected boolean hasAcceptedAuthorization(
+            final OrderModel orderModel) {
+
+        if (orderModel.getPaymentTransactions() == null) {
+            return false;
+        }
+
+        for (final PaymentTransactionModel transaction
+                : orderModel.getPaymentTransactions()) {
+
+            if (transaction == null
+                    || transaction.getEntries() == null) {
+                continue;
+            }
+
+            for (final PaymentTransactionEntryModel entry
+                    : transaction.getEntries()) {
+
+                if (entry != null
+                        && PaymentTransactionType.AUTHORIZATION
+                        .equals(entry.getType())
+                        && TransactionStatus.ACCEPTED.name()
+                        .equals(entry.getTransactionStatus())) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected AdyenNotificationModel convertFromNotificationItem(NotificationItemModel notificationItemModel){
