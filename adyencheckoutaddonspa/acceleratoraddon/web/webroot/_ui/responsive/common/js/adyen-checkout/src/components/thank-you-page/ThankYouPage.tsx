@@ -9,6 +9,7 @@ import {PaymentTimeout} from "./PaymentTimeout";
 import {PaymentStatusService} from "../../service/paymentStatusService";
 import {isEmpty, isNotEmpty} from "../../util/stringUtil";
 import {isGuid} from "../../util/guidUtil";
+import {PaymentCancelled} from "./PaymentCancelled";
 
 interface Props {
     orderCode: string;
@@ -189,6 +190,8 @@ export class ThankYouPage extends React.Component<Props, State> {
                         {this.renderRetryButton()}
                     </div>
                 );
+            case "cancelled":
+                return <PaymentCancelled/>
             case "timeout":
             case "unknown":
                 return <PaymentTimeout/>;
