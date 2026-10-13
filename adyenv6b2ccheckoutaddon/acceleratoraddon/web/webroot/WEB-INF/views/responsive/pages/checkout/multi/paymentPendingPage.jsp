@@ -34,6 +34,9 @@
                 const confirmationUrl =
                     paymentPending.attr("data-confirmation-url");
 
+                const safeConfirmationUrl =
+                    getSafeRedirectUrl(confirmationUrl);
+
                 const orderIdentifier =
                     paymentPending.attr("data-order-identifier");
 
@@ -63,8 +66,12 @@
                 function handleStatus(status) {
                     switch (status) {
                         case "completed":
-                            pollingFinished = true;
-                            window.location.replace(confirmationUrl);
+                            if (safeConfirmationUrl) {
+                                pollingFinished = true;
+                                window.location.replace(safeConfirmationUrl);
+                            } else {
+                                showFinalStatus("#payment-error");
+                            }
                             break;
 
                         case "cancelled":
@@ -117,6 +124,35 @@
 
                             scheduleNextCheck();
                         });
+                }
+
+
+                function getSafeRedirectUrl(url) {
+                    if (!url) {
+                        return null;
+                    }
+
+                    try {
+                        const parsedUrl = new URL(
+                            url,
+                            window.location.origin
+                        );
+
+                        const isSameOrigin =
+                            parsedUrl.origin === window.location.origin;
+
+                        const isHttpProtocol =
+                            parsedUrl.protocol === "http:" ||
+                            parsedUrl.protocol === "https:";
+
+                        if (isSameOrigin && isHttpProtocol) {
+                            return parsedUrl.href;
+                        }
+                    } catch (e) {
+                        return null;
+                    }
+
+                    return null;
                 }
 
                 window.setTimeout(
