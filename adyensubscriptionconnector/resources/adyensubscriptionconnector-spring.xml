@@ -285,19 +285,25 @@
     <!-- ============================================================= -->
     <!-- My Account: the shopper's own view of their subscriptions      -->
     <!-- ============================================================= -->
+    <alias name="defaultCustomerSubscriptionService" alias="customerSubscriptionService"/>
+    <bean id="defaultCustomerSubscriptionService"
+          class="com.adyen.commerce.connector.selfservice.impl.DefaultCustomerSubscriptionService">
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+        <property name="subscriptionBillingService" ref="subscriptionBillingService"/>
+        <property name="connectorRegistry" ref="subscriptionBillingConnectorRegistry"/>
+        <property name="storeContext" ref="subscriptionStoreContext"/>
+        <property name="tokenHandleFactory" ref="adyenTokenHandleFactory"/>
+        <property name="storedCardsService" ref="adyenStoredCardsService"/>
+        <property name="storedCardAuthorisationService" ref="adyenStoredCardAuthorisationService"/>
+    </bean>
+
     <alias name="defaultMySubscriptionsFacade" alias="mySubscriptionsFacade"/>
     <bean id="defaultMySubscriptionsFacade"
           class="com.adyen.commerce.connector.facades.impl.DefaultMySubscriptionsFacade">
         <property name="userService" ref="userService"/>
-        <property name="flexibleSearchService" ref="flexibleSearchService"/>
         <property name="productService" ref="productService"/>
-        <property name="subscriptionBillingService" ref="subscriptionBillingService"/>
-        <property name="sessionService" ref="sessionService"/>
-        <property name="baseSiteService" ref="baseSiteService"/>
-        <property name="connectorRegistry" ref="subscriptionBillingConnectorRegistry"/>
-        <property name="tokenHandleFactory" ref="adyenTokenHandleFactory"/>
-        <property name="storedCardsFacade" ref="adyenStoredCardsFacade"/>
-        <property name="storedCardAuthorisationService" ref="adyenStoredCardAuthorisationService"/>
+        <property name="enumerationService" ref="enumerationService"/>
+        <property name="customerSubscriptionService" ref="customerSubscriptionService"/>
     </bean>
 
     <bean id="adyenOrderCancelledSubscriptionListener"

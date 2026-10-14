@@ -394,7 +394,7 @@ public class DefaultSubscriptionBillingServiceTest
 	}
 
 	/**
-	 * Recurly answers a repeated idempotency key with the first response it recorded, so sharing one key
+	 * A platform answers a repeated idempotency key with the first response it recorded, so sharing one key
 	 * between the two timings would have an escalation from "at period end" to "now" acknowledged without
 	 * the platform ever hearing it.
 	 */

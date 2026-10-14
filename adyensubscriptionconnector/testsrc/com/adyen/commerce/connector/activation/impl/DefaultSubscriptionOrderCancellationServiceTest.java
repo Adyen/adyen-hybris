@@ -135,8 +135,8 @@ public class DefaultSubscriptionOrderCancellationServiceTest
 	}
 
 	/**
-	 * An order can be announced cancelled more than once, and on Chargebee a second cancellation is a real
-	 * API call — that adapter sends no idempotency key.
+	 * An order can be announced cancelled more than once, and a platform remembers an idempotency key only
+	 * for a while, so a late second announcement would be a real API call.
 	 */
 	@Test
 	public void leavesASubscriptionAlreadySetToStopAlone() throws Exception

@@ -303,11 +303,14 @@ public class ChargebeeSubscriptionActivationIntegrationTest extends Servicelayer
 		// no quantity — Chargebee answers "subscription_items[quantity][0]: This param should not be sent
 		// for on_off addon type" — so the item price is the lever that exercises update_for_items here.
 		// Quantity-bearing updates are unit-covered in ChargebeeSubscriptionBillingConnectorTest.
-		chargebeeConnector.updateSubscription(new SubscriptionUpdateRequest(created, plan, null, null, Map.of(), idem));
+		// One key per call, as the core derives them: Chargebee refuses a key it has already seen on another
+		// path or body (422).
+		chargebeeConnector.updateSubscription(
+				new SubscriptionUpdateRequest(created, plan, null, null, Map.of(), idem + "/update"));
 
 		// Cancel immediately (atPeriodEnd=false -> cancel_option=immediately).
 		chargebeeConnector.cancelSubscription(
 				new SubscriptionCancelRequest(created, CancelReason.REQUESTED_BY_CUSTOMER,
-						CancellationTiming.IMMEDIATELY, idem));
+						CancellationTiming.IMMEDIATELY, idem + "/immediately"));
 	}
 }

@@ -55,6 +55,10 @@ import com.adyen.commerce.connector.exception.CapabilityUnsupportedException;
  * every failure surfaces as a {@link BillingException} subtype, transient ones as
  * {@link com.adyen.commerce.connector.exception.RetryableBillingException}. Implementations receive an
  * {@link com.adyen.commerce.connector.dto.AdyenTokenHandle}, so a PAN never crosses this boundary.</p>
+ *
+ * <p>A key names one call, not one subscription: a platform answers a repeated key with its first
+ * response, or refuses it when the request differs, so a caller derives a separate key for each distinct
+ * call.</p>
  */
 public interface SubscriptionBillingConnector
 {
