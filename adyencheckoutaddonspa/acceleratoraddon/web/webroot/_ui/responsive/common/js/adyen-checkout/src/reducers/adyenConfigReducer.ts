@@ -28,6 +28,8 @@ export const adyenConfigInitialState : AdyenConfigData = {
     merchantDisplayName: "",
     shopperEmail: "",
     clickToPayLocale: "",
+    disclaimerMessage: "",
+    disclaimerLink: "",
     skipCvcForOneClick: false,
 }
 

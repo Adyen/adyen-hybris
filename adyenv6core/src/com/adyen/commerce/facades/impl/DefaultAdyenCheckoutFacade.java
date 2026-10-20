@@ -42,10 +42,10 @@ import com.adyen.v6.dto.ExpressCheckoutConfigDTOBuilder;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
+import com.adyen.v6.event.AdyenPaymentAuthorizedEventPublisher;
 import com.adyen.v6.exceptions.AdyenCheckoutConfigurationException;
 import com.adyen.v6.exceptions.AdyenNonAuthorizedPaymentException;
 import com.adyen.v6.factory.AdyenPaymentServiceFactory;
-import com.adyen.v6.event.AdyenPaymentAuthorizedEventPublisher;
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
 import com.adyen.v6.forms.validation.AdyenPaymentFormValidator;
@@ -120,6 +120,10 @@ import static com.adyen.v6.constants.Adyenv6coreConstants.*;
 public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
     public static final String DETAILS = "details";
+    private static final Set<String> DISCLAIMER_EUROPEAN_COUNTRY_CODES = Set.of(
+            "AL", "AD", "AM", "AT", "AZ", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "GE", "DE",
+            "GR", "HU", "IS", "IE", "IT", "KZ", "XK", "LV", "LI", "LT", "LU", "MT", "MD", "MC", "ME", "NL", "MK", "NO",
+            "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SE", "CH", "TR", "UA", "GB", "VA");
     private static final String RECURRING_RECURRING_DETAIL_REFERENCE = "recurring.recurringDetailReference";
     public static final String EXPRESS_PAYMENT_CONFIG = "expressPaymentConfig";
 
@@ -713,6 +717,16 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     public CheckoutConfigDTO getReactCheckoutConfig() throws ApiException {
+        final CartModel cartModel = cartService.getSessionCart();
+        final String deliveryCountryCode = cartModel.getDeliveryAddress() != null
+                && cartModel.getDeliveryAddress().getCountry() != null
+                ? cartModel.getDeliveryAddress().getCountry().getIsocode()
+                : null;
+        return getReactCheckoutConfig(deliveryCountryCode);
+    }
+
+    @Override
+    public CheckoutConfigDTO getReactCheckoutConfig(final String shopperCountryCode) throws ApiException {
         final CartData cartData = getCheckoutFacade().getCheckoutCart();
         final AdyenCheckoutApiService adyenPaymentService = getAdyenPaymentService();
         final CustomerModel customerModel = getCheckoutCustomerStrategy().getCurrentUserForCheckout();
@@ -736,6 +750,38 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 cartData, response, cartModel, baseStoreService.getCurrentBaseStore(), customerModel, adyenPaymentService);
 
         builder.setInstallmentOptions(adyenInstallmentsConfigurationService.getInstallmentOptionsForCountry());
+
+        final String deliveryCountryCode = cartModel.getDeliveryAddress().getCountry() == null
+                ? null
+                : cartModel.getDeliveryAddress().getCountry().getIsocode();
+        final String countryCode = shopperCountryCode == null || shopperCountryCode.isBlank()
+                ? deliveryCountryCode
+                : shopperCountryCode.trim().toUpperCase(Locale.ROOT);
+
+        String disclaimerMessage = null;
+        if (countryCode != null && DISCLAIMER_EUROPEAN_COUNTRY_CODES.contains(countryCode)) {
+            final String currentLanguageIso = commonI18NService.getCurrentLanguage() != null
+                    ? commonI18NService.getCurrentLanguage().getIsocode()
+                    : Locale.ENGLISH.getLanguage();
+            final Locale currentLanguageLocale = Locale.of(currentLanguageIso);
+            final Locale countryLocale = commonI18NService.getLocaleForIsoCode(countryCode);
+            final boolean countryLocaleIsAvailable = countryLocale != null
+                    && commonI18NService.getAllLanguages().stream()
+                    .anyMatch(language -> language.getIsocode().equalsIgnoreCase(countryLocale.getLanguage()));
+            final Locale disclaimerLocale = countryLocaleIsAvailable ? countryLocale : currentLanguageLocale;
+            LOGGER.info("Resolving disclaimer message: requestedCountry={}, selectedLocale={}", countryCode, disclaimerLocale);
+
+            disclaimerMessage = baseStoreService.getCurrentBaseStore().getDisclaimerMessage(disclaimerLocale);
+            if (disclaimerMessage == null && !disclaimerLocale.equals(currentLanguageLocale)) {
+                disclaimerMessage = baseStoreService.getCurrentBaseStore().getDisclaimerMessage(currentLanguageLocale);
+            }
+        } else {
+            LOGGER.info("Skipping disclaimer lookup for non-European country {}", countryCode);
+        }
+
+        builder.setDisclaimerMessage(disclaimerMessage);
+
+        builder.setDisclaimerLink(baseStoreService.getCurrentBaseStore().getDisclaimerLink());
 
         return builder.build();
     }
