@@ -20,6 +20,9 @@
  */
 package com.adyen.commerce.connector.chargebee.client;
 
+import java.util.List;
+import java.util.function.BooleanSupplier;
+
 import com.adyen.commerce.connector.dto.CardMetadata;
 import com.adyen.commerce.connector.dto.NormalizedSubscription;
 import com.adyen.commerce.connector.exception.BillingException;
@@ -67,6 +70,23 @@ public interface ChargebeeApiClient
 	 * @return a vendor-neutral snapshot of the Chargebee subscription
 	 */
 	NormalizedSubscription fetchSubscription(String subscriptionId) throws BillingException;
+
+	/**
+	 * Every subscription of the customer in any state, across pages ({@code customer_id[is]} filter). Not tied
+	 * to what this integration created: the customer is the ownership boundary.
+	 */
+	default List<NormalizedSubscription> listCustomerSubscriptions(String customerId) throws BillingException
+	{
+		return listCustomerSubscriptions(customerId, () -> true);
+	}
+
+	/**
+	 * As {@link #listCustomerSubscriptions(String)}, for a caller with a deadline: {@code mayContinue} is asked
+	 * before each page after the first, and once it answers {@code false} the pages read so far are returned. A
+	 * request already in flight is not interrupted; it is bounded by the transport timeout.
+	 */
+	List<NormalizedSubscription> listCustomerSubscriptions(String customerId, BooleanSupplier mayContinue)
+			throws BillingException;
 
 	/**
 	 * Update an existing subscription. Null arguments are omitted (left unchanged).

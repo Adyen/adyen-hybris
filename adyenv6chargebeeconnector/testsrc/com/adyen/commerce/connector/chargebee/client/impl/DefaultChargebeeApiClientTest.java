@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -452,6 +453,84 @@ public class DefaultChargebeeApiClientTest
 	{
 		when(httpClient.get(BASE + "/subscriptions/sub-1", expectedAuth))
 				.thenReturn(new ChargebeeHttpResponse(200, body));
+	}
+
+	/**
+	 * The customer's subscriptions are read with the {@code customer_id[is]} filter across pages ({@code next_offset}),
+	 * each list entry mapped like a retrieve response, in-trial included.
+	 */
+	@Test
+	public void listsEverySubscriptionOfTheCustomerAcrossPages() throws Exception
+	{
+		final String filter = URLEncoder.encode("customer_id[is]", StandardCharsets.UTF_8) + "=cust";
+		final String nextOffset = "[\"1784628635000\",\"900\"]";
+		when(httpClient.get(BASE + "/subscriptions?limit=100&" + filter, expectedAuth))
+				.thenReturn(new ChargebeeHttpResponse(200, "{\"list\":[" + subscriptionJson("in_trial", "")
+						+ "],\"next_offset\":\"" + nextOffset.replace("\"", "\\\"") + "\"}"));
+		when(httpClient.get(BASE + "/subscriptions?limit=100&" + filter + "&offset="
+				+ URLEncoder.encode(nextOffset, StandardCharsets.UTF_8), expectedAuth))
+				.thenReturn(new ChargebeeHttpResponse(200, "{\"list\":["
+						+ subscriptionJson("non_renewing", "").replace("sub-1", "sub-2") + ","
+						+ subscriptionJson("cancelled", "").replace("sub-1", "sub-3") + "]}"));
+
+		final List<NormalizedSubscription> result = client.listCustomerSubscriptions("cust");
+
+		assertEquals(3, result.size());
+		assertEquals("sub-1", result.get(0).subscription().externalId());
+		assertEquals(NormalizedSubscriptionStatus.ACTIVE, result.get(0).status());
+		assertEquals("price-1", result.get(0).planId());
+		assertEquals(NormalizedSubscriptionStatus.ACTIVE, result.get(1).status());
+		assertTrue(result.get(1).cancelAtPeriodEnd());
+		assertEquals(NormalizedSubscriptionStatus.EXPIRED, result.get(2).status());
+	}
+
+	/** The caller's deadline is asked before each page after the first; a spent one ends the listing with what was read. */
+	@Test
+	public void aListingStopsPagingWhenTheCallersBudgetIsSpentAndReturnsWhatItRead() throws Exception
+	{
+		final String filter = URLEncoder.encode("customer_id[is]", StandardCharsets.UTF_8) + "=cust";
+		when(httpClient.get(BASE + "/subscriptions?limit=100&" + filter, expectedAuth))
+				.thenReturn(new ChargebeeHttpResponse(200, "{\"list\":[" + subscriptionJson("active", "")
+						+ "],\"next_offset\":\"more\"}"));
+
+		final List<NormalizedSubscription> result = client.listCustomerSubscriptions("cust", () -> false);
+
+		assertEquals(1, result.size());
+		verify(httpClient, times(1)).get(any(), any());
+	}
+
+	/** Partial data can only add blocks to a duplicate check, so a looping cursor ends the listing, it does not fail it. */
+	@Test
+	public void aCustomerListingThatRepeatsItsOffsetReturnsWhatItReadInsteadOfLooping() throws Exception
+	{
+		when(httpClient.get(any(), any())).thenReturn(new ChargebeeHttpResponse(200,
+				"{\"list\":[" + subscriptionJson("active", "") + "],\"next_offset\":\"same\"}"));
+
+		final List<NormalizedSubscription> result = client.listCustomerSubscriptions("cust");
+
+		assertEquals(2, result.size());
+		verify(httpClient, times(2)).get(any(), any());
+	}
+
+	@Test
+	public void aCustomerListingThatRunsPastThePageCapReturnsTheCappedPages() throws Exception
+	{
+		final java.util.concurrent.atomic.AtomicInteger page = new java.util.concurrent.atomic.AtomicInteger();
+		when(httpClient.get(any(), any())).thenAnswer(invocation -> new ChargebeeHttpResponse(200,
+				"{\"list\":[" + subscriptionJson("active", "") + "],\"next_offset\":\"p" + page.incrementAndGet() + "\"}"));
+
+		final List<NormalizedSubscription> result = client.listCustomerSubscriptions("cust");
+
+		assertEquals(DefaultChargebeeApiClient.MAX_LISTING_PAGES, result.size());
+		verify(httpClient, times(DefaultChargebeeApiClient.MAX_LISTING_PAGES)).get(any(), any());
+	}
+
+	@Test
+	public void aCustomerListingFailureSurfacesAsABillingException() throws Exception
+	{
+		when(httpClient.get(any(), any())).thenReturn(new ChargebeeHttpResponse(500, "{}"));
+
+		assertThrows(RetryableBillingException.class, () -> client.listCustomerSubscriptions("cust"));
 	}
 
 	/**

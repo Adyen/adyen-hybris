@@ -168,6 +168,64 @@ public class ChargebeeSubscriptionBillingConnectorTest
 	}
 
 	@Test
+	public void resolvePlanLogsAnUnmappedProductAtDebugNotAsAFailure() throws Exception
+	{
+		final org.slf4j.Logger log = org.mockito.Mockito.mock(org.slf4j.Logger.class);
+		when(log.isDebugEnabled()).thenReturn(true);
+		when(log.isWarnEnabled()).thenReturn(true);
+		final ChargebeeSubscriptionBillingConnector logged = new ChargebeeSubscriptionBillingConnector()
+		{
+			@Override
+			protected org.slf4j.Logger resolvePlanLog()
+			{
+				return log;
+			}
+		};
+		logged.setPlanResolver(planResolver);
+		when(planResolver.resolve(any())).thenThrow(new com.adyen.commerce.connector.exception.PlanNotMappedException("no plan"));
+
+		assertThrows(com.adyen.commerce.connector.exception.PlanNotMappedException.class,
+				() -> logged.resolvePlan(new PlanResolutionRequest("PROD-1", "electronics", Map.of())));
+
+		final ArgumentCaptor<Object[]> values = ArgumentCaptor.forClass(Object[].class);
+
+		verify(log).debug(org.mockito.ArgumentMatchers.anyString(), values.capture());
+
+		verify(log, never()).warn(org.mockito.ArgumentMatchers.anyString(), (Object[]) org.mockito.ArgumentMatchers.any());
+
+		assertTrue(java.util.Arrays.stream(values.getValue()).anyMatch(v -> "not_mapped".equals(String.valueOf(v))));
+	}
+
+	@Test
+	public void resolvePlanStillWarnsOnAnyOtherBillingFailure() throws Exception
+	{
+		final org.slf4j.Logger log = org.mockito.Mockito.mock(org.slf4j.Logger.class);
+		when(log.isDebugEnabled()).thenReturn(true);
+		when(log.isWarnEnabled()).thenReturn(true);
+		final ChargebeeSubscriptionBillingConnector logged = new ChargebeeSubscriptionBillingConnector()
+		{
+			@Override
+			protected org.slf4j.Logger resolvePlanLog()
+			{
+				return log;
+			}
+		};
+		logged.setPlanResolver(planResolver);
+		when(planResolver.resolve(any())).thenThrow(new com.adyen.commerce.connector.exception.TerminalBillingException("boom"));
+
+		assertThrows(com.adyen.commerce.connector.exception.TerminalBillingException.class,
+				() -> logged.resolvePlan(new PlanResolutionRequest("PROD-1", "electronics", Map.of())));
+
+		final ArgumentCaptor<Object[]> values = ArgumentCaptor.forClass(Object[].class);
+
+		verify(log).warn(org.mockito.ArgumentMatchers.anyString(), values.capture());
+
+		verify(log, never()).debug(org.mockito.ArgumentMatchers.anyString(), (Object[]) org.mockito.ArgumentMatchers.any());
+
+		assertTrue(java.util.Arrays.stream(values.getValue()).anyMatch(v -> "failure".equals(String.valueOf(v))));
+	}
+
+	@Test
 	public void resolvePlanDelegatesToResolver() throws Exception
 	{
 		final PlanRef plan = new PlanRef("price-1", null);
@@ -586,5 +644,35 @@ public class ChargebeeSubscriptionBillingConnectorTest
 	private void verifyNoTokenImport() throws Exception
 	{
 		verify(apiClient, never()).importPermanentToken(any(), any(), any(), any());
+	}
+
+	@Test
+	public void listsTheCustomersSubscriptionsThroughTheApiClient() throws Exception
+	{
+		final NormalizedSubscription snapshot = new NormalizedSubscription(
+				new BillingSubscriptionRef(BillingPlatform.CHARGEBEE, "sub-1"), NormalizedSubscriptionStatus.ACTIVE,
+				"price-1", 1, null, null, false, null);
+		when(apiClient.listCustomerSubscriptions(org.mockito.ArgumentMatchers.eq("cust"), org.mockito.ArgumentMatchers.any())).thenReturn(java.util.List.of(snapshot));
+
+		assertEquals(java.util.List.of(snapshot), connector.listCustomerSubscriptions("cust"));
+	}
+
+	@Test
+	public void theCallersBudgetReachesTheApiClient() throws Exception
+	{
+		final java.util.function.BooleanSupplier budget = () -> true;
+		connector.listCustomerSubscriptions("cust", budget);
+
+		verify(apiClient).listCustomerSubscriptions("cust", budget);
+	}
+
+	@Test
+	public void aFailedListingIsNotSwallowedByTheConnector() throws Exception
+	{
+		when(apiClient.listCustomerSubscriptions(org.mockito.ArgumentMatchers.eq("cust"), org.mockito.ArgumentMatchers.any()))
+				.thenThrow(new com.adyen.commerce.connector.exception.RetryableBillingException("down"));
+
+		assertThrows(com.adyen.commerce.connector.exception.RetryableBillingException.class,
+				() -> connector.listCustomerSubscriptions("cust"));
 	}
 }

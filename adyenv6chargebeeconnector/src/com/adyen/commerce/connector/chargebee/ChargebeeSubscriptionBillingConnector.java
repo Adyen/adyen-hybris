@@ -27,8 +27,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +67,7 @@ import com.adyen.commerce.connector.dto.TokenImportStyle;
 import com.adyen.commerce.connector.enums.BillingPlatform;
 import com.adyen.commerce.connector.exception.BillingException;
 import com.adyen.commerce.connector.exception.CapabilityUnsupportedException;
+import com.adyen.commerce.connector.exception.PlanNotMappedException;
 import com.adyen.commerce.connector.exception.PreconditionFailedException;
 import com.adyen.commerce.connector.exception.TerminalBillingException;
 import com.adyen.commerce.connector.log.ConnectorLogContext;
@@ -261,6 +264,12 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 		}
 	}
 
+	/** The logger of {@link #resolvePlan}; a seam so a test can observe the level. */
+	protected Logger resolvePlanLog()
+	{
+		return LOG;
+	}
+
 	@Override
 	public PlanRef resolvePlan(final PlanResolutionRequest request) throws BillingException
 	{
@@ -272,13 +281,24 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 			{
 				plan = planResolver.resolve(request);
 			}
+			catch (final PlanNotMappedException e)
+			{
+				// Every non-subscription product in a cart asks and is told no: not a failure.
+				ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
+						.outcome(ConnectorLogEvent.OUTCOME_NOT_MAPPED)
+						.durationSince(startedAt)
+						.field("product_code", request.productCode())
+						.field("base_store", request.baseStoreUid())
+						.debug(resolvePlanLog());
+				throw e;
+			}
 			catch (final BillingException e)
 			{
 				ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
 						.failure(startedAt, e)
 						.field("product_code", request.productCode())
 						.field("base_store", request.baseStoreUid())
-						.warn(LOG);
+						.warn(resolvePlanLog());
 				throw e;
 			}
 			ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
@@ -286,7 +306,7 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 					.field("product_code", request.productCode())
 					.field("base_store", request.baseStoreUid())
 					.field(PLAN_ID, itemPriceIdOrNull(plan))
-					.info(LOG);
+					.info(resolvePlanLog());
 			return plan;
 		}
 	}
@@ -360,6 +380,40 @@ public class ChargebeeSubscriptionBillingConnector implements SubscriptionBillin
 					.field("subscription_status", fetched == null ? null : fetched.status())
 					.info(LOG);
 			return fetched;
+		}
+	}
+
+	@Override
+	public List<NormalizedSubscription> listCustomerSubscriptions(final String externalCustomerId)
+			throws BillingException
+	{
+		return listCustomerSubscriptions(externalCustomerId, () -> true);
+	}
+
+	@Override
+	public List<NormalizedSubscription> listCustomerSubscriptions(final String externalCustomerId,
+			final BooleanSupplier mayContinue) throws BillingException
+	{
+		final long startedAt = System.nanoTime();
+		try (ConnectorLogContext ignored = ConnectorLogContext.open(platform(), "list_customer_subscriptions"))
+		{
+			final List<NormalizedSubscription> subscriptions;
+			try
+			{
+				subscriptions = apiClient.listCustomerSubscriptions(externalCustomerId, mayContinue);
+			}
+			catch (final BillingException e)
+			{
+				ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
+						.failure(startedAt, e)
+						.warn(LOG);
+				throw e;
+			}
+			ConnectorLogEvent.of(EVENT_CONNECTOR_OPERATION)
+					.success(startedAt)
+					.field("subscription_count", subscriptions.size())
+					.info(LOG);
+			return subscriptions;
 		}
 	}
 
