@@ -38,7 +38,7 @@ public interface AdyenPaymentMethodsApi {
             }
     )
     @ApiBaseSiteIdUserIdAndCartIdParam
-    ResponseEntity<String> getCheckoutConfiguration() throws ApiException, JsonProcessingException;
+    ResponseEntity<String> getCheckoutConfiguration(String shopperCountryCode) throws ApiException, JsonProcessingException;
 
     @Operation(
             operationId = "getExpressPDPCheckoutConfiguration",

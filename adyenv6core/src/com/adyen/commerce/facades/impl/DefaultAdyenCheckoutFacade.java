@@ -758,31 +758,15 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 ? deliveryCountryCode
                 : shopperCountryCode.trim().toUpperCase(Locale.ROOT);
 
-        String disclaimerMessage = null;
-        if (countryCode != null && DISCLAIMER_EUROPEAN_COUNTRY_CODES.contains(countryCode)) {
-            final String currentLanguageIso = commonI18NService.getCurrentLanguage() != null
-                    ? commonI18NService.getCurrentLanguage().getIsocode()
-                    : Locale.ENGLISH.getLanguage();
-            final Locale currentLanguageLocale = Locale.of(currentLanguageIso);
-            final Locale countryLocale = commonI18NService.getLocaleForIsoCode(countryCode);
-            final boolean countryLocaleIsAvailable = countryLocale != null
-                    && commonI18NService.getAllLanguages().stream()
-                    .anyMatch(language -> language.getIsocode().equalsIgnoreCase(countryLocale.getLanguage()));
-            final Locale disclaimerLocale = countryLocaleIsAvailable ? countryLocale : currentLanguageLocale;
-            LOGGER.info("Resolving disclaimer message: requestedCountry={}, selectedLocale={}", countryCode, disclaimerLocale);
+        populateDisclaimerConfiguration(builder, countryCode, baseStoreService.getCurrentBaseStore());
 
-            disclaimerMessage = baseStoreService.getCurrentBaseStore().getDisclaimerMessage(disclaimerLocale);
-            if (disclaimerMessage == null && !disclaimerLocale.equals(currentLanguageLocale)) {
-                disclaimerMessage = baseStoreService.getCurrentBaseStore().getDisclaimerMessage(currentLanguageLocale);
-            }
-        } else {
-            LOGGER.info("Skipping disclaimer lookup for non-European country {}", countryCode);
-        }
+        return builder.build();
+    }
 
-        builder.setDisclaimerMessage(disclaimerMessage);
-
-        builder.setDisclaimerLink(baseStoreService.getCurrentBaseStore().getDisclaimerLink());
-
+    @Override
+    public CheckoutConfigDTO getDisclaimerConfiguration(final String shopperCountryCode) {
+        final CheckoutConfigDTOBuilder builder = new CheckoutConfigDTOBuilder();
+        populateDisclaimerConfiguration(builder, shopperCountryCode, baseStoreService.getCurrentBaseStore());
         return builder.build();
     }
 
@@ -854,7 +838,42 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
                 .setSepaDirectDebit(sepaDirectDebit)
                 .setCountryCode(cartData.getDeliveryAddress().getCountry().getIsocode());
 
+        populateDisclaimerConfiguration(builder, cartData.getDeliveryAddress().getCountry().getIsocode(), baseStore);
+
         return builder.build();
+    }
+
+    private void populateDisclaimerConfiguration(
+            final CheckoutConfigDTOBuilder builder,
+            final String shopperCountryCode,
+            final BaseStoreModel baseStore) {
+        String disclaimerMessage = null;
+        String disclaimerLink = null;
+        final String countryCode = shopperCountryCode == null ? null : shopperCountryCode.trim().toUpperCase(Locale.ROOT);
+
+        if (countryCode != null && DISCLAIMER_EUROPEAN_COUNTRY_CODES.contains(countryCode)) {
+            final String currentLanguageIso = commonI18NService.getCurrentLanguage() != null
+                    ? commonI18NService.getCurrentLanguage().getIsocode()
+                    : Locale.ENGLISH.getLanguage();
+            final Locale currentLanguageLocale = Locale.of(currentLanguageIso);
+            final Locale countryLocale = commonI18NService.getLocaleForIsoCode(countryCode);
+            final boolean countryLocaleIsAvailable = countryLocale != null
+                    && commonI18NService.getAllLanguages().stream()
+                    .anyMatch(language -> language.getIsocode().equalsIgnoreCase(countryLocale.getLanguage()));
+            final Locale disclaimerLocale = countryLocaleIsAvailable ? countryLocale : currentLanguageLocale;
+            LOGGER.info("Resolving disclaimer message: requestedCountry={}, selectedLocale={}", countryCode, disclaimerLocale);
+
+            disclaimerMessage = baseStore.getDisclaimerMessage(disclaimerLocale);
+            if (disclaimerMessage == null && !disclaimerLocale.equals(currentLanguageLocale)) {
+                disclaimerMessage = baseStore.getDisclaimerMessage(currentLanguageLocale);
+            }
+            disclaimerLink = baseStore.getDisclaimerLink();
+        } else {
+            LOGGER.info("Skipping disclaimer lookup for non-European country {}", countryCode);
+        }
+
+        builder.setDisclaimerMessage(disclaimerMessage)
+                .setDisclaimerLink(disclaimerLink);
     }
     /**
      * Builds a {@link CheckoutConfigDTOBuilder} pre-populated with fields common to both

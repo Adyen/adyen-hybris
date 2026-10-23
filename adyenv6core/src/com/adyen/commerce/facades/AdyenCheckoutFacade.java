@@ -211,6 +211,8 @@ public interface AdyenCheckoutFacade {
 
     CheckoutConfigDTO getReactCheckoutConfig(String shopperCountryCode) throws ApiException;
 
+    CheckoutConfigDTO getDisclaimerConfiguration(String shopperCountryCode);
+
     AdyenCheckoutApiService getAdyenPaymentService();
 
     OrderData placePendingOrder() throws InvalidCartException;

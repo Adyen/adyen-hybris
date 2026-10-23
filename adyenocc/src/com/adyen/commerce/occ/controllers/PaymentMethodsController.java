@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,8 +47,10 @@ public class PaymentMethodsController implements AdyenPaymentMethodsApi
     @Override
     @Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
     @GetMapping(value = AdyenoccConstants.ADYEN_USER_CART_PREFIX + "/checkout-configuration")
-    public ResponseEntity<String> getCheckoutConfiguration() throws ApiException, JsonProcessingException {
-        String response = objectMapper.writeValueAsString(adyenCheckoutFacade.getReactCheckoutConfig());
+    public ResponseEntity<String> getCheckoutConfiguration(
+            @RequestParam(name = "shopperCountryCode", required = false) final String shopperCountryCode)
+            throws ApiException, JsonProcessingException {
+        String response = objectMapper.writeValueAsString(adyenCheckoutFacade.getReactCheckoutConfig(shopperCountryCode));
         return ResponseEntity.ok().body(response);
     }
 
