@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {PaymentHeader} from "../headers/PaymentHeader";
 import {connect} from "react-redux";
 import {ShippingAddressHeading} from "../common/ShippingAddressHeading";
@@ -53,10 +53,9 @@ type Props = StoreProps & DispatchProps & ComponentProps;
 const Payment: React.FC<Props> = (props) => {
     const [useDifferentBillingAddress, setUseDifferentBillingAddress] = useState(false);
     const [saveInAddressBook, setSaveInAddressBook] = useState(false);
+    const lastRequestedShopperCountryCode = useRef<string | undefined>(undefined);
 
     const { errorCode, removeAdyenConfigFromStore, billingAddress, adyenConfig, shippingAddressFromCart } = props;
-    // When the shopper uses a separate billing address, prefer its country;
-    // otherwise billing follows delivery and the delivery country is effective.
     const shopperCountryCode = (useDifferentBillingAddress && billingAddress.countryCode)
         || shippingAddressFromCart?.country?.isocode
         || adyenConfig.countryCode
@@ -78,10 +77,17 @@ const Payment: React.FC<Props> = (props) => {
     }, []);
 
     useEffect(() => {
-        if (shopperCountryCode) {
-            AdyenConfigService.fetchPaymentMethodsConfig(shopperCountryCode);
+        if (!shopperCountryCode) {
+            return;
         }
-    }, [shopperCountryCode]);
+
+        if (!adyenConfig.adyenClientKey) {
+            AdyenConfigService.fetchPaymentMethodsConfig(shopperCountryCode);
+        } else if (lastRequestedShopperCountryCode.current !== shopperCountryCode) {
+            AdyenConfigService.fetchDisclaimerConfiguration(shopperCountryCode);
+        }
+        lastRequestedShopperCountryCode.current = shopperCountryCode;
+    }, [shopperCountryCode, adyenConfig.adyenClientKey]);
 
     useEffect(() => {
         if (errorCode) {
@@ -163,7 +169,6 @@ const Payment: React.FC<Props> = (props) => {
                     <PaymentDropIn
                         adyenConfig={adyenConfig}
                         shippingAddress={shippingAddressFromCart}
-                        shopperCountryCode={shopperCountryCode}
                         partialPaymentId={paymentState.partialPaymentId}
                         onPayment={handlePayment}
                         onAdditionalDetails={handleAdditionalDetails}

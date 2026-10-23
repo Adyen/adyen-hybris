@@ -35,10 +35,7 @@ import com.adyen.service.exception.ApiException;
 import com.adyen.v6.constants.StorefrontType;
 import com.adyen.v6.controllers.dtos.PaymentResultDTO;
 import com.adyen.v6.converters.ExpressPaymentConfigConverter;
-import com.adyen.v6.dto.CheckoutConfigDTO;
-import com.adyen.v6.dto.CheckoutConfigDTOBuilder;
-import com.adyen.v6.dto.ExpressCheckoutConfigDTO;
-import com.adyen.v6.dto.ExpressCheckoutConfigDTOBuilder;
+import com.adyen.v6.dto.*;
 import com.adyen.v6.enums.AdyenCardTypeEnum;
 import com.adyen.v6.enums.AdyenRegions;
 import com.adyen.v6.enums.RecurringContractMode;
@@ -717,12 +714,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     public CheckoutConfigDTO getReactCheckoutConfig() throws ApiException {
-        final CartModel cartModel = cartService.getSessionCart();
-        final String deliveryCountryCode = cartModel.getDeliveryAddress() != null
-                && cartModel.getDeliveryAddress().getCountry() != null
-                ? cartModel.getDeliveryAddress().getCountry().getIsocode()
-                : null;
-        return getReactCheckoutConfig(deliveryCountryCode);
+        return getReactCheckoutConfig(null);
     }
 
     @Override
@@ -751,12 +743,7 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
 
         builder.setInstallmentOptions(adyenInstallmentsConfigurationService.getInstallmentOptionsForCountry());
 
-        final String deliveryCountryCode = cartModel.getDeliveryAddress().getCountry() == null
-                ? null
-                : cartModel.getDeliveryAddress().getCountry().getIsocode();
-        final String countryCode = shopperCountryCode == null || shopperCountryCode.isBlank()
-                ? deliveryCountryCode
-                : shopperCountryCode.trim().toUpperCase(Locale.ROOT);
+        final String countryCode = resolveShopperCountryCode(shopperCountryCode, cartModel);
 
         populateDisclaimerConfiguration(builder, countryCode, baseStoreService.getCurrentBaseStore());
 
@@ -764,10 +751,8 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
     }
 
     @Override
-    public CheckoutConfigDTO getDisclaimerConfiguration(final String shopperCountryCode) {
-        final CheckoutConfigDTOBuilder builder = new CheckoutConfigDTOBuilder();
-        populateDisclaimerConfiguration(builder, shopperCountryCode, baseStoreService.getCurrentBaseStore());
-        return builder.build();
+    public DisclaimerConfigurationDTO getDisclaimerConfiguration(final String shopperCountryCode) {
+        return resolveDisclaimerConfiguration(shopperCountryCode, baseStoreService.getCurrentBaseStore());
     }
 
     @Deprecated
@@ -847,9 +832,17 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             final CheckoutConfigDTOBuilder builder,
             final String shopperCountryCode,
             final BaseStoreModel baseStore) {
+        final DisclaimerConfigurationDTO disclaimerConfiguration = resolveDisclaimerConfiguration(shopperCountryCode, baseStore);
+        builder.setDisclaimerMessage(disclaimerConfiguration.getDisclaimerMessage())
+                .setDisclaimerLink(disclaimerConfiguration.getDisclaimerLink());
+    }
+
+    private DisclaimerConfigurationDTO resolveDisclaimerConfiguration(
+            final String shopperCountryCode,
+            final BaseStoreModel baseStore) {
         String disclaimerMessage = null;
         String disclaimerLink = null;
-        final String countryCode = shopperCountryCode == null ? null : shopperCountryCode.trim().toUpperCase(Locale.ROOT);
+        final String countryCode = resolveShopperCountryCode(shopperCountryCode, cartService.getSessionCart());
 
         if (countryCode != null && DISCLAIMER_EUROPEAN_COUNTRY_CODES.contains(countryCode)) {
             final String currentLanguageIso = commonI18NService.getCurrentLanguage() != null
@@ -872,8 +865,20 @@ public class DefaultAdyenCheckoutFacade implements AdyenCheckoutFacade {
             LOGGER.info("Skipping disclaimer lookup for non-European country {}", countryCode);
         }
 
-        builder.setDisclaimerMessage(disclaimerMessage)
-                .setDisclaimerLink(disclaimerLink);
+        final DisclaimerConfigurationDTO disclaimerConfiguration = new DisclaimerConfigurationDTO();
+        disclaimerConfiguration.setDisclaimerMessage(disclaimerMessage);
+        disclaimerConfiguration.setDisclaimerLink(disclaimerLink);
+        return disclaimerConfiguration;
+    }
+
+    private String resolveShopperCountryCode(final String shopperCountryCode, final CartModel cartModel) {
+        String countryCode = shopperCountryCode;
+        if (StringUtils.isBlank(countryCode)
+                && cartModel.getDeliveryAddress() != null
+                && cartModel.getDeliveryAddress().getCountry() != null) {
+            countryCode = cartModel.getDeliveryAddress().getCountry().getIsocode();
+        }
+        return countryCode == null ? null : countryCode.trim().toUpperCase(Locale.ROOT);
     }
     /**
      * Builds a {@link CheckoutConfigDTOBuilder} pre-populated with fields common to both

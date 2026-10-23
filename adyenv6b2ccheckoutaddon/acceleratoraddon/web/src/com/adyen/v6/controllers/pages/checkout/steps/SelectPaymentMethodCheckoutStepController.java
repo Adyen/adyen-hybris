@@ -25,7 +25,7 @@ import com.adyen.v6.constants.AdyenControllerConstants;
 import com.adyen.commerce.facades.AdyenCheckoutFacade;
 import com.adyen.v6.forms.AddressForm;
 import com.adyen.v6.forms.AdyenPaymentForm;
-import com.adyen.v6.dto.CheckoutConfigDTO;
+import com.adyen.v6.dto.DisclaimerConfigurationDTO;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
 import de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutStep;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.checkout.steps.AbstractCheckoutStepController;
@@ -186,7 +186,7 @@ public class SelectPaymentMethodCheckoutStepController extends AbstractCheckoutS
 
     @RequestMapping(value = "/disclaimer-configuration", method = GET)
     @ResponseBody
-    public CheckoutConfigDTO getDisclaimerConfiguration(
+    public DisclaimerConfigurationDTO getDisclaimerConfiguration(
             @RequestParam(name = "shopperCountryCode", required = false) final String shopperCountryCode) {
         return adyenCheckoutFacade.getDisclaimerConfiguration(shopperCountryCode);
     }

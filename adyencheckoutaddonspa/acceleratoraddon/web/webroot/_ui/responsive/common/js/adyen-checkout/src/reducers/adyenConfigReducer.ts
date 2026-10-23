@@ -1,4 +1,4 @@
-import {AdyenConfigData} from "../types/adyenConfigData";
+import {AdyenConfigData, DisclaimerConfigurationData} from "../types/adyenConfigData";
 import {PayloadAction, RootAction} from "./rootReducer";
 
 export const adyenConfigInitialState : AdyenConfigData = {
@@ -38,12 +38,20 @@ export function adyenConfigReducer(adyenConfig: AdyenConfigData, action: RootAct
         case "adyenConfig/setAdyenConfig":
             return action.payload
 
+        case "adyenConfig/updateDisclaimer":
+            return {
+                ...adyenConfig,
+                disclaimerMessage: action.payload.disclaimerMessage || "",
+                disclaimerLink: action.payload.disclaimerLink || ""
+            }
+
         default:
             return adyenConfig;
     }
 }
 
 interface SetAdyenConfigAction extends PayloadAction<"adyenConfig/setAdyenConfig", AdyenConfigData> {}
+interface UpdateDisclaimerAction extends PayloadAction<"adyenConfig/updateDisclaimer", DisclaimerConfigurationData> {}
 
 
-export type AdyenConfigAction = SetAdyenConfigAction
+export type AdyenConfigAction = SetAdyenConfigAction | UpdateDisclaimerAction

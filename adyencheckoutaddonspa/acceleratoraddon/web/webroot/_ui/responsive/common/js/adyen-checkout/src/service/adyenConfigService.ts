@@ -1,7 +1,7 @@
 import {AxiosError, AxiosResponse} from "axios";
 import {urlContextPath} from "../util/baseUrlUtil";
 import {store} from "../store/store";
-import {AdyenConfigData} from "../types/adyenConfigData";
+import {AdyenConfigData, DisclaimerConfigurationData} from "../types/adyenConfigData";
 import {ErrorResponse} from "../types/errorResponse";
 import {adyenAxios} from "../axios/AdyenAxios";
 
@@ -17,7 +17,6 @@ export class AdyenConfigService {
             }
         })
             .then((response: AxiosResponse<AdyenConfigData>) => {
-                // Ignore an older response if the shopper changed country while it was in flight.
                 if (requestId === AdyenConfigService.configRequestId) {
                     store.dispatch({type: "adyenConfig/setAdyenConfig", payload: response.data})
                 }
@@ -26,5 +25,24 @@ export class AdyenConfigService {
                 console.error("Payment method config fetch error.")
                 return false
             })
+    }
+
+    public static fetchDisclaimerConfiguration(shopperCountryCode: string) {
+        const requestId = ++AdyenConfigService.configRequestId;
+        adyenAxios.get(urlContextPath + '/api/checkout/disclaimer-configuration', {
+            params: {shopperCountryCode},
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+            .then((response: AxiosResponse<DisclaimerConfigurationData>) => {
+                if (requestId === AdyenConfigService.configRequestId) {
+                    store.dispatch({type: "adyenConfig/updateDisclaimer", payload: response.data});
+                }
+            })
+            .catch((errorResponse: AxiosError<ErrorResponse>) => {
+                console.error("Disclaimer configuration fetch error.");
+                return false;
+            });
     }
 }

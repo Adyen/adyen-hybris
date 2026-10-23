@@ -33,6 +33,11 @@ export interface AdyenConfigData {
     disclaimerLink: string;
 }
 
+export interface DisclaimerConfigurationData {
+    disclaimerMessage: string | null;
+    disclaimerLink: string | null;
+}
+
 interface StoredPaymentMethodData {
     brand: string;
     expiryMonth: string;

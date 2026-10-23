@@ -13,13 +13,6 @@ import {AddressData} from "../../types/addressData";
 
 class IrisQrCodeElement extends PromptPay {}
 
-const defaultDisclaimerMessage = 'Caution! Borrowing money costs money!';
-const europeanCountryCodes = new Set([
-    'AL', 'AD', 'AM', 'AT', 'AZ', 'BY', 'BE', 'BA', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'GE', 'DE',
-    'GR', 'HU', 'IS', 'IE', 'IT', 'KZ', 'XK', 'LV', 'LI', 'LT', 'LU', 'MT', 'MD', 'MC', 'ME', 'NL', 'MK', 'NO',
-    'PL', 'PT', 'RO', 'RU', 'SM', 'RS', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR', 'UA', 'GB', 'VA'
-]);
-
 (IrisQrCodeElement as any).type = 'iris';
 (IrisQrCodeElement as any).txVariants = ['iris'];
 AdyenCheckout.register(IrisQrCodeElement as any);
@@ -27,7 +20,6 @@ AdyenCheckout.register(IrisQrCodeElement as any);
 interface PaymentDropInProps {
     adyenConfig: AdyenConfigData;
     shippingAddress: AddressData;
-    shopperCountryCode: string;
     partialPaymentId?: string;
     onPayment: (state: any, element: UIElement, actions: SubmitActions) => void;
     onAdditionalDetails: (state: any, element: UIElement, actions: AdditionalDetailsActions) => void;
@@ -40,7 +32,6 @@ interface PaymentDropInProps {
 export const PaymentDropIn: React.FC<PaymentDropInProps> = ({
     adyenConfig,
     shippingAddress,
-    shopperCountryCode,
     partialPaymentId,
     onPayment,
     onAdditionalDetails,
@@ -159,23 +150,21 @@ export const PaymentDropIn: React.FC<PaymentDropInProps> = ({
         try {
             const adyenCheckout = await AdyenCheckout(getAdyenCheckoutConfig());
 
-            const nonCardPaymentMethodConfigurations = europeanCountryCodes.has(shopperCountryCode.toUpperCase())
+            const disclaimerMessage = adyenConfig.disclaimerMessage?.trim();
+            const disclaimerLink = adyenConfig.disclaimerLink?.trim();
+            const nonCardPaymentMethodConfigurations = disclaimerMessage
                 ? Object.fromEntries(
                     adyenConfig.paymentMethods
                     .filter(paymentMethod => adyenConfig.openInvoiceMethods.includes(paymentMethod.type))
-                    .map(paymentMethod => {
-                        const disclaimerMessage = adyenConfig.disclaimerMessage || defaultDisclaimerMessage;
-                        const disclaimerLink = adyenConfig.disclaimerLink?.trim();
-                        return [paymentMethod.type, {
-                            disclaimerMessage: disclaimerLink
-                                ? {
-                                    message: `${disclaimerMessage} %{learnMore}`,
-                                    linkText: 'Learn more...',
-                                    link: disclaimerLink
-                                }
-                                : { message: disclaimerMessage }
-                        }];
-                    })
+                    .map(paymentMethod => [paymentMethod.type, {
+                        disclaimerMessage: disclaimerLink
+                            ? {
+                                message: `${disclaimerMessage} %{learnMore}`,
+                                linkText: 'Learn more...',
+                                link: disclaimerLink
+                            }
+                            : { message: disclaimerMessage }
+                    }])
                 )
                 : {};
             
@@ -222,7 +211,6 @@ export const PaymentDropIn: React.FC<PaymentDropInProps> = ({
         adyenConfig.disclaimerLink,
         adyenConfig.paymentMethods,
         adyenConfig.openInvoiceMethods,
-        shopperCountryCode,
         shippingAddress.firstName,
         shippingAddress.lastName,
         getAdyenCheckoutConfig,
